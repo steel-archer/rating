@@ -1,29 +1,41 @@
 services:
   app:
+    env_file: .env.local
     build: ./docker
     ports:
       - "8080:80"
     volumes:
-      - ./project:/var/www/html
+      - .:/var/www/html
     depends_on:
       - db
+      - mailer
     environment:
       MYSQL_HOST: db
-      MYSQL_DATABASE: rating
-      MYSQL_USER: rating_user
-      MYSQL_PASSWORD: rating_pass
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   db:
+    env_file: .env.local
     image: mysql:8.0
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root_pass
-      MYSQL_DATABASE: rating
-      MYSQL_USER: rating_user
-      MYSQL_PASSWORD: rating_pass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
+
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
 volumes:
   db_data:
