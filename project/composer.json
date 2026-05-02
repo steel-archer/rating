@@ -1,0 +1,17 @@
+{
+    "name": "steel_archer/rating",
+    "description": "Rating site",
+    "type": "project",
+    "license": "BUSL-1.1",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Bohdan Sokulskyi"
+        }
+    ],
+    "require": {}
+}
