@@ -13,5 +13,7 @@
             "name": "Bohdan Sokulskyi"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    }
 }
