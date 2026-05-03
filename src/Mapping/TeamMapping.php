@@ -30,9 +30,19 @@ final class TeamMapping implements MappingInterface
 
         // Group players by season
         $seasonGroups = [];
+        $squadInfoBySeason = [];
         foreach ($context['teamPlayers'] ?? [] as $tp) {
+            $seasonId = $tp->getSeason()->getId();
             $seasonName = $tp->getSeason()->getName();
             $seasonGroups[$seasonName][] = $mapper->map($tp, SquadPlayerDTO::class);
+
+            if (!isset($squadInfoBySeason[$seasonId])) {
+                $squadInfoBySeason[$seasonId] = ['playerIds' => [], 'captainId' => null];
+            }
+            $squadInfoBySeason[$seasonId]['playerIds'][] = $tp->getPlayer()->getId();
+            if ($tp->isCaptain()) {
+                $squadInfoBySeason[$seasonId]['captainId'] = $tp->getPlayer()->getId();
+            }
         }
 
         $squads = [];
@@ -53,8 +63,11 @@ final class TeamMapping implements MappingInterface
             $st = $first->getTournamentSessionTeam();
             $session = $st->getTournamentSession();
 
+            $seasonId = $session->getTournament()->getSeason()?->getId();
+            $squadInfo = $squadInfoBySeason[$seasonId] ?? ['playerIds' => [], 'captainId' => null];
+
             $players = array_map(
-                static fn(TournamentSessionTeamPlayer $a) => $mapper->map($a, TournamentPlayerDTO::class),
+                static fn(TournamentSessionTeamPlayer $a) => $mapper->map($a, TournamentPlayerDTO::class, ['squadInfo' => $squadInfo]),
                 $appearances,
             );
 

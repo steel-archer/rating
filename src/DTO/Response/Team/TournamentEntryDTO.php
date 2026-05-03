@@ -6,6 +6,8 @@ use DateTimeInterface;
 
 final readonly class TournamentEntryDTO
 {
+    public int $baseSquadCount;
+
     public function __construct(
         public int $tournamentId,
         public string $tournamentName,
@@ -15,5 +17,6 @@ final readonly class TournamentEntryDTO
         /** @var list<TournamentPlayerDTO> */
         public array $players = [],
     ) {
+        $this->baseSquadCount = count(array_filter($players, static fn(TournamentPlayerDTO $p) => $p->isBaseSquad));
     }
 }

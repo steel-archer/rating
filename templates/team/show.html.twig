@@ -37,13 +37,16 @@
                 </thead>
                 <tbody>
                     {% for entry in team.tournaments %}
-                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ entry.baseSquadCount < 3 ? ' squad-weak' : '' }}">
                             <td>{{ loop.index }}</td>
                             <td><a href="{{ path('tournament_show', {id: entry.tournamentId}) }}">{{ entry.tournamentName }}</a></td>
                             <td>{{ entry.playedAt ? entry.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>
                                 {% for player in entry.players %}
-                                    <a href="{{ path('player_show', {id: player.playerId}) }}">{{ player.playerName }}</a>{% if player.isLegionary %} <em>(л)</em>{% endif %}<br>
+                                    <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
+                                        <a href="{{ path('player_show', {id: player.playerId}) }}">{{- player.playerName -}}</a>
+                                        {%- if player.isCaptain %} (к){% endif -%}
+                                    </div>
                                 {% endfor %}
                             </td>
                             <td>{{ entry.place ? (entry.place == entry.place|round(0) ? entry.place|number_format(0) : entry.place) : '—' }}</td>

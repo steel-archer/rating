@@ -7,6 +7,8 @@ final readonly class TournamentPlayerDTO
     public function __construct(
         public int $playerId,
         public string $playerName,
+        public bool $isBaseSquad,
+        public bool $isCaptain,
         public bool $isLegionary,
     ) {
     }

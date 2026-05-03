@@ -44,6 +44,8 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->addSelect('ts')
             ->join('ts.tournament', 'tournament')
             ->addSelect('tournament')
+            ->leftJoin('tournament.season', 'season')
+            ->addSelect('season')
             ->where('st.team = :team')
             ->setParameter('team', $team)
             ->orderBy('ts.playedAt', 'DESC')
