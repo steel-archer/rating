@@ -5,7 +5,7 @@ namespace App\Service;
 use App\DTO\Response\Tournament\SessionTeamDTO;
 use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeam;
-use App\Entity\TournamentSessionTeamPlayer;
+use App\Helper\SessionTeamPlayerGrouper;
 use App\Mapping\Mapper;
 use App\Repository\TeamPlayerRepository;
 use App\Repository\TournamentSessionTeamPlayerRepository;
@@ -36,7 +36,7 @@ final readonly class TournamentResultService
         }
 
         $sessionTeamIds = array_map(static fn(TournamentSessionTeam $st) => $st->getId(), $sessionTeams);
-        $playerMap = self::groupBySessionTeam(
+        $playerMap = SessionTeamPlayerGrouper::group(
             $this->sessionTeamPlayerRepository->findBySessionTeamIds($sessionTeamIds),
         );
         $places = $this->sessionTeamRepository->getPlacesInTournament($sessionTeamIds);
@@ -63,18 +63,5 @@ final readonly class TournamentResultService
         $total = $this->sessionTeamRepository->countByTournament($tournament);
 
         return max(1, (int) ceil($total / self::PER_PAGE));
-    }
-
-    /**
-     * @return array<int, list<TournamentSessionTeamPlayer>>
-     */
-    private static function groupBySessionTeam(array $players): array
-    {
-        $index = [];
-        foreach ($players as $player) {
-            $index[$player->getTournamentSessionTeam()->getId()][] = $player;
-        }
-
-        return $index;
     }
 }

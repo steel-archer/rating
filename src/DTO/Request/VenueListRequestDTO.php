@@ -13,10 +13,10 @@ final readonly class VenueListRequestDTO
         #[Assert\Length(max: 255)]
         public ?string $name = null,
 
-        #[Assert\Range(min: 1, max: 10000)]
+        #[Assert\Positive]
         public ?int $townId = null,
 
-        #[Assert\Range(min: 1, max: 10000)]
+        #[Assert\Positive]
         public ?int $countryId = null,
 
         #[Assert\Length(max: 255)]

@@ -5,15 +5,15 @@
                 <input type="text" name="lastName" value="{{ filters.lastName ?? '' }}" placeholder="Прізвище" class="search-input">
                 <input type="text" name="firstName" value="{{ filters.firstName ?? '' }}" placeholder="Ім'я" class="search-input">
                 <input type="text" name="patronymic" value="{{ filters.patronymic ?? '' }}" placeholder="По батькові" class="search-input">
-                <div class="suggest-wrapper">
-                    <input type="text" id="player-town-search" value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
-                    <input type="hidden" name="townId" id="player-town-id" value="{{ filters.townId ?? '' }}">
-                    <div class="suggest-dropdown" id="player-town-dropdown"></div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
+                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
+                    <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
-                <div class="suggest-wrapper">
-                    <input type="text" id="player-country-search" value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
-                    <input type="hidden" name="countryId" id="player-country-id" value="{{ filters.countryId ?? '' }}">
-                    <div class="suggest-dropdown" id="player-country-dropdown"></div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
+                    <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}">
+                    <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
                 <button type="submit" class="search-btn">Знайти</button>
             </div>

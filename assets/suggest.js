@@ -1,9 +1,10 @@
-function initSuggest(inputId, hiddenId, dropdownId, apiUrl) {
-    const input = document.getElementById(inputId);
-    const hidden = document.getElementById(hiddenId);
-    const dropdown = document.getElementById(dropdownId);
-    if (!input || !hidden || !dropdown || input.dataset.suggestInit) return;
-    input.dataset.suggestInit = '1';
+function initSuggest(wrapper) {
+    const input = wrapper.querySelector('[data-suggest-input]');
+    const hidden = wrapper.querySelector('[data-suggest-hidden]');
+    const dropdown = wrapper.querySelector('[data-suggest-dropdown]');
+    const apiUrl = wrapper.dataset.suggestUrl;
+    if (!input || !hidden || !dropdown || !apiUrl || wrapper.dataset.suggestInit) return;
+    wrapper.dataset.suggestInit = '1';
 
     let debounceTimer;
 
@@ -52,12 +53,7 @@ function initSuggest(inputId, hiddenId, dropdownId, apiUrl) {
 }
 
 function initAllSuggests() {
-    initSuggest('town-search', 'town-id', 'town-dropdown', '/api/towns/suggest');
-    initSuggest('country-search', 'country-id', 'country-dropdown', '/api/countries/suggest');
-    initSuggest('player-town-search', 'player-town-id', 'player-town-dropdown', '/api/towns/suggest');
-    initSuggest('player-country-search', 'player-country-id', 'player-country-dropdown', '/api/countries/suggest');
-    initSuggest('venue-town-search', 'venue-town-id', 'venue-town-dropdown', '/api/towns/suggest');
-    initSuggest('venue-country-search', 'venue-country-id', 'venue-country-dropdown', '/api/countries/suggest');
+    document.querySelectorAll('[data-suggest-url]').forEach(initSuggest);
 }
 
 document.addEventListener('DOMContentLoaded', initAllSuggests);

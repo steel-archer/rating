@@ -19,10 +19,10 @@ final readonly class PlayerListRequestDTO
         #[Assert\Length(max: 255)]
         public ?string $patronymic = null,
 
-        #[Assert\Range(min: 1, max: 10000)]
+        #[Assert\Positive]
         public ?int $townId = null,
 
-        #[Assert\Range(min: 1, max: 10000)]
+        #[Assert\Positive]
         public ?int $countryId = null,
     ) {
     }

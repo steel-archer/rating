@@ -3,15 +3,15 @@
         <form action="{{ path('team_list') }}" method="get">
             <div class="search-row">
                 <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="Назва команди" class="search-input">
-                <div class="suggest-wrapper">
-                    <input type="text" id="town-search" value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
-                    <input type="hidden" name="townId" id="town-id" value="{{ filters.townId ?? '' }}">
-                    <div class="suggest-dropdown" id="town-dropdown"></div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
+                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
+                    <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
-                <div class="suggest-wrapper">
-                    <input type="text" id="country-search" value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
-                    <input type="hidden" name="countryId" id="country-id" value="{{ filters.countryId ?? '' }}">
-                    <div class="suggest-dropdown" id="country-dropdown"></div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
+                    <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}">
+                    <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
                 <button type="submit" class="search-btn">Знайти</button>
             </div>
