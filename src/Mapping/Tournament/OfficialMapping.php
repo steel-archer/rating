@@ -11,11 +11,11 @@ use App\Mapping\MappingInterface;
 final class OfficialMapping implements MappingInterface
 {
     /**
+     * @param TournamentOfficial $source
      * @return OfficialDTO
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        /** @var TournamentOfficial $source */
         $player = $source->getPlayer();
 
         return new $destinationClass(

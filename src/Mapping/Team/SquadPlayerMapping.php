@@ -10,9 +10,12 @@ use App\Mapping\MappingInterface;
 #[AsMapper(source: TeamPlayer::class, destination: SquadPlayerDTO::class)]
 final class SquadPlayerMapping implements MappingInterface
 {
+    /**
+     * @param TeamPlayer $source
+     * @return SquadPlayerDTO
+     */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        /** @var TeamPlayer $source */
         return new $destinationClass(
             playerId: $source->getPlayer()->getId(),
             playerName: $source->getPlayer()->getFullName(),

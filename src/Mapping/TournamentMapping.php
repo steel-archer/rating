@@ -10,9 +10,12 @@ use InvalidArgumentException;
 #[AsMapper(source: Tournament::class, destination: TournamentDTO::class)]
 final class TournamentMapping implements MappingInterface
 {
+    /**
+     * @param Tournament $source
+     * @return TournamentDTO
+     */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        /** @var Tournament $source */
         $mapper = $context['mapper'] ?? throw new InvalidArgumentException('Mapper is required in context');
 
         return new $destinationClass(

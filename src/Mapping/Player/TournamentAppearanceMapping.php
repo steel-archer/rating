@@ -11,12 +11,12 @@ use App\Mapping\MappingInterface;
 final class TournamentAppearanceMapping implements MappingInterface
 {
     /**
+     * @param TournamentSessionTeamPlayer $source
      * @param array{places?: array<int, int>} $context
      * @return TournamentAppearanceDTO
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        /** @var TournamentSessionTeamPlayer $source */
         $sessionTeam = $source->getTournamentSessionTeam();
         $session = $sessionTeam->getTournamentSession();
         $tournament = $session->getTournament();

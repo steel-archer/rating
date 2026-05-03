@@ -11,12 +11,12 @@ use App\Mapping\MappingInterface;
 final class SessionTeamPlayerMapping implements MappingInterface
 {
     /**
+     * @param TournamentSessionTeamPlayer $source
      * @param array{squadInfo?: array{playerIds: list<int>, captainId: int|null}} $context
      * @return SessionTeamPlayerDTO
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        /** @var TournamentSessionTeamPlayer $source */
         $player = $source->getPlayer();
         $playerId = $player->getId();
         $squadInfo = $context['squadInfo'] ?? ['playerIds' => [], 'captainId' => null];

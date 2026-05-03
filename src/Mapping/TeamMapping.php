@@ -11,9 +11,12 @@ use App\Entity\TeamPlayer;
 #[AsMapper(source: Team::class, destination: TeamDTO::class)]
 final class TeamMapping implements MappingInterface
 {
+    /**
+     * @param Team $source
+     * @return TeamDTO
+     */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        /** @var Team $source */
         $mapper = $context['mapper'];
 
         $seasonGroups = [];

@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\DTO\Response\Tournament\SessionTeamDTO;
-use App\DTO\Response\Tournament\SessionTeamPlayerDTO;
 use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeam;
 use App\Entity\TournamentSessionTeamPlayer;
@@ -11,6 +10,7 @@ use App\Mapping\Mapper;
 use App\Repository\TeamPlayerRepository;
 use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Repository\TournamentSessionTeamRepository;
+use Doctrine\DBAL\Exception as DbalException;
 
 final readonly class TournamentResultService
 {
@@ -25,6 +25,7 @@ final readonly class TournamentResultService
     }
 
     /**
+     * @throws DbalException
      * @return list<SessionTeamDTO>
      */
     public function getResults(Tournament $tournament, int $page): array
@@ -35,36 +36,26 @@ final readonly class TournamentResultService
         }
 
         $sessionTeamIds = array_map(static fn(TournamentSessionTeam $st) => $st->getId(), $sessionTeams);
-        $players = $this->sessionTeamPlayerRepository->findBySessionTeamIds($sessionTeamIds);
-        $playerMap = self::groupBySessionTeam($players);
-
+        $playerMap = self::groupBySessionTeam(
+            $this->sessionTeamPlayerRepository->findBySessionTeamIds($sessionTeamIds),
+        );
         $places = $this->sessionTeamRepository->getPlacesInTournament($sessionTeamIds);
 
         $season = $tournament->getSeason();
         $squadMap = $season ? $this->teamPlayerRepository->getSquadMapBySeason($season) : [];
 
-        $result = [];
-        foreach ($sessionTeams as $sessionTeam) {
-            $teamId = $sessionTeam->getTeam()->getId();
-            $squadInfo = $squadMap[$teamId] ?? ['playerIds' => [], 'captainId' => null];
-            $teamPlayers = $playerMap[$sessionTeam->getId()] ?? [];
+        return array_map(
+            function (TournamentSessionTeam $st) use ($playerMap, $places, $squadMap) {
+                $squadInfo = $squadMap[$st->getTeam()->getId()] ?? ['playerIds' => [], 'captainId' => null];
 
-            $playerDTOs = array_map(
-                fn(TournamentSessionTeamPlayer $p) => $this->mapper->map($p, SessionTeamPlayerDTO::class, ['squadInfo' => $squadInfo]),
-                $teamPlayers,
-            );
-
-            $result[] = new SessionTeamDTO(
-                teamId: $teamId,
-                teamName: $sessionTeam->getTeam()->getName(),
-                teamTownName: $sessionTeam->getTeam()->getTown()->getName(),
-                score: $sessionTeam->getScore(),
-                place: $places[$sessionTeam->getId()] ?? null,
-                players: $playerDTOs,
-            );
-        }
-
-        return $result;
+                return $this->mapper->map($st, SessionTeamDTO::class, [
+                    'place' => $places[$st->getId()] ?? null,
+                    'players' => $playerMap[$st->getId()] ?? [],
+                    'squadInfo' => $squadInfo,
+                ]);
+            },
+            $sessionTeams,
+        );
     }
 
     public function getLastPage(Tournament $tournament): int

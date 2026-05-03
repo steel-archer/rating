@@ -11,11 +11,11 @@ use App\Mapping\MappingInterface;
 final class SquadMapping implements MappingInterface
 {
     /**
+     * @param TeamPlayer $source
      * @return SquadDTO
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        /** @var TeamPlayer $source */
         return new $destinationClass(
             teamId: $source->getTeam()->getId(),
             teamName: $source->getTeam()->getName(),
