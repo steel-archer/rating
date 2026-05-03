@@ -12,4 +12,15 @@ class TeamRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Team::class);
     }
+
+    public function findWithTown(int $id): ?Team
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.town', 'town')
+            ->addSelect('town')
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

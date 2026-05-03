@@ -28,6 +28,7 @@ final class TournamentAppearanceMapping implements MappingInterface
             playedAt: $session->getPlayedAt(),
             teamId: $team->getId(),
             teamName: $team->getName(),
+            teamTownName: $team->getTown()->getName(),
             score: $sessionTeam->getScore(),
             place: $context['places'][$sessionTeam->getId()] ?? null,
             isLegionary: $source->isLegionary(),

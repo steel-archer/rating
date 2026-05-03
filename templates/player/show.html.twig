@@ -14,7 +14,7 @@
             <dl>
                 {% for squad in player.squads %}
                     <dt>{{ squad.seasonName }}</dt>
-                    <dd>{{ squad.teamName }}{% if squad.isCaptain %} (к){% endif %}</dd>
+                    <dd><a href="{{ path('team_show', {id: squad.teamId}) }}">{{ squad.teamName }}</a>{% if squad.isCaptain %} (к){% endif %}</dd>
                 {% endfor %}
             </dl>
         </div>
@@ -30,6 +30,7 @@
                         <th>Турнір</th>
                         <th>Дата</th>
                         <th>Команда</th>
+                        <th>Місто</th>
                         <th>Місце</th>
                         <th>Результат</th>
                     </tr>
@@ -40,7 +41,8 @@
                             <td>{{ loop.index }}</td>
                             <td><a href="{{ path('tournament_show', {id: appearance.tournamentId}) }}">{{ appearance.tournamentName }}</a></td>
                             <td>{{ appearance.playedAt ? appearance.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td>{{ appearance.teamName }}{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
+                            <td><a href="{{ path('team_show', {id: appearance.teamId}) }}">{{ appearance.teamName }}</a>{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
+                            <td>{{ appearance.teamTownName }}</td>
                             <td>{{ appearance.place ? (appearance.place == appearance.place|round(0) ? appearance.place|number_format(0) : appearance.place) : '—' }}</td>
                             <td>{{ appearance.score ?? '—' }}</td>
                         </tr>

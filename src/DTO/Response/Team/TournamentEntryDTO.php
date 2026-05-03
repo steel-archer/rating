@@ -1,21 +1,19 @@
 <?php
 
-namespace App\DTO\Response\Player;
+namespace App\DTO\Response\Team;
 
 use DateTimeInterface;
 
-final readonly class TournamentAppearanceDTO
+final readonly class TournamentEntryDTO
 {
     public function __construct(
         public int $tournamentId,
         public string $tournamentName,
         public ?DateTimeInterface $playedAt,
-        public int $teamId,
-        public string $teamName,
-        public string $teamTownName,
         public ?int $score,
         public ?float $place,
-        public bool $isLegionary,
+        /** @var list<TournamentPlayerDTO> */
+        public array $players = [],
     ) {
     }
 }

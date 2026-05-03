@@ -59,6 +59,7 @@
                         <th></th>
                         <th>#</th>
                         <th>Команда</th>
+                        <th>Місто</th>
                         <th>Результат</th>
                         <th>
                             Склад
@@ -71,7 +72,8 @@
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
                             <td>{{ loop.index }}</td>
                             <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
-                            <td>{{ team.teamName }}</td>
+                            <td><a href="{{ path('team_show', {id: team.teamId}) }}">{{ team.teamName }}</a></td>
+                            <td>{{ team.teamTownName }}</td>
                             <td>{{ team.score ?? '—' }}</td>
                             <td>
                                 <button type="button" class="btn-toggle-text" data-toggle-squad>показати</button>

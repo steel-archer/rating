@@ -23,6 +23,8 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('st')
             ->join('st.team', 'team')
             ->addSelect('team')
+            ->join('team.town', 'town')
+            ->addSelect('town')
             ->join('st.tournamentSession', 'ts')
             ->where('ts.tournament = :t')
             ->setParameter('t', $tournament)

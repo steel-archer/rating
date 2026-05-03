@@ -56,6 +56,9 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
     /** @var array<int, list<int>> team index => list of player indices (season 1 squad) */
     public static array $teamSquads = [];
 
+    /** @var array<int, list<int>> town index => list of player indices */
+    public static array $townPlayers = [];
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('uk_UA');
@@ -63,6 +66,12 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         $seasons = $manager->getRepository(Season::class)->findAll();
         if (count($seasons) < 2) {
             throw new RuntimeException('Need at least 2 seasons. Run seed.sql first.');
+        }
+
+        // Побудувати мапу місто → гравці
+        self::$townPlayers = [];
+        for ($p = 0; $p < self::PLAYER_COUNT; $p++) {
+            self::$townPlayers[$p % $townCount][] = $p;
         }
 
         $used = [];
@@ -79,9 +88,8 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         $bothCount = (int)(self::TEAM_COUNT * 0.8);
         $s1OnlyCount = (int)(self::TEAM_COUNT * 0.1);
 
-        $playerPool = range(0, self::PLAYER_COUNT - 1);
-        $faker->shuffleArray($playerPool);
-        $poolOffset = 0;
+        // Трекер використаних гравців у складах (щоб не дублювати в одному сезоні)
+        $usedInSeason = [[], []];
 
         foreach ($teamNames as $i => $name) {
             $townIndex = $i % $townCount;
@@ -100,42 +108,113 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
                 $teamSeasons = [$seasons[1]];
             }
 
-            // Base roster for first season
-            $rosterSize = $faker->numberBetween(4, 6);
-            $basePlayers = [];
-            for ($j = 0; $j < $rosterSize; $j++) {
-                $basePlayers[] = $playerPool[$poolOffset % self::PLAYER_COUNT];
-                $poolOffset++;
+            $squadSize = $faker->numberBetween(4, 6);
+            $basePlayers = self::pickPlayers($faker, $townIndex, $townCount, $squadSize, $usedInSeason[0]);
+
+            foreach ($basePlayers as $pi) {
+                $usedInSeason[0][$pi] = true;
             }
             self::$teamSquads[$i] = $basePlayers;
 
             foreach ($teamSeasons as $seasonIndex => $season) {
                 if ($seasonIndex === 0) {
-                    $roster = $basePlayers;
+                    $squad = $basePlayers;
                 } else {
-                    // Between seasons: swap 1-2 players
-                    $roster = $basePlayers;
-                    $swapCount = $faker->numberBetween(1, min(2, count($roster)));
+                    $squad = $basePlayers;
+                    $swapCount = $faker->numberBetween(1, min(2, count($squad)));
+                    $excluded = $usedInSeason[1];
+                    foreach ($squad as $pi) {
+                        $excluded[$pi] = true;
+                    }
                     for ($s = 0; $s < $swapCount; $s++) {
-                        $roster[$s] = $playerPool[$poolOffset % self::PLAYER_COUNT];
-                        $poolOffset++;
+                        $newPlayer = self::pickPlayers($faker, $townIndex, $townCount, 1, $excluded);
+                        if ($newPlayer !== []) {
+                            $excluded[$newPlayer[0]] = true;
+                            $squad[$s] = $newPlayer[0];
+                        }
+                    }
+                    foreach ($squad as $pi) {
+                        $usedInSeason[1][$pi] = true;
                     }
                 }
 
-                $captainIndex = $faker->numberBetween(0, count($roster) - 1);
+                $captainIndex = $faker->numberBetween(0, count($squad) - 1);
 
-                foreach ($roster as $rosterIndex => $playerIndex) {
+                foreach ($squad as $idx => $playerIndex) {
                     $teamPlayer = new TeamPlayer();
                     $teamPlayer->setTeam($team);
                     $teamPlayer->setPlayer($this->getReference("player_$playerIndex", Player::class));
                     $teamPlayer->setSeason($season);
-                    $teamPlayer->setIsCaptain($rosterIndex === $captainIndex);
+                    $teamPlayer->setIsCaptain($idx === $captainIndex);
                     $manager->persist($teamPlayer);
                 }
             }
         }
 
         $manager->flush();
+    }
+
+    /**
+     * 80% з рідного міста, 20% з інших.
+     *
+     * @return list<int>
+     */
+    private static function pickPlayers(\Faker\Generator $faker, int $townIndex, int $townCount, int $count, array $excluded): array
+    {
+        $result = [];
+        $used = $excluded;
+
+        for ($i = 0; $i < $count; $i++) {
+            $fromHome = $faker->boolean(80);
+            $pool = $fromHome
+                ? (self::$townPlayers[$townIndex] ?? [])
+                : self::playersFromOtherTowns($townIndex, $townCount);
+
+            $picked = self::pickOneFrom($faker, $pool, $used);
+
+            // Fallback: якщо не знайшли в бажаному пулі — шукаємо в іншому
+            if ($picked === null) {
+                $pool = $fromHome
+                    ? self::playersFromOtherTowns($townIndex, $townCount)
+                    : (self::$townPlayers[$townIndex] ?? []);
+                $picked = self::pickOneFrom($faker, $pool, $used);
+            }
+
+            if ($picked !== null) {
+                $result[] = $picked;
+                $used[$picked] = true;
+            }
+        }
+
+        return $result;
+    }
+
+    private static function pickOneFrom(\Faker\Generator $faker, array $pool, array $excluded): ?int
+    {
+        $available = array_values(array_filter($pool, static fn(int $p) => !isset($excluded[$p])));
+        if ($available === []) {
+            return null;
+        }
+
+        return $faker->randomElement($available);
+    }
+
+    /**
+     * @return list<int>
+     */
+    private static function playersFromOtherTowns(int $excludeTown, int $townCount): array
+    {
+        $result = [];
+        for ($t = 0; $t < $townCount; $t++) {
+            if ($t === $excludeTown) {
+                continue;
+            }
+            foreach (self::$townPlayers[$t] ?? [] as $p) {
+                $result[] = $p;
+            }
+        }
+
+        return $result;
     }
 
     public function getDependencies(): array

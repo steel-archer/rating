@@ -9,6 +9,7 @@ final readonly class SessionTeamDTO
     public function __construct(
         public int $teamId,
         public string $teamName,
+        public ?string $teamTownName,
         public ?int $score,
         public ?float $place,
         public int $venueId,

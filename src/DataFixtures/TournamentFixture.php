@@ -122,53 +122,54 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                     }
                     $usedTeams[$teamIndex] = true;
 
+                    $teamTownIndex = $teamIndex % $townCount;
+
                     $sessionTeam = new TournamentSessionTeam();
                     $sessionTeam->setTournamentSession($session);
                     $sessionTeam->setTeam($this->getReference("team_$teamIndex", Team::class));
                     $sessionTeam->setScore($faker->numberBetween((int)($totalQuestions * 0.2), (int)($totalQuestions * 0.85)));
                     $manager->persist($sessionTeam);
 
-                    // Roster: base roster + legionaries if needed
+                    // Базовий склад + легіонери за потреби
                     $baseSquad = TeamFixture::$teamSquads[$teamIndex] ?? [];
-                    $roster = [];
-                    $rosterPlayerIds = [];
+                    $squad = [];
+                    $squadPlayerIds = [];
 
                     foreach ($baseSquad as $playerIndex) {
-                        if (isset($usedPlayers[$playerIndex]) || isset($rosterPlayerIds[$playerIndex])) {
+                        if (isset($usedPlayers[$playerIndex]) || isset($squadPlayerIds[$playerIndex])) {
                             continue;
                         }
-                        $roster[] = ['player' => $playerIndex, 'legionary' => false];
-                        $rosterPlayerIds[$playerIndex] = true;
+                        $squad[] = ['player' => $playerIndex, 'legionary' => false];
+                        $squadPlayerIds[$playerIndex] = true;
                     }
 
-                    // Fill up to at least 4 players with legionaries
-                    $targetSize = max(4, count($roster));
+                    // Добити до 4 гравців легіонерами (80% з того ж міста)
+                    $targetSize = max(4, count($squad));
                     $attempts = 0;
-                    while (count($roster) < $targetSize && $attempts < 100) {
-                        $legIndex = $faker->numberBetween(0, $playerCount - 1);
+                    while (count($squad) < $targetSize && $attempts < 100) {
                         $attempts++;
-                        if (!isset($usedPlayers[$legIndex]) && !isset($rosterPlayerIds[$legIndex])) {
-                            $roster[] = ['player' => $legIndex, 'legionary' => true];
-                            $rosterPlayerIds[$legIndex] = true;
+                        $legIndex = self::pickLegionary($faker, $teamTownIndex, $townCount, $playerCount);
+                        if (!isset($usedPlayers[$legIndex]) && !isset($squadPlayerIds[$legIndex])) {
+                            $squad[] = ['player' => $legIndex, 'legionary' => true];
+                            $squadPlayerIds[$legIndex] = true;
                         }
                     }
 
-                    // 20% chance an extra legionary
+                    // 20% шанс на додаткового легіонера
                     if ($faker->boolean(20)) {
                         $attempts = 0;
                         do {
-                            $legIndex = $faker->numberBetween(0, $playerCount - 1);
+                            $legIndex = self::pickLegionary($faker, $teamTownIndex, $townCount, $playerCount);
                             $attempts++;
-                        } while ((isset($usedPlayers[$legIndex]) || isset($rosterPlayerIds[$legIndex])) && $attempts < 50);
+                        } while ((isset($usedPlayers[$legIndex]) || isset($squadPlayerIds[$legIndex])) && $attempts < 50);
 
-                        if (!isset($usedPlayers[$legIndex]) && !isset($rosterPlayerIds[$legIndex])) {
-                            $roster[] = ['player' => $legIndex, 'legionary' => true];
-                            $rosterPlayerIds[$legIndex] = true;
+                        if (!isset($usedPlayers[$legIndex]) && !isset($squadPlayerIds[$legIndex])) {
+                            $squad[] = ['player' => $legIndex, 'legionary' => true];
+                            $squadPlayerIds[$legIndex] = true;
                         }
                     }
 
-                    // Mark all roster players as used in this tournament
-                    foreach ($roster as $entry) {
+                    foreach ($squad as $entry) {
                         $usedPlayers[$entry['player']] = true;
 
                         $sessionTeamPlayer = new TournamentSessionTeamPlayer();
@@ -182,6 +183,21 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
         }
 
         $manager->flush();
+    }
+
+    /**
+     * 80% з міста команди, 20% випадковий.
+     */
+    private static function pickLegionary(\Faker\Generator $faker, int $teamTownIndex, int $townCount, int $playerCount): int
+    {
+        if ($faker->boolean(80)) {
+            $townPlayers = TeamFixture::$townPlayers[$teamTownIndex] ?? [];
+            if ($townPlayers !== []) {
+                return $faker->randomElement($townPlayers);
+            }
+        }
+
+        return $faker->numberBetween(0, $playerCount - 1);
     }
 
     public function getDependencies(): array
