@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
-#[Route('/venue/{id}', name: 'venue_show', requirements: ['id' => '\d+'])]
+#[Route('/venue/{id}', name: 'venue_show', requirements: ['id' => '\d+'], methods: ['GET'])]
 final class ShowController extends AbstractController
 {
     public function __invoke(

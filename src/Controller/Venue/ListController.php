@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
-#[Route('/venues/list', name: 'venue_list')]
+#[Route('/venues/list', name: 'venue_list', methods: ['GET'])]
 final class ListController extends AbstractController
 {
     public function __construct(

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Сервіс недоступний — Rating{% endblock %}
+
+{% block body %}
+    <div class="error-page">
+        <div class="error-code">503</div>
+        <div class="error-message">Сервіс тимчасово недоступний</div>
+        <p class="error-hint">Спробуйте оновити сторінку через кілька хвилин.</p>
+        <a href="/" class="error-link">На головну</a>
+    </div>
+{% endblock %}

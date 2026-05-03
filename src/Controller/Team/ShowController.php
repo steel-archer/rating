@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
-#[Route('/team/{id}', name: 'team_show', requirements: ['id' => '\d+'])]
+#[Route('/team/{id}', name: 'team_show', requirements: ['id' => '\d+'], methods: ['GET'])]
 final class ShowController extends AbstractController
 {
     public function __invoke(int $id, TeamService $teamService): Response

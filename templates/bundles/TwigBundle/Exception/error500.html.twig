@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Помилка сервера — Rating{% endblock %}
+
+{% block body %}
+    <div class="error-page">
+        <div class="error-code">500</div>
+        <div class="error-message">Внутрішня помилка сервера</div>
+        <p class="error-hint">Щось пішло не так. Спробуйте пізніше.</p>
+        <a href="/" class="error-link">На головну</a>
+    </div>
+{% endblock %}

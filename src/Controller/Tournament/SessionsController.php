@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
-#[Route('/tournament/{id}/sessions', name: 'tournament_sessions', requirements: ['id' => '\d+'])]
+#[Route('/tournament/{id}/sessions', name: 'tournament_sessions', requirements: ['id' => '\d+'], methods: ['GET'])]
 final class SessionsController extends AbstractController
 {
     public function __invoke(int $id, TournamentRepository $tournamentRepository): Response

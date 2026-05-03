@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/towns/suggest', name: 'api_towns_suggest')]
+#[Route('/api/towns/suggest', name: 'api_towns_suggest', methods: ['GET'])]
 final class TownSuggestController extends AbstractController
 {
     public function __invoke(
