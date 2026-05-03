@@ -12,4 +12,15 @@ class PlayerRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Player::class);
     }
+
+    public function findWithTown(int $id): ?Player
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.town', 't')
+            ->addSelect('t')
+            ->where('p.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

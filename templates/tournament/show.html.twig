@@ -42,7 +42,7 @@
                     {% for role in roleOrder %}
                         {% if tournament.officials[role] is defined %}
                             <dt>{{ role == 'organizer' ? 'Організатори' : (role == 'editor' ? 'Редактори' : (role == 'game_jury' ? 'Ігрове журі' : 'Апеляційне журі')) }}</dt>
-                            <dd>{{ tournament.officials[role]|map(p => p.playerName)|join(', ') }}</dd>
+                            <dd>{{ tournament.officials[role]|map(p => '<a href="' ~ path('player_show', {id: p.playerId}) ~ '">' ~ p.playerName ~ '</a>')|join(', ')|raw }}</dd>
                         {% endif %}
                     {% endfor %}
                 </dl>
@@ -56,6 +56,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th></th>
                         <th>#</th>
                         <th>Команда</th>
                         <th>Результат</th>
@@ -69,6 +70,7 @@
                     {% for team in tournament.allTeams %}
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
                             <td>{{ loop.index }}</td>
+                            <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
                             <td>{{ team.teamName }}</td>
                             <td>{{ team.score ?? '—' }}</td>
                             <td>
@@ -76,7 +78,7 @@
                                 <div class="squad-list" hidden>
                                     {% for player in team.players %}
                                         <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
-                                            {{- player.playerName -}}
+                                            <a href="{{ path('player_show', {id: player.playerId}) }}">{{- player.playerName -}}</a>
                                             {%- if player.isCaptain %} (к){% endif -%}
                                         </div>
                                     {% endfor %}

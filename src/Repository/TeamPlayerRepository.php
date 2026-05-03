@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Player;
 use App\Entity\Season;
 use App\Entity\TeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -46,5 +47,22 @@ class TeamPlayerRepository extends ServiceEntityRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @return list<TeamPlayer>
+     */
+    public function findByPlayerWithTeamAndSeason(Player $player): array
+    {
+        return $this->createQueryBuilder('tp')
+            ->join('tp.team', 'team')
+            ->addSelect('team')
+            ->join('tp.season', 'season')
+            ->addSelect('season')
+            ->where('tp.player = :player')
+            ->setParameter('player', $player)
+            ->orderBy('season.startedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

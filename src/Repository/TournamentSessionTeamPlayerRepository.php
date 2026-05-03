@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Player;
 use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -25,6 +26,25 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->where('ts.tournament = :t')
             ->setParameter('t', $tournament)
             ->orderBy('p.lastName')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** @return list<TournamentSessionTeamPlayer> */
+    public function findByPlayerWithFullContext(Player $player): array
+    {
+        return $this->createQueryBuilder('stp')
+            ->join('stp.tournamentSessionTeam', 'st')
+            ->addSelect('st')
+            ->join('st.team', 'team')
+            ->addSelect('team')
+            ->join('st.tournamentSession', 'ts')
+            ->addSelect('ts')
+            ->join('ts.tournament', 'tournament')
+            ->addSelect('tournament')
+            ->where('stp.player = :player')
+            ->setParameter('player', $player)
+            ->orderBy('ts.playedAt', 'DESC')
             ->getQuery()
             ->getResult();
     }

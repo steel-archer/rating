@@ -12,7 +12,7 @@ use App\Mapping\MappingInterface;
 final class SessionTeamMapping implements MappingInterface
 {
     /**
-     * @param array{venueId: int, venueName: string, townName: string, players: list<SessionTeamPlayerDTO>} $context
+     * @param array{venueId: int, venueName: string, townName: string, place: float|null, players: list<SessionTeamPlayerDTO>} $context
      * @return SessionTeamDTO
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
@@ -24,6 +24,7 @@ final class SessionTeamMapping implements MappingInterface
             teamId: $team->getId(),
             teamName: $team->getName(),
             score: $source->getScore(),
+            place: $context['place'] ?? null,
             venueId: $context['venueId'],
             venueName: $context['venueName'],
             townName: $context['townName'],

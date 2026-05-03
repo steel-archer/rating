@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ player.fullName }} — Rating{% endblock %}
+
+{% block body %}
+    <h1>{{ player.fullName }}</h1>
+    {% if player.townName %}
+        <div class="meta"><span>{{ player.townName }}</span></div>
+    {% endif %}
+
+    {% if player.squads is not empty %}
+        <div class="card">
+            <h2>Базові склади</h2>
+            <dl>
+                {% for squad in player.squads %}
+                    <dt>{{ squad.seasonName }}</dt>
+                    <dd>{{ squad.teamName }}{% if squad.isCaptain %} (к){% endif %}</dd>
+                {% endfor %}
+            </dl>
+        </div>
+    {% endif %}
+
+    {% if player.tournaments is not empty %}
+        <div class="card card-wide">
+            <h2>Турніри</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Турнір</th>
+                        <th>Дата</th>
+                        <th>Команда</th>
+                        <th>Місце</th>
+                        <th>Результат</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appearance in player.tournaments %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                            <td>{{ loop.index }}</td>
+                            <td><a href="{{ path('tournament_show', {id: appearance.tournamentId}) }}">{{ appearance.tournamentName }}</a></td>
+                            <td>{{ appearance.playedAt ? appearance.playedAt|date('d.m.Y') : '—' }}</td>
+                            <td>{{ appearance.teamName }}{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
+                            <td>{{ appearance.place ? (appearance.place == appearance.place|round(0) ? appearance.place|number_format(0) : appearance.place) : '—' }}</td>
+                            <td>{{ appearance.score ?? '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -10,6 +10,7 @@ final readonly class SessionTeamDTO
         public int $teamId,
         public string $teamName,
         public ?int $score,
+        public ?float $place,
         public int $venueId,
         public string $venueName,
         public string $townName,

@@ -36,7 +36,7 @@ final class TournamentMapping implements MappingInterface
         $squadMap = $context['squadMap'] ?? [];
 
         $sessionDTOs = [];
-        $allTeamDTOs = [];
+        $allSessionTeams = []; // collect for place calculation
 
         foreach ($context['sessions'] ?? [] as $session) {
             $venue = $session->getVenue();
@@ -44,27 +44,56 @@ final class TournamentMapping implements MappingInterface
             $venueName = $venue->getName();
             $townName = $venue->getTown()->getName();
 
-            $teamDTOs = [];
             foreach ($teamMap[$session->getId()] ?? [] as $sessionTeam) {
-                $teamId = $sessionTeam->getTeam()->getId();
-                $squadInfo = $squadMap[$teamId] ?? ['playerIds' => [], 'captainId' => null];
-                $players = $playerMap[$sessionTeam->getId()] ?? [];
-
-                $playerDTOs = array_map(
-                    fn($player) => $mapper->map($player, SessionTeamPlayerDTO::class, ['squadInfo' => $squadInfo]),
-                    $players,
-                );
-
-                $teamDTO = $mapper->map($sessionTeam, SessionTeamDTO::class, [
+                $allSessionTeams[] = [
+                    'sessionTeam' => $sessionTeam,
                     'venueId' => $venueId,
                     'venueName' => $venueName,
                     'townName' => $townName,
-                    'players' => $playerDTOs,
-                ]);
-                $teamDTOs[] = $teamDTO;
-                $allTeamDTOs[] = $teamDTO;
+                    'session' => $session,
+                ];
             }
+        }
 
+        // Calculate fractional places across entire tournament
+        $scores = array_map(
+            fn($entry) => $entry['sessionTeam']->getScore() ?? 0,
+            $allSessionTeams,
+        );
+        rsort($scores);
+        $places = self::fractionalRanks($scores);
+
+        // Build DTOs with places
+        $allTeamDTOs = [];
+        $sessionTeamDTOs = []; // sessionId => list of teamDTOs
+
+        foreach ($allSessionTeams as $entry) {
+            $sessionTeam = $entry['sessionTeam'];
+            $score = $sessionTeam->getScore() ?? 0;
+            $place = $places[$score] ?? null;
+            $teamId = $sessionTeam->getTeam()->getId();
+            $squadInfo = $squadMap[$teamId] ?? ['playerIds' => [], 'captainId' => null];
+            $players = $playerMap[$sessionTeam->getId()] ?? [];
+
+            $playerDTOs = array_map(
+                fn($player) => $mapper->map($player, SessionTeamPlayerDTO::class, ['squadInfo' => $squadInfo]),
+                $players,
+            );
+
+            $teamDTO = $mapper->map($sessionTeam, SessionTeamDTO::class, [
+                'venueId' => $entry['venueId'],
+                'venueName' => $entry['venueName'],
+                'townName' => $entry['townName'],
+                'place' => $place,
+                'players' => $playerDTOs,
+            ]);
+
+            $allTeamDTOs[] = $teamDTO;
+            $sessionTeamDTOs[$entry['session']->getId()][] = $teamDTO;
+        }
+
+        foreach ($context['sessions'] ?? [] as $session) {
+            $teamDTOs = $sessionTeamDTOs[$session->getId()] ?? [];
             $sessionDTOs[] = $mapper->map($session, SessionDTO::class, ['teams' => $teamDTOs]);
         }
 
@@ -84,6 +113,33 @@ final class TournamentMapping implements MappingInterface
             sessions: $sessionDTOs,
             allTeams: $allTeamDTOs,
         );
+    }
+
+    /**
+     * Fractional ranking: score => average position for that score.
+     *
+     * @param list<int> $sortedScoresDesc
+     * @return array<int, float> score => place
+     */
+    private static function fractionalRanks(array $sortedScoresDesc): array
+    {
+        $result = [];
+        $position = 1;
+
+        while ($position <= count($sortedScoresDesc)) {
+            $score = $sortedScoresDesc[$position - 1];
+            $count = 0;
+
+            while ($position + $count <= count($sortedScoresDesc) && $sortedScoresDesc[$position + $count - 1] === $score) {
+                $count++;
+            }
+
+            $rank = $position + ($count - 1) / 2;
+            $result[$score] = $rank;
+            $position += $count;
+        }
+
+        return $result;
     }
 
     /**
