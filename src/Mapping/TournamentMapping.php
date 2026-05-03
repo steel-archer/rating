@@ -29,6 +29,7 @@ final class TournamentMapping implements MappingInterface
             difficulty: $source->getDifficulty(),
             trueDl: $source->getTrueDl(),
             teamCount: $context['teamCount'] ?? 0,
+            sessionCount: $context['sessionCount'] ?? 0,
             officials: self::groupOfficials($mapper, $context['officials'] ?? []),
         );
     }

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Team;
 use App\Entity\Tournament;
+use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Helper\FractionalRanking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -46,6 +47,50 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             ->setParameter('team', $team)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @param list<int> $sessionIds
+     * @return array<int, int> sessionId => count
+     */
+    public function countBySessionIds(array $sessionIds): array
+    {
+        if ($sessionIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('st')
+            ->select('IDENTITY(st.tournamentSession) AS sessionId', 'COUNT(st.id) AS cnt')
+            ->where('st.tournamentSession IN (:ids)')
+            ->setParameter('ids', $sessionIds)
+            ->groupBy('st.tournamentSession')
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(int) $row['sessionId']] = (int) $row['cnt'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return list<TournamentSessionTeam>
+     */
+    public function findBySessionPaginated(TournamentSession $session, int $page, int $perPage): array
+    {
+        return $this->createQueryBuilder('st')
+            ->join('st.team', 'team')
+            ->join('team.town', 'town')
+            ->addSelect('team', 'town')
+            ->where('st.tournamentSession = :session')
+            ->setParameter('session', $session)
+            ->orderBy('st.score', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery()
+            ->getResult();
     }
 
     /**

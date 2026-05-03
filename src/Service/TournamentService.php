@@ -7,6 +7,7 @@ use App\Exception\EntityNotFoundException;
 use App\Mapping\Mapper;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
+use App\Repository\TournamentSessionRepository;
 use App\Repository\TournamentSessionTeamRepository;
 
 final readonly class TournamentService
@@ -15,6 +16,7 @@ final readonly class TournamentService
         private TournamentRepository $tournamentRepository,
         private TournamentOfficialRepository $officialRepository,
         private TournamentSessionTeamRepository $sessionTeamRepository,
+        private TournamentSessionRepository $sessionRepository,
         private Mapper $mapper,
     ) {
     }
@@ -31,6 +33,7 @@ final readonly class TournamentService
         return $this->mapper->map($tournament, TournamentDTO::class, [
             'officials' => $this->officialRepository->findByTournament($tournament),
             'teamCount' => $this->sessionTeamRepository->countByTournament($tournament),
+            'sessionCount' => $this->sessionRepository->countByTournament($tournament),
         ]);
     }
 }

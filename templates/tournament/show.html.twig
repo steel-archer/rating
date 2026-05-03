@@ -31,6 +31,10 @@
                     <dt>True DL</dt>
                     <dd>{{ tournament.trueDl }}</dd>
                 {% endif %}
+                {% if tournament.sessionCount %}
+                    <dt>Відіграші</dt>
+                    <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">{{ tournament.sessionCount }}</a></dd>
+                {% endif %}
             </dl>
         </div>
 

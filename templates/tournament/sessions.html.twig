@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Відіграші — {{ tournament.name }} — Rating{% endblock %}
+
+{% block body %}
+    <h1>Відіграші: {{ tournament.name }}</h1>
+
+    <turbo-frame id="tournament-sessions" src="{{ path('tournament_sessions_list', {id: tournament.id}) }}">
+        <p>Завантаження…</p>
+    </turbo-frame>
+{% endblock %}

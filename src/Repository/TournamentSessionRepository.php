@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\Venue;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -16,6 +17,45 @@ class TournamentSessionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, TournamentSession::class);
+    }
+
+    /**
+     * @return list<TournamentSession>
+     */
+    public function findByTournamentPaginated(Tournament $tournament, int $page): array
+    {
+        return $this->createQueryBuilder('ts')
+            ->join('ts.venue', 'v')
+            ->join('v.town', 'town')
+            ->join('ts.representative', 'rep')
+            ->leftJoin('ts.host', 'host')
+            ->addSelect('v', 'town', 'rep', 'host')
+            ->where('ts.tournament = :t')
+            ->setParameter('t', $tournament)
+            ->orderBy('town.name', 'ASC')
+            ->setFirstResult(($page - 1) * self::PER_PAGE)
+            ->setMaxResults(self::PER_PAGE)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getLastPageNumberByTournament(Tournament $tournament): int
+    {
+        return max(1, (int) ceil($this->countByTournament($tournament) / self::PER_PAGE));
+    }
+
+    public function countByTournament(Tournament $tournament): int
+    {
+        return (int) $this->createQueryBuilder('ts')
+            ->select('COUNT(ts.id)')
+            ->where('ts.tournament = :t')
+            ->setParameter('t', $tournament)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**
