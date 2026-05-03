@@ -19,6 +19,9 @@ final readonly class TeamService
     ) {
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function get(int $id): TeamDTO
     {
         $team = $this->teamRepository->findWithTown($id)

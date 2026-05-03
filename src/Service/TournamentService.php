@@ -19,6 +19,9 @@ final readonly class TournamentService
     ) {
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function get(int $id): TournamentDTO
     {
         $tournament = $this->tournamentRepository->findWithSeason($id)

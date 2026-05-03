@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Player;
 use App\Entity\TournamentSessionTeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
@@ -31,6 +33,10 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function countByPlayer(Player $player): int
     {
         return (int) $this->createQueryBuilder('stp')

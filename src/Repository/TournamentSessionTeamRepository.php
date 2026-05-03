@@ -7,7 +7,9 @@ use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeam;
 use App\Helper\FractionalRanking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception as DbalException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class TournamentSessionTeamRepository extends ServiceEntityRepository
@@ -17,6 +19,10 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         parent::__construct($registry, TournamentSessionTeam::class);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function countByTournament(Tournament $tournament): int
     {
         return (int) $this->createQueryBuilder('st')
@@ -28,6 +34,10 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function countByTeam(Team $team): int
     {
         return (int) $this->createQueryBuilder('st')
@@ -80,8 +90,8 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
      * Fractional ranking: teams with the same score share the average of their positions.
      *
      * @param list<int> $sessionTeamIds
+     * @throws DbalException
      * @return array<int, float> sessionTeamId => place
-     * @throws Exception
      */
     public function getPlacesInTournament(array $sessionTeamIds): array
     {

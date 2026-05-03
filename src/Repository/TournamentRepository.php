@@ -6,15 +6,22 @@ use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class TournamentRepository extends ServiceEntityRepository
 {
+    private const int PER_PAGE = 5;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tournament::class);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     public function findWithSeason(int $id): ?Tournament
     {
         return $this->createQueryBuilder('t')
@@ -25,8 +32,6 @@ class TournamentRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-
-    private const int PER_PAGE = 5;
 
     /**
      * @return list<array{id: int, name: string, startedAt: ?\DateTime, endedAt: ?\DateTime, difficulty: ?float, trueDl: ?float, teamCount: int}>
@@ -53,6 +58,10 @@ class TournamentRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function countAll(): int
     {
         return (int) $this->createQueryBuilder('t')
@@ -61,6 +70,10 @@ class TournamentRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getLastPage(): int
     {
         return max(1, (int) ceil($this->countAll() / self::PER_PAGE));

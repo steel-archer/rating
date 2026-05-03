@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Player;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class PlayerRepository extends ServiceEntityRepository
@@ -13,6 +14,9 @@ class PlayerRepository extends ServiceEntityRepository
         parent::__construct($registry, Player::class);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     public function findWithTown(int $id): ?Player
     {
         return $this->createQueryBuilder('p')

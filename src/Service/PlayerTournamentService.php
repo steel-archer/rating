@@ -8,6 +8,7 @@ use App\Entity\TournamentSessionTeamPlayer;
 use App\Mapping\Mapper;
 use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Repository\TournamentSessionTeamRepository;
+use Doctrine\DBAL\Exception as DbalException;
 
 final readonly class PlayerTournamentService
 {
@@ -21,6 +22,7 @@ final readonly class PlayerTournamentService
     }
 
     /**
+     * @throws DbalException
      * @return list<TournamentAppearanceDTO>
      */
     public function getTournaments(Player $player, int $page): array

@@ -19,6 +19,9 @@ final readonly class PlayerService
     ) {
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function get(int $id): PlayerDTO
     {
         $player = $this->playerRepository->findWithTown($id)

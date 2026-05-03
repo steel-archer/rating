@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class TeamRepository extends ServiceEntityRepository
@@ -13,6 +14,9 @@ class TeamRepository extends ServiceEntityRepository
         parent::__construct($registry, Team::class);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     public function findWithTown(int $id): ?Team
     {
         return $this->createQueryBuilder('t')

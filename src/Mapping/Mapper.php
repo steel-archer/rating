@@ -31,6 +31,9 @@ final class Mapper
         }
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function map(object $source, string $destinationClass, array $context = []): object
     {
         $key = $source::class . '::' . $destinationClass;
