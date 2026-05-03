@@ -1,0 +1,17 @@
+.breadcrumbs {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.breadcrumbs a {
+    color: var(--text-secondary);
+}
+
+.breadcrumbs a:hover {
+    color: var(--text);
+}
+
+.breadcrumbs span::before {
+    content: ' → ';
+}

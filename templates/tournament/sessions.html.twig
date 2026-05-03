@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Відіграші — {{ tournament.name }} — Rating{% endblock %}
+{% block title %}Відіграші — {{ tournament.name }} — Турніри — Rating{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('tournament_index') }}">Турніри</a></span><span><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></span><span>Відіграші</span></nav>
+{% endblock %}
 
 {% block body %}
     <h1>Відіграші: {{ tournament.name }}</h1>

@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ player.fullName }} — Rating{% endblock %}
+{% block title %}{{ player.fullName }} — Гравці — Rating{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('player_index') }}">Гравці</a></span><span>{{ player.fullName }}</span></nav>
+{% endblock %}
 
 {% block body %}
     <h1>{{ player.fullName }}</h1>

@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ team.name }} — Rating{% endblock %}
+{% block title %}{{ team.name }} — Команди — Rating{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('team_index') }}">Команди</a></span><span>{{ team.name }}</span></nav>
+{% endblock %}
 
 {% block body %}
     <h1>{{ team.id }} — {{ team.name }} ({{ team.townName }})</h1>

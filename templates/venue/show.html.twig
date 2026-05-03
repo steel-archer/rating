@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ venue.name }} — Rating{% endblock %}
+{% block title %}{{ venue.name }} — Майданчики — Rating{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('venue_index') }}">Майданчики</a></span><span>{{ venue.name }}</span></nav>
+{% endblock %}
 
 {% block body %}
     <h1>{{ venue.name }}</h1>
