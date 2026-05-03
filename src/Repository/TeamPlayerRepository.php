@@ -57,9 +57,8 @@ class TeamPlayerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('tp')
             ->join('tp.player', 'player')
-            ->addSelect('player')
             ->join('tp.season', 'season')
-            ->addSelect('season')
+            ->addSelect('player', 'season')
             ->where('tp.team = :team')
             ->setParameter('team', $team)
             ->orderBy('season.startedAt', 'DESC')
@@ -75,9 +74,8 @@ class TeamPlayerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('tp')
             ->join('tp.team', 'team')
-            ->addSelect('team')
             ->join('tp.season', 'season')
-            ->addSelect('season')
+            ->addSelect('team', 'season')
             ->where('tp.player = :player')
             ->setParameter('player', $player)
             ->orderBy('season.startedAt', 'DESC')

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeam;
+use App\Helper\FractionalRanking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,10 +23,9 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('st')
             ->join('st.team', 'team')
-            ->addSelect('team')
             ->join('team.town', 'town')
-            ->addSelect('town')
             ->join('st.tournamentSession', 'ts')
+            ->addSelect('team', 'town')
             ->where('ts.tournament = :t')
             ->setParameter('t', $tournament)
             ->orderBy('st.score', 'DESC')
@@ -47,17 +47,12 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         }
 
         $conn = $this->getEntityManager()->getConnection();
-        $placeholders = $sessionTeamIds
-                |> count(...)
-                |> (static fn($x) => array_fill(0, $x, '?'))
-                |> (static fn($x) => implode(',', $x));
 
-        // 1. Get tournament IDs and scores for requested session teams
         $rows = $conn->fetchAllAssociative(
-            "SELECT st.id, st.score, ts.tournament_id
+            'SELECT st.id, st.score, ts.tournament_id
              FROM tournament_session_team st
              JOIN tournament_session ts ON ts.id = st.tournament_session_id
-             WHERE st.id IN ($placeholders)",
+             WHERE st.id IN (' . self::placeholders($sessionTeamIds) . ')',
             $sessionTeamIds,
         );
 
@@ -66,32 +61,23 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             return [];
         }
 
-        // 2. Single query: all scores for all relevant tournaments
-        $tournamentPlaceholders = $tournamentIds
-                |> count(...)
-                |> (static fn($x) => array_fill(0, $x, '?'))
-                |> (static fn($x) => implode(',', $x));
+        $tournamentIdsValues = array_values($tournamentIds);
         $scoreRows = $conn->fetchAllAssociative(
-            "SELECT ts.tournament_id, st.score
+            'SELECT ts.tournament_id, st.score
              FROM tournament_session_team st
              JOIN tournament_session ts ON ts.id = st.tournament_session_id
-             WHERE ts.tournament_id IN ($tournamentPlaceholders)
-             ORDER BY ts.tournament_id, st.score DESC",
-            array_values($tournamentIds),
+             WHERE ts.tournament_id IN (' . self::placeholders($tournamentIdsValues) . ')
+             ORDER BY ts.tournament_id, st.score DESC',
+            $tournamentIdsValues,
         );
 
-        // Group scores by tournament
         $scoresByTournament = [];
         foreach ($scoreRows as $scoreRow) {
             $scoresByTournament[$scoreRow['tournament_id']][] = (int) $scoreRow['score'];
         }
 
-        // 3. Pre-calculate fractional ranks per tournament
-        $ranksByTournament = array_map(static function ($scores) {
-            return self::fractionalRanks($scores);
-        }, $scoresByTournament);
+        $ranksByTournament = array_map(FractionalRanking::rank(...), $scoresByTournament);
 
-        // 4. Assign places
         $result = [];
         foreach ($rows as $row) {
             $score = (int) $row['score'];
@@ -101,28 +87,11 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         return $result;
     }
 
-    /**
-     * @param list<int> $sortedScoresDesc
-     * @return array<int, float> score => fractional rank
-     */
-    private static function fractionalRanks(array $sortedScoresDesc): array
+    private static function placeholders(array $items): string
     {
-        $result = [];
-        $position = 1;
-        $total = count($sortedScoresDesc);
-
-        while ($position <= $total) {
-            $score = $sortedScoresDesc[$position - 1];
-            $count = 0;
-
-            while ($position + $count <= $total && $sortedScoresDesc[$position + $count - 1] === $score) {
-                $count++;
-            }
-
-            $result[$score] = $position + ($count - 1) / 2;
-            $position += $count;
-        }
-
-        return $result;
+        return $items
+                |> count(...)
+                |> (static fn($x) => array_fill(0, $x, '?'))
+                |> (static fn($x) => implode(',', $x));
     }
 }

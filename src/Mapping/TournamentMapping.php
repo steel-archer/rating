@@ -12,6 +12,8 @@ use App\Entity\TournamentOfficial;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Entity\TournamentSessionTeamPlayer;
+use App\Helper\FractionalRanking;
+use InvalidArgumentException;
 
 #[AsMapper(source: Tournament::class, destination: TournamentDTO::class)]
 final class TournamentMapping implements MappingInterface
@@ -30,7 +32,7 @@ final class TournamentMapping implements MappingInterface
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
         /** @var Tournament $source */
-        $mapper = $context['mapper'] ?? throw new \InvalidArgumentException('Mapper is required in context');
+        $mapper = $context['mapper'] ?? throw new InvalidArgumentException('Mapper is required in context');
         $playerMap = self::groupBySessionTeam($context['sessionTeamPlayers'] ?? []);
         $teamMap = self::groupBySession($context['sessionTeams'] ?? []);
         $squadMap = $context['squadMap'] ?? [];
@@ -57,11 +59,11 @@ final class TournamentMapping implements MappingInterface
 
         // Calculate fractional places across entire tournament
         $scores = array_map(
-            fn($entry) => $entry['sessionTeam']->getScore() ?? 0,
+            static fn($entry) => $entry['sessionTeam']->getScore() ?? 0,
             $allSessionTeams,
         );
         rsort($scores);
-        $places = self::fractionalRanks($scores);
+        $places = FractionalRanking::rank($scores);
 
         // Build DTOs with places
         $allTeamDTOs = [];
@@ -76,7 +78,7 @@ final class TournamentMapping implements MappingInterface
             $players = $playerMap[$sessionTeam->getId()] ?? [];
 
             $playerDTOs = array_map(
-                fn($player) => $mapper->map($player, SessionTeamPlayerDTO::class, ['squadInfo' => $squadInfo]),
+                static fn($player) => $mapper->map($player, SessionTeamPlayerDTO::class, ['squadInfo' => $squadInfo]),
                 $players,
             );
 
@@ -113,33 +115,6 @@ final class TournamentMapping implements MappingInterface
             sessions: $sessionDTOs,
             allTeams: $allTeamDTOs,
         );
-    }
-
-    /**
-     * Fractional ranking: score => average position for that score.
-     *
-     * @param list<int> $sortedScoresDesc
-     * @return array<int, float> score => place
-     */
-    private static function fractionalRanks(array $sortedScoresDesc): array
-    {
-        $result = [];
-        $position = 1;
-
-        while ($position <= count($sortedScoresDesc)) {
-            $score = $sortedScoresDesc[$position - 1];
-            $count = 0;
-
-            while ($position + $count <= count($sortedScoresDesc) && $sortedScoresDesc[$position + $count - 1] === $score) {
-                $count++;
-            }
-
-            $rank = $position + ($count - 1) / 2;
-            $result[$score] = $rank;
-            $position += $count;
-        }
-
-        return $result;
     }
 
     /**
