@@ -1,0 +1,50 @@
+header {
+    backdrop-filter: saturate(180%) blur(20px);
+    background: rgba(251, 251, 253, 0.8);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 52px;
+    padding: 0 var(--content-padding);
+}
+
+.logo {
+    text-decoration: none;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    padding: 6px 16px;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 8px;
+    line-height: 1;
+}
+
+.logo:hover {
+    text-decoration: none;
+    opacity: 0.85;
+}
+
+header nav {
+    display: flex;
+    gap: 24px;
+}
+
+header nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+header nav a:hover {
+    color: var(--text);
+    text-decoration: none;
+}

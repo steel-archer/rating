@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Команди — Rating{% endblock %}
+
+{% block body %}
+    <h1>Команди</h1>
+
+    <turbo-frame id="teams-list" src="{{ path('team_list') }}">
+        <p>Завантаження…</p>
+    </turbo-frame>
+{% endblock %}

@@ -1,0 +1,24 @@
+@media (min-width: 1400px) {
+    .container { max-width: 1320px; }
+}
+
+@media (min-width: 1800px) {
+    .container { max-width: 1600px; }
+}
+
+@media (max-width: 768px) {
+    :root { --content-padding: 16px; }
+
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; }
+
+    .card { padding: 20px; }
+
+    .cards-row {
+        flex-direction: column;
+    }
+
+    .cards-row .card {
+        min-width: 0;
+    }
+}

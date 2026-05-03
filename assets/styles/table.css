@@ -1,0 +1,63 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+th {
+    text-align: left;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.sort-header {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.sort-header:hover {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.sort-header.sort-active {
+    color: var(--text);
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr.row-light { background: var(--surface); }
+tr.row-dark { background: #e8e8ed; }
+
+.player-base { font-weight: 600; }
+.player-guest { font-weight: 400; }
+.squad-weak .player-base,
+.squad-weak .player-guest { font-style: italic; }
+
+.btn-toggle-text {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+    margin-left: 8px;
+}
+
+.btn-toggle-text:hover {
+    text-decoration: underline;
+}
+
+.squad-list {
+    margin-top: 6px;
+}

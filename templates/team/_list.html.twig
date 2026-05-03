@@ -1,0 +1,53 @@
+<turbo-frame id="teams-list">
+    <div class="card search-form">
+        <form action="{{ path('team_list') }}" method="get">
+            <div class="search-row">
+                <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="Назва команди" class="search-input">
+                <div class="suggest-wrapper">
+                    <input type="text" id="town-search" value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
+                    <input type="hidden" name="townId" id="town-id" value="{{ filters.townId ?? '' }}">
+                    <div class="suggest-dropdown" id="town-dropdown"></div>
+                </div>
+                <div class="suggest-wrapper">
+                    <input type="text" id="country-search" value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
+                    <input type="hidden" name="countryId" id="country-id" value="{{ filters.countryId ?? '' }}">
+                    <div class="suggest-dropdown" id="country-dropdown"></div>
+                </div>
+                <button type="submit" class="search-btn">Знайти</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card card-wide">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <a href="{{ path('team_list', filters|merge({sort: 'name', dir: sort == 'name' ? toggleDir : 'asc', page: 1})) }}" class="sort-header{{ sort == 'name' ? ' sort-active' : '' }}">
+                            Назва {{ sort == 'name' ? (dir == 'asc' ? '▲' : '▼') : '' }}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ path('team_list', filters|merge({sort: 'town', dir: sort == 'town' ? toggleDir : 'asc', page: 1})) }}" class="sort-header{{ sort == 'town' ? ' sort-active' : '' }}">
+                            Місто {{ sort == 'town' ? (dir == 'asc' ? '▲' : '▼') : '' }}
+                        </a>
+                    </th>
+                    <th>Країна</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in teams %}
+                    <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                        <td><a href="{{ path('team_show', {id: t.id}) }}" data-turbo-frame="_top">{{ t.name }}</a></td>
+                        <td>{{ t.townName }}</td>
+                        <td>{{ t.countryName }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3">Нічого не знайдено</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_pagination.html.twig' with {paginationRoute: 'team_list', paginationParams: filters} %}
+    </div>
+</turbo-frame>

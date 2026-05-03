@@ -1,0 +1,33 @@
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+}
+
+.cards-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.cards-row .card {
+    margin-bottom: 0;
+    min-width: 280px;
+    flex: 1;
+}
+
+.cards-row .card-grow {
+    flex: 2;
+}
+
+.card-wide {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 32px var(--content-padding);
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
