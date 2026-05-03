@@ -62,8 +62,9 @@ final class TeamMapping implements MappingInterface
             $first = $appearances[0];
             $st = $first->getTournamentSessionTeam();
             $session = $st->getTournamentSession();
+            $tournament = $session->getTournament();
 
-            $seasonId = $session->getTournament()->getSeason()?->getId();
+            $seasonId = $tournament->getSeason()?->getId();
             $squadInfo = $squadInfoBySeason[$seasonId] ?? ['playerIds' => [], 'captainId' => null];
 
             $players = array_map(
@@ -72,8 +73,8 @@ final class TeamMapping implements MappingInterface
             );
 
             $tournaments[] = new TournamentEntryDTO(
-                tournamentId: $session->getTournament()->getId(),
-                tournamentName: $session->getTournament()->getName(),
+                tournamentId: $tournament->getId(),
+                tournamentName: $tournament->getName(),
                 playedAt: $session->getPlayedAt(),
                 score: $st->getScore(),
                 place: $places[$stId] ?? null,

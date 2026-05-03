@@ -2,13 +2,10 @@
 
 namespace App\Entity;
 
-use App\DTO\Response\TournamentDTO;
 use App\Repository\TournamentRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(target: TournamentDTO::class)]
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
 class Tournament
 {
@@ -20,7 +17,6 @@ class Tournament
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[Map(target: 'seasonName', transform: [self::class, 'seasonToName'])]
     #[ORM\ManyToOne]
     private ?Season $season = null;
 
@@ -143,8 +139,4 @@ class Tournament
         return $this;
     }
 
-    public static function seasonToName(?Season $season): ?string
-    {
-        return $season?->getName();
-    }
 }
