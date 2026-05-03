@@ -64,7 +64,7 @@ class TournamentRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getLastPage(TournamentListRequestDTO $requestDto): int
+    public function getLastPageNumber(TournamentListRequestDTO $requestDto): int
     {
         $total = (int) $this->buildFilteredQuery($requestDto)
             ->select('COUNT(t.id)')

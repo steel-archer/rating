@@ -58,7 +58,7 @@ final readonly class TournamentResultService
         );
     }
 
-    public function getLastPage(Tournament $tournament): int
+    public function getLastPageNumber(Tournament $tournament): int
     {
         $total = $this->sessionTeamRepository->countByTournament($tournament);
 

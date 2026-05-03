@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Гравці — Rating{% endblock %}
+
+{% block body %}
+    <h1>Гравці</h1>
+
+    <turbo-frame id="players-list" src="{{ path('player_list') }}">
+        <p>Завантаження…</p>
+    </turbo-frame>
+{% endblock %}

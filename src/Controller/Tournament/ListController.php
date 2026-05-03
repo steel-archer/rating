@@ -25,7 +25,7 @@ final class ListController extends AbstractController
             return $this->render('tournament/_list.html.twig', [
                 'tournaments' => $this->tournamentRepository->findForList($requestDto),
                 'page' => $requestDto->page,
-                'lastPage' => $this->tournamentRepository->getLastPage($requestDto),
+                'lastPage' => $this->tournamentRepository->getLastPageNumber($requestDto),
                 'filters' => $requestDto->getFilters(),
             ]);
         } catch (Throwable $exception) {

@@ -53,7 +53,7 @@ class TeamRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getLastPage(TeamListRequestDTO $requestDto): int
+    public function getLastPageNumber(TeamListRequestDTO $requestDto): int
     {
         $total = (int) $this->buildFilteredQuery($requestDto)
             ->select('COUNT(t.id)')

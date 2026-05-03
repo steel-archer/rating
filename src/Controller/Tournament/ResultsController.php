@@ -27,7 +27,7 @@ final class ResultsController extends AbstractController
                 'tournament' => $tournament,
                 'teams' => $resultService->getResults($tournament, $page),
                 'page' => $page,
-                'lastPage' => $resultService->getLastPage($tournament),
+                'lastPage' => $resultService->getLastPageNumber($tournament),
             ]);
         } catch (NotFoundHttpException $exception) {
             throw $exception;

@@ -54,6 +54,8 @@ function initSuggest(inputId, hiddenId, dropdownId, apiUrl) {
 function initAllSuggests() {
     initSuggest('town-search', 'town-id', 'town-dropdown', '/api/towns/suggest');
     initSuggest('country-search', 'country-id', 'country-dropdown', '/api/countries/suggest');
+    initSuggest('player-town-search', 'player-town-id', 'player-town-dropdown', '/api/towns/suggest');
+    initSuggest('player-country-search', 'player-country-id', 'player-country-dropdown', '/api/countries/suggest');
 }
 
 document.addEventListener('DOMContentLoaded', initAllSuggests);
