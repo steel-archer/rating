@@ -20,9 +20,10 @@ INSERT INTO team (id, name, town_id) VALUES
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
 -- Season
-INSERT INTO season (id, name) VALUES
-  (1, '2024-2025')
-ON DUPLICATE KEY UPDATE name = VALUES(name);
+INSERT INTO season (id, name, started_at, ended_at) VALUES
+  (1, '2024-2025', '2024-10-01 00:00:00', '2025-09-30 23:59:59'),
+  (2, '2025-2026', '2025-10-01 00:00:00', '2026-09-30 23:59:59')
+ON DUPLICATE KEY UPDATE name = VALUES(name), started_at = VALUES(started_at), ended_at = VALUES(ended_at);
 
 -- Team ↔ Player ↔ Season
 INSERT INTO team_player (id, team_id, player_id, season_id, is_captain) VALUES
