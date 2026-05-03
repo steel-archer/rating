@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ venue.name }} — Rating{% endblock %}
+
+{% block body %}
+    <h1>{{ venue.name }}</h1>
+    <div class="meta"><span>{{ venue.town.name }}</span></div>
+
+    {% if representatives is not empty %}
+        <div class="card">
+            <h2>Представники</h2>
+            <ul class="representatives-list">
+                {% for rep in representatives %}
+                    <li><a href="{{ path('player_show', {id: rep.player.id}) }}">{{ rep.player.fullName }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if tournamentCount > 0 %}
+        <turbo-frame id="venue-tournaments" src="{{ path('venue_tournaments', {id: venue.id}) }}">
+            <p>Завантаження турнірів…</p>
+        </turbo-frame>
+    {% endif %}
+{% endblock %}

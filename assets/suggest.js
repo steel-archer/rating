@@ -56,6 +56,8 @@ function initAllSuggests() {
     initSuggest('country-search', 'country-id', 'country-dropdown', '/api/countries/suggest');
     initSuggest('player-town-search', 'player-town-id', 'player-town-dropdown', '/api/towns/suggest');
     initSuggest('player-country-search', 'player-country-id', 'player-country-dropdown', '/api/countries/suggest');
+    initSuggest('venue-town-search', 'venue-town-id', 'venue-town-dropdown', '/api/towns/suggest');
+    initSuggest('venue-country-search', 'venue-country-id', 'venue-country-dropdown', '/api/countries/suggest');
 }
 
 document.addEventListener('DOMContentLoaded', initAllSuggests);

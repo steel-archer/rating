@@ -1,0 +1,46 @@
+<turbo-frame id="venues-list">
+    <div class="card search-form">
+        <form action="{{ path('venue_list') }}" method="get">
+            <div class="search-row">
+                <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="Назва майданчика" class="search-input">
+                <div class="suggest-wrapper">
+                    <input type="text" id="venue-town-search" value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
+                    <input type="hidden" name="townId" id="venue-town-id" value="{{ filters.townId ?? '' }}">
+                    <div class="suggest-dropdown" id="venue-town-dropdown"></div>
+                </div>
+                <div class="suggest-wrapper">
+                    <input type="text" id="venue-country-search" value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
+                    <input type="hidden" name="countryId" id="venue-country-id" value="{{ filters.countryId ?? '' }}">
+                    <div class="suggest-dropdown" id="venue-country-dropdown"></div>
+                </div>
+                <input type="text" name="representative" value="{{ filters.representative ?? '' }}" placeholder="ПІБ представника" class="search-input">
+                <button type="submit" class="search-btn">Знайти</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card card-wide">
+        <table>
+            <thead>
+                <tr>
+                    <th>Назва</th>
+                    <th>Місто</th>
+                    <th>Країна</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in venues %}
+                    <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                        <td><a href="{{ path('venue_show', {id: v.id}) }}" data-turbo-frame="_top">{{ v.name }}</a></td>
+                        <td>{{ v.townName }}</td>
+                        <td>{{ v.countryName }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3">Нічого не знайдено</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_pagination.html.twig' with {paginationRoute: 'venue_list', paginationParams: filters} %}
+    </div>
+</turbo-frame>

@@ -69,6 +69,15 @@ dd {
     font-size: 15px;
 }
 
+.representatives-list {
+    list-style: none;
+    font-size: 15px;
+}
+
+.representatives-list li + li {
+    margin-top: 4px;
+}
+
 a {
     color: var(--accent);
     text-decoration: none;

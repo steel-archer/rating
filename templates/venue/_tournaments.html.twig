@@ -1,0 +1,23 @@
+<turbo-frame id="venue-tournaments">
+    <div class="card card-wide">
+        <h2>Турніри</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Турнір</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tournaments %}
+                    <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                        <td><a href="{{ path('tournament_show', {id: t.tournamentId}) }}" data-turbo-frame="_top">{{ t.tournamentName }}</a></td>
+                        <td>{{ t.playedAt ? t.playedAt|date('d.m.Y') : '—' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_pagination.html.twig' with {paginationRoute: 'venue_tournaments', paginationParams: {id: venue.id}} %}
+    </div>
+</turbo-frame>
