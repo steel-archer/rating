@@ -3,14 +3,14 @@
 namespace App\Service;
 
 use App\DTO\Response\TournamentDTO;
-use App\Mapping\TournamentMapping;
+use App\Exception\EntityNotFoundException;
+use App\Mapping\Mapper;
 use App\Repository\TeamPlayerRepository;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
 use App\Repository\TournamentSessionRepository;
 use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Repository\TournamentSessionTeamRepository;
-use App\Exception\EntityNotFoundException;
 
 final readonly class TournamentService
 {
@@ -21,6 +21,7 @@ final readonly class TournamentService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private TeamPlayerRepository $teamPlayerRepository,
+        private Mapper $mapper,
     ) {
     }
 
@@ -31,7 +32,8 @@ final readonly class TournamentService
 
         $season = $tournament->getSeason();
 
-        return TournamentMapping::mapTo($tournament, TournamentDTO::class, [
+        /** @var TournamentDTO */
+        return $this->mapper->map($tournament, TournamentDTO::class, [
             'officials' => $this->officialRepository->findByTournament($tournament),
             'sessions' => $this->sessionRepository->findByTournamentWithVenue($tournament),
             'sessionTeams' => $this->sessionTeamRepository->findByTournamentWithTeam($tournament),

@@ -5,15 +5,17 @@ namespace App\Mapping\Tournament;
 use App\DTO\Response\Tournament\SessionTeamDTO;
 use App\DTO\Response\Tournament\SessionTeamPlayerDTO;
 use App\Entity\TournamentSessionTeam;
+use App\Mapping\AsMapper;
 use App\Mapping\MappingInterface;
 
+#[AsMapper(source: TournamentSessionTeam::class, destination: SessionTeamDTO::class)]
 final class SessionTeamMapping implements MappingInterface
 {
     /**
      * @param array{venueId: int, venueName: string, townName: string, players: list<SessionTeamPlayerDTO>} $context
      * @return SessionTeamDTO
      */
-    public static function mapTo(mixed $source, string $destinationClass, array $context = []): object
+    public function map(mixed $source, string $destinationClass, array $context = []): object
     {
         /** @var TournamentSessionTeam $source */
         $team = $source->getTeam();

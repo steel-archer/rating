@@ -4,15 +4,17 @@ namespace App\Mapping\Tournament;
 
 use App\DTO\Response\Tournament\SessionTeamPlayerDTO;
 use App\Entity\TournamentSessionTeamPlayer;
+use App\Mapping\AsMapper;
 use App\Mapping\ListMappingInterface;
 
+#[AsMapper(source: TournamentSessionTeamPlayer::class, destination: SessionTeamPlayerDTO::class)]
 final class SessionTeamPlayerMapping implements ListMappingInterface
 {
     /**
      * @param array{squadInfo?: array{playerIds: list<int>, captainId: int|null}} $context
      * @return SessionTeamPlayerDTO
      */
-    public static function mapTo(mixed $source, string $destinationClass, array $context = []): object
+    public function map(mixed $source, string $destinationClass, array $context = []): object
     {
         /** @var TournamentSessionTeamPlayer $source */
         $player = $source->getPlayer();
@@ -27,11 +29,13 @@ final class SessionTeamPlayerMapping implements ListMappingInterface
         );
     }
 
-    /** @return list<SessionTeamPlayerDTO> */
-    public static function mapList(array $sources, string $destinationClass, array $context = []): array
+    /**
+     * @return list<SessionTeamPlayerDTO>
+     */
+    public function mapList(array $sources, string $destinationClass, array $context = []): array
     {
         return array_map(
-            static fn(TournamentSessionTeamPlayer $source) => self::mapTo($source, $destinationClass, $context),
+            fn(TournamentSessionTeamPlayer $source) => $this->map($source, $destinationClass, $context),
             $sources,
         );
     }
