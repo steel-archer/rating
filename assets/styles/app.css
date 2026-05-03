@@ -190,3 +190,44 @@ td:last-child {
     width: 35%;
     min-width: 300px;
 }
+
+.error-page {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.error-code {
+    font-size: 96px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--border);
+    line-height: 1;
+}
+
+.error-message {
+    font-size: 28px;
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.error-hint {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin-top: 8px;
+}
+
+.error-link {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.error-link:hover {
+    text-decoration: none;
+    opacity: 0.9;
+}

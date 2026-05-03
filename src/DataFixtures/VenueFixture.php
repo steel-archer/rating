@@ -36,10 +36,10 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
         $playerCount = TeamFixture::PLAYER_COUNT;
         $venueIndex = 0;
 
-        for ($t = 0; $t < $townCount; $t++) {
-            $town = $this->getReference("town_$t", Town::class);
+        for ($townIndex = 0; $townIndex < $townCount; $townIndex++) {
+            $town = $this->getReference("town_$townIndex", Town::class);
             $count = $faker->numberBetween(1, 3);
-            self::$townVenueMap[$t] = [];
+            self::$townVenueMap[$townIndex] = [];
 
             for ($i = 0; $i < $count; $i++) {
                 $venue = new Venue();
@@ -47,7 +47,7 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
                 $venue->setTown($town);
                 $manager->persist($venue);
                 $this->addReference("venue_$venueIndex", $venue);
-                self::$townVenueMap[$t][] = $venueIndex;
+                self::$townVenueMap[$townIndex][] = $venueIndex;
 
                 // 1-2 representatives per venue
                 $repCount = $faker->numberBetween(1, 2);
@@ -58,10 +58,10 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
                     } while (isset($usedPlayers[$playerIndex]));
                     $usedPlayers[$playerIndex] = true;
 
-                    $vr = new VenueRepresentative();
-                    $vr->setVenue($venue);
-                    $vr->setPlayer($this->getReference("player_$playerIndex", Player::class));
-                    $manager->persist($vr);
+                    $representative = new VenueRepresentative();
+                    $representative->setVenue($venue);
+                    $representative->setPlayer($this->getReference("player_$playerIndex", Player::class));
+                    $manager->persist($representative);
                 }
 
                 $venueIndex++;

@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\DTO\Response\TournamentDTO;
-use App\Entity\Tournament;
 use App\Mapping\TournamentMapping;
 use App\Repository\TeamPlayerRepository;
 use App\Repository\TournamentOfficialRepository;
@@ -11,7 +10,7 @@ use App\Repository\TournamentRepository;
 use App\Repository\TournamentSessionRepository;
 use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Repository\TournamentSessionTeamRepository;
-use InvalidArgumentException;
+use App\Exception\EntityNotFoundException;
 
 final readonly class TournamentService
 {
@@ -27,19 +26,17 @@ final readonly class TournamentService
 
     public function get(int $id): TournamentDTO
     {
-        /** @var Tournament $tournament */
-        $tournament = $this->tournamentRepository->find($id)
-            ?? throw new InvalidArgumentException("Tournament #$id not found");
+        $tournament = $this->tournamentRepository->findWithSeason($id)
+            ?? throw EntityNotFoundException::forId('Tournament', $id);
 
         $season = $tournament->getSeason();
 
-        return TournamentMapping::toDTO(
-            tournament: $tournament,
-            officials: $this->officialRepository->findByTournament($tournament),
-            sessions: $this->sessionRepository->findByTournamentWithVenue($tournament),
-            sessionTeams: $this->sessionTeamRepository->findByTournamentWithTeam($tournament),
-            sessionTeamPlayers: $this->sessionTeamPlayerRepository->findByTournamentWithPlayer($tournament),
-            squadMap: $season ? $this->teamPlayerRepository->getSquadMapBySeason($season) : [],
-        );
+        return TournamentMapping::mapTo($tournament, TournamentDTO::class, [
+            'officials' => $this->officialRepository->findByTournament($tournament),
+            'sessions' => $this->sessionRepository->findByTournamentWithVenue($tournament),
+            'sessionTeams' => $this->sessionTeamRepository->findByTournamentWithTeam($tournament),
+            'sessionTeamPlayers' => $this->sessionTeamPlayerRepository->findByTournamentWithPlayer($tournament),
+            'squadMap' => $season ? $this->teamPlayerRepository->getSquadMapBySeason($season) : [],
+        ]);
     }
 }

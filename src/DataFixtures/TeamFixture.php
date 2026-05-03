@@ -109,8 +109,8 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
             }
             self::$teamSquads[$i] = $basePlayers;
 
-            foreach ($teamSeasons as $si => $season) {
-                if ($si === 0) {
+            foreach ($teamSeasons as $seasonIndex => $season) {
+                if ($seasonIndex === 0) {
                     $roster = $basePlayers;
                 } else {
                     // Between seasons: swap 1-2 players
@@ -124,13 +124,13 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
 
                 $captainIndex = $faker->numberBetween(0, count($roster) - 1);
 
-                foreach ($roster as $ri => $playerIndex) {
-                    $tp = new TeamPlayer();
-                    $tp->setTeam($team);
-                    $tp->setPlayer($this->getReference("player_$playerIndex", Player::class));
-                    $tp->setSeason($season);
-                    $tp->setIsCaptain($ri === $captainIndex);
-                    $manager->persist($tp);
+                foreach ($roster as $rosterIndex => $playerIndex) {
+                    $teamPlayer = new TeamPlayer();
+                    $teamPlayer->setTeam($team);
+                    $teamPlayer->setPlayer($this->getReference("player_$playerIndex", Player::class));
+                    $teamPlayer->setSeason($season);
+                    $teamPlayer->setIsCaptain($rosterIndex === $captainIndex);
+                    $manager->persist($teamPlayer);
                 }
             }
         }

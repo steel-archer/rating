@@ -4,24 +4,30 @@ namespace App\Mapping\Tournament;
 
 use App\DTO\Response\Tournament\OfficialDTO;
 use App\Entity\TournamentOfficial;
+use App\Mapping\MappingInterface;
 
-final class OfficialMapping
+final class OfficialMapping implements MappingInterface
 {
-    public static function toDTO(TournamentOfficial $official): OfficialDTO
+    /** @return OfficialDTO */
+    public static function mapTo(mixed $source, string $destinationClass, array $context = []): object
     {
-        return new OfficialDTO(
-            playerName: $official->getPlayer()->getFullName(),
-            role: $official->getRole()->value,
+        /** @var TournamentOfficial $source */
+        $player = $source->getPlayer();
+
+        return new $destinationClass(
+            playerId: $player->getId(),
+            playerName: $player->getFullName(),
+            role: $source->getRole()->value,
         );
     }
 
     /** @return array<string, list<OfficialDTO>> */
-    public static function toDTOGrouped(array $officials): array
+    public static function mapGrouped(array $officials): array
     {
         $grouped = [];
-        foreach ($officials as $o) {
-            $role = $o->getRole()->value;
-            $grouped[$role][] = self::toDTO($o);
+        foreach ($officials as $official) {
+            $role = $official->getRole()->value;
+            $grouped[$role][] = self::mapTo($official, OfficialDTO::class);
         }
 
         return $grouped;

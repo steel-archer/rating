@@ -2,6 +2,9 @@
 
 namespace App\Mapping;
 
+use App\DTO\Response\Tournament\SessionDTO;
+use App\DTO\Response\Tournament\SessionTeamDTO;
+use App\DTO\Response\Tournament\SessionTeamPlayerDTO;
 use App\DTO\Response\TournamentDTO;
 use App\Entity\Tournament;
 use App\Entity\TournamentOfficial;
@@ -13,73 +16,73 @@ use App\Mapping\Tournament\SessionMapping;
 use App\Mapping\Tournament\SessionTeamMapping;
 use App\Mapping\Tournament\SessionTeamPlayerMapping;
 
-final class TournamentMapping
+final class TournamentMapping implements MappingInterface
 {
     /**
-     * @param list<TournamentOfficial>          $officials
-     * @param list<TournamentSession>           $sessions
-     * @param list<TournamentSessionTeam>       $sessionTeams
-     * @param list<TournamentSessionTeamPlayer> $sessionTeamPlayers
-     * @param array<int, array{playerIds: list<int>, captainId: int|null}> $squadMap teamId => squadInfo
+     * @param array{
+     *     officials: list<TournamentOfficial>,
+     *     sessions: list<TournamentSession>,
+     *     sessionTeams: list<TournamentSessionTeam>,
+     *     sessionTeamPlayers: list<TournamentSessionTeamPlayer>,
+     *     squadMap: array<int, array{playerIds: list<int>, captainId: int|null}>,
+     * } $context
+     * @return TournamentDTO
      */
-    public static function toDTO(
-        Tournament $tournament,
-        array $officials,
-        array $sessions,
-        array $sessionTeams,
-        array $sessionTeamPlayers,
-        array $squadMap,
-    ): TournamentDTO {
-        $playerIndex = self::indexBySessionTeam($sessionTeamPlayers);
-        $teamIndex = self::indexBySession($sessionTeams);
+    public static function mapTo(mixed $source, string $destinationClass, array $context = []): object
+    {
+        /** @var Tournament $source */
+        $playerMap = self::groupBySessionTeam($context['sessionTeamPlayers'] ?? []);
+        $teamMap = self::groupBySession($context['sessionTeams'] ?? []);
+        $squadMap = $context['squadMap'] ?? [];
 
         $sessionDTOs = [];
         $allTeamDTOs = [];
 
-        foreach ($sessions as $session) {
+        foreach ($context['sessions'] ?? [] as $session) {
             $venue = $session->getVenue();
+            $venueId = $venue->getId();
             $venueName = $venue->getName();
             $townName = $venue->getTown()->getName();
 
             $teamDTOs = [];
-            foreach ($teamIndex[$session->getId()] ?? [] as $sessionTeam) {
+            foreach ($teamMap[$session->getId()] ?? [] as $sessionTeam) {
                 $teamId = $sessionTeam->getTeam()->getId();
                 $squadInfo = $squadMap[$teamId] ?? ['playerIds' => [], 'captainId' => null];
-                $players = $playerIndex[$sessionTeam->getId()] ?? [];
+                $players = $playerMap[$sessionTeam->getId()] ?? [];
 
-                $teamDTO = SessionTeamMapping::toDTO(
-                    $sessionTeam,
-                    $venueName,
-                    $townName,
-                    SessionTeamPlayerMapping::toDTOList($players, $squadInfo),
-                );
+                $teamDTO = SessionTeamMapping::mapTo($sessionTeam, SessionTeamDTO::class, [
+                    'venueId' => $venueId,
+                    'venueName' => $venueName,
+                    'townName' => $townName,
+                    'players' => SessionTeamPlayerMapping::mapList($players, SessionTeamPlayerDTO::class, ['squadInfo' => $squadInfo]),
+                ]);
                 $teamDTOs[] = $teamDTO;
                 $allTeamDTOs[] = $teamDTO;
             }
 
-            $sessionDTOs[] = SessionMapping::toDTO($session, $teamDTOs);
+            $sessionDTOs[] = SessionMapping::mapTo($session, SessionDTO::class, ['teams' => $teamDTOs]);
         }
 
-        usort($allTeamDTOs, static fn($a, $b) => ($b->score ?? 0) <=> ($a->score ?? 0));
+        usort($allTeamDTOs, static fn($teamA, $teamB) => ($teamB->score ?? 0) <=> ($teamA->score ?? 0));
 
-        return new TournamentDTO(
-            id: $tournament->getId(),
-            name: $tournament->getName(),
-            seasonName: $tournament->getSeason()?->getName(),
-            startedAt: $tournament->getStartedAt(),
-            endedAt: $tournament->getEndedAt(),
-            toursCount: $tournament->getToursCount(),
-            questionsPerTour: $tournament->getQuestionsPerTour(),
-            difficulty: $tournament->getDifficulty(),
-            trueDl: $tournament->getTrueDl(),
-            officials: OfficialMapping::toDTOGrouped($officials),
+        return new $destinationClass(
+            id: $source->getId(),
+            name: $source->getName(),
+            seasonName: $source->getSeason()?->getName(),
+            startedAt: $source->getStartedAt(),
+            endedAt: $source->getEndedAt(),
+            toursCount: $source->getToursCount(),
+            questionsPerTour: $source->getQuestionsPerTour(),
+            difficulty: $source->getDifficulty(),
+            trueDl: $source->getTrueDl(),
+            officials: OfficialMapping::mapGrouped($context['officials'] ?? []),
             sessions: $sessionDTOs,
             allTeams: $allTeamDTOs,
         );
     }
 
     /** @return array<int, list<TournamentSessionTeamPlayer>> sessionTeamId => players */
-    private static function indexBySessionTeam(array $sessionTeamPlayers): array
+    private static function groupBySessionTeam(array $sessionTeamPlayers): array
     {
         $index = [];
         foreach ($sessionTeamPlayers as $player) {
@@ -90,7 +93,7 @@ final class TournamentMapping
     }
 
     /** @return array<int, list<TournamentSessionTeam>> sessionId => teams */
-    private static function indexBySession(array $sessionTeams): array
+    private static function groupBySession(array $sessionTeams): array
     {
         $index = [];
         foreach ($sessionTeams as $team) {

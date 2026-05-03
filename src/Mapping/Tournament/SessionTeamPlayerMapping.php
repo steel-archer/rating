@@ -4,35 +4,35 @@ namespace App\Mapping\Tournament;
 
 use App\DTO\Response\Tournament\SessionTeamPlayerDTO;
 use App\Entity\TournamentSessionTeamPlayer;
+use App\Mapping\ListMappingInterface;
 
-final class SessionTeamPlayerMapping
+final class SessionTeamPlayerMapping implements ListMappingInterface
 {
     /**
-     * @param array{playerIds: list<int>, captainId: int|null} $squadInfo
+     * @param array{squadInfo?: array{playerIds: list<int>, captainId: int|null}} $context
+     * @return SessionTeamPlayerDTO
      */
-    public static function toDTO(TournamentSessionTeamPlayer $stp, array $squadInfo): SessionTeamPlayerDTO
+    public static function mapTo(mixed $source, string $destinationClass, array $context = []): object
     {
-        $player = $stp->getPlayer();
+        /** @var TournamentSessionTeamPlayer $source */
+        $player = $source->getPlayer();
         $playerId = $player->getId();
+        $squadInfo = $context['squadInfo'] ?? ['playerIds' => [], 'captainId' => null];
 
-        return new SessionTeamPlayerDTO(
+        return new $destinationClass(
             playerId: $playerId,
             playerName: $player->getFullName(),
-            isLegionary: $stp->isLegionary(),
-            isCaptain: $playerId === $squadInfo['captainId'],
             isBaseSquad: in_array($playerId, $squadInfo['playerIds'], true),
+            isCaptain: $playerId === $squadInfo['captainId'],
         );
     }
 
-    /**
-     * @param array{playerIds: list<int>, captainId: int|null} $squadInfo
-     * @return list<SessionTeamPlayerDTO>
-     */
-    public static function toDTOList(array $players, array $squadInfo): array
+    /** @return list<SessionTeamPlayerDTO> */
+    public static function mapList(array $sources, string $destinationClass, array $context = []): array
     {
         return array_map(
-            static fn(TournamentSessionTeamPlayer $stp) => self::toDTO($stp, $squadInfo),
-            $players,
+            static fn(TournamentSessionTeamPlayer $source) => self::mapTo($source, $destinationClass, $context),
+            $sources,
         );
     }
 }

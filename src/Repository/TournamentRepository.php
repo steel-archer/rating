@@ -12,4 +12,15 @@ class TournamentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Tournament::class);
     }
+
+    public function findWithSeason(int $id): ?Tournament
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.season', 's')
+            ->addSelect('s')
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

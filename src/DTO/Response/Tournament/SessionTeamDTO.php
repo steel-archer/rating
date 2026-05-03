@@ -10,11 +10,12 @@ final readonly class SessionTeamDTO
         public int $teamId,
         public string $teamName,
         public ?int $score,
+        public int $venueId,
         public string $venueName,
         public string $townName,
         /** @var list<SessionTeamPlayerDTO> */
         public array $players,
     ) {
-        $this->baseSquadCount = count(array_filter($players, static fn(SessionTeamPlayerDTO $p) => $p->isBaseSquad));
+        $this->baseSquadCount = count(array_filter($players, static fn(SessionTeamPlayerDTO $player) => $player->isBaseSquad));
     }
 }

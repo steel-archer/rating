@@ -81,11 +81,11 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                     } while (isset($usedOfficials[$key]));
                     $usedOfficials[$key] = true;
 
-                    $off = new TournamentOfficial();
-                    $off->setTournament($tournament);
-                    $off->setPlayer($this->getReference("player_$playerIndex", Player::class));
-                    $off->setRole($role);
-                    $manager->persist($off);
+                    $official = new TournamentOfficial();
+                    $official->setTournament($tournament);
+                    $official->setPlayer($this->getReference("player_$playerIndex", Player::class));
+                    $official->setRole($role);
+                    $manager->persist($official);
                 }
             }
 
@@ -122,11 +122,11 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                     }
                     $usedTeams[$teamIndex] = true;
 
-                    $st = new TournamentSessionTeam();
-                    $st->setTournamentSession($session);
-                    $st->setTeam($this->getReference("team_$teamIndex", Team::class));
-                    $st->setScore($faker->numberBetween((int)($totalQuestions * 0.2), (int)($totalQuestions * 0.85)));
-                    $manager->persist($st);
+                    $sessionTeam = new TournamentSessionTeam();
+                    $sessionTeam->setTournamentSession($session);
+                    $sessionTeam->setTeam($this->getReference("team_$teamIndex", Team::class));
+                    $sessionTeam->setScore($faker->numberBetween((int)($totalQuestions * 0.2), (int)($totalQuestions * 0.85)));
+                    $manager->persist($sessionTeam);
 
                     // Roster: base roster + legionaries if needed
                     $baseSquad = TeamFixture::$teamSquads[$teamIndex] ?? [];
@@ -171,11 +171,11 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                     foreach ($roster as $entry) {
                         $usedPlayers[$entry['player']] = true;
 
-                        $tstp = new TournamentSessionTeamPlayer();
-                        $tstp->setTournamentSessionTeam($st);
-                        $tstp->setPlayer($this->getReference("player_{$entry['player']}", Player::class));
-                        $tstp->setIsLegionary($entry['legionary']);
-                        $manager->persist($tstp);
+                        $sessionTeamPlayer = new TournamentSessionTeamPlayer();
+                        $sessionTeamPlayer->setTournamentSessionTeam($sessionTeam);
+                        $sessionTeamPlayer->setPlayer($this->getReference("player_{$entry['player']}", Player::class));
+                        $sessionTeamPlayer->setIsLegionary($entry['legionary']);
+                        $manager->persist($sessionTeamPlayer);
                     }
                 }
             }

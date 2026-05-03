@@ -5,23 +5,31 @@ namespace App\Mapping\Tournament;
 use App\DTO\Response\Tournament\SessionDTO;
 use App\DTO\Response\Tournament\SessionTeamDTO;
 use App\Entity\TournamentSession;
+use App\Mapping\MappingInterface;
 
-final class SessionMapping
+final class SessionMapping implements MappingInterface
 {
     /**
-     * @param list<SessionTeamDTO> $teams
+     * @param array{teams: list<SessionTeamDTO>} $context
+     * @return SessionDTO
      */
-    public static function toDTO(TournamentSession $session, array $teams): SessionDTO
+    public static function mapTo(mixed $source, string $destinationClass, array $context = []): object
     {
-        $venue = $session->getVenue();
+        /** @var TournamentSession $source */
+        $venue = $source->getVenue();
+        $representative = $source->getRepresentative();
+        $host = $source->getHost();
 
-        return new SessionDTO(
+        return new $destinationClass(
+            venueId: $venue->getId(),
             venueName: $venue->getName(),
             townName: $venue->getTown()->getName(),
-            representativeName: $session->getRepresentative()->getFullName(),
-            hostName: $session->getHost()?->getFullName(),
-            playedAt: $session->getPlayedAt(),
-            teams: $teams,
+            representativeId: $representative->getId(),
+            representativeName: $representative->getFullName(),
+            hostId: $host?->getId(),
+            hostName: $host?->getFullName(),
+            playedAt: $source->getPlayedAt(),
+            teams: $context['teams'] ?? [],
         );
     }
 }
