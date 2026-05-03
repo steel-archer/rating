@@ -6,6 +6,7 @@ use App\Repository\TournamentRepository;
 use App\Repository\TournamentSessionRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -27,7 +28,7 @@ final class SessionsListController extends AbstractController
             $tournament = $tournamentRepository->find($id)
                 ?? throw new NotFoundHttpException("Tournament #$id not found");
 
-            $page = max(1, $request->query->getInt('page', 1));
+            $page = PageResolver::resolve($request);
             $sessions = $sessionRepository->findByTournamentPaginated($tournament, $page);
 
             $teamCounts = $sessionTeamRepository->countBySessionIds(

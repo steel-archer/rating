@@ -6,6 +6,7 @@ use App\DTO\Request\TournamentListRequestDTO;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
+use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -14,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class TournamentRepository extends ServiceEntityRepository
 {
-    private const int PER_PAGE = 5;
+    private const int PER_PAGE = 50;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -80,7 +81,7 @@ class TournamentRepository extends ServiceEntityRepository
 
         if ($requestDto->name !== null && $requestDto->name !== '') {
             $qb->andWhere('t.name LIKE :name')
-                ->setParameter('name', '%' . $requestDto->name . '%');
+                ->setParameter('name', LikeEscape::contains($requestDto->name));
         }
 
         return $qb;

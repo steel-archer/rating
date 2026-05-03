@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class TournamentListRequestDTO
 {
     public function __construct(
-        #[Assert\Positive]
+        #[Assert\Range(min: 1, max: 10000)]
         public int $page = 1,
 
         #[Assert\Length(max: 255)]

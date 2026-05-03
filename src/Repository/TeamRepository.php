@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\DTO\Request\TeamListRequestDTO;
 use App\Entity\Team;
+use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -12,7 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class TeamRepository extends ServiceEntityRepository
 {
-    private const int PER_PAGE = 5;
+    private const int PER_PAGE = 50;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -71,7 +72,7 @@ class TeamRepository extends ServiceEntityRepository
 
         if ($requestDto->name !== null && $requestDto->name !== '') {
             $qb->andWhere('t.name LIKE :name')
-                ->setParameter('name', '%' . $requestDto->name . '%');
+                ->setParameter('name', LikeEscape::contains($requestDto->name));
         }
 
         if ($requestDto->townId !== null) {

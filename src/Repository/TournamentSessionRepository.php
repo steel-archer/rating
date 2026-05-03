@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class TournamentSessionRepository extends ServiceEntityRepository
 {
-    private const int PER_PAGE = 5;
+    private const int PER_PAGE = 50;
 
     public function __construct(ManagerRegistry $registry)
     {

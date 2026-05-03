@@ -14,7 +14,7 @@ use Doctrine\DBAL\Exception as DbalException;
 
 final readonly class TournamentResultService
 {
-    private const int PER_PAGE = 5;
+    private const int PER_PAGE = 50;
 
     public function __construct(
         private TournamentSessionTeamRepository $sessionTeamRepository,

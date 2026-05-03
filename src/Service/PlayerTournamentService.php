@@ -12,7 +12,7 @@ use Doctrine\DBAL\Exception as DbalException;
 
 final readonly class PlayerTournamentService
 {
-    private const int PER_PAGE = 5;
+    private const int PER_PAGE = 50;
 
     public function __construct(
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,

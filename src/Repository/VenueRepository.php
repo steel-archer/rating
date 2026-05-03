@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\DTO\Request\VenueListRequestDTO;
 use App\Entity\Venue;
+use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -12,7 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class VenueRepository extends ServiceEntityRepository
 {
-    private const int PER_PAGE = 5;
+    private const int PER_PAGE = 50;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -69,7 +70,7 @@ class VenueRepository extends ServiceEntityRepository
 
         if ($requestDto->name !== null && $requestDto->name !== '') {
             $qb->andWhere('v.name LIKE :name')
-                ->setParameter('name', '%' . $requestDto->name . '%');
+                ->setParameter('name', LikeEscape::contains($requestDto->name));
         }
 
         if ($requestDto->townId !== null) {
@@ -86,7 +87,7 @@ class VenueRepository extends ServiceEntityRepository
             $qb->join('App\Entity\VenueRepresentative', 'vr', 'WITH', 'vr.venue = v')
                 ->join('vr.player', 'rep')
                 ->andWhere("CONCAT(rep.lastName, ' ', rep.firstName, ' ', COALESCE(rep.patronymic, '')) LIKE :rep")
-                ->setParameter('rep', '%' . $requestDto->representative . '%');
+                ->setParameter('rep', LikeEscape::contains($requestDto->representative));
         }
 
         return $qb;

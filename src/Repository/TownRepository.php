@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Town;
+use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,7 +22,7 @@ class TownRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('t')
             ->select('t.id', 't.name')
             ->where('t.name LIKE :q')
-            ->setParameter('q', '%' . $query . '%')
+            ->setParameter('q', LikeEscape::contains($query))
             ->orderBy('t.name')
             ->setMaxResults(10)
             ->getQuery()

@@ -6,6 +6,7 @@ use App\DTO\Request\PlayerListRequestDTO;
 use App\Entity\Player;
 use App\Entity\Season;
 use App\Entity\TeamPlayer;
+use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -14,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class PlayerRepository extends ServiceEntityRepository
 {
-    private const int PER_PAGE = 5;
+    private const int PER_PAGE = 50;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -85,17 +86,17 @@ class PlayerRepository extends ServiceEntityRepository
 
         if ($requestDto->lastName !== null && $requestDto->lastName !== '') {
             $qb->andWhere('p.lastName LIKE :lastName')
-                ->setParameter('lastName', '%' . $requestDto->lastName . '%');
+                ->setParameter('lastName', LikeEscape::contains($requestDto->lastName));
         }
 
         if ($requestDto->firstName !== null && $requestDto->firstName !== '') {
             $qb->andWhere('p.firstName LIKE :firstName')
-                ->setParameter('firstName', '%' . $requestDto->firstName . '%');
+                ->setParameter('firstName', LikeEscape::contains($requestDto->firstName));
         }
 
         if ($requestDto->patronymic !== null && $requestDto->patronymic !== '') {
             $qb->andWhere('p.patronymic LIKE :patronymic')
-                ->setParameter('patronymic', '%' . $requestDto->patronymic . '%');
+                ->setParameter('patronymic', LikeEscape::contains($requestDto->patronymic));
         }
 
         if ($requestDto->townId !== null) {

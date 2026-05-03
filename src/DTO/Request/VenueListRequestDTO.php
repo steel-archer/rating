@@ -7,16 +7,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class VenueListRequestDTO
 {
     public function __construct(
-        #[Assert\Positive]
+        #[Assert\Range(min: 1, max: 10000)]
         public int $page = 1,
 
         #[Assert\Length(max: 255)]
         public ?string $name = null,
 
-        #[Assert\Positive]
+        #[Assert\Range(min: 1, max: 10000)]
         public ?int $townId = null,
 
-        #[Assert\Positive]
+        #[Assert\Range(min: 1, max: 10000)]
         public ?int $countryId = null,
 
         #[Assert\Length(max: 255)]

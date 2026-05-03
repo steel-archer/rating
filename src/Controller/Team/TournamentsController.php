@@ -5,6 +5,7 @@ namespace App\Controller\Team;
 use App\Repository\TeamRepository;
 use App\Service\TeamTournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -21,7 +22,7 @@ final class TournamentsController extends AbstractController
             $team = $teamRepository->findWithTown($id)
                 ?? throw new NotFoundHttpException("Team #$id not found");
 
-            $page = max(1, $request->query->getInt('page', 1));
+            $page = PageResolver::resolve($request);
 
             return $this->render('team/_tournaments.html.twig', [
                 'team' => $team,

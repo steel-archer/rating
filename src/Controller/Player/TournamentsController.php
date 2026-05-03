@@ -5,6 +5,7 @@ namespace App\Controller\Player;
 use App\Repository\PlayerRepository;
 use App\Service\PlayerTournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -21,7 +22,7 @@ final class TournamentsController extends AbstractController
             $player = $playerRepository->find($id)
                 ?? throw new NotFoundHttpException("Player #$id not found");
 
-            $page = max(1, $request->query->getInt('page', 1));
+            $page = PageResolver::resolve($request);
 
             return $this->render('player/_tournaments.html.twig', [
                 'player' => $player,

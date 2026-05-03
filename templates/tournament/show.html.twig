@@ -50,7 +50,7 @@
                     {% for role in roleOrder %}
                         {% if tournament.officials[role] is defined %}
                             <dt>{{ role == 'organizer' ? 'Організатори' : (role == 'editor' ? 'Редактори' : (role == 'game_jury' ? 'Ігрове журі' : 'Апеляційне журі')) }}</dt>
-                            <dd>{{ tournament.officials[role]|map(p => '<a href="' ~ path('player_show', {id: p.playerId}) ~ '">' ~ p.playerName ~ '</a>')|join(', ')|raw }}</dd>
+                            <dd>{{ tournament.officials[role]|map(p => '<a href="' ~ path('player_show', {id: p.playerId}) ~ '">' ~ p.playerName|e ~ '</a>')|join(', ')|raw }}</dd>
                         {% endif %}
                     {% endfor %}
                 </dl>

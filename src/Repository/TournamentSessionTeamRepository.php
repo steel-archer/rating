@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Team;
 use App\Entity\Tournament;
-use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Helper\FractionalRanking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -73,24 +72,6 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         }
 
         return $result;
-    }
-
-    /**
-     * @return list<TournamentSessionTeam>
-     */
-    public function findBySessionPaginated(TournamentSession $session, int $page, int $perPage): array
-    {
-        return $this->createQueryBuilder('st')
-            ->join('st.team', 'team')
-            ->join('team.town', 'town')
-            ->addSelect('team', 'town')
-            ->where('st.tournamentSession = :session')
-            ->setParameter('session', $session)
-            ->orderBy('st.score', 'DESC')
-            ->setFirstResult(($page - 1) * $perPage)
-            ->setMaxResults($perPage)
-            ->getQuery()
-            ->getResult();
     }
 
     /**

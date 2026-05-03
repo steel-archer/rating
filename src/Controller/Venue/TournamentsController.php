@@ -5,6 +5,7 @@ namespace App\Controller\Venue;
 use App\Repository\TournamentSessionRepository;
 use App\Repository\VenueRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -25,7 +26,7 @@ final class TournamentsController extends AbstractController
             $venue = $venueRepository->find($id)
                 ?? throw new NotFoundHttpException("Venue #$id not found");
 
-            $page = max(1, $request->query->getInt('page', 1));
+            $page = PageResolver::resolve($request);
 
             return $this->render('venue/_tournaments.html.twig', [
                 'venue' => $venue,
