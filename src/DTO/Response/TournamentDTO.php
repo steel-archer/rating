@@ -3,8 +3,6 @@
 namespace App\DTO\Response;
 
 use App\DTO\Response\Tournament\OfficialDTO;
-use App\DTO\Response\Tournament\SessionDTO;
-use App\DTO\Response\Tournament\SessionTeamDTO;
 use DateTimeInterface;
 
 final readonly class TournamentDTO
@@ -19,12 +17,9 @@ final readonly class TournamentDTO
         public ?int $questionsPerTour,
         public ?float $difficulty,
         public ?float $trueDl,
+        public int $teamCount = 0,
         /** @var array<string, list<OfficialDTO>> role => officials */
         public array $officials = [],
-        /** @var list<SessionDTO> */
-        public array $sessions = [],
-        /** @var list<SessionTeamDTO> sorted by score desc */
-        public array $allTeams = [],
     ) {
     }
 }

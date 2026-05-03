@@ -1,0 +1,30 @@
+<turbo-frame id="tournaments-list">
+    <div class="card card-wide">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Назва</th>
+                    <th>Дати</th>
+                    <th>Складність</th>
+                    <th>True DL</th>
+                    <th>Команд</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tournaments %}
+                    <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                        <td>{{ t.id }}</td>
+                        <td><a href="{{ path('tournament_show', {id: t.id}) }}" data-turbo-frame="_top">{{ t.name }}</a></td>
+                        <td>{{ t.startedAt ? t.startedAt|date('d.m.Y') : '—' }}{% if t.endedAt %} — {{ t.endedAt|date('d.m.Y') }}{% endif %}</td>
+                        <td>{{ t.difficulty ?? '—' }}</td>
+                        <td>{{ t.trueDl ?? '—' }}</td>
+                        <td>{{ t.teamCount }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_pagination.html.twig' with {paginationRoute: 'tournament_list', paginationParams: {}} %}
+    </div>
+</turbo-frame>

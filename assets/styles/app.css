@@ -191,6 +191,15 @@ td:last-child {
     min-width: 300px;
 }
 
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 15px;
+}
+
 .error-page {
     text-align: center;
     padding: 80px 20px;

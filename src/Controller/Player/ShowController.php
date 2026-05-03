@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Player;
 
 use App\Exception\EntityNotFoundException;
 use App\Service\PlayerService;
@@ -11,11 +11,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/player')]
-final class PlayerController extends AbstractController
+#[Route('/player/{id}', name: 'player_show', requirements: ['id' => '\d+'])]
+final class ShowController extends AbstractController
 {
-    #[Route('/{id}', name: 'player_show', requirements: ['id' => '\d+'])]
-    public function show(int $id, PlayerService $playerService): Response
+    public function __invoke(int $id, PlayerService $playerService): Response
     {
         try {
             $player = $playerService->get($id);

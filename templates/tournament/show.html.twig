@@ -19,9 +19,9 @@
                     <dt>Питань у турі</dt>
                     <dd>{{ tournament.questionsPerTour }}</dd>
                 {% endif %}
-                {% if tournament.allTeams is not empty %}
+                {% if tournament.teamCount %}
                     <dt>Команд</dt>
-                    <dd>{{ tournament.allTeams|length }}</dd>
+                    <dd>{{ tournament.teamCount }}</dd>
                 {% endif %}
                 {% if tournament.difficulty %}
                     <dt>Складність</dt>
@@ -50,46 +50,9 @@
         {% endif %}
     </div>
 
-    {% if tournament.allTeams is not empty %}
-        <div class="card card-wide">
-            <h2>Результати</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>#</th>
-                        <th>Команда</th>
-                        <th>Місто</th>
-                        <th>Результат</th>
-                        <th>
-                            Склад
-                            <button type="button" class="btn-toggle-text" data-toggle-all-squads>показати всі</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for team in tournament.allTeams %}
-                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
-                            <td>{{ loop.index }}</td>
-                            <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
-                            <td><a href="{{ path('team_show', {id: team.teamId}) }}">{{ team.teamName }}</a></td>
-                            <td>{{ team.teamTownName }}</td>
-                            <td>{{ team.score ?? '—' }}</td>
-                            <td>
-                                <button type="button" class="btn-toggle-text" data-toggle-squad>показати</button>
-                                <div class="squad-list" hidden>
-                                    {% for player in team.players %}
-                                        <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
-                                            <a href="{{ path('player_show', {id: player.playerId}) }}">{{- player.playerName -}}</a>
-                                            {%- if player.isCaptain %} (к){% endif -%}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    {% if tournament.teamCount > 0 %}
+        <turbo-frame id="tournament-results" src="{{ path('tournament_results', {id: tournament.id}) }}">
+            <p>Завантаження результатів…</p>
+        </turbo-frame>
     {% endif %}
 {% endblock %}

@@ -3,7 +3,6 @@
 namespace App\DTO\Response;
 
 use App\DTO\Response\Player\SquadDTO;
-use App\DTO\Response\Player\TournamentAppearanceDTO;
 
 final readonly class PlayerDTO
 {
@@ -11,10 +10,9 @@ final readonly class PlayerDTO
         public int $id,
         public string $fullName,
         public ?string $townName,
+        public int $tournamentCount = 0,
         /** @var list<SquadDTO> */
         public array $squads = [],
-        /** @var list<TournamentAppearanceDTO> */
-        public array $tournaments = [],
     ) {
     }
 }

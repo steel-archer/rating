@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Service;
+
+use App\DTO\Response\Player\TournamentAppearanceDTO;
+use App\Entity\Player;
+use App\Entity\TournamentSessionTeamPlayer;
+use App\Mapping\Mapper;
+use App\Repository\TournamentSessionTeamPlayerRepository;
+use App\Repository\TournamentSessionTeamRepository;
+
+final readonly class PlayerTournamentService
+{
+    private const int PER_PAGE = 5;
+
+    public function __construct(
+        private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
+        private TournamentSessionTeamRepository $sessionTeamRepository,
+        private Mapper $mapper,
+    ) {
+    }
+
+    /**
+     * @return list<TournamentAppearanceDTO>
+     */
+    public function getTournaments(Player $player, int $page): array
+    {
+        $appearances = $this->sessionTeamPlayerRepository->findByPlayerPaginated($player, $page, self::PER_PAGE);
+        if ($appearances === []) {
+            return [];
+        }
+
+        $sessionTeamIds = array_map(
+            static fn(TournamentSessionTeamPlayer $a) => $a->getTournamentSessionTeam()->getId(),
+            $appearances,
+        );
+        $places = $this->sessionTeamRepository->getPlacesInTournament($sessionTeamIds);
+
+        return array_map(
+            fn(TournamentSessionTeamPlayer $a) => $this->mapper->map($a, TournamentAppearanceDTO::class, ['places' => $places]),
+            $appearances,
+        );
+    }
+
+    public function getLastPage(Player $player): int
+    {
+        $total = $this->sessionTeamPlayerRepository->countByPlayer($player);
+
+        return max(1, (int) ceil($total / self::PER_PAGE));
+    }
+}

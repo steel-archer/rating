@@ -12,9 +12,6 @@ final readonly class SessionTeamDTO
         public ?string $teamTownName,
         public ?int $score,
         public ?float $place,
-        public int $venueId,
-        public string $venueName,
-        public string $townName,
         /** @var list<SessionTeamPlayerDTO> */
         public array $players,
     ) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Team;
 
 use App\Exception\EntityNotFoundException;
 use App\Service\TeamService;
@@ -11,11 +11,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/team')]
-final class TeamController extends AbstractController
+#[Route('/team/{id}', name: 'team_show', requirements: ['id' => '\d+'])]
+final class ShowController extends AbstractController
 {
-    #[Route('/{id}', name: 'team_show', requirements: ['id' => '\d+'])]
-    public function show(int $id, TeamService $teamService): Response
+    public function __invoke(int $id, TeamService $teamService): Response
     {
         try {
             $team = $teamService->get($id);

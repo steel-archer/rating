@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Турніри — Rating{% endblock %}
+
+{% block body %}
+    <h1>Турніри</h1>
+
+    <turbo-frame id="tournaments-list" src="{{ path('tournament_list') }}">
+        <p>Завантаження…</p>
+    </turbo-frame>
+{% endblock %}

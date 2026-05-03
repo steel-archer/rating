@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Team;
 use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeam;
 use App\Helper\FractionalRanking;
@@ -16,10 +17,50 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         parent::__construct($registry, TournamentSessionTeam::class);
     }
 
+    public function countByTournament(Tournament $tournament): int
+    {
+        return (int) $this->createQueryBuilder('st')
+            ->select('COUNT(st.id)')
+            ->join('st.tournamentSession', 'ts')
+            ->where('ts.tournament = :t')
+            ->setParameter('t', $tournament)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countByTeam(Team $team): int
+    {
+        return (int) $this->createQueryBuilder('st')
+            ->select('COUNT(st.id)')
+            ->where('st.team = :team')
+            ->setParameter('team', $team)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     /**
      * @return list<TournamentSessionTeam>
      */
-    public function findByTournamentWithTeam(Tournament $tournament): array
+    public function findByTeamPaginated(Team $team, int $page, int $perPage): array
+    {
+        return $this->createQueryBuilder('st')
+            ->join('st.tournamentSession', 'ts')
+            ->join('ts.tournament', 'tournament')
+            ->leftJoin('tournament.season', 'season')
+            ->addSelect('ts', 'tournament', 'season')
+            ->where('st.team = :team')
+            ->setParameter('team', $team)
+            ->orderBy('ts.playedAt', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<TournamentSessionTeam>
+     */
+    public function findByTournamentPaginated(Tournament $tournament, int $page, int $perPage): array
     {
         return $this->createQueryBuilder('st')
             ->join('st.team', 'team')
@@ -29,6 +70,8 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             ->where('ts.tournament = :t')
             ->setParameter('t', $tournament)
             ->orderBy('st.score', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
             ->getQuery()
             ->getResult();
     }

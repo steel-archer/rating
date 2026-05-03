@@ -1,0 +1,14 @@
+{# Expects: paginationRoute (string), paginationParams (object), page (int), lastPage (int) #}
+{% if lastPage > 1 %}
+    <nav class="pagination">
+        {% if page > 1 %}
+            <a href="{{ path(paginationRoute, paginationParams|merge({page: 1})) }}">« Перша</a>
+            <a href="{{ path(paginationRoute, paginationParams|merge({page: page - 1})) }}">← Назад</a>
+        {% endif %}
+        <span>{{ page }} / {{ lastPage }}</span>
+        {% if page < lastPage %}
+            <a href="{{ path(paginationRoute, paginationParams|merge({page: page + 1})) }}">Вперед →</a>
+            <a href="{{ path(paginationRoute, paginationParams|merge({page: lastPage})) }}">Остання »</a>
+        {% endif %}
+    </nav>
+{% endif %}

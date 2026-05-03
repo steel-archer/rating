@@ -5,10 +5,10 @@ namespace App\Mapping\Tournament;
 use App\DTO\Response\Tournament\SessionTeamPlayerDTO;
 use App\Entity\TournamentSessionTeamPlayer;
 use App\Mapping\AsMapper;
-use App\Mapping\ListMappingInterface;
+use App\Mapping\MappingInterface;
 
 #[AsMapper(source: TournamentSessionTeamPlayer::class, destination: SessionTeamPlayerDTO::class)]
-final class SessionTeamPlayerMapping implements ListMappingInterface
+final class SessionTeamPlayerMapping implements MappingInterface
 {
     /**
      * @param array{squadInfo?: array{playerIds: list<int>, captainId: int|null}} $context
@@ -26,17 +26,6 @@ final class SessionTeamPlayerMapping implements ListMappingInterface
             playerName: $player->getFullName(),
             isBaseSquad: in_array($playerId, $squadInfo['playerIds'], true),
             isCaptain: $playerId === $squadInfo['captainId'],
-        );
-    }
-
-    /**
-     * @return list<SessionTeamPlayerDTO>
-     */
-    public function mapList(array $sources, string $destinationClass, array $context = []): array
-    {
-        return array_map(
-            fn(TournamentSessionTeamPlayer $source) => $this->map($source, $destinationClass, $context),
-            $sources,
         );
     }
 }

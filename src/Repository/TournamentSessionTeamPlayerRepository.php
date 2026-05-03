@@ -3,8 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Player;
-use App\Entity\Team;
-use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,40 +15,34 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
     }
 
     /** @return list<TournamentSessionTeamPlayer> */
-    public function findByTournamentWithPlayer(Tournament $tournament): array
+    public function findBySessionTeamIds(array $sessionTeamIds): array
     {
+        if ($sessionTeamIds === []) {
+            return [];
+        }
+
         return $this->createQueryBuilder('stp')
             ->join('stp.player', 'p')
-            ->join('stp.tournamentSessionTeam', 'st')
-            ->join('st.tournamentSession', 'ts')
-            ->addSelect('p', 'st')
-            ->where('ts.tournament = :t')
-            ->setParameter('t', $tournament)
+            ->addSelect('p')
+            ->where('stp.tournamentSessionTeam IN (:ids)')
+            ->setParameter('ids', $sessionTeamIds)
             ->orderBy('p.lastName')
             ->getQuery()
             ->getResult();
     }
 
-    /** @return list<TournamentSessionTeamPlayer> */
-    public function findByTeamWithFullContext(Team $team): array
+    public function countByPlayer(Player $player): int
     {
-        return $this->createQueryBuilder('stp')
-            ->join('stp.player', 'p')
-            ->join('stp.tournamentSessionTeam', 'st')
-            ->join('st.tournamentSession', 'ts')
-            ->join('ts.tournament', 'tournament')
-            ->leftJoin('tournament.season', 'season')
-            ->addSelect('p', 'st', 'ts', 'tournament', 'season')
-            ->where('st.team = :team')
-            ->setParameter('team', $team)
-            ->orderBy('ts.playedAt', 'DESC')
-            ->addOrderBy('p.lastName', 'ASC')
+        return (int) $this->createQueryBuilder('stp')
+            ->select('COUNT(stp.id)')
+            ->where('stp.player = :player')
+            ->setParameter('player', $player)
             ->getQuery()
-            ->getResult();
+            ->getSingleScalarResult();
     }
 
     /** @return list<TournamentSessionTeamPlayer> */
-    public function findByPlayerWithFullContext(Player $player): array
+    public function findByPlayerPaginated(Player $player, int $page, int $perPage): array
     {
         return $this->createQueryBuilder('stp')
             ->join('stp.tournamentSessionTeam', 'st')
@@ -62,6 +54,8 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->where('stp.player = :player')
             ->setParameter('player', $player)
             ->orderBy('ts.playedAt', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
             ->getQuery()
             ->getResult();
     }

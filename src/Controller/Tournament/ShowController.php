@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Tournament;
 
 use App\Exception\EntityNotFoundException;
 use App\Service\TournamentService;
@@ -9,11 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/tournament')]
-final class TournamentController extends AbstractController
+#[Route('/tournament/{id}', name: 'tournament_show', requirements: ['id' => '\d+'])]
+final class ShowController extends AbstractController
 {
-    #[Route('/{id}', name: 'tournament_show', requirements: ['id' => '\d+'])]
-    public function show(int $id, TournamentService $tournamentService): Response
+    public function __invoke(int $id, TournamentService $tournamentService): Response
     {
         try {
             $tournament = $tournamentService->get($id);

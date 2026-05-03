@@ -20,35 +20,9 @@
         </div>
     {% endif %}
 
-    {% if player.tournaments is not empty %}
-        <div class="card card-wide">
-            <h2>Турніри</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Турнір</th>
-                        <th>Дата</th>
-                        <th>Команда</th>
-                        <th>Місто</th>
-                        <th>Місце</th>
-                        <th>Результат</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for appearance in player.tournaments %}
-                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                            <td>{{ loop.index }}</td>
-                            <td><a href="{{ path('tournament_show', {id: appearance.tournamentId}) }}">{{ appearance.tournamentName }}</a></td>
-                            <td>{{ appearance.playedAt ? appearance.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td><a href="{{ path('team_show', {id: appearance.teamId}) }}">{{ appearance.teamName }}</a>{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
-                            <td>{{ appearance.teamTownName }}</td>
-                            <td>{{ appearance.place ? (appearance.place == appearance.place|round(0) ? appearance.place|number_format(0) : appearance.place) : '—' }}</td>
-                            <td>{{ appearance.score ?? '—' }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    {% if player.tournamentCount > 0 %}
+        <turbo-frame id="player-tournaments" src="{{ path('player_tournaments', {id: player.id}) }}">
+            <p>Завантаження турнірів…</p>
+        </turbo-frame>
     {% endif %}
 {% endblock %}
