@@ -2,12 +2,14 @@
 
 namespace App\Repository;
 
+use App\DTO\Request\TournamentListRequestDTO;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 class TournamentRepository extends ServiceEntityRepository
@@ -36,9 +38,9 @@ class TournamentRepository extends ServiceEntityRepository
     /**
      * @return list<array{id: int, name: string, startedAt: ?\DateTime, endedAt: ?\DateTime, difficulty: ?float, trueDl: ?float, teamCount: int}>
      */
-    public function findForList(int $page): array
+    public function findForList(TournamentListRequestDTO $requestDto): array
     {
-        return $this->createQueryBuilder('t')
+        return $this->buildFilteredQuery($requestDto)
             ->leftJoin(TournamentSession::class, 'ts', 'WITH', 'ts.tournament = t')
             ->leftJoin(TournamentSessionTeam::class, 'tst', 'WITH', 'tst.tournamentSession = ts')
             ->select(
@@ -52,7 +54,7 @@ class TournamentRepository extends ServiceEntityRepository
             )
             ->groupBy('t.id')
             ->orderBy('t.startedAt', 'DESC')
-            ->setFirstResult(($page - 1) * self::PER_PAGE)
+            ->setFirstResult(($requestDto->page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)
             ->getQuery()
             ->getArrayResult();
@@ -62,20 +64,25 @@ class TournamentRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function countAll(): int
+    public function getLastPage(TournamentListRequestDTO $requestDto): int
     {
-        return (int) $this->createQueryBuilder('t')
+        $total = (int) $this->buildFilteredQuery($requestDto)
             ->select('COUNT(t.id)')
             ->getQuery()
             ->getSingleScalarResult();
+
+        return max(1, (int) ceil($total / self::PER_PAGE));
     }
 
-    /**
-     * @throws NonUniqueResultException
-     * @throws NoResultException
-     */
-    public function getLastPage(): int
+    private function buildFilteredQuery(TournamentListRequestDTO $requestDto): QueryBuilder
     {
-        return max(1, (int) ceil($this->countAll() / self::PER_PAGE));
+        $qb = $this->createQueryBuilder('t');
+
+        if ($requestDto->name !== null && $requestDto->name !== '') {
+            $qb->andWhere('t.name LIKE :name')
+                ->setParameter('name', '%' . $requestDto->name . '%');
+        }
+
+        return $qb;
     }
 }

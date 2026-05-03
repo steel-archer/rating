@@ -1,9 +1,17 @@
 <turbo-frame id="tournaments-list">
+    <div class="card search-form">
+        <form action="{{ path('tournament_list') }}" method="get">
+            <div class="search-row">
+                <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="Назва турніру" class="search-input">
+                <button type="submit" class="search-btn">Знайти</button>
+            </div>
+        </form>
+    </div>
+
     <div class="card card-wide">
         <table>
             <thead>
                 <tr>
-                    <th></th>
                     <th>Назва</th>
                     <th>Дати</th>
                     <th>Складність</th>
@@ -14,17 +22,18 @@
             <tbody>
                 {% for t in tournaments %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td>{{ t.id }}</td>
                         <td><a href="{{ path('tournament_show', {id: t.id}) }}" data-turbo-frame="_top">{{ t.name }}</a></td>
                         <td>{{ t.startedAt ? t.startedAt|date('d.m.Y') : '—' }}{% if t.endedAt %} — {{ t.endedAt|date('d.m.Y') }}{% endif %}</td>
                         <td>{{ t.difficulty ?? '—' }}</td>
                         <td>{{ t.trueDl ?? '—' }}</td>
                         <td>{{ t.teamCount }}</td>
                     </tr>
+                {% else %}
+                    <tr><td colspan="5">Нічого не знайдено</td></tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'tournament_list', paginationParams: {}} %}
+        {% include '_pagination.html.twig' with {paginationRoute: 'tournament_list', paginationParams: filters} %}
     </div>
 </turbo-frame>
