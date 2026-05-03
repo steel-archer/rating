@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Турніри — Rating{% endblock %}
+{% block title %}{{ 'nav.tournaments'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span>Турніри</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'nav.tournaments'|trans }}</span></nav>
 {% endblock %}
 
 {% block body %}
-    <h1>Турніри</h1>
+    <h1>{{ 'nav.tournaments'|trans }}</h1>
 
     <turbo-frame id="tournaments-list" src="{{ path('tournament_list') }}">
-        <p>Завантаження…</p>
+        <p>{{ 'common.loading'|trans }}</p>
     </turbo-frame>
 {% endblock %}

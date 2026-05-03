@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ venue.name }} — Майданчики — Rating{% endblock %}
+{% block title %}{{ venue.name }} — {{ 'nav.venues'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('venue_index') }}">Майданчики</a></span><span>{{ venue.name }}</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('venue_index') }}">{{ 'nav.venues'|trans }}</a></span><span>{{ venue.name }}</span></nav>
 {% endblock %}
 
 {% block body %}
@@ -12,7 +12,7 @@
 
     {% if representatives is not empty %}
         <div class="card">
-            <h2>Представники</h2>
+            <h2>{{ 'venue.representatives'|trans }}</h2>
             <ul class="representatives-list">
                 {% for rep in representatives %}
                     <li><a href="{{ path('player_show', {id: rep.player.id}) }}">{{ rep.player.fullName }}</a></li>
@@ -23,7 +23,7 @@
 
     {% if tournamentCount > 0 %}
         <turbo-frame id="venue-tournaments" src="{{ path('venue_tournaments', {id: venue.id}) }}">
-            <p>Завантаження турнірів…</p>
+            <p>{{ 'common.loading_tournaments'|trans }}</p>
         </turbo-frame>
     {% endif %}
 {% endblock %}

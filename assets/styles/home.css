@@ -1,0 +1,54 @@
+.home-hero {
+    text-align: center;
+    padding: 48px 0 32px;
+}
+
+.home-hero h1 {
+    font-size: 48px;
+    letter-spacing: -0.04em;
+}
+
+.home-subtitle {
+    color: var(--text-secondary);
+    font-size: 18px;
+    margin-top: 8px;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.home-card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.home-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    text-decoration: none;
+}
+
+.home-card-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.home-card h2 {
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.home-card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}

@@ -1,10 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Rating{% endblock %}
+{% block title %}{{ 'site.title_full'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="error-page">
-        <div class="error-message">Rating</div>
-        <p class="error-hint">Рейтингова система інтелектуальних ігор</p>
+    <div class="home-hero">
+        <h1>{{ 'site.title_full'|trans }}</h1>
+    </div>
+
+    <div class="home-grid">
+        <a href="{{ path('tournament_index') }}" class="home-card">
+            <div class="home-card-icon">🏆</div>
+            <h2>{{ 'nav.tournaments'|trans }}</h2>
+            <p>{{ 'home.description.tournaments'|trans }}</p>
+        </a>
+        <a href="{{ path('team_index') }}" class="home-card">
+            <div class="home-card-icon">👥</div>
+            <h2>{{ 'nav.teams'|trans }}</h2>
+            <p>{{ 'home.description.teams'|trans }}</p>
+        </a>
+        <a href="{{ path('player_index') }}" class="home-card">
+            <div class="home-card-icon">🧑</div>
+            <h2>{{ 'nav.players'|trans }}</h2>
+            <p>{{ 'home.description.players'|trans }}</p>
+        </a>
+        <a href="{{ path('venue_index') }}" class="home-card">
+            <div class="home-card-icon">📍</div>
+            <h2>{{ 'nav.venues'|trans }}</h2>
+            <p>{{ 'home.description.venues'|trans }}</p>
+        </a>
     </div>
 {% endblock %}

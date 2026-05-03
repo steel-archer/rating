@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Відіграші — {{ tournament.name }} — Турніри — Rating{% endblock %}
+{% block title %}{{ 'tournament.sessions'|trans }} — {{ tournament.name }} — {{ 'nav.tournaments'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('tournament_index') }}">Турніри</a></span><span><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></span><span>Відіграші</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('tournament_index') }}">{{ 'nav.tournaments'|trans }}</a></span><span><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></span><span>{{ 'tournament.sessions'|trans }}</span></nav>
 {% endblock %}
 
 {% block body %}
-    <h1>Відіграші: {{ tournament.name }}</h1>
+    <h1>{{ 'tournament.sessions'|trans }}: {{ tournament.name }}</h1>
 
     <turbo-frame id="tournament-sessions" src="{{ path('tournament_sessions_list', {id: tournament.id}) }}">
-        <p>Завантаження…</p>
+        <p>{{ 'common.loading'|trans }}</p>
     </turbo-frame>
 {% endblock %}

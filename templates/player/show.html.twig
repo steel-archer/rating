@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ player.fullName }} — Гравці — Rating{% endblock %}
+{% block title %}{{ player.fullName }} — {{ 'nav.players'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('player_index') }}">Гравці</a></span><span>{{ player.fullName }}</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('player_index') }}">{{ 'nav.players'|trans }}</a></span><span>{{ player.fullName }}</span></nav>
 {% endblock %}
 
 {% block body %}
@@ -14,7 +14,7 @@
 
     {% if player.squads is not empty %}
         <div class="card">
-            <h2>Базові склади</h2>
+            <h2>{{ 'team.base_squads'|trans }}</h2>
             <dl>
                 {% for squad in player.squads %}
                     <dt>{{ squad.seasonName }}</dt>
@@ -26,7 +26,7 @@
 
     {% if player.tournamentCount > 0 %}
         <turbo-frame id="player-tournaments" src="{{ path('player_tournaments', {id: player.id}) }}">
-            <p>Завантаження турнірів…</p>
+            <p>{{ 'common.loading_tournaments'|trans }}</p>
         </turbo-frame>
     {% endif %}
 {% endblock %}

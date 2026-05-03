@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ tournament.name }} — Турніри — Rating{% endblock %}
+{% block title %}{{ tournament.name }} — {{ 'nav.tournaments'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span><a href="{{ path('tournament_index') }}">Турніри</a></span><span>{{ tournament.name }}</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('tournament_index') }}">{{ 'nav.tournaments'|trans }}</a></span><span>{{ tournament.name }}</span></nav>
 {% endblock %}
 
 {% block body %}
@@ -16,27 +16,27 @@
         <div class="card">
             <dl>
                 {% if tournament.toursCount %}
-                    <dt>Турів</dt>
+                    <dt>{{ 'tournament.tours_count'|trans }}</dt>
                     <dd>{{ tournament.toursCount }}</dd>
                 {% endif %}
                 {% if tournament.questionsPerTour %}
-                    <dt>Питань у турі</dt>
+                    <dt>{{ 'tournament.questions_per_tour'|trans }}</dt>
                     <dd>{{ tournament.questionsPerTour }}</dd>
                 {% endif %}
                 {% if tournament.teamCount %}
-                    <dt>Команд</dt>
+                    <dt>{{ 'common.teams_count'|trans }}</dt>
                     <dd>{{ tournament.teamCount }}</dd>
                 {% endif %}
                 {% if tournament.difficulty %}
-                    <dt>Складність</dt>
+                    <dt>{{ 'tournament.difficulty'|trans }}</dt>
                     <dd>{{ tournament.difficulty }}</dd>
                 {% endif %}
                 {% if tournament.trueDl %}
-                    <dt>True DL</dt>
+                    <dt>{{ 'tournament.true_dl'|trans }}</dt>
                     <dd>{{ tournament.trueDl }}</dd>
                 {% endif %}
                 {% if tournament.sessionCount %}
-                    <dt>Відіграші</dt>
+                    <dt>{{ 'tournament.sessions'|trans }}</dt>
                     <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">{{ tournament.sessionCount }}</a></dd>
                 {% endif %}
             </dl>
@@ -44,12 +44,12 @@
 
         {% if tournament.officials is not empty %}
             <div class="card card-grow">
-                <h2>Офіційні особи</h2>
+                <h2>{{ 'tournament.officials'|trans }}</h2>
                 <dl>
                     {% set roleOrder = ['organizer', 'editor', 'game_jury', 'appeal_jury'] %}
                     {% for role in roleOrder %}
                         {% if tournament.officials[role] is defined %}
-                            <dt>{{ role == 'organizer' ? 'Організатори' : (role == 'editor' ? 'Редактори' : (role == 'game_jury' ? 'Ігрове журі' : 'Апеляційне журі')) }}</dt>
+                            <dt>{{ ('tournament.role.' ~ role)|trans }}</dt>
                             <dd>{{ tournament.officials[role]|map(p => '<a href="' ~ path('player_show', {id: p.playerId}) ~ '">' ~ p.playerName|e ~ '</a>')|join(', ')|raw }}</dd>
                         {% endif %}
                     {% endfor %}
@@ -60,7 +60,7 @@
 
     {% if tournament.teamCount > 0 %}
         <turbo-frame id="tournament-results" src="{{ path('tournament_results', {id: tournament.id}) }}">
-            <p>Завантаження результатів…</p>
+            <p>{{ 'common.loading_results'|trans }}</p>
         </turbo-frame>
     {% endif %}
 {% endblock %}

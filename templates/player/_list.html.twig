@@ -2,20 +2,20 @@
     <div class="card search-form">
         <form action="{{ path('player_list') }}" method="get">
             <div class="search-row">
-                <input type="text" name="lastName" value="{{ filters.lastName ?? '' }}" placeholder="Прізвище" class="search-input">
-                <input type="text" name="firstName" value="{{ filters.firstName ?? '' }}" placeholder="Ім'я" class="search-input">
-                <input type="text" name="patronymic" value="{{ filters.patronymic ?? '' }}" placeholder="По батькові" class="search-input">
+                <input type="text" name="lastName" value="{{ filters.lastName ?? '' }}" placeholder="{{ 'player.last_name'|trans }}" class="search-input">
+                <input type="text" name="firstName" value="{{ filters.firstName ?? '' }}" placeholder="{{ 'player.first_name'|trans }}" class="search-input">
+                <input type="text" name="patronymic" value="{{ filters.patronymic ?? '' }}" placeholder="{{ 'player.patronymic'|trans }}" class="search-input">
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
-                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
                     <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
-                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
+                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off">
                     <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}">
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
-                <button type="submit" class="search-btn">Знайти</button>
+                <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
             </div>
         </form>
     </div>
@@ -24,9 +24,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>ПІБ</th>
-                    <th>Місто</th>
-                    <th>Команда</th>
+                    <th>{{ 'player.full_name'|trans }}</th>
+                    <th>{{ 'common.town'|trans }}</th>
+                    <th>{{ 'common.team'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,7 +41,7 @@
                         </td>
                     </tr>
                 {% else %}
-                    <tr><td colspan="3">Нічого не знайдено</td></tr>
+                    <tr><td colspan="3">{{ 'common.not_found'|trans }}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

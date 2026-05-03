@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ app.request.locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Rating{% endblock %}</title>
+    <title>{% block title %}{{ 'site.title'|trans }}{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🏆</text></svg>">
     {% block stylesheets %}{% endblock %}
     {% block javascripts %}
@@ -15,10 +15,10 @@
         <div class="header-inner">
             <a href="/" class="logo">Rating</a>
             <nav>
-                <a href="{{ path('tournament_index') }}">Турніри</a>
-                <a href="{{ path('team_index') }}">Команди</a>
-                <a href="{{ path('player_index') }}">Гравці</a>
-                <a href="{{ path('venue_index') }}">Майданчики</a>
+                <a href="{{ path('tournament_index') }}">{{ 'nav.tournaments'|trans }}</a>
+                <a href="{{ path('team_index') }}">{{ 'nav.teams'|trans }}</a>
+                <a href="{{ path('player_index') }}">{{ 'nav.players'|trans }}</a>
+                <a href="{{ path('venue_index') }}">{{ 'nav.venues'|trans }}</a>
             </nav>
         </div>
     </header>

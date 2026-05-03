@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Помилка сервера — Rating{% endblock %}
+{% block title %}{{ 'error.500.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="error-page">
         <div class="error-code">500</div>
-        <div class="error-message">Внутрішня помилка сервера</div>
-        <p class="error-hint">Щось пішло не так. Спробуйте пізніше.</p>
-        <a href="/" class="error-link">На головну</a>
+        <div class="error-message">{{ 'error.500.title'|trans }}</div>
+        <p class="error-hint">{{ 'error.500.hint'|trans }}</p>
+        <a href="/" class="error-link">{{ 'error.back_home'|trans }}</a>
     </div>
 {% endblock %}

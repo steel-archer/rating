@@ -1,16 +1,16 @@
 <turbo-frame id="tournament-results">
     <div class="card card-wide">
-        <h2>Результати</h2>
+        <h2>{{ 'tournament.results'|trans }}</h2>
         <table>
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Команда</th>
-                    <th>Місто</th>
-                    <th>Результат</th>
+                    <th>{{ 'common.team'|trans }}</th>
+                    <th>{{ 'common.town'|trans }}</th>
+                    <th>{{ 'common.result'|trans }}</th>
                     <th>
-                        Склад
-                        <button type="button" class="btn-toggle-text" data-toggle-all-squads>показати всі</button>
+                        {{ 'common.squad'|trans }}
+                        <button type="button" class="btn-toggle-text" data-toggle-all-squads>{{ 'squad.show_all'|trans }}</button>
                     </th>
                 </tr>
             </thead>
@@ -22,7 +22,7 @@
                         <td>{{ team.teamTownName }}</td>
                         <td>{{ team.score ?? '—' }}</td>
                         <td>
-                            <button type="button" class="btn-toggle-text" data-toggle-squad>показати</button>
+                            <button type="button" class="btn-toggle-text" data-toggle-squad>{{ 'squad.show'|trans }}</button>
                             <div class="squad-list" hidden>
                                 {% for player in team.players %}
                                     <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">

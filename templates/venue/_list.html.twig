@@ -2,19 +2,19 @@
     <div class="card search-form">
         <form action="{{ path('venue_list') }}" method="get">
             <div class="search-row">
-                <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="Назва майданчика" class="search-input">
+                <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="{{ 'common.name'|trans }}" class="search-input">
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
-                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="Місто" class="search-input" autocomplete="off">
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
                     <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
-                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="Країна" class="search-input" autocomplete="off">
+                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off">
                     <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}">
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
-                <input type="text" name="representative" value="{{ filters.representative ?? '' }}" placeholder="ПІБ представника" class="search-input">
-                <button type="submit" class="search-btn">Знайти</button>
+                <input type="text" name="representative" value="{{ filters.representative ?? '' }}" placeholder="{{ 'venue.search.representative'|trans }}" class="search-input">
+                <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
             </div>
         </form>
     </div>
@@ -23,9 +23,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>Назва</th>
-                    <th>Місто</th>
-                    <th>Країна</th>
+                    <th>{{ 'common.name'|trans }}</th>
+                    <th>{{ 'common.town'|trans }}</th>
+                    <th>{{ 'common.country'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +36,7 @@
                         <td>{{ v.countryName }}</td>
                     </tr>
                 {% else %}
-                    <tr><td colspan="3">Нічого не знайдено</td></tr>
+                    <tr><td colspan="3">{{ 'common.not_found'|trans }}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -1,0 +1,90 @@
+common:
+  country: 'Країна'
+  date: 'Дата'
+  dates: 'Дати'
+  loading: 'Завантаження…'
+  loading_results: 'Завантаження результатів…'
+  loading_tournaments: 'Завантаження турнірів…'
+  name: 'Назва'
+  not_found: 'Нічого не знайдено'
+  place: 'Місце'
+  result: 'Результат'
+  search: 'Знайти'
+  squad: 'Склад'
+  team: 'Команда'
+  teams_count: 'Команд'
+  tournament: 'Турнір'
+  town: 'Місто'
+
+error:
+  '404':
+    hint: 'Можливо, вона була видалена або ви перейшли за невірним посиланням.'
+    title: 'Сторінку не знайдено'
+  '500':
+    hint: 'Щось пішло не так. Спробуйте пізніше.'
+    title: 'Внутрішня помилка сервера'
+  '503':
+    hint: 'Спробуйте оновити сторінку через кілька хвилин.'
+    title: 'Сервіс тимчасово недоступний'
+  back_home: 'На головну'
+
+home:
+  description:
+    players: 'Профілі гравців та їхні досягнення'
+    teams: 'Склади, рейтинги та історія виступів'
+    tournaments: 'Результати та статистика турнірів'
+    venues: 'Місця проведення ігор'
+
+nav:
+  home: 'Головна'
+  players: 'Гравці'
+  teams: 'Команди'
+  tournaments: 'Турніри'
+  venues: 'Майданчики'
+
+pagination:
+  first: '« Перша'
+  last: 'Остання »'
+  next: 'Вперед →'
+  prev: '← Назад'
+
+player:
+  first_name: "Ім'я"
+  full_name: 'ПІБ'
+  last_name: 'Прізвище'
+  patronymic: 'По батькові'
+
+site:
+  title: 'Рейтинг ЩДК'
+  title_full: 'Рейтинг українського «Що? Де? Коли?»'
+
+squad:
+  hide: 'сховати'
+  hide_all: 'сховати всі'
+  show: 'показати'
+  show_all: 'показати всі'
+
+team:
+  base_squads: 'Базові склади'
+
+tournament:
+  difficulty: 'Складність'
+  officials: 'Офіційні особи'
+  questions_per_tour: 'Питань у турі'
+  results: 'Результати'
+  role:
+    appeal_jury: 'Апеляційне журі'
+    editor: 'Редактори'
+    game_jury: 'Ігрове журі'
+    organizer: 'Організатори'
+  sessions: 'Відіграші'
+  tours_count: 'Турів'
+  true_dl: 'True DL'
+
+venue:
+  host: 'Ведучий'
+  representative: 'Представник'
+  representatives: 'Представники'
+  search:
+    representative: 'ПІБ представника'
+  venue: 'Майданчик'

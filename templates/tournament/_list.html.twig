@@ -2,8 +2,8 @@
     <div class="card search-form">
         <form action="{{ path('tournament_list') }}" method="get">
             <div class="search-row">
-                <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="Назва турніру" class="search-input">
-                <button type="submit" class="search-btn">Знайти</button>
+                <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="{{ 'common.name'|trans }}" class="search-input">
+                <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
             </div>
         </form>
     </div>
@@ -12,11 +12,11 @@
         <table>
             <thead>
                 <tr>
-                    <th>Назва</th>
-                    <th>Дати</th>
-                    <th>Складність</th>
-                    <th>True DL</th>
-                    <th>Команд</th>
+                    <th>{{ 'common.name'|trans }}</th>
+                    <th>{{ 'common.dates'|trans }}</th>
+                    <th>{{ 'tournament.difficulty'|trans }}</th>
+                    <th>{{ 'tournament.true_dl'|trans }}</th>
+                    <th>{{ 'common.teams_count'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,7 +29,7 @@
                         <td>{{ t.teamCount }}</td>
                     </tr>
                 {% else %}
-                    <tr><td colspan="5">Нічого не знайдено</td></tr>
+                    <tr><td colspan="5">{{ 'common.not_found'|trans }}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

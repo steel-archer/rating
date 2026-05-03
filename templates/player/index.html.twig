@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Гравці — Rating{% endblock %}
+{% block title %}{{ 'nav.players'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">Головна</a><span>Гравці</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'nav.players'|trans }}</span></nav>
 {% endblock %}
 
 {% block body %}
-    <h1>Гравці</h1>
+    <h1>{{ 'nav.players'|trans }}</h1>
 
     <turbo-frame id="players-list" src="{{ path('player_list') }}">
-        <p>Завантаження…</p>
+        <p>{{ 'common.loading'|trans }}</p>
     </turbo-frame>
 {% endblock %}

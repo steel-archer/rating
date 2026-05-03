@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Не знайдено — Rating{% endblock %}
+{% block title %}{{ 'error.404.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="error-page">
         <div class="error-code">404</div>
-        <div class="error-message">Сторінку не знайдено</div>
-        <p class="error-hint">Можливо, вона була видалена або ви перейшли за невірним посиланням.</p>
-        <a href="/" class="error-link">На головну</a>
+        <div class="error-message">{{ 'error.404.title'|trans }}</div>
+        <p class="error-hint">{{ 'error.404.hint'|trans }}</p>
+        <a href="/" class="error-link">{{ 'error.back_home'|trans }}</a>
     </div>
 {% endblock %}
