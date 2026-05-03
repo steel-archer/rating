@@ -1,10 +1,23 @@
 import './stimulus_bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
 import './styles/app.css';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+let allExpanded = false;
+
+document.addEventListener('click', (e) => {
+    const singleToggle = e.target.closest('[data-toggle-squad]');
+    if (singleToggle) {
+        const list = singleToggle.parentElement.querySelector('.squad-list');
+        const isHidden = list.hidden;
+        list.hidden = !isHidden;
+        singleToggle.textContent = isHidden ? 'сховати' : 'показати';
+        return;
+    }
+
+    const allToggle = e.target.closest('[data-toggle-all-squads]');
+    if (allToggle) {
+        allExpanded = !allExpanded;
+        document.querySelectorAll('.squad-list').forEach(l => l.hidden = !allExpanded);
+        document.querySelectorAll('[data-toggle-squad]').forEach(b => b.textContent = allExpanded ? 'сховати' : 'показати');
+        allToggle.textContent = allExpanded ? 'сховати всі' : 'показати всі';
+    }
+});

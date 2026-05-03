@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ tournament.name }} — Rating{% endblock %}
+
+{% block body %}
+    <h1>{{ tournament.name }}</h1>
+    <div class="meta">
+        {% if tournament.startedAt %}<span>{{ tournament.startedAt|date('d.m.Y') }}{% if tournament.endedAt %} — {{ tournament.endedAt|date('d.m.Y') }}{% endif %}</span>{% endif %}
+    </div>
+
+    <div class="cards-row">
+        <div class="card">
+            <dl>
+                {% if tournament.toursCount %}
+                    <dt>Турів</dt>
+                    <dd>{{ tournament.toursCount }}</dd>
+                {% endif %}
+                {% if tournament.questionsPerTour %}
+                    <dt>Питань у турі</dt>
+                    <dd>{{ tournament.questionsPerTour }}</dd>
+                {% endif %}
+                {% if tournament.allTeams is not empty %}
+                    <dt>Команд</dt>
+                    <dd>{{ tournament.allTeams|length }}</dd>
+                {% endif %}
+                {% if tournament.difficulty %}
+                    <dt>Складність</dt>
+                    <dd>{{ tournament.difficulty }}</dd>
+                {% endif %}
+                {% if tournament.trueDl %}
+                    <dt>True DL</dt>
+                    <dd>{{ tournament.trueDl }}</dd>
+                {% endif %}
+            </dl>
+        </div>
+
+        {% if tournament.officials is not empty %}
+            <div class="card card-grow">
+                <h2>Офіційні особи</h2>
+                <dl>
+                    {% set roleOrder = ['organizer', 'editor', 'game_jury', 'appeal_jury'] %}
+                    {% for role in roleOrder %}
+                        {% if tournament.officials[role] is defined %}
+                            <dt>{{ role == 'organizer' ? 'Організатори' : (role == 'editor' ? 'Редактори' : (role == 'game_jury' ? 'Ігрове журі' : 'Апеляційне журі')) }}</dt>
+                            <dd>{{ tournament.officials[role]|map(p => p.playerName)|join(', ') }}</dd>
+                        {% endif %}
+                    {% endfor %}
+                </dl>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if tournament.allTeams is not empty %}
+        <div class="card card-wide">
+            <h2>Результати</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Команда</th>
+                        <th>Результат</th>
+                        <th>
+                            Склад
+                            <button type="button" class="btn-toggle-text" data-toggle-all-squads>показати всі</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in tournament.allTeams %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
+                            <td>{{ loop.index }}</td>
+                            <td>{{ team.teamName }}</td>
+                            <td>{{ team.score ?? '—' }}</td>
+                            <td>
+                                <button type="button" class="btn-toggle-text" data-toggle-squad>показати</button>
+                                <div class="squad-list" hidden>
+                                    {% for player in team.players %}
+                                        <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
+                                            {{- player.playerName -}}
+                                            {%- if player.isCaptain %} (к){% endif -%}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -30,6 +30,7 @@
         "symfony/mime": "8.0.*",
         "symfony/monolog-bundle": "^3.0|^4.0.2",
         "symfony/notifier": "8.0.*",
+        "symfony/object-mapper": "8.0.*",
         "symfony/process": "8.0.*",
         "symfony/property-access": "8.0.*",
         "symfony/property-info": "8.0.*",
@@ -101,6 +102,8 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "fakerphp/faker": "^1.24",
         "phpunit/phpunit": "^13.1.8",
         "symfony/browser-kit": "8.0.*",
         "symfony/css-selector": "8.0.*",
