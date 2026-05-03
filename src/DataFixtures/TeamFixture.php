@@ -68,7 +68,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
             throw new RuntimeException('Need at least 2 seasons. Run seed.sql first.');
         }
 
-        // Побудувати мапу місто → гравці
+        // Build town → players map
         self::$townPlayers = [];
         for ($p = 0; $p < self::PLAYER_COUNT; $p++) {
             self::$townPlayers[$p % $townCount][] = $p;
@@ -88,7 +88,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         $bothCount = (int)(self::TEAM_COUNT * 0.8);
         $s1OnlyCount = (int)(self::TEAM_COUNT * 0.1);
 
-        // Трекер використаних гравців у складах (щоб не дублювати в одному сезоні)
+        // Track used players per season to avoid duplicates
         $usedInSeason = [[], []];
 
         foreach ($teamNames as $i => $name) {
@@ -172,7 +172,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
 
             $picked = self::pickOneFrom($faker, $pool, $used);
 
-            // Fallback: якщо не знайшли в бажаному пулі — шукаємо в іншому
+            // Fallback: if not found in preferred pool, try the other one
             if ($picked === null) {
                 $pool = $fromHome
                     ? self::playersFromOtherTowns($townIndex, $townCount)

@@ -28,7 +28,7 @@ final class TeamMapping implements MappingInterface
         $mapper = $context['mapper'];
         $places = $context['places'] ?? [];
 
-        // Групуємо гравців по сезонах
+        // Group players by season
         $seasonGroups = [];
         foreach ($context['teamPlayers'] ?? [] as $tp) {
             $seasonName = $tp->getSeason()->getName();
@@ -40,7 +40,7 @@ final class TeamMapping implements MappingInterface
             $squads[] = new SeasonSquadDTO($seasonName, $players);
         }
 
-        // Групуємо appearances по sessionTeam (турнір)
+        // Group appearances by session team (tournament)
         $tournamentGroups = [];
         foreach ($context['appearances'] ?? [] as $appearance) {
             $stId = $appearance->getTournamentSessionTeam()->getId();

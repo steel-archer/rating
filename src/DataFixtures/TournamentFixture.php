@@ -130,7 +130,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                     $sessionTeam->setScore($faker->numberBetween((int)($totalQuestions * 0.2), (int)($totalQuestions * 0.85)));
                     $manager->persist($sessionTeam);
 
-                    // Базовий склад + легіонери за потреби
+                    // Base squad + legionaries if needed
                     $baseSquad = TeamFixture::$teamSquads[$teamIndex] ?? [];
                     $squad = [];
                     $squadPlayerIds = [];
@@ -143,7 +143,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                         $squadPlayerIds[$playerIndex] = true;
                     }
 
-                    // Добити до 4 гравців легіонерами (80% з того ж міста)
+                    // Fill up to 4 players with legionaries (80% from same town)
                     $targetSize = max(4, count($squad));
                     $attempts = 0;
                     while (count($squad) < $targetSize && $attempts < 100) {
@@ -155,7 +155,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                         }
                     }
 
-                    // 20% шанс на додаткового легіонера
+                    // 20% chance for an extra legionary
                     if ($faker->boolean(20)) {
                         $attempts = 0;
                         do {
