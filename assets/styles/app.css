@@ -9,6 +9,7 @@
     --accent: #0071e3;
     --radius: 12px;
     --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    --content-padding: 24px;
 }
 
 body {
@@ -20,9 +21,9 @@ body {
 }
 
 .container {
-    max-width: 980px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 22px;
+    padding: 0 var(--content-padding);
 }
 
 header {
@@ -34,18 +35,46 @@ header {
     z-index: 100;
 }
 
-header .container {
+header .header-inner {
     display: flex;
     align-items: center;
+    gap: 32px;
     height: 52px;
+    padding: 0 var(--content-padding);
 }
 
-header a {
+.logo {
+    text-decoration: none;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    padding: 6px 16px;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 8px;
+    line-height: 1;
+}
+
+.logo:hover {
+    text-decoration: none;
+    opacity: 0.85;
+}
+
+header nav {
+    display: flex;
+    gap: 24px;
+}
+
+header nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+header nav a:hover {
     color: var(--text);
     text-decoration: none;
-    font-size: 21px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
 }
 
 main {
@@ -64,10 +93,13 @@ main {
     display: flex;
     gap: 24px;
     margin-bottom: 24px;
+    flex-wrap: wrap;
 }
 
 .cards-row .card {
     margin-bottom: 0;
+    min-width: 280px;
+    flex: 1;
 }
 
 .cards-row .card-grow {
@@ -125,6 +157,7 @@ th {
     font-weight: 500;
     padding: 10px 12px;
     border-bottom: 1px solid var(--border);
+    white-space: nowrap;
 }
 
 td {
@@ -148,17 +181,12 @@ a:hover {
 tr.row-light { background: var(--surface); }
 tr.row-dark { background: #e8e8ed; }
 
-html {
-    overflow-x: hidden;
-}
-
 .card-wide {
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    padding: 32px 10%;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 32px var(--content-padding);
+    margin-bottom: 24px;
     overflow-x: auto;
 }
 
@@ -183,12 +211,6 @@ html {
 
 .squad-list {
     margin-top: 6px;
-}
-
-th:last-child,
-td:last-child {
-    width: 35%;
-    min-width: 300px;
 }
 
 .pagination {
@@ -239,4 +261,29 @@ td:last-child {
 .error-link:hover {
     text-decoration: none;
     opacity: 0.9;
+}
+
+@media (min-width: 1400px) {
+    .container { max-width: 1320px; }
+}
+
+@media (min-width: 1800px) {
+    .container { max-width: 1600px; }
+}
+
+@media (max-width: 768px) {
+    :root { --content-padding: 16px; }
+
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; }
+
+    .card { padding: 20px; }
+
+    .cards-row {
+        flex-direction: column;
+    }
+
+    .cards-row .card {
+        min-width: 0;
+    }
 }
