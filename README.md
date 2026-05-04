@@ -15,7 +15,9 @@
    - Linux: `sudo apt install git` (Ubuntu/Debian) або `sudo dnf install git` (Fedora)
 
 2. **Docker Desktop** — для запуску серверів (застосунок, база даних, пошта)
-   - Завантажте з https://www.docker.com/products/docker-desktop
+   - macOS: `brew install --cask docker` або завантажте з https://www.docker.com/products/docker-desktop
+   - Windows: `winget install Docker.DockerDesktop` або завантажте з https://www.docker.com/products/docker-desktop
+   - Linux: `sudo apt install docker.io docker-compose-v2` (Ubuntu/Debian) або `sudo dnf install docker docker-compose` (Fedora)
    - Після встановлення запустіть Docker Desktop і дочекайтесь, поки він повністю завантажиться
 
 ## Встановлення
@@ -100,7 +102,6 @@ docker compose exec app php bin/console doctrine:fixtures:load --append --no-int
 Після успішного запуску відкрийте у браузері:
 
 - **Сайт:** http://localhost:8080
-- **Пошта (Mailpit):** http://localhost:8025
 
 ## Зупинка та перезапуск
 
@@ -116,17 +117,38 @@ docker compose down
 docker compose up -d
 ```
 
-## Структура проєкту
+## Якість коду
 
-| Папка | Опис |
-|-------|------|
-| `src/` | PHP-код застосунку (контролери, сервіси, сутності) |
-| `templates/` | HTML-шаблони сторінок |
-| `translations/` | Файли перекладів (текстовки інтерфейсу) |
-| `assets/` | CSS-стилі та JavaScript |
-| `migrations/` | Міграції бази даних |
-| `docker/` | Конфігурація Docker |
-| `config/` | Конфігурація Symfony |
+Перевірка стилю коду (PSR-12):
+
+```bash
+docker compose exec app vendor/bin/phpcs
+```
+
+Автоматичне виправлення стилю:
+
+```bash
+docker compose exec app vendor/bin/phpcbf
+```
+
+Статичний аналіз (PHPStan, рівень 6):
+
+```bash
+docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M
+```
+
+Тести з покриттям коду:
+
+```bash
+docker compose exec app php bin/phpunit --coverage-text
+```
+
+Перевірка безпеки залежностей:
+
+```bash
+docker compose exec app composer audit
+docker compose exec app symfony security:check
+```
 
 ## Вирішення проблем
 
