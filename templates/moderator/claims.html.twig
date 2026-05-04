@@ -16,7 +16,7 @@
     {% if claims is empty %}
         <p>{{ 'moderator.no_pending_claims'|trans }}</p>
     {% else %}
-        <table>
+        <table aria-label="{{ 'moderator.claims'|trans }}">
             <thead>
                 <tr>
                     <th>{{ 'moderator.claim_user'|trans }}</th>

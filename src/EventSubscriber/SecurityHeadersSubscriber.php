@@ -27,5 +27,6 @@ final class SecurityHeadersSubscriber implements EventSubscriberInterface
         $headers->set('X-XSS-Protection', '1; mode=block');
         $headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        $headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'");
     }
 }
