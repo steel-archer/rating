@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - '.github/badges/**'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: rating_test
+          MYSQL_USER: rating_user
+          MYSQL_PASSWORD: rating_pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: intl, pdo_mysql, pcov
+          coverage: pcov
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: PHPCS
+        id: phpcs
+        continue-on-error: true
+        run: vendor/bin/phpcs
+
+      - name: PHPStan
+        id: phpstan
+        continue-on-error: true
+        run: vendor/bin/phpstan analyse --memory-limit=512M
+
+      - name: PHPUnit
+        id: phpunit
+        continue-on-error: true
+        env:
+          DATABASE_URL: mysql://rating_user:rating_pass@127.0.0.1:3306/rating_test?serverVersion=8.0&charset=utf8mb4
+          APP_ENV: test
+          APP_SECRET: ci_secret
+        run: |
+          php bin/console doctrine:migrations:migrate --no-interaction
+          php bin/phpunit --coverage-clover coverage.xml --coverage-text | tee coverage-output.txt
+
+      - name: Generate coverage badge
+        if: always()
+        run: |
+          COVERAGE=$(grep -oP 'Lines:\s+\K[\d.]+' coverage-output.txt || echo "0")
+          if (( $(echo "$COVERAGE >= 90" | bc -l) )); then COLOR="brightgreen";
+          elif (( $(echo "$COVERAGE >= 75" | bc -l) )); then COLOR="yellow";
+          elif (( $(echo "$COVERAGE >= 50" | bc -l) )); then COLOR="orange";
+          else COLOR="red"; fi
+          mkdir -p .github/badges
+          curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > .github/badges/coverage.svg
+
+      - name: Push coverage badge
+        if: always() && github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .github/badges/coverage.svg
+          git diff --cached --quiet && exit 0
+          git commit -m "Update coverage badge [skip ci]"
+          git push
+
+      - name: Composer audit
+        id: composer_audit
+        continue-on-error: true
+        run: composer audit
+
+      - name: Symfony security check
+        id: security_check
+        continue-on-error: true
+        run: |
+          curl -sS https://get.symfony.com/cli/installer | bash
+          export PATH="$HOME/.symfony5/bin:$PATH"
+          symfony security:check
+
+      - name: Gitleaks
+        id: gitleaks
+        continue-on-error: true
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check results
+        if: always()
+        run: |
+          echo "PHPCS: ${{ steps.phpcs.outcome }}"
+          echo "PHPStan: ${{ steps.phpstan.outcome }}"
+          echo "PHPUnit: ${{ steps.phpunit.outcome }}"
+          echo "Composer audit: ${{ steps.composer_audit.outcome }}"
+          echo "Security check: ${{ steps.security_check.outcome }}"
+          echo "Gitleaks: ${{ steps.gitleaks.outcome }}"
+          if [[ "${{ steps.phpcs.outcome }}" == "failure" || \
+                "${{ steps.phpstan.outcome }}" == "failure" || \
+                "${{ steps.phpunit.outcome }}" == "failure" || \
+                "${{ steps.composer_audit.outcome }}" == "failure" || \
+                "${{ steps.security_check.outcome }}" == "failure" || \
+                "${{ steps.gitleaks.outcome }}" == "failure" ]]; then
+            echo "::error::One or more checks failed"
+            exit 1
+          fi
