@@ -8,20 +8,20 @@
 
 {% block body %}
     <h1>{{ venue.name }}</h1>
-    <div class="meta"><span>{{ venue.town.name }}</span></div>
+    <div class="meta"><span>{{ venue.townName }}</span></div>
 
-    {% if representatives is not empty %}
+    {% if venue.representatives is not empty %}
         <div class="card">
             <h2>{{ 'venue.representatives'|trans }}</h2>
             <ul class="representatives-list">
-                {% for rep in representatives %}
+                {% for rep in venue.representatives %}
                     <li><a href="{{ path('player_show', {id: rep.player.id}) }}">{{ rep.player.fullName }}</a></li>
                 {% endfor %}
             </ul>
         </div>
     {% endif %}
 
-    {% if tournamentCount > 0 %}
+    {% if venue.tournamentCount > 0 %}
         <turbo-frame id="venue-tournaments" src="{{ path('venue_tournaments', {id: venue.id}) }}">
             <p>{{ 'common.loading_tournaments'|trans }}</p>
         </turbo-frame>
