@@ -17,6 +17,11 @@ security:
             provider: app_user_provider
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 31536000
+                always_remember_me: true
+                signature_properties: [googleId]
             logout:
                 path: auth_logout
 
