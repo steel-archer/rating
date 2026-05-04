@@ -50,5 +50,4 @@ class VenueRepresentative
 
         return $this;
     }
-
 }

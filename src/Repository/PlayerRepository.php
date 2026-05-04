@@ -14,6 +14,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<Player> */
 class PlayerRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;

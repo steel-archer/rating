@@ -7,6 +7,7 @@ use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<Town> */
 class TownRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

@@ -13,6 +13,9 @@ class ShowControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testShow(
         string $method,
@@ -31,6 +34,9 @@ class ShowControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'show player with squad and tournaments' => [
@@ -44,7 +50,7 @@ class ShowControllerTest extends WebTestCase
                 // town in meta
                 static::assertStringContainsString('Київ', $crawler->filter('.meta')->text());
 
-                // squad: team Альфа in season 2024-2025
+                // squad: team Alpha in season 2024-2025
                 $card = $crawler->filter('.card');
                 static::assertStringContainsString('Альфа', $card->text());
                 static::assertStringContainsString('2025-2026', $card->text());
@@ -74,7 +80,8 @@ class ShowControllerTest extends WebTestCase
             'uri' => '/player/999999',
             'fixtures' => ['Entity/base.yaml'],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
 
         yield 'not found for non-numeric id' => [
@@ -82,7 +89,8 @@ class ShowControllerTest extends WebTestCase
             'uri' => '/player/abc',
             'fixtures' => [],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Rating">
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <rule ref="PSR12">
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
+        <exclude name="Generic.Files.LineLength"/>
+    </rule>
+
+    <file>src</file>
+    <file>tests</file>
+</ruleset>

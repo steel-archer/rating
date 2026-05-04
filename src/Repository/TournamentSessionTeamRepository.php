@@ -12,6 +12,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<TournamentSessionTeam> */
 class TournamentSessionTeamRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -166,6 +167,7 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         return $result;
     }
 
+    /** @param list<mixed> $items */
     private static function placeholders(array $items): string
     {
         return $items

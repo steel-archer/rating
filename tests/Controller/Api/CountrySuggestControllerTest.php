@@ -12,6 +12,9 @@ class CountrySuggestControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testSuggest(
         string $uri,
@@ -28,6 +31,9 @@ class CountrySuggestControllerTest extends WebTestCase
         $afterCallback($client, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'suggest returns matching countries' => [
@@ -55,7 +61,8 @@ class CountrySuggestControllerTest extends WebTestCase
             'uri' => '/api/countries/suggest',
             'fixtures' => [],
             'expectedStatus' => 404,
-            'afterCallback' => static function ($client, array $objects) {},
+            'afterCallback' => static function ($client, array $objects) {
+            },
         ];
     }
 }

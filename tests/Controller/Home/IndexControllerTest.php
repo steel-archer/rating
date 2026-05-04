@@ -23,6 +23,9 @@ class IndexControllerTest extends WebTestCase
         $afterCallback($client);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'home page returns 200' => [
@@ -43,7 +46,8 @@ class IndexControllerTest extends WebTestCase
             'method' => 'POST',
             'uri' => '/',
             'expectedStatus' => 405,
-            'afterCallback' => static function ($client) {},
+            'afterCallback' => static function ($client) {
+            },
         ];
     }
 }

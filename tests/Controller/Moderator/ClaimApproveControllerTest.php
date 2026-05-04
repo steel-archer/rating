@@ -73,6 +73,9 @@ class ClaimApproveControllerTest extends WebTestCase
         static::assertResponseRedirects('/moderator/claims');
     }
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testApprove(
         array $fixtures,
@@ -101,6 +104,9 @@ class ClaimApproveControllerTest extends WebTestCase
         $afterCallback($objects, $claimKey);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'moderator approves existing player claim' => [
@@ -136,7 +142,8 @@ class ClaimApproveControllerTest extends WebTestCase
             'loginAs' => 'user_regular',
             'claimKey' => 'claim_pending',
             'expectedStatus' => 403,
-            'afterCallback' => static function (array $objects, string $claimKey) {},
+            'afterCallback' => static function (array $objects, string $claimKey) {
+            },
         ];
 
         yield 'anonymous gets 401' => [
@@ -144,7 +151,8 @@ class ClaimApproveControllerTest extends WebTestCase
             'loginAs' => null,
             'claimKey' => 'claim_pending',
             'expectedStatus' => 401,
-            'afterCallback' => static function (array $objects, string $claimKey) {},
+            'afterCallback' => static function (array $objects, string $claimKey) {
+            },
         ];
     }
 }

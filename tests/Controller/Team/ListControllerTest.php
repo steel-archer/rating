@@ -13,6 +13,9 @@ class ListControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testList(
         string $method,
@@ -31,6 +34,9 @@ class ListControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'list shows teams with towns and countries' => [
@@ -67,7 +73,7 @@ class ListControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $towns = $crawler->filter('table tbody tr')
                     ->each(fn(Crawler $row) => $row->filter('td')->eq(1)->text() |> trim(...));
-                // Київ before Львів alphabetically
+                // Kyiv before Lviv alphabetically
                 static::assertSame('Київ', $towns[0]);
             },
         ];
@@ -122,7 +128,8 @@ class ListControllerTest extends WebTestCase
             'uri' => '/teams/list',
             'fixtures' => [],
             'expectedStatus' => 405,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

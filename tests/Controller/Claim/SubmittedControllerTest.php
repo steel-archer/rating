@@ -12,6 +12,9 @@ class SubmittedControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testSubmitted(
         string $uri,
@@ -31,6 +34,9 @@ class SubmittedControllerTest extends WebTestCase
         static::assertResponseStatusCodeSame($expectedStatus);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'anonymous gets 401' => [

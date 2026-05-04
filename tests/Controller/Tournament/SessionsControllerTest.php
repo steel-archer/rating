@@ -13,6 +13,9 @@ class SessionsControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testSessions(
         string $method,
@@ -31,6 +34,9 @@ class SessionsControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'sessions page renders tournament name' => [
@@ -52,7 +58,8 @@ class SessionsControllerTest extends WebTestCase
             'uri' => '/tournament/999999/sessions',
             'fixtures' => ['Entity/base.yaml'],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

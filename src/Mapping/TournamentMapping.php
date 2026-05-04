@@ -35,6 +35,7 @@ final class TournamentMapping implements MappingInterface
     }
 
     /**
+     * @param list<\App\Entity\TournamentOfficial> $officials
      * @return array<string, list<OfficialDTO>>
      */
     private static function groupOfficials(Mapper $mapper, array $officials): array

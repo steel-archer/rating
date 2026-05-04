@@ -13,6 +13,9 @@ class IndexControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testIndex(
         string $uri,
@@ -36,6 +39,9 @@ class IndexControllerTest extends WebTestCase
         }
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'anonymous gets 401' => [

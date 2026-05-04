@@ -32,6 +32,7 @@ final class Mapper
     }
 
     /**
+     * @param array<string, mixed> $context
      * @throws InvalidArgumentException
      */
     public function map(object $source, string $destinationClass, array $context = []): object

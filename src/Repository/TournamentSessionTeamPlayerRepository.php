@@ -9,6 +9,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<TournamentSessionTeamPlayer> */
 class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,7 +17,10 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
         parent::__construct($registry, TournamentSessionTeamPlayer::class);
     }
 
-    /** @return list<TournamentSessionTeamPlayer> */
+    /**
+     * @param list<int> $sessionTeamIds
+     * @return list<TournamentSessionTeamPlayer>
+     */
     public function findBySessionTeamIds(array $sessionTeamIds): array
     {
         if ($sessionTeamIds === []) {

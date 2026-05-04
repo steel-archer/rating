@@ -13,6 +13,9 @@ class TournamentsControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testTournaments(
         string $method,
@@ -31,6 +34,9 @@ class TournamentsControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'player tournaments with calculated places and legionary flag' => [
@@ -40,7 +46,7 @@ class TournamentsControllerTest extends WebTestCase
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
-                // Shevchenko plays in: spring(Альфа), spring(Гамма as legionary), autumn(... not in stp fixtures)
+                // Shevchenko plays in: spring(Alpha), spring(Gamma as legionary), autumn(... not in stp fixtures)
                 // From fixtures: stp_spring_alpha_shevchenko + stp_spring_gamma_shevchenko = 2 appearances
                 static::assertGreaterThanOrEqual(2, $rows->count());
 
@@ -49,7 +55,7 @@ class TournamentsControllerTest extends WebTestCase
                 $allText = implode(' ', $texts);
                 static::assertStringContainsString('Весняний кубок', $allText);
 
-                // legionary marker present (Гамма appearance)
+                // legionary marker present (Gamma appearance)
                 static::assertStringContainsString('не в складі', $allText);
 
                 // scores present
@@ -74,7 +80,8 @@ class TournamentsControllerTest extends WebTestCase
             'uri' => '/player/999999/tournaments',
             'fixtures' => ['Entity/base.yaml'],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

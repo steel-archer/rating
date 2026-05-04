@@ -13,6 +13,9 @@ class ShowControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testShow(
         string $method,
@@ -31,6 +34,9 @@ class ShowControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'show team with squad, captain and tournaments' => [
@@ -76,7 +82,8 @@ class ShowControllerTest extends WebTestCase
             'uri' => '/team/999999',
             'fixtures' => ['Entity/base.yaml'],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
 
         yield 'not found for non-numeric id' => [
@@ -84,7 +91,8 @@ class ShowControllerTest extends WebTestCase
             'uri' => '/team/abc',
             'fixtures' => [],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

@@ -15,6 +15,9 @@ class ClaimNewControllerTest extends WebTestCase
     use FixturesTrait;
     use CsrfTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testClaimNew(
         array $fixtures,
@@ -46,6 +49,9 @@ class ClaimNewControllerTest extends WebTestCase
         $afterCallback($objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'user submits new player claim' => [
@@ -67,21 +73,24 @@ class ClaimNewControllerTest extends WebTestCase
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_with_player',
             'expectedStatus' => 302,
-            'afterCallback' => static function (array $objects) {},
+            'afterCallback' => static function (array $objects) {
+            },
         ];
 
         yield 'user with pending claim redirects to home' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 302,
-            'afterCallback' => static function (array $objects) {},
+            'afterCallback' => static function (array $objects) {
+            },
         ];
 
         yield 'anonymous gets 401' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
             'expectedStatus' => 401,
-            'afterCallback' => static function (array $objects) {},
+            'afterCallback' => static function (array $objects) {
+            },
         ];
     }
 }

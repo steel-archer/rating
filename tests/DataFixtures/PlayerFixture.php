@@ -35,7 +35,7 @@ class PlayerFixture extends Fixture implements DependentFixtureInterface
     {
         $suffix = $gender === 'male' ? 'ович' : 'івна';
 
-        if (str_ends_with($fatherName, 'ій') || str_ends_with($fatherName, 'ій')) {
+        if (str_ends_with($fatherName, 'ій')) {
             $base = mb_substr($fatherName, 0, -2);
             return $base . ($gender === 'male' ? 'ійович' : 'іївна');
         }

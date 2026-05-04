@@ -13,6 +13,9 @@ class ListControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testList(
         string $method,
@@ -31,6 +34,9 @@ class ListControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'list shows venues with towns and countries' => [
@@ -119,7 +125,8 @@ class ListControllerTest extends WebTestCase
             'uri' => '/venues/list',
             'fixtures' => [],
             'expectedStatus' => 405,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

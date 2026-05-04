@@ -21,6 +21,9 @@ class IndexControllerTest extends WebTestCase
         static::assertResponseStatusCodeSame($expectedStatus);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'teams page returns 200' => [

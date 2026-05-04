@@ -155,8 +155,12 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * 80% з рідного міста, 20% з інших.
+     * 80% from the home town, 20% from others.
      *
+     * @return list<int>
+     */
+    /**
+     * @param array<int, true> $excluded
      * @return list<int>
      */
     private static function pickPlayers(\Faker\Generator $faker, int $townIndex, int $townCount, int $count, array $excluded): array
@@ -189,6 +193,10 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         return $result;
     }
 
+    /**
+     * @param list<int> $pool
+     * @param array<int, true> $excluded
+     */
     private static function pickOneFrom(\Faker\Generator $faker, array $pool, array $excluded): ?int
     {
         $available = array_values(array_filter($pool, static fn(int $p) => !isset($excluded[$p])));

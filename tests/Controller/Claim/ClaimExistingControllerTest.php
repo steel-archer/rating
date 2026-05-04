@@ -15,6 +15,9 @@ class ClaimExistingControllerTest extends WebTestCase
     use FixturesTrait;
     use CsrfTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testClaimExisting(
         array $fixtures,
@@ -46,6 +49,9 @@ class ClaimExistingControllerTest extends WebTestCase
         $afterCallback($objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'user claims existing free player' => [
@@ -68,7 +74,8 @@ class ClaimExistingControllerTest extends WebTestCase
             'loginAs' => null,
             'searchLastName' => 'Франко',
             'expectedStatus' => 401,
-            'afterCallback' => static function (array $objects) {},
+            'afterCallback' => static function (array $objects) {
+            },
         ];
     }
 }

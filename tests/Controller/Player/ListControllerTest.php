@@ -13,6 +13,9 @@ class ListControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testList(
         string $method,
@@ -31,6 +34,9 @@ class ListControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'list shows players with towns and current team' => [
@@ -42,7 +48,7 @@ class ListControllerTest extends WebTestCase
                 $rows = $crawler->filter('table tbody tr');
                 static::assertCount(3, $rows);
 
-                // sorted by lastName ASC: Українка, Франко, Шевченко
+                // sorted by lastName ASC: Ukrainka, Franko, Shevchenko
                 $names = $rows->each(fn(Crawler $row) => $row->filter('td')->eq(0)->text() |> trim(...));
                 static::assertStringContainsString('Українка', $names[0]);
                 static::assertStringContainsString('Франко', $names[1]);
@@ -53,7 +59,7 @@ class ListControllerTest extends WebTestCase
                 static::assertContains('Київ', $towns);
                 static::assertContains('Львів', $towns);
 
-                // Shevchenko has team Альфа (captain in current season)
+                // Shevchenko has team Alpha (captain in current season)
                 static::assertStringContainsString('Альфа', $rows->eq(2)->filter('td')->eq(2)->text());
             },
         ];
@@ -118,7 +124,8 @@ class ListControllerTest extends WebTestCase
             'uri' => '/players/list',
             'fixtures' => [],
             'expectedStatus' => 405,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

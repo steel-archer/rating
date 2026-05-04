@@ -10,6 +10,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<TournamentSession> */
 class TournamentSessionRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;

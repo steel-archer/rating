@@ -1,0 +1,24 @@
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    ignoreErrors:
+        - '#Attribute class PHPUnit\\Framework\\Attributes\\CodeCoverageIgnore does not exist#'
+        -
+            identifier: arguments.count
+            path: src/Controller/Auth/GoogleConnectController.php
+        -
+            identifier: parameter.defaultValue
+            path: src/Mapping/*
+        -
+            identifier: nullCoalesce.offset
+            path: src/Mapping/*
+        -
+            identifier: return.unusedType
+            path: src/Security/GoogleAuthenticator.php
+        -
+            identifier: function.alreadyNarrowedType
+            path: tests/bootstrap.php

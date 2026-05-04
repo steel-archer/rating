@@ -13,6 +13,9 @@ class ClaimListControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testClaimList(
         string $uri,
@@ -34,6 +37,9 @@ class ClaimListControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'anonymous gets 401' => [
@@ -41,7 +47,8 @@ class ClaimListControllerTest extends WebTestCase
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
             'expectedStatus' => 401,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
 
         yield 'regular user gets 403' => [
@@ -49,7 +56,8 @@ class ClaimListControllerTest extends WebTestCase
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 403,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
 
         yield 'moderator sees pending claims' => [

@@ -13,6 +13,9 @@ class ResultsControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testResults(
         string $method,
@@ -31,6 +34,9 @@ class ResultsControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'results sorted by score desc with calculated places' => [
@@ -43,7 +49,7 @@ class ResultsControllerTest extends WebTestCase
                 // 3 teams: beta(30), alpha(25), gamma(20)
                 static::assertCount(3, $rows);
 
-                // 1st place: Бета, score 30
+                // 1st place: Beta, score 30
                 $first = $rows->eq(0);
                 $first->filter('td')->eq(0)->text()
                     |> trim(...)
@@ -51,7 +57,7 @@ class ResultsControllerTest extends WebTestCase
                 static::assertStringContainsString('Бета', $first->filter('td')->eq(1)->text());
                 static::assertStringContainsString('30', $first->filter('td')->eq(3)->text());
 
-                // 2nd place: Альфа, score 25
+                // 2nd place: Alpha, score 25
                 $second = $rows->eq(1);
                 $second->filter('td')->eq(0)->text()
                     |> trim(...)
@@ -59,7 +65,7 @@ class ResultsControllerTest extends WebTestCase
                 static::assertStringContainsString('Альфа', $second->filter('td')->eq(1)->text());
                 static::assertStringContainsString('25', $second->filter('td')->eq(3)->text());
 
-                // 3rd place: Гамма, score 20
+                // 3rd place: Gamma, score 20
                 $third = $rows->eq(2);
                 $third->filter('td')->eq(0)->text()
                     |> trim(...)
@@ -105,7 +111,8 @@ class ResultsControllerTest extends WebTestCase
             'uri' => '/tournament/999999/results',
             'fixtures' => ['Entity/base.yaml'],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

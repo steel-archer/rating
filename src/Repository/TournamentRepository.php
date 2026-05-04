@@ -13,6 +13,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<Tournament> */
 class TournamentRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;

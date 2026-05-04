@@ -13,6 +13,9 @@ class ListControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testList(
         string $method,
@@ -30,6 +33,9 @@ class ListControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'list shows tournaments with calculated team counts' => [
@@ -41,7 +47,7 @@ class ListControllerTest extends WebTestCase
                 $rows = $crawler->filter('table tbody tr');
                 static::assertCount(2, $rows);
 
-                // Весняний кубок first (ORDER BY startedAt DESC: 2025-03 > 2024-10)
+                // Spring Cup first (ORDER BY startedAt DESC: 2025-03 > 2024-10)
                 $firstRow = $rows->eq(0);
                 static::assertStringContainsString('Весняний кубок', $firstRow->filter('td')->eq(0)->text());
                 static::assertStringContainsString('01.03.2025', $firstRow->filter('td')->eq(1)->text());
@@ -89,7 +95,8 @@ class ListControllerTest extends WebTestCase
             'uri' => '/tournaments/list',
             'fixtures' => [],
             'expectedStatus' => 405,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

@@ -13,6 +13,9 @@ class TournamentsControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
+    /**
+     * @param list<string> $fixtures
+     */
     #[DataProvider('dataProvider')]
     public function testTournaments(
         string $method,
@@ -31,6 +34,9 @@ class TournamentsControllerTest extends WebTestCase
         $afterCallback($crawler, $objects);
     }
 
+    /**
+     * @return iterable<string, array<mixed>>
+     */
     public static function dataProvider(): iterable
     {
         yield 'team tournaments with calculated places and squad' => [
@@ -40,7 +46,7 @@ class TournamentsControllerTest extends WebTestCase
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
-                // Альфа plays in spring (score 25) and autumn (score 40)
+                // Alpha plays in spring (score 25) and autumn (score 40)
                 static::assertCount(2, $rows);
 
                 $allText = $crawler->filter('table tbody')->text();
@@ -74,7 +80,8 @@ class TournamentsControllerTest extends WebTestCase
             'uri' => '/team/999999/tournaments',
             'fixtures' => ['Entity/base.yaml'],
             'expectedStatus' => 404,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {},
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
         ];
     }
 }

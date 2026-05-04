@@ -7,6 +7,7 @@ use App\Entity\TournamentOfficial;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<TournamentOfficial> */
 class TournamentOfficialRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

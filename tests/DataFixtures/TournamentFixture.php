@@ -186,7 +186,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * 80% з міста команди, 20% випадковий.
+     * 80% from the team's town, 20% random.
      */
     private static function pickLegionary(\Faker\Generator $faker, int $teamTownIndex, int $townCount, int $playerCount): int
     {
