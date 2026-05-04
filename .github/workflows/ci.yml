@@ -15,7 +15,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: rating_test
+          MYSQL_DATABASE: rating
           MYSQL_USER: rating_user
           MYSQL_PASSWORD: rating_pass
         ports:
@@ -46,6 +46,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Create test database
+        run: mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS rating_test; GRANT ALL ON rating_test.* TO 'rating_user'@'%';"
+
       - name: PHPCS
         id: phpcs
         continue-on-error: true
@@ -60,9 +63,11 @@ jobs:
         id: phpunit
         continue-on-error: true
         env:
-          DATABASE_URL: mysql://rating_user:rating_pass@127.0.0.1:3306/rating_test?serverVersion=8.0&charset=utf8mb4
+          DATABASE_URL: mysql://rating_user:rating_pass@127.0.0.1:3306/rating?serverVersion=8.0&charset=utf8mb4
           APP_ENV: test
           APP_SECRET: ci_secret
+          MYSQL_USER: rating_user
+          MYSQL_PASSWORD: rating_pass
         run: |
           php bin/console doctrine:migrations:migrate --no-interaction
           php bin/phpunit --coverage-clover coverage.xml --coverage-text | tee coverage-output.txt
