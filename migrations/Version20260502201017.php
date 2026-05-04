@@ -16,7 +16,11 @@ final class Version20260502201017 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE `user` ADD first_name VARCHAR(255) DEFAULT NULL, ADD last_name VARCHAR(255) DEFAULT NULL');
+        $this->addSql('
+            ALTER TABLE `user`
+                ADD first_name VARCHAR(255) DEFAULT NULL,
+                ADD last_name VARCHAR(255) DEFAULT NULL
+        ');
     }
 
     public function down(Schema $schema): void
