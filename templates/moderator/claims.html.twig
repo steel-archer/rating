@@ -9,6 +9,10 @@
 {% block body %}
     <h1>{{ 'moderator.claims'|trans }}</h1>
 
+    {% for message in app.flashes('error') %}
+        <div class="flash-error">{{ message }}</div>
+    {% endfor %}
+
     {% if claims is empty %}
         <p>{{ 'moderator.no_pending_claims'|trans }}</p>
     {% else %}

@@ -18,14 +18,12 @@ class PlayerClaimRepository extends ServiceEntityRepository
     public function findPending(): array
     {
         return $this->createQueryBuilder('c')
+            ->leftJoin('c.user', 'u')
+            ->leftJoin('c.player', 'p')
+            ->leftJoin('c.town', 't')
+            ->addSelect('u', 'p', 't')
             ->andWhere('c.status = :status')
             ->setParameter('status', PlayerClaim::STATUS_PENDING)
-            ->leftJoin('c.user', 'u')
-            ->addSelect('u')
-            ->leftJoin('c.player', 'p')
-            ->addSelect('p')
-            ->leftJoin('c.town', 't')
-            ->addSelect('t')
             ->orderBy('c.id', 'ASC')
             ->getQuery()
             ->getResult();

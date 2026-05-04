@@ -2,6 +2,7 @@
 
 namespace App\Controller\Moderator;
 
+use App\Exception\PlayerClaimException;
 use App\Service\PlayerClaimService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -17,7 +18,11 @@ final class ClaimRejectController extends AbstractController
 {
     public function __invoke(int $id, PlayerClaimService $claimService): Response
     {
-        $claimService->reject($id);
+        try {
+            $claimService->reject($id);
+        } catch (PlayerClaimException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
         return $this->redirectToRoute('moderator_claims');
     }

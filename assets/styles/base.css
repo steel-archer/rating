@@ -86,3 +86,65 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.flash-error {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #991b1b;
+    font-size: 14px;
+}
+
+.claim-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-approve {
+    background: #16a34a;
+    color: #fff;
+}
+
+.btn-approve:hover {
+    opacity: 0.9;
+}
+
+.btn-reject {
+    background: #dc2626;
+    color: #fff;
+}
+
+.btn-reject:hover {
+    opacity: 0.9;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.btn-link {
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}

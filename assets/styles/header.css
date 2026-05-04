@@ -89,6 +89,9 @@ header nav a:hover {
     top: 100%;
     right: 0;
     padding-top: 8px;
+}
+
+.dropdown-menu-inner {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);

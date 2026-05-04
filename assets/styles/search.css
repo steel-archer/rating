@@ -70,22 +70,3 @@
 .suggest-item:hover {
     background: #f0f0f5;
 }
-
-.form-group {
-    margin-bottom: 12px;
-}
-
-.btn-link {
-    font-family: var(--font);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--accent);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-}
-
-.btn-link:hover {
-    text-decoration: underline;
-}

@@ -14,6 +14,7 @@ claim:
   title: 'Привʼязка гравця'
 
 common:
+  back_home: 'На головну'
   country: 'Країна'
   date: 'Дата'
   dates: 'Дати'

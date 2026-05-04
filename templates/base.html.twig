@@ -13,7 +13,7 @@
 <body>
     <header>
         <div class="header-inner">
-            <a href="/" class="logo">Rating</a>
+            <a href="{{ path('home') }}" class="logo">Rating</a>
             <nav>
                 <a href="{{ path('tournament_index') }}">{{ 'nav.tournaments'|trans }}</a>
                 <a href="{{ path('team_index') }}">{{ 'nav.teams'|trans }}</a>
@@ -26,7 +26,9 @@
                         <div class="dropdown">
                             <span class="dropdown-toggle">{{ 'nav.moderation'|trans }}</span>
                             <div class="dropdown-menu">
-                                <a href="{{ path('moderator_claims') }}">{{ 'moderator.claims'|trans }}</a>
+                                <div class="dropdown-menu-inner">
+                                    <a href="{{ path('moderator_claims') }}">{{ 'moderator.claims'|trans }}</a>
+                                </div>
                             </div>
                         </div>
                     {% endif %}
