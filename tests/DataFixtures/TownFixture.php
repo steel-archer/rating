@@ -37,7 +37,8 @@ class TownFixture extends Fixture
     {
         assert($manager instanceof EntityManagerInterface);
         $conn = $manager->getConnection();
-        foreach ([
+        foreach (
+            [
             'tournament_session_team_player',
             'tournament_session_team',
             'tournament_session',
@@ -48,7 +49,8 @@ class TownFixture extends Fixture
             'venue_representative',
             'venue',
             'player_claim',
-        ] as $table) {
+            ] as $table
+        ) {
             $conn->executeStatement("DELETE FROM `$table`");
         }
         $conn->executeStatement('UPDATE `user` SET player_id = NULL');
