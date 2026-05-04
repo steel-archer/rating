@@ -1,0 +1,8 @@
+App\Entity\Tournament:
+    tournament_empty:
+        name: 'Порожній турнір'
+        season: '@season_current'
+        startedAt: '<(new DateTime("2026-01-01"))>'
+        endedAt: '<(new DateTime("2026-01-15"))>'
+        toursCount: 3
+        questionsPerTour: 12

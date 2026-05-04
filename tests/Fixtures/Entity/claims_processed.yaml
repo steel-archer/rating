@@ -1,0 +1,6 @@
+App\Entity\PlayerClaim:
+    claim_approved:
+        user: '@user_admin'
+        player: '@player_lesya'
+        lastName: 'Українка'
+        status: 'approved'

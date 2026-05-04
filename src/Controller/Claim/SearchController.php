@@ -16,9 +16,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class SearchController extends AbstractController
 {
     public function __invoke(
-        #[MapQueryString] PlayerListRequestDTO $requestDto = new PlayerListRequestDTO(),
         PlayerRepository $playerRepository,
         TownRepository $townRepository,
+        #[MapQueryString] PlayerListRequestDTO $requestDto = new PlayerListRequestDTO(),
     ): Response {
         return $this->render('claim/_search_results.html.twig', [
             'players' => $playerRepository->findFreeForList($requestDto),

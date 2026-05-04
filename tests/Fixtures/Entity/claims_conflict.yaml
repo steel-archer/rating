@@ -1,0 +1,13 @@
+App\Entity\User:
+    user_franko_owner:
+        email: 'franko_owner@example.com'
+        googleId: 'google_franko_owner'
+        roles: []
+        player: '@player_franko'
+
+App\Entity\PlayerClaim:
+    claim_already_taken:
+        user: '@user_regular'
+        player: '@player_franko'
+        lastName: 'Франко'
+        status: 'pending'

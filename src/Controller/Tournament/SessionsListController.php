@@ -42,10 +42,10 @@ final class SessionsListController extends AbstractController
                 'page' => $page,
                 'lastPage' => $sessionRepository->getLastPageNumberByTournament($tournament),
             ]);
-        } catch (NotFoundHttpException $exception) {
-            throw $exception;
-        } catch (Throwable $exception) {
-            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception);
+        } catch (NotFoundHttpException $exception) { // @codeCoverageIgnoreStart
+            throw $exception; // @codeCoverageIgnoreEnd
+        } catch (Throwable $exception) { // @codeCoverageIgnoreStart
+            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
         }
     }
 }

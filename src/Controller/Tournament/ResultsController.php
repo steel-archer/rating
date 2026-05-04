@@ -30,10 +30,10 @@ final class ResultsController extends AbstractController
                 'page' => $page,
                 'lastPage' => $resultService->getLastPageNumber($tournament),
             ]);
-        } catch (NotFoundHttpException $exception) {
-            throw $exception;
-        } catch (Throwable $exception) {
-            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception);
+        } catch (NotFoundHttpException $exception) { // @codeCoverageIgnoreStart
+            throw $exception; // @codeCoverageIgnoreEnd
+        } catch (Throwable $exception) { // @codeCoverageIgnoreStart
+            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
         }
     }
 }

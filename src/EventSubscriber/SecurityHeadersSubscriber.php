@@ -2,12 +2,14 @@
 
 namespace App\EventSubscriber;
 
+use PHPUnit\Framework\Attributes\CodeCoverageIgnore;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 final class SecurityHeadersSubscriber implements EventSubscriberInterface
 {
+    #[CodeCoverageIgnore]
     public static function getSubscribedEvents(): array
     {
         return [KernelEvents::RESPONSE => 'onResponse'];

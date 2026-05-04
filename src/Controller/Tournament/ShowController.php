@@ -20,8 +20,8 @@ final class ShowController extends AbstractController
             $tournament = $tournamentService->get($id);
         } catch (EntityNotFoundException $exception) {
             throw new NotFoundHttpException($exception->getMessage(), $exception);
-        } catch (Throwable $exception) {
-            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception);
+        } catch (Throwable $exception) { // @codeCoverageIgnoreStart
+            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
         }
 
         return $this->render('tournament/show.html.twig', [

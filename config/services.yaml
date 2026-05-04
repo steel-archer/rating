@@ -16,3 +16,10 @@ services:
     App\Mapping\Mapper:
         arguments:
             $mappings: !tagged_iterator app.mapping
+
+when@dev: &dev_fixtures
+    services:
+        App\Tests\DataFixtures\:
+            resource: '../tests/DataFixtures/'
+
+when@test: *dev_fixtures

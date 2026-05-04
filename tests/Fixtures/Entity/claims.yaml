@@ -1,0 +1,14 @@
+App\Entity\PlayerClaim:
+    claim_pending:
+        user: '@user_regular'
+        player: '@player_franko'
+        lastName: 'Франко'
+        status: 'pending'
+    claim_new_pending:
+        user: '@user_moderator'
+        player: null
+        lastName: 'Новий'
+        firstName: 'Гравець'
+        patronymic: 'Тестович'
+        town: '@town_kyiv'
+        status: 'pending'

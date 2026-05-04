@@ -1,7 +1,8 @@
 FROM php:8.5-apache
 RUN apt-get update \
     && apt-get install -y libicu-dev git unzip \
-    && docker-php-ext-install mysqli pdo pdo_mysql intl
+    && docker-php-ext-install mysqli pdo pdo_mysql intl \
+    && pecl install pcov && docker-php-ext-enable pcov
 RUN echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short-open-tag.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN git config --global user.email "dev@rating.local" && git config --global user.name "Rating Dev"

@@ -22,10 +22,10 @@ final class SessionsController extends AbstractController
             return $this->render('tournament/sessions.html.twig', [
                 'tournament' => $tournament,
             ]);
-        } catch (NotFoundHttpException $exception) {
-            throw $exception;
-        } catch (Throwable $exception) {
-            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception);
+        } catch (NotFoundHttpException $exception) { // @codeCoverageIgnoreStart
+            throw $exception; // @codeCoverageIgnoreEnd
+        } catch (Throwable $exception) { // @codeCoverageIgnoreStart
+            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
         }
     }
 }

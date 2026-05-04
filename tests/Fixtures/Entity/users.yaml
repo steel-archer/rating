@@ -1,0 +1,21 @@
+App\Entity\User:
+    user_regular:
+        email: 'user@example.com'
+        googleId: 'google_user_123'
+        roles: []
+        player: null
+    user_with_player:
+        email: 'player@example.com'
+        googleId: 'google_player_123'
+        roles: []
+        player: '@player_shevchenko'
+    user_moderator:
+        email: 'moderator@example.com'
+        googleId: 'google_mod_123'
+        roles: ['ROLE_MODERATOR']
+        player: null
+    user_admin:
+        email: 'admin@example.com'
+        googleId: 'google_admin_123'
+        roles: ['ROLE_ADMIN']
+        player: null

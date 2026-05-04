@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\Tests\DataFixtures;
 
 use App\Entity\Country;
 use App\Entity\Town;

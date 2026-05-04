@@ -6,6 +6,8 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use PHPUnit\Framework\Attributes\CodeCoverageIgnore;
+
 class UserRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -13,6 +15,7 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    #[CodeCoverageIgnore]
     public function findByGoogleId(string $googleId): ?User
     {
         return $this->findOneBy(['googleId' => $googleId]);

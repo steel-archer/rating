@@ -1,0 +1,61 @@
+App\Entity\Country:
+    country_ukraine:
+        name: 'Україна'
+
+App\Entity\Town:
+    town_kyiv:
+        name: 'Київ'
+        country: '@country_ukraine'
+    town_lviv:
+        name: 'Львів'
+        country: '@country_ukraine'
+
+App\Entity\Season:
+    season_current:
+        name: '2025-2026'
+        startedAt: '<(new DateTime("2025-10-01"))>'
+        endedAt: '<(new DateTime("2026-09-30"))>'
+
+App\Entity\Player:
+    player_shevchenko:
+        lastName: 'Шевченко'
+        firstName: 'Тарас'
+        patronymic: 'Григорович'
+        town: '@town_kyiv'
+    player_franko:
+        lastName: 'Франко'
+        firstName: 'Іван'
+        patronymic: 'Якович'
+        town: '@town_lviv'
+    player_lesya:
+        lastName: 'Українка'
+        firstName: 'Леся'
+        patronymic: null
+        town: '@town_kyiv'
+
+App\Entity\Team:
+    team_alpha:
+        name: 'Альфа'
+        town: '@town_kyiv'
+    team_beta:
+        name: 'Бета'
+        town: '@town_lviv'
+    team_gamma:
+        name: 'Гамма'
+        town: '@town_kyiv'
+
+App\Entity\Venue:
+    venue_kyiv:
+        name: 'Квіз-бар Київ'
+        town: '@town_kyiv'
+    venue_lviv:
+        name: 'Арт-простір Львів'
+        town: '@town_lviv'
+
+App\Entity\VenueRepresentative:
+    venue_rep_kyiv:
+        venue: '@venue_kyiv'
+        player: '@player_shevchenko'
+    venue_rep_lviv:
+        venue: '@venue_lviv'
+        player: '@player_franko'

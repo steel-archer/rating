@@ -1,0 +1,6 @@
+App\Entity\PlayerClaim:
+    claim_user_has_player:
+        user: '@user_with_player'
+        player: '@player_franko'
+        lastName: 'Франко'
+        status: 'pending'
