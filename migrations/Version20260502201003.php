@@ -25,7 +25,7 @@ final class Version20260502201003 extends AbstractMigration
                 town_id INT DEFAULT NULL,
                 INDEX IDX_player_town (town_id),
                 PRIMARY KEY (id),
-                CONSTRAINT FK_player_town FOREIGN KEY (town_id) REFERENCES town (id)
+                CONSTRAINT FK_98197A6575E23604 FOREIGN KEY (town_id) REFERENCES town (id)
             ) DEFAULT CHARACTER SET utf8mb4
         ');
     }

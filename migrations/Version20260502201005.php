@@ -20,6 +20,8 @@ final class Version20260502201005 extends AbstractMigration
             CREATE TABLE season (
                 id INT AUTO_INCREMENT NOT NULL,
                 name VARCHAR(255) NOT NULL,
+                started_at DATETIME DEFAULT NULL,
+                ended_at DATETIME DEFAULT NULL,
                 PRIMARY KEY (id)
             ) DEFAULT CHARACTER SET utf8mb4
         ');

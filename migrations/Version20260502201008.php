@@ -11,25 +11,28 @@ final class Version20260502201008 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Create venue table';
+        return 'Create venue_representative table';
     }
 
     public function up(Schema $schema): void
     {
         $this->addSql('
-            CREATE TABLE venue (
+            CREATE TABLE venue_representative (
                 id INT AUTO_INCREMENT NOT NULL,
-                name VARCHAR(255) NOT NULL,
-                town_id INT NOT NULL,
-                INDEX IDX_venue_town (town_id),
+                venue_id INT NOT NULL,
+                player_id INT NOT NULL,
+                INDEX IDX_vr_venue (venue_id),
+                INDEX IDX_vr_player (player_id),
+                UNIQUE INDEX UQ_venue_player (venue_id, player_id),
                 PRIMARY KEY (id),
-                CONSTRAINT FK_venue_town FOREIGN KEY (town_id) REFERENCES town (id)
+                CONSTRAINT FK_127B853740A73EBA FOREIGN KEY (venue_id) REFERENCES venue (id),
+                CONSTRAINT FK_127B853799E6F5DF FOREIGN KEY (player_id) REFERENCES player (id)
             ) DEFAULT CHARACTER SET utf8mb4
         ');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('DROP TABLE venue');
+        $this->addSql('DROP TABLE venue_representative');
     }
 }

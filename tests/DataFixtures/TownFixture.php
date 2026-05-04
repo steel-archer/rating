@@ -18,6 +18,7 @@ class TownFixture extends Fixture
         'Київ',
         'Кропивницький',
         'Луцьк',
+        'Львів',
         'Миколаїв',
         'Одеса',
         'Полтава',
@@ -47,11 +48,12 @@ class TownFixture extends Fixture
             'venue_representative',
             'venue',
             'player_claim',
-            'player',
-            'town',
         ] as $table) {
             $conn->executeStatement("DELETE FROM `$table`");
         }
+        $conn->executeStatement('UPDATE `user` SET player_id = NULL');
+        $conn->executeStatement('DELETE FROM player');
+        $conn->executeStatement('DELETE FROM town');
 
         $ukraine = $manager->getRepository(Country::class)->find(1);
 

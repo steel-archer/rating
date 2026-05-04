@@ -8,6 +8,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[ORM\UniqueConstraint(name: 'UNIQ_user_email', columns: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_user_google_id', columns: ['google_id'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_user_player', columns: ['player_id'])]
 class User implements UserInterface
 {
     #[ORM\Id]
@@ -15,11 +18,17 @@ class User implements UserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255)]
     private string $email;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255)]
     private string $googleId;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastName = null;
 
     /** @var list<string> */
     #[ORM\Column]
@@ -83,6 +92,30 @@ class User implements UserInterface
     public function setPlayer(?Player $player): static
     {
         $this->player = $player;
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(?string $firstName): static
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName): static
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }

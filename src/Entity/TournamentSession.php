@@ -7,7 +7,11 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentSessionRepository::class)]
-#[ORM\UniqueConstraint(columns: ['tournament_id', 'venue_id'])]
+#[ORM\UniqueConstraint(name: 'UQ_tournament_venue', columns: ['tournament_id', 'venue_id'])]
+#[ORM\Index(name: 'IDX_ts_tournament', columns: ['tournament_id'])]
+#[ORM\Index(name: 'IDX_ts_venue', columns: ['venue_id'])]
+#[ORM\Index(name: 'IDX_ts_representative', columns: ['representative_id'])]
+#[ORM\Index(name: 'IDX_ts_host', columns: ['host_id'])]
 class TournamentSession
 {
     #[ORM\Id]

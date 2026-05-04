@@ -30,10 +30,10 @@ final class Version20260502201011 extends AbstractMigration
                 INDEX IDX_ts_host (host_id),
                 UNIQUE INDEX UQ_tournament_venue (tournament_id, venue_id),
                 PRIMARY KEY (id),
-                CONSTRAINT FK_ts_tournament FOREIGN KEY (tournament_id) REFERENCES tournament (id),
-                CONSTRAINT FK_ts_venue FOREIGN KEY (venue_id) REFERENCES venue (id),
-                CONSTRAINT FK_ts_representative FOREIGN KEY (representative_id) REFERENCES player (id),
-                CONSTRAINT FK_ts_host FOREIGN KEY (host_id) REFERENCES player (id)
+                CONSTRAINT FK_BB4B2EDE33D1A3E7 FOREIGN KEY (tournament_id) REFERENCES tournament (id),
+                CONSTRAINT FK_BB4B2EDE40A73EBA FOREIGN KEY (venue_id) REFERENCES venue (id),
+                CONSTRAINT FK_BB4B2EDEFC3FF006 FOREIGN KEY (representative_id) REFERENCES player (id),
+                CONSTRAINT FK_BB4B2EDE1FB8D185 FOREIGN KEY (host_id) REFERENCES player (id)
             ) DEFAULT CHARACTER SET utf8mb4
         ');
     }

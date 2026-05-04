@@ -7,7 +7,7 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-final class Version20260504102902 extends AbstractMigration
+final class Version20260502201015 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -30,9 +30,9 @@ final class Version20260504102902 extends AbstractMigration
                 INDEX IDX_player_claim_player (player_id),
                 INDEX IDX_player_claim_town (town_id),
                 PRIMARY KEY (id),
-                CONSTRAINT FK_player_claim_user FOREIGN KEY (user_id) REFERENCES `user` (id),
-                CONSTRAINT FK_player_claim_player FOREIGN KEY (player_id) REFERENCES player (id),
-                CONSTRAINT FK_player_claim_town FOREIGN KEY (town_id) REFERENCES town (id)
+                CONSTRAINT FK_181BA561A76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id),
+                CONSTRAINT FK_181BA56199E6F5DF FOREIGN KEY (player_id) REFERENCES player (id),
+                CONSTRAINT FK_181BA56175E23604 FOREIGN KEY (town_id) REFERENCES town (id)
             ) DEFAULT CHARACTER SET utf8mb4
         ');
     }

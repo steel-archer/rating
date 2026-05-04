@@ -6,6 +6,9 @@ use App\Repository\PlayerClaimRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlayerClaimRepository::class)]
+#[ORM\Index(name: 'IDX_player_claim_user', columns: ['user_id'])]
+#[ORM\Index(name: 'IDX_player_claim_player', columns: ['player_id'])]
+#[ORM\Index(name: 'IDX_player_claim_town', columns: ['town_id'])]
 class PlayerClaim
 {
     public const string STATUS_PENDING = 'pending';

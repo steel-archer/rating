@@ -35,6 +35,7 @@
 
         <exclude>
             <directory>src/Entity</directory>
+            <file>src/Command/PromoteAdminCommand.php</file>
             <directory>src/Controller/Auth</directory>
             <file>src/Security/GoogleAuthenticator.php</file>
         </exclude>

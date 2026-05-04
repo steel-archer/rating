@@ -11,28 +11,31 @@ final class Version20260502201009 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Create venue_representative table';
+        return 'Create tournament table';
     }
 
     public function up(Schema $schema): void
     {
         $this->addSql('
-            CREATE TABLE venue_representative (
+            CREATE TABLE tournament (
                 id INT AUTO_INCREMENT NOT NULL,
-                venue_id INT NOT NULL,
-                player_id INT NOT NULL,
-                INDEX IDX_vr_venue (venue_id),
-                INDEX IDX_vr_player (player_id),
-                UNIQUE INDEX UQ_venue_player (venue_id, player_id),
+                name VARCHAR(255) NOT NULL,
+                season_id INT DEFAULT NULL,
+                started_at DATETIME DEFAULT NULL,
+                ended_at DATETIME DEFAULT NULL,
+                tours_count INT DEFAULT NULL,
+                questions_per_tour INT DEFAULT NULL,
+                difficulty DOUBLE PRECISION DEFAULT NULL,
+                true_dl DOUBLE PRECISION DEFAULT NULL,
+                INDEX IDX_tournament_season (season_id),
                 PRIMARY KEY (id),
-                CONSTRAINT FK_vr_venue FOREIGN KEY (venue_id) REFERENCES venue (id),
-                CONSTRAINT FK_vr_player FOREIGN KEY (player_id) REFERENCES player (id)
+                CONSTRAINT FK_BD5FB8D94EC001D1 FOREIGN KEY (season_id) REFERENCES season (id)
             ) DEFAULT CHARACTER SET utf8mb4
         ');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('DROP TABLE venue_representative');
+        $this->addSql('DROP TABLE tournament');
     }
 }

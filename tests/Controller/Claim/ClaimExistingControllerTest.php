@@ -69,11 +69,11 @@ class ClaimExistingControllerTest extends WebTestCase
             },
         ];
 
-        yield 'anonymous gets 401' => [
+        yield 'anonymous gets redirected' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
             'searchLastName' => 'Франко',
-            'expectedStatus' => 401,
+            'expectedStatus' => 302,
             'afterCallback' => static function (array $objects) {
             },
         ];

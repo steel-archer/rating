@@ -18,8 +18,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-final class GoogleAuthenticator extends OAuth2Authenticator
+final class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationEntryPointInterface
 {
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
@@ -52,8 +53,11 @@ final class GoogleAuthenticator extends OAuth2Authenticator
                     $user->setEmail($googleUser->getEmail());
 
                     $this->em->persist($user);
-                    $this->em->flush();
                 }
+
+                $user->setFirstName($googleUser->getFirstName());
+                $user->setLastName($googleUser->getLastName());
+                $this->em->flush();
 
                 return $user;
             }),
@@ -72,6 +76,11 @@ final class GoogleAuthenticator extends OAuth2Authenticator
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    {
+        return new RedirectResponse($this->router->generate('home'));
+    }
+
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         return new RedirectResponse($this->router->generate('home'));
     }

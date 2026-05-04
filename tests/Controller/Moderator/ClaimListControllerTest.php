@@ -42,11 +42,11 @@ class ClaimListControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'anonymous gets 401' => [
+        yield 'anonymous gets redirected' => [
             'uri' => '/moderator/claims',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
-            'expectedStatus' => 401,
+            'expectedStatus' => 302,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];

@@ -6,6 +6,7 @@ use App\Repository\TownRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TownRepository::class)]
+#[ORM\Index(name: 'IDX_town_country', columns: ['country_id'])]
 class Town
 {
     #[ORM\Id]

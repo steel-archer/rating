@@ -6,7 +6,9 @@ use App\Repository\TournamentSessionTeamPlayerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentSessionTeamPlayerRepository::class)]
-#[ORM\UniqueConstraint(columns: ['tournament_session_team_id', 'player_id'])]
+#[ORM\UniqueConstraint(name: 'UQ_session_team_player', columns: ['tournament_session_team_id', 'player_id'])]
+#[ORM\Index(name: 'IDX_tstp_session_team', columns: ['tournament_session_team_id'])]
+#[ORM\Index(name: 'IDX_tstp_player', columns: ['player_id'])]
 class TournamentSessionTeamPlayer
 {
     #[ORM\Id]

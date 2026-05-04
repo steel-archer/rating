@@ -83,19 +83,30 @@ docker compose exec app composer install
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-### 6. Завантажте початкові дані
-
-```bash
-docker compose exec -T db sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < docker/sql/seed.sql
-```
-
-### 7. (Опціонально) Завантажте тестові дані
+### 6. (Опціонально) Завантажте тестові дані
 
 Якщо хочете наповнити базу тестовими турнірами, командами та гравцями:
 
 ```bash
 docker compose exec app php bin/console doctrine:fixtures:load --append --no-interaction
 ```
+
+### 7. Налаштуйте адміністратора
+
+Адміністратори та модератори — це гравці з додатковими правами. Щоб створити першого адміна:
+
+1. Напишіть розробнику і попросіть додати ваш Google-імейл до списку дозволених.
+2. Відкрийте сайт (http://localhost:8080) і увійдіть через Google.
+3. Подайте заявку на прив'язку до гравця (сайт запропонує це автоматично).
+4. Затвердіть заявку та надайте права адміністратора (поміняйте в команді імейл на ваш):
+
+```bash
+docker compose exec app php bin/console app:promote-admin your-email@gmail.com
+```
+
+5. Перелогіньтеся на сайті (хоча, скоріше за все, вас вилогінить автоматично).
+
+Після цього ви зможете затверджувати заявки інших користувачів через інтерфейс модератора.
 
 ## Використання
 

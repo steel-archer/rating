@@ -11,16 +11,25 @@ final class Version20260502201007 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Add is_captain to team_player';
+        return 'Create venue table';
     }
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE team_player ADD is_captain TINYINT(1) NOT NULL DEFAULT 0');
+        $this->addSql('
+            CREATE TABLE venue (
+                id INT AUTO_INCREMENT NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                town_id INT NOT NULL,
+                INDEX IDX_venue_town (town_id),
+                PRIMARY KEY (id),
+                CONSTRAINT FK_91911B0D75E23604 FOREIGN KEY (town_id) REFERENCES town (id)
+            ) DEFAULT CHARACTER SET utf8mb4
+        ');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE team_player DROP COLUMN is_captain');
+        $this->addSql('DROP TABLE venue');
     }
 }

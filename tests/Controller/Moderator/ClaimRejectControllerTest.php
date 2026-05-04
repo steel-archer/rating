@@ -90,10 +90,10 @@ class ClaimRejectControllerTest extends WebTestCase
             },
         ];
 
-        yield 'anonymous gets 401' => [
+        yield 'anonymous gets redirected' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
             'loginAs' => null,
-            'expectedStatus' => 401,
+            'expectedStatus' => 302,
             'afterCallback' => static function (array $objects) {
             },
         ];

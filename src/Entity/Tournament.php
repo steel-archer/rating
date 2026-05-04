@@ -7,6 +7,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
+#[ORM\Index(name: 'IDX_tournament_season', columns: ['season_id'])]
 class Tournament
 {
     #[ORM\Id]

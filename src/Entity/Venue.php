@@ -6,6 +6,7 @@ use App\Repository\VenueRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VenueRepository::class)]
+#[ORM\Index(name: 'IDX_venue_town', columns: ['town_id'])]
 class Venue
 {
     #[ORM\Id]

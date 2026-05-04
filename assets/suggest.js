@@ -41,7 +41,6 @@ function initSuggest(wrapper) {
         hidden.value = item.dataset.id;
         dropdown.innerHTML = '';
         dropdown.hidden = true;
-        input.closest('form')?.requestSubmit();
     });
 
     document.addEventListener('click', (e) => {

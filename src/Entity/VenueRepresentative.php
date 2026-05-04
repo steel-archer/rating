@@ -6,7 +6,9 @@ use App\Repository\VenueRepresentativeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VenueRepresentativeRepository::class)]
-#[ORM\UniqueConstraint(columns: ['venue_id', 'player_id'])]
+#[ORM\UniqueConstraint(name: 'UQ_venue_player', columns: ['venue_id', 'player_id'])]
+#[ORM\Index(name: 'IDX_vr_venue', columns: ['venue_id'])]
+#[ORM\Index(name: 'IDX_vr_player', columns: ['player_id'])]
 class VenueRepresentative
 {
     #[ORM\Id]

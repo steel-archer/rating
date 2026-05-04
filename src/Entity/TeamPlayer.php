@@ -6,7 +6,10 @@ use App\Repository\TeamPlayerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TeamPlayerRepository::class)]
-#[ORM\UniqueConstraint(columns: ['team_id', 'player_id', 'season_id'])]
+#[ORM\UniqueConstraint(name: 'UQ_team_player_season', columns: ['team_id', 'player_id', 'season_id'])]
+#[ORM\Index(name: 'IDX_tp_team', columns: ['team_id'])]
+#[ORM\Index(name: 'IDX_tp_player', columns: ['player_id'])]
+#[ORM\Index(name: 'IDX_tp_season', columns: ['season_id'])]
 class TeamPlayer
 {
     #[ORM\Id]

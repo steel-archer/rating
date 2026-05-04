@@ -94,7 +94,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         $townCount = count(TownFixture::TOWNS);
         $seasons = $manager->getRepository(Season::class)->findAll();
         if (count($seasons) < 2) {
-            throw new RuntimeException('Need at least 2 seasons. Run seed.sql first.');
+            throw new RuntimeException('Need at least 2 seasons. Run migrations first.');
         }
 
         // Build town → players map

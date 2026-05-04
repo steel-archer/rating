@@ -23,7 +23,7 @@ final class Version20260502201002 extends AbstractMigration
                 country_id INT NOT NULL,
                 INDEX IDX_town_country (country_id),
                 PRIMARY KEY (id),
-                CONSTRAINT FK_town_country FOREIGN KEY (country_id) REFERENCES country (id)
+                CONSTRAINT FK_4CE6C7A4F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id)
             ) DEFAULT CHARACTER SET utf8mb4
         ');
     }
