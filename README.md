@@ -1,6 +1,6 @@
 # Сайт рейтингу українського «Що? Де? Коли?»
 
-[![CI](https://github.com/steel-archer/rating/actions/workflows/ci.yml/badge.svg)](https://github.com/steel-archer/rating/actions/workflows/ci.yml)
+[![CI](https://github.com/steel-archer/rating/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/steel-archer/rating/actions/workflows/ci.yml)
 ![Coverage](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/coverage.svg)
 
 Вебсайт рейтингової системи інтелектуальних ігор: турніри, команди, гравці, майданчики.
