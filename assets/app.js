@@ -1,6 +1,7 @@
 import './stimulus_bootstrap.js';
 import './styles/app.css';
 import './suggest.js';
+import './sync-url.js';
 
 let allExpanded = false;
 

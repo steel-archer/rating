@@ -3,7 +3,9 @@ function initSuggest(wrapper) {
     const hidden = wrapper.querySelector('[data-suggest-hidden]');
     const dropdown = wrapper.querySelector('[data-suggest-dropdown]');
     const apiUrl = wrapper.dataset.suggestUrl;
-    if (!input || !hidden || !dropdown || !apiUrl || wrapper.dataset.suggestInit) return;
+    if (!input || !hidden || !dropdown || !apiUrl || wrapper.dataset.suggestInit) {
+        return;
+    }
     wrapper.dataset.suggestInit = '1';
 
     let debounceTimer;
@@ -36,7 +38,9 @@ function initSuggest(wrapper) {
 
     dropdown.addEventListener('click', (e) => {
         const item = e.target.closest('.suggest-item');
-        if (!item) return;
+        if (!item) {
+            return;
+        }
         input.value = item.textContent;
         hidden.value = item.dataset.id;
         dropdown.innerHTML = '';

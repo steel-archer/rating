@@ -9,7 +9,7 @@
 {% block body %}
     <h1>{{ 'nav.venues'|trans }}</h1>
 
-    <turbo-frame id="venues-list" src="{{ path('venue_list') }}">
+    <turbo-frame id="venues-list" data-sync-url src="{{ path('venue_list') }}{{ app.request.queryString ? '?' ~ app.request.queryString : '' }}">
         <p>{{ 'common.loading'|trans }}</p>
     </turbo-frame>
 {% endblock %}
