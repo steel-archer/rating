@@ -20,6 +20,26 @@
                 <a href="{{ path('player_index') }}">{{ 'nav.players'|trans }}</a>
                 <a href="{{ path('venue_index') }}">{{ 'nav.venues'|trans }}</a>
             </nav>
+            <div class="auth">
+                {% if app.user %}
+                    {% if is_granted('ROLE_MODERATOR') %}
+                        <div class="dropdown">
+                            <span class="dropdown-toggle">{{ 'nav.moderation'|trans }}</span>
+                            <div class="dropdown-menu">
+                                <a href="{{ path('moderator_claims') }}">{{ 'moderator.claims'|trans }}</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if app.user.player %}
+                        <a href="{{ path('player_show', {id: app.user.player.id}) }}">{{ app.user.player.firstName }} {{ app.user.player.lastName }}</a>
+                    {% else %}
+                        <span>{{ app.user.email }}</span>
+                    {% endif %}
+                    <a href="{{ path('auth_logout') }}">{{ 'auth.logout'|trans }}</a>
+                {% else %}
+                    <a href="{{ path('auth_google_start') }}">{{ 'auth.login'|trans }}</a>
+                {% endif %}
+            </div>
         </div>
     </header>
     <main>

@@ -6,6 +6,7 @@ use App\DTO\Request\PlayerListRequestDTO;
 use App\Entity\Player;
 use App\Entity\Season;
 use App\Entity\TeamPlayer;
+use App\Entity\User;
 use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -72,6 +73,43 @@ class PlayerRepository extends ServiceEntityRepository
     {
         $total = (int) $this->buildFilteredQuery($requestDto)
             ->select('COUNT(p.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return max(1, (int) ceil($total / self::PER_PAGE));
+    }
+
+    /**
+     * @return list<array{id: int, fullName: string, townName: ?string}>
+     */
+    public function findFreeForList(PlayerListRequestDTO $requestDto): array
+    {
+        return $this->buildFilteredQuery($requestDto)
+            ->select(
+                'p.id',
+                "CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) AS fullName",
+                'town.name AS townName',
+            )
+            ->leftJoin(User::class, 'u', 'WITH', 'u.player = p')
+            ->andWhere('u.id IS NULL')
+            ->orderBy('p.lastName', 'ASC')
+            ->addOrderBy('p.firstName', 'ASC')
+            ->setFirstResult(($requestDto->page - 1) * self::PER_PAGE)
+            ->setMaxResults(self::PER_PAGE)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getFreeLastPageNumber(PlayerListRequestDTO $requestDto): int
+    {
+        $total = (int) $this->buildFilteredQuery($requestDto)
+            ->select('COUNT(p.id)')
+            ->leftJoin(User::class, 'u', 'WITH', 'u.player = p')
+            ->andWhere('u.id IS NULL')
             ->getQuery()
             ->getSingleScalarResult();
 

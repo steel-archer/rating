@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'claim.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'claim.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'claim.title'|trans }}</h1>
+
+    <div class="cards-row">
+        <div class="card">
+            <h2>{{ 'claim.existing_title'|trans }}</h2>
+            <p>{{ 'claim.existing_description'|trans }}</p>
+
+            <turbo-frame id="claim-search" src="{{ path('claim_search') }}">
+                <p>{{ 'common.loading'|trans }}</p>
+            </turbo-frame>
+        </div>
+
+        <div class="card">
+            <h2>{{ 'claim.new_title'|trans }}</h2>
+            <p>{{ 'claim.new_description'|trans }}</p>
+
+            <form method="post" action="{{ path('claim_new') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('claim_new') }}">
+                <div class="form-group">
+                    <input type="text" name="lastName" required placeholder="{{ 'player.last_name'|trans }}" class="search-input">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="firstName" placeholder="{{ 'player.first_name'|trans }}" class="search-input">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="patronymic" placeholder="{{ 'player.patronymic'|trans }}" class="search-input">
+                </div>
+                <div class="form-group">
+                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                        <input type="text" data-suggest-input placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
+                        <input type="hidden" name="townId" data-suggest-hidden>
+                        <div class="suggest-dropdown" data-suggest-dropdown></div>
+                    </div>
+                </div>
+                <button type="submit" class="search-btn">{{ 'claim.submit'|trans }}</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

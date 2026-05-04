@@ -1,0 +1,48 @@
+<turbo-frame id="claim-search">
+    <div class="search-form">
+        <form action="{{ path('claim_search') }}" method="get">
+            <div class="search-row">
+                <input type="text" name="lastName" value="{{ filters.lastName ?? '' }}" placeholder="{{ 'player.last_name'|trans }}" class="search-input">
+                <input type="text" name="firstName" value="{{ filters.firstName ?? '' }}" placeholder="{{ 'player.first_name'|trans }}" class="search-input">
+                <input type="text" name="patronymic" value="{{ filters.patronymic ?? '' }}" placeholder="{{ 'player.patronymic'|trans }}" class="search-input">
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
+                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
+                    <div class="suggest-dropdown" data-suggest-dropdown></div>
+                </div>
+                <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
+            </div>
+        </form>
+    </div>
+
+    {% if players is defined and players is not empty %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ 'player.full_name'|trans }}</th>
+                    <th>{{ 'common.town'|trans }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in players %}
+                    <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                        <td>{{ p.fullName }}</td>
+                        <td>{{ p.townName ?? '' }}</td>
+                        <td>
+                            <form method="post" action="{{ path('claim_existing') }}" data-turbo-frame="_top">
+                                <input type="hidden" name="_token" value="{{ csrf_token('claim_existing') }}">
+                                <input type="hidden" name="playerId" value="{{ p.id }}">
+                                <button type="submit" class="btn-link">{{ 'claim.select'|trans }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_pagination.html.twig' with {paginationRoute: 'claim_search', paginationParams: filters} %}
+    {% elseif filters is not empty %}
+        <p>{{ 'common.not_found'|trans }}</p>
+    {% endif %}
+</turbo-frame>

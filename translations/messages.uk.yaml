@@ -1,3 +1,18 @@
+auth:
+  login: 'Увійти'
+  logout: 'Вийти'
+
+claim:
+  existing_description: 'Знайдіть себе серед гравців рейтингу'
+  existing_title: 'Я вже є в рейтингу'
+  new_description: 'Заповніть дані для створення нового гравця'
+  new_title: 'Я новий гравець'
+  select: 'Обрати'
+  submit: 'Подати заявку'
+  submitted_description: 'Вашу заявку буде розглянуто модератором.'
+  submitted_title: 'Заявку подано'
+  title: 'Привʼязка гравця'
+
 common:
   country: 'Країна'
   date: 'Дата'
@@ -35,8 +50,20 @@ home:
     tournaments: 'Результати та статистика турнірів'
     venues: 'Місця проведення ігор'
 
+moderator:
+  approve: 'Схвалити'
+  claim_details: 'Деталі'
+  claim_existing_player: 'Існуючий гравець'
+  claim_new_player: 'Новий гравець'
+  claim_type: 'Тип'
+  claim_user: 'Користувач'
+  claims: 'Заявки'
+  no_pending_claims: 'Немає заявок на розгляд'
+  reject: 'Відхилити'
+
 nav:
   home: 'Головна'
+  moderation: 'Модерація'
   players: 'Гравці'
   teams: 'Команди'
   tournaments: 'Турніри'

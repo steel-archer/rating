@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'moderator.claims'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'moderator.claims'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'moderator.claims'|trans }}</h1>
+
+    {% if claims is empty %}
+        <p>{{ 'moderator.no_pending_claims'|trans }}</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ 'moderator.claim_user'|trans }}</th>
+                    <th>{{ 'moderator.claim_type'|trans }}</th>
+                    <th>{{ 'moderator.claim_details'|trans }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for claim in claims %}
+                    <tr>
+                        <td>{{ claim.user.email }}</td>
+                        <td>
+                            {% if claim.new %}
+                                {{ 'moderator.claim_new_player'|trans }}
+                            {% else %}
+                                {{ 'moderator.claim_existing_player'|trans }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if claim.new %}
+                                {{ claim.lastName }} {{ claim.firstName ?? '' }} {{ claim.patronymic ?? '' }}
+                                {% if claim.town %} ({{ claim.town.name }}){% endif %}
+                            {% else %}
+                                <a href="{{ path('player_show', {id: claim.player.id}) }}">{{ claim.player.fullName }}</a>
+                            {% endif %}
+                        </td>
+                        <td class="claim-actions">
+                            <form method="post" action="{{ path('moderator_claim_approve', {id: claim.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('claim_' ~ claim.id) }}">
+                                <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
+                            </form>
+                            <form method="post" action="{{ path('moderator_claim_reject', {id: claim.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('claim_' ~ claim.id) }}">
+                                <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

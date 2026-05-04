@@ -35,6 +35,7 @@ header .header-inner {
 header nav {
     display: flex;
     gap: 24px;
+    flex: 1;
 }
 
 header nav a {
@@ -47,4 +48,68 @@ header nav a {
 header nav a:hover {
     color: var(--text);
     text-decoration: none;
+}
+
+.auth {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.auth a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth a:hover {
+    color: var(--text);
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.dropdown-toggle:hover {
+    color: var(--text);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding-top: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px 0;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 8px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.dropdown-menu a:hover {
+    background: var(--border);
+    color: var(--text);
 }

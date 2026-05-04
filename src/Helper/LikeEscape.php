@@ -9,6 +9,11 @@ final class LikeEscape
         return '%' . self::escape($value) . '%';
     }
 
+    public static function startsWith(string $value): string
+    {
+        return self::escape($value) . '%';
+    }
+
     private static function escape(string $value): string
     {
         return addcslashes($value, '%_\\');
