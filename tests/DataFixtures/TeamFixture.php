@@ -19,38 +19,67 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
     public const int PLAYER_COUNT = 500;
 
     private const array ADJECTIVES = [
+        'Безстрашні',
+        'Блискучі',
+        'Бурхливі',
         'Веселі',
+        'Вільні',
         'Відчайдушні',
+        'Вогняні',
+        'Грізні',
         'Дикі',
         'Залізні',
         'Зоряні',
         'Крижані',
         'Лісові',
+        'Магічні',
         'Мудрі',
+        'Нескорені',
         'Нічні',
         'Палкі',
+        'Полум\'яні',
+        'Сміливі',
         'Сонні',
+        'Срібні',
+        'Стрімкі',
         'Таємні',
+        'Тіньові',
         'Хитрі',
+        'Хоробрі',
         'Шалені',
         'Швидкі',
+        'Яскраві',
     ];
 
     private const array NOUNS = [
         'Бджоли',
+        'Бізони',
         'Борсуки',
         'Вовки',
         'Ворони',
+        'Гепарди',
+        'Грифони',
+        'Дельфіни',
         'Дракони',
         'Єноти',
         'Їжаки',
         'Кактуси',
+        'Кобри',
+        'Козаки',
         'Коти',
         'Леви',
         'Лиси',
+        'Мамонти',
         'Орли',
+        'Пантери',
+        'Рисі',
         'Сови',
+        'Соколи',
+        'Тигри',
         'Фенікси',
+        'Химери',
+        'Шершні',
+        'Яструби',
     ];
 
     /** @var array<int, list<int>> team index => list of player indices (season 1 squad) */
@@ -74,15 +103,14 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
             self::$townPlayers[$p % $townCount][] = $p;
         }
 
-        $used = [];
-        $teamNames = [];
-        while (count($teamNames) < self::TEAM_COUNT) {
-            $name = $faker->randomElement(self::ADJECTIVES) . ' ' . $faker->randomElement(self::NOUNS);
-            if (!isset($used[$name])) {
-                $used[$name] = true;
-                $teamNames[] = $name;
+        $allNames = [];
+        foreach (self::ADJECTIVES as $adj) {
+            foreach (self::NOUNS as $noun) {
+                $allNames[] = $adj . ' ' . $noun;
             }
         }
+        shuffle($allNames);
+        $teamNames = array_slice($allNames, 0, self::TEAM_COUNT);
 
         // 80% both seasons, 10% season 1 only, 10% season 2 only
         $bothCount = (int)(self::TEAM_COUNT * 0.8);

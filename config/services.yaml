@@ -19,6 +19,10 @@ services:
 
 when@dev: &dev_fixtures
     services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
         App\Tests\DataFixtures\:
             resource: '../tests/DataFixtures/'
 
