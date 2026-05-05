@@ -1,0 +1,83 @@
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+}
+
+.tab {
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px 8px 0 0;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.tab:hover {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.tab-active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.empty-state {
+    color: var(--text-secondary);
+    font-size: 15px;
+    padding: 32px 0;
+}
+
+.moderation-card {
+    padding: 24px 32px;
+}
+
+.moderation-card-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.moderation-card-header h2 {
+    margin-bottom: 0;
+}
+
+.moderation-comment {
+    font-size: 15px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 12px;
+}
+
+.moderation-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.reject-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reject-input {
+    font-family: var(--font);
+    font-size: 14px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 240px;
+}
+
+.reject-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}

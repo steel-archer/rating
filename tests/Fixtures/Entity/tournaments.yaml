@@ -8,6 +8,7 @@ App\Entity\Tournament:
         questionsPerTour: 12
         difficulty: 3.5
         trueDl: 2.8
+        status: '<(App\Entity\TournamentStatus::Published)>'
     tournament_autumn:
         name: 'Осінній бриз'
         season: '@season_current'
@@ -17,6 +18,7 @@ App\Entity\Tournament:
         questionsPerTour: 15
         difficulty: 4.2
         trueDl: 3.1
+        status: '<(App\Entity\TournamentStatus::Published)>'
 
 App\Entity\TournamentOfficial:
     official_organizer:

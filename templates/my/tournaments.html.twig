@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'tournament.my.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'tournament.my.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'tournament.my.title'|trans }}</h1>
+
+    <div class="my-tournaments-toolbar">
+        <a href="{{ path('my_tournament_new') }}" class="btn btn-primary">{{ 'tournament.my.create'|trans }}</a>
+    </div>
+
+    {% if tournaments is empty %}
+        <p class="empty-state">{{ 'tournament.my.empty'|trans }}</p>
+    {% else %}
+        <table class="my-tournaments-table">
+            <thead>
+                <tr>
+                    <th>{{ 'common.name'|trans }}</th>
+                    <th>{{ 'common.dates'|trans }}</th>
+                    <th>{{ 'tournament.my.status'|trans }}</th>
+                    <th>
+                        <a href="{{ path('my_tournaments', {sort: sort == 'desc' ? 'asc' : 'desc'}) }}">
+                            {{ 'tournament.my.last_moderation'|trans }} {{ sort == 'desc' ? '↓' : '↑' }}
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tournament in tournaments %}
+                    {% set claim = claims[tournament.id] %}
+                    <tr>
+                        <td><a href="{{ path('my_tournament_edit', {id: tournament.id}) }}">{{ tournament.name }}</a></td>
+                        <td class="meta">
+                            {% if tournament.startedAt %}
+                                {{ tournament.startedAt|date('d.m.Y') }}{% if tournament.endedAt %} — {{ tournament.endedAt|date('d.m.Y') }}{% endif %}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ tournament.status.value }}">{{ ('tournament.status.' ~ tournament.status.value)|trans }}</span>
+                            {% if claim %}
+                                <span class="badge badge-moderation-{{ claim.status.value }}">{{ ('tournament.moderation_status.' ~ claim.status.value)|trans }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="meta">
+                            {% if claim and claim.resolvedAt %}
+                                {{ claim.resolvedAt|date('d.m.Y H:i') }}
+                            {% elseif claim %}
+                                {{ claim.createdAt|date('d.m.Y H:i') }}
+                            {% else %}
+                                —
+                            {% endif %}
+                            {% if claim and claim.comment %}
+                                <br><small class="moderation-comment">{{ claim.comment }}</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

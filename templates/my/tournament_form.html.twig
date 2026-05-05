@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'tournament.my.create'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_tournaments') }}">{{ 'tournament.my.title'|trans }}</a></span><span>{{ 'tournament.my.create'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'tournament.my.create'|trans }}</h1>
+
+    {% for message in app.flashes('error') %}
+        <div class="flash flash-error">{{ message|trans }}</div>
+    {% endfor %}
+
+    <div class="card">
+        <form method="post" action="{{ path('my_tournament_store') }}" class="tournament-form">
+            <input type="hidden" name="_token" value="{{ csrf_token('tournament_create') }}">
+            <div class="form-group">
+                <label for="name">{{ 'common.name'|trans }} *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <button type="submit" class="btn">{{ 'tournament.my.create'|trans }}</button>
+        </form>
+    </div>
+{% endblock %}

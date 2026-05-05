@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ tournament.name }} — {{ 'tournament.my.edit'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_tournaments') }}">{{ 'tournament.my.title'|trans }}</a></span><span>{{ tournament.name }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ tournament.name }}</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash flash-success">{{ message|trans }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash flash-error">{{ message|trans }}</div>
+    {% endfor %}
+
+    {# --- Статус і дії --- #}
+    <div class="cards-row">
+        <div class="card status-card">
+            <h2>{{ 'tournament.my.status'|trans }}</h2>
+            <dl>
+                <dt>{{ 'tournament.my.tournament_status'|trans }}</dt>
+                <dd>{{ ('tournament.status.' ~ tournament.status.value)|trans }}</dd>
+                <dt>{{ 'tournament.my.moderation'|trans }}</dt>
+                <dd>
+                    {% if claim %}
+                        {{ ('tournament.moderation_status.' ~ claim.status.value)|trans }}
+                        {% if claim.comment %}
+                            <br><small>{{ claim.comment }}</small>
+                        {% endif %}
+                    {% else %}
+                        {{ 'tournament.moderation_status.none'|trans }}
+                    {% endif %}
+                </dd>
+            </dl>
+        </div>
+
+        <div class="card">
+            <h2>{{ 'tournament.my.actions'|trans }}</h2>
+            <div class="actions-card">
+                {% if (not claim or claim.status.value not in ['pending', 'approved']) and tournament.status.value != 'published' %}
+                    <form method="post" action="{{ path('my_tournament_submit', {id: tournament.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('tournament_submit_' ~ tournament.id) }}">
+                        <button type="submit" class="btn btn-primary">{{ 'tournament.my.submit_moderation'|trans }}</button>
+                    </form>
+                {% endif %}
+
+                {% if publishErrors is empty and tournament.status.value != 'published' %}
+                    <form method="post" action="{{ path('my_tournament_publish', {id: tournament.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('tournament_publish_' ~ tournament.id) }}">
+                        <button type="submit" class="btn btn-success">{{ 'tournament.my.publish'|trans }}</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# --- Основна інформація --- #}
+    <div class="card">
+        <h2>{{ 'tournament.my.general_info'|trans }}</h2>
+        <form id="tournament-edit-form" class="tournament-form" data-url="{{ path('my_tournament_update', {id: tournament.id}) }}">
+
+            <div class="form-group">
+                <label for="name">{{ 'common.name'|trans }} *</label>
+                <input type="text" id="name" name="name" value="{{ tournament.name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="started_at">{{ 'tournament.my.start_datetime'|trans }}</label>
+                <input type="datetime-local" id="started_at" name="startedAt" value="{{ tournament.startedAt ? tournament.startedAt|date('Y-m-d\\TH:i') : '' }}">
+            </div>
+            <div class="form-group">
+                <label for="ended_at">{{ 'tournament.my.end_datetime'|trans }}</label>
+                <input type="datetime-local" id="ended_at" name="endedAt" value="{{ tournament.endedAt ? tournament.endedAt|date('Y-m-d\\TH:i') : '' }}">
+            </div>
+            <div class="form-group">
+                <label for="tours_count">{{ 'tournament.tours_count'|trans }}</label>
+                <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}">
+            </div>
+            <div class="form-group">
+                <label for="questions_per_tour">{{ 'tournament.questions_per_tour'|trans }}</label>
+                <input type="number" id="questions_per_tour" name="questionsPerTour" min="1" step="1" value="{{ tournament.questionsPerTour }}">
+            </div>
+            <div class="form-group">
+                <label for="difficulty">{{ 'tournament.difficulty'|trans }}</label>
+                <input type="number" id="difficulty" name="difficulty" min="1" max="10" step="0.5" value="{{ tournament.difficulty }}">
+            </div>
+
+            {# --- Офіційні особи --- #}
+            <h2>{{ 'tournament.officials'|trans }}</h2>
+
+            {% set roleConfig = [
+                {key: 'organizers', role: 'organizer', label: 'tournament.role.organizer'},
+                {key: 'editors', role: 'editor', label: 'tournament.role.editor'},
+                {key: 'gameJury', role: 'game_jury', label: 'tournament.role.game_jury'},
+                {key: 'appealJury', role: 'appeal_jury', label: 'tournament.role.appeal_jury'},
+            ] %}
+
+            {% for cfg in roleConfig %}
+                <div class="form-group">
+                    <label>{{ cfg.label|trans }}</label>
+                    <div class="officials-group" data-role="{{ cfg.key }}">
+                        {% set roleOfficials = officials|filter(o => o.role.value == cfg.role) %}
+                        {% for official in roleOfficials %}
+                            <div class="official-entry">
+                                <input type="hidden" name="{{ cfg.key }}[]" value="{{ official.player.id }}">
+                                <a href="{{ path('player_show', {id: official.player.id}) }}">{{ official.player.fullName }}</a>
+                                {% if not (cfg.role == 'organizer' and official.player.id == tournament.createdBy.player.id) %}
+                                    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">×</button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                        <input type="text" data-suggest-input placeholder="{{ 'tournament.my.add_official'|trans }}">
+                        <div data-suggest-dropdown hidden></div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn">{{ 'tournament.my.save'|trans }}</button>
+            <span id="save-status" class="save-status" hidden></span>
+        </form>
+    </div>
+
+    {# --- Вимоги для публікації --- #}
+    {% if publishErrors is not empty %}
+        <div class="card publish-errors">
+            <h2>{{ 'tournament.my.publish_requirements'|trans }}</h2>
+            <ul>
+                {% for error in publishErrors %}
+                    <li>{{ error|trans }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

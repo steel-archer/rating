@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
 #[ORM\Index(name: 'IDX_tournament_season', columns: ['season_id'])]
+#[ORM\Index(name: 'IDX_tournament_created_by', columns: ['created_by_id'])]
 class Tournament
 {
     #[ORM\Id]
@@ -17,6 +18,13 @@ class Tournament
 
     #[ORM\Column(length: 255)]
     private string $name;
+
+    #[ORM\Column(length: 20, enumType: TournamentStatus::class)]
+    private TournamentStatus $status = TournamentStatus::Draft;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $createdBy = null;
 
     #[ORM\ManyToOne]
     private ?Season $season = null;
@@ -136,6 +144,30 @@ class Tournament
     public function setTrueDl(?float $trueDl): static
     {
         $this->trueDl = $trueDl;
+
+        return $this;
+    }
+
+    public function getStatus(): TournamentStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(TournamentStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

@@ -4,8 +4,11 @@ namespace App\Repository;
 
 use App\DTO\Request\TournamentListRequestDTO;
 use App\Entity\Tournament;
+use App\Entity\TournamentModerationClaim;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
+use App\Entity\TournamentStatus;
+use App\Entity\User;
 use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -76,9 +79,32 @@ class TournamentRepository extends ServiceEntityRepository
         return max(1, (int) ceil($total / self::PER_PAGE));
     }
 
+    /**
+     * @return list<Tournament>
+     */
+    public function findByCreator(User $user, string $sort = 'DESC'): array
+    {
+        $direction = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
+
+        return $this->createQueryBuilder('t')
+            ->leftJoin(
+                TournamentModerationClaim::class,
+                'c',
+                'WITH',
+                'c.tournament = t',
+            )
+            ->where('t.createdBy = :user')
+            ->setParameter('user', $user)
+            ->orderBy('CASE WHEN c.resolvedAt IS NOT NULL THEN c.resolvedAt WHEN c.createdAt IS NOT NULL THEN c.createdAt ELSE t.startedAt END', $direction)
+            ->getQuery()
+            ->getResult();
+    }
+
     private function buildFilteredQuery(TournamentListRequestDTO $requestDto): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('t');
+        $qb = $this->createQueryBuilder('t')
+            ->andWhere('t.status = :published')
+            ->setParameter('published', TournamentStatus::Published->value);
 
         if ($requestDto->name !== null && $requestDto->name !== '') {
             $qb->andWhere('t.name LIKE :name')

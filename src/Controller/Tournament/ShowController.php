@@ -2,6 +2,8 @@
 
 namespace App\Controller\Tournament;
 
+use App\Entity\TournamentStatus;
+use App\Entity\User;
 use App\Exception\EntityNotFoundException;
 use App\Service\TournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +24,17 @@ final class ShowController extends AbstractController
             throw new NotFoundHttpException($exception->getMessage(), $exception);
         } catch (Throwable $exception) { // @codeCoverageIgnoreStart
             throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
+        }
+
+        if ($tournament->status !== TournamentStatus::Published->value) {
+            /** @var User|null $user */
+            $user = $this->getUser();
+            $isOwner = $user !== null && $tournament->createdById === $user->getId();
+            $isModerator = $this->isGranted('ROLE_MODERATOR');
+
+            if (!$isOwner && !$isModerator) {
+                throw new NotFoundHttpException();
+            }
         }
 
         return $this->render('tournament/show.html.twig', [

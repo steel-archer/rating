@@ -10,6 +10,8 @@ final readonly class TournamentDTO
     public function __construct(
         public int $id,
         public string $name,
+        public string $status,
+        public ?int $createdById,
         public ?string $seasonName,
         public ?DateTimeInterface $startedAt,
         public ?DateTimeInterface $endedAt,

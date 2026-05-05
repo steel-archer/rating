@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'moderator.tournaments'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'moderator.tournaments'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'moderator.tournaments'|trans }}</h1>
+
+    <div class="tabs">
+        <a href="{{ path('moderator_tournaments', {status: 'pending'}) }}" class="tab {% if currentStatus.value == 'pending' %}tab-active{% endif %}">{{ 'tournament.moderation_status.pending'|trans }}</a>
+        <a href="{{ path('moderator_tournaments', {status: 'approved'}) }}" class="tab {% if currentStatus.value == 'approved' %}tab-active{% endif %}">{{ 'tournament.moderation_status.approved'|trans }}</a>
+        <a href="{{ path('moderator_tournaments', {status: 'rejected'}) }}" class="tab {% if currentStatus.value == 'rejected' %}tab-active{% endif %}">{{ 'tournament.moderation_status.rejected'|trans }}</a>
+    </div>
+
+    {% if claims is empty %}
+        {% if currentStatus.value == 'pending' %}
+            <p class="empty-state">{{ 'moderator.no_tournament_claims_pending'|trans }}</p>
+        {% elseif currentStatus.value == 'approved' %}
+            <p class="empty-state">{{ 'moderator.no_tournament_claims_approved'|trans }}</p>
+        {% else %}
+            <p class="empty-state">{{ 'moderator.no_tournament_claims_rejected'|trans }}</p>
+        {% endif %}
+    {% else %}
+        {% for claim in claims %}
+            <div class="card moderation-card">
+                <div class="moderation-card-header">
+                    <h2><a href="{{ path('tournament_show', {id: claim.tournament.id}) }}">{{ claim.tournament.name }}</a></h2>
+                    <span class="meta">{{ claim.createdAt|date('d.m.Y H:i') }}</span>
+                </div>
+
+                {% if claim.comment %}
+                    <p class="moderation-comment">{{ claim.comment }}</p>
+                {% endif %}
+
+                {% if currentStatus.value == 'pending' %}
+                    <div class="moderation-actions">
+                        <form method="post" action="{{ path('moderator_tournament_approve', {id: claim.tournament.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('tournament_moderate_' ~ claim.tournament.id) }}">
+                            <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
+                        </form>
+                        <form method="post" action="{{ path('moderator_tournament_reject', {id: claim.tournament.id}) }}" class="reject-form">
+                            <input type="hidden" name="_token" value="{{ csrf_token('tournament_moderate_' ~ claim.tournament.id) }}">
+                            <input type="text" name="comment" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}">
+                            <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

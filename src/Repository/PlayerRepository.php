@@ -117,6 +117,31 @@ class PlayerRepository extends ServiceEntityRepository
         return max(1, (int) ceil($total / self::PER_PAGE));
     }
 
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    public function suggest(string $query): array
+    {
+        $rows = $this->createQueryBuilder('p')
+            ->leftJoin('p.town', 'town')
+            ->select(
+                'p.id',
+                "CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) AS name",
+                'town.name AS townName',
+            )
+            ->where("CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) LIKE :q")
+            ->setParameter('q', LikeEscape::contains($query))
+            ->setMaxResults(10)
+            ->orderBy('p.lastName')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn(array $row) => [
+            'id' => $row['id'],
+            'name' => trim($row['name']) . ($row['townName'] ? ' (' . $row['townName'] . ')' : ''),
+        ], $rows);
+    }
+
     private function buildFilteredQuery(PlayerListRequestDTO $requestDto): QueryBuilder
     {
         $qb = $this->createQueryBuilder('p')

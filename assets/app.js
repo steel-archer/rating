@@ -1,6 +1,8 @@
 import './stimulus_bootstrap.js';
 import './styles/app.css';
 import './suggest.js';
+import './officials-suggest.js';
+import './tournament-edit.js';
 import './sync-url.js';
 
 let allExpanded = false;
