@@ -101,6 +101,7 @@ export default {
     "tournament.my.moderation": "Модерація",
     "tournament.my.publish": "Опублікувати",
     "tournament.my.publish_requirements": "Вимоги для публікації",
+    "tournament.my.readonly_notice": "Цей турнір вже почався і не може бути відредагований",
     "tournament.my.save": "Зберегти",
     "tournament.my.sort": "Сортування",
     "tournament.my.start_datetime": "Дата та час початку",

@@ -128,13 +128,15 @@ docker compose down
 docker compose up -d
 ```
 
-## Якість коду
+## Для розробників
 
-Оновлення JS-перекладів (після зміни `translations/messages.uk.yaml`):
+Після зміни файлу перекладів `translations/messages.uk.yaml` потрібно перегенерувати JS-переклади та закомітити результат:
 
 ```bash
 docker compose exec app php bin/console app:generate-translations
 ```
+
+## Якість коду
 
 Перевірка стилю коду (PSR-12):
 
