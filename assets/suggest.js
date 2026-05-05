@@ -28,9 +28,13 @@ function initSuggest(wrapper) {
                         dropdown.hidden = true;
                         return;
                     }
-                    dropdown.innerHTML = items.map(item =>
-                        `<div class="suggest-item" data-id="${item.id}">${item.name}</div>`
-                    ).join('');
+                    dropdown.replaceChildren(...items.map(item => {
+                        const div = document.createElement('div');
+                        div.className = 'suggest-item';
+                        div.dataset.id = item.id;
+                        div.textContent = item.name;
+                        return div;
+                    }));
                     dropdown.hidden = false;
                 });
         }, 200);
@@ -46,18 +50,20 @@ function initSuggest(wrapper) {
         dropdown.innerHTML = '';
         dropdown.hidden = true;
     });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.suggest-wrapper')) {
-            dropdown.innerHTML = '';
-            dropdown.hidden = true;
-        }
-    });
 }
 
 function initAllSuggests() {
     document.querySelectorAll('[data-suggest-url]').forEach(initSuggest);
 }
 
-document.addEventListener('DOMContentLoaded', initAllSuggests);
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.suggest-wrapper')) {
+        document.querySelectorAll('[data-suggest-dropdown]').forEach(d => {
+            d.innerHTML = '';
+            d.hidden = true;
+        });
+    }
+});
+
+document.addEventListener('turbo:load', initAllSuggests);
 document.addEventListener('turbo:frame-load', initAllSuggests);

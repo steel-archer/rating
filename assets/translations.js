@@ -14,6 +14,7 @@ export default {
     "common.country": "Країна",
     "common.date": "Дата",
     "common.dates": "Дати",
+    "common.error": "Помилка",
     "common.loading": "Завантаження…",
     "common.loading_results": "Завантаження результатів…",
     "common.loading_tournaments": "Завантаження турнірів…",

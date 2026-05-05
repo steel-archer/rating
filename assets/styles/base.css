@@ -13,7 +13,7 @@
 }
 
 body {
-    font-family: var(--font);
+    font-family: var(--font), sans-serif;
     color: var(--text);
     background: var(--bg);
     line-height: 1.5;
@@ -103,7 +103,7 @@ a:hover {
 }
 
 .btn {
-    font-family: var(--font);
+    font-family: var(--font), sans-serif;
     font-size: 14px;
     font-weight: 500;
     padding: 6px 14px;
@@ -135,7 +135,7 @@ a:hover {
 }
 
 .btn-link {
-    font-family: var(--font);
+    font-family: var(--font), sans-serif;
     font-size: 14px;
     font-weight: 500;
     color: var(--accent);

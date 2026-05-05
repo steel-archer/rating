@@ -18,6 +18,7 @@ common:
   country: 'Країна'
   date: 'Дата'
   dates: 'Дати'
+  error: 'Помилка'
   loading: 'Завантаження…'
   loading_results: 'Завантаження результатів…'
   loading_tournaments: 'Завантаження турнірів…'

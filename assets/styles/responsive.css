@@ -21,4 +21,43 @@
     .cards-row .card {
         min-width: 0;
     }
+
+    .actions-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .moderation-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .reject-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .reject-input {
+        width: 100%;
+    }
+
+    .my-tournaments-table {
+        font-size: 14px;
+    }
+
+    .my-tournaments-table th,
+    .my-tournaments-table td {
+        padding: 8px 6px;
+    }
+
+    .moderation-card-header {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .my-tournament-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
 }

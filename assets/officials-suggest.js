@@ -31,9 +31,13 @@ function initOfficialsSuggest(wrapper) {
                         dropdown.hidden = true;
                         return;
                     }
-                    dropdown.innerHTML = items.map(item =>
-                        `<div class="suggest-item" data-id="${item.id}">${item.name}</div>`
-                    ).join('');
+                    dropdown.replaceChildren(...items.map(item => {
+                        const div = document.createElement('div');
+                        div.className = 'suggest-item';
+                        div.dataset.id = item.id;
+                        div.textContent = item.name;
+                        return div;
+                    }));
                     dropdown.hidden = false;
                 });
         }, 200);
@@ -56,25 +60,47 @@ function initOfficialsSuggest(wrapper) {
 
         const entry = document.createElement('div');
         entry.className = 'official-entry';
-        entry.innerHTML = `<input type="hidden" name="${fieldName}[]" value="${playerId}"><a href="/player/${playerId}">${item.textContent}</a><button type="button" class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = `${fieldName}[]`;
+        hidden.value = playerId;
+
+        const link = document.createElement('a');
+        link.href = `/player/${playerId}`;
+        link.textContent = item.textContent;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-remove';
+        btn.textContent = '\u00d7';
+
+        entry.append(hidden, link, btn);
         group.appendChild(entry);
 
         dropdown.innerHTML = '';
         dropdown.hidden = true;
         input.value = '';
     });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.suggest-wrapper')) {
-            dropdown.innerHTML = '';
-            dropdown.hidden = true;
-        }
-    });
 }
 
 function initAllOfficialsSuggests() {
     document.querySelectorAll('.officials-group + .suggest-wrapper[data-suggest-url]').forEach(initOfficialsSuggest);
 }
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.suggest-wrapper')) {
+        document.querySelectorAll('.officials-group + .suggest-wrapper [data-suggest-dropdown]').forEach(d => {
+            d.innerHTML = '';
+            d.hidden = true;
+        });
+    }
+
+    const removeBtn = e.target.closest('.official-entry .btn-remove');
+    if (removeBtn) {
+        removeBtn.closest('.official-entry').remove();
+    }
+});
 
 document.addEventListener('turbo:load', initAllOfficialsSuggests);
 document.addEventListener('turbo:frame-load', initAllOfficialsSuggests);

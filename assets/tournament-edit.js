@@ -41,6 +41,11 @@ function initTournamentEditForm() {
                     status.className = 'save-status save-status-error';
                     status.hidden = false;
                 }
+            })
+            .catch(() => {
+                status.textContent = trans('common.error');
+                status.className = 'save-status save-status-error';
+                status.hidden = false;
             });
     });
 }

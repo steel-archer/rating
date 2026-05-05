@@ -116,16 +116,18 @@
                             <div class="official-entry">
                                 <input type="hidden" name="{{ cfg.key }}[]" value="{{ official.player.id }}">
                                 <a href="{{ path('player_show', {id: official.player.id}) }}">{{ official.player.fullName }}</a>
-                                {% if not (cfg.role == 'organizer' and official.player.id == tournament.createdBy.player.id) %}
-                                    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">×</button>
+                                {% if not readonly and not (cfg.role == 'organizer' and official.player.id == tournament.createdBy.player.id) %}
+                                    <button type="button" class="btn-remove">×</button>
                                 {% endif %}
                             </div>
                         {% endfor %}
                     </div>
-                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
-                        <input type="text" data-suggest-input placeholder="{{ 'tournament.my.add_official'|trans }}">
-                        <div data-suggest-dropdown hidden></div>
-                    </div>
+                    {% if not readonly %}
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                            <input type="text" data-suggest-input placeholder="{{ 'tournament.my.add_official'|trans }}">
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
 

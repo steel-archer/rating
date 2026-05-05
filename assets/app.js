@@ -4,6 +4,7 @@ import './suggest.js';
 import './officials-suggest.js';
 import './tournament-edit.js';
 import './sync-url.js';
+import { trans } from './trans.js';
 
 let allExpanded = false;
 
@@ -13,7 +14,7 @@ document.addEventListener('click', (e) => {
         const list = singleToggle.parentElement.querySelector('.squad-list');
         const isHidden = list.hidden;
         list.hidden = !isHidden;
-        singleToggle.textContent = isHidden ? 'сховати' : 'показати';
+        singleToggle.textContent = isHidden ? trans('squad.hide') : trans('squad.show');
         return;
     }
 
@@ -21,7 +22,7 @@ document.addEventListener('click', (e) => {
     if (allToggle) {
         allExpanded = !allExpanded;
         document.querySelectorAll('.squad-list').forEach(l => l.hidden = !allExpanded);
-        document.querySelectorAll('[data-toggle-squad]').forEach(b => b.textContent = allExpanded ? 'сховати' : 'показати');
-        allToggle.textContent = allExpanded ? 'сховати всі' : 'показати всі';
+        document.querySelectorAll('[data-toggle-squad]').forEach(b => b.textContent = allExpanded ? trans('squad.hide') : trans('squad.show'));
+        allToggle.textContent = allExpanded ? trans('squad.hide_all') : trans('squad.show_all');
     }
 });
