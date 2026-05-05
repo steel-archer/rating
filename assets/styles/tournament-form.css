@@ -9,7 +9,7 @@
 .tournament-form input[type="text"],
 .tournament-form input[type="number"],
 .tournament-form input[type="datetime-local"] {
-    font-family: var(--font);
+    font-family: var(--font), sans-serif;
     font-size: 17px;
     padding: 10px 14px;
     border: 1px solid var(--border);
@@ -74,7 +74,7 @@
 }
 
 .btn-remove {
-    font-family: var(--font);
+    font-family: var(--font), sans-serif;
     font-size: 16px;
     background: none;
     border: none;

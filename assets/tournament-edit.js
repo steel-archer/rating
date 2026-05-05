@@ -35,10 +35,9 @@ function initTournamentEditForm() {
                 if (ok) {
                     window.location.reload();
                 } else {
-                    const error = body.error
+                    status.textContent = body.error
                         ? body.error.split(' ').map(key => trans(key)).join('. ')
                         : trans('common.error');
-                    status.textContent = error;
                     status.className = 'save-status save-status-error';
                     status.hidden = false;
                 }

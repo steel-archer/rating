@@ -69,7 +69,7 @@
 }
 
 .reject-input {
-    font-family: var(--font);
+    font-family: var(--font), sans-serif;
     font-size: 14px;
     padding: 6px 12px;
     border: 1px solid var(--border);
