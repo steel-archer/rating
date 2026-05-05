@@ -67,31 +67,34 @@
     {# --- Основна інформація --- #}
     <div class="card">
         <h2>{{ 'tournament.my.general_info'|trans }}</h2>
+        {% if readonly %}
+            <p class="flash flash-info">{{ 'tournament.my.readonly_notice'|trans }}</p>
+        {% endif %}
         <form id="tournament-edit-form" class="tournament-form" data-url="{{ path('my_tournament_update', {id: tournament.id}) }}">
 
             <div class="form-group">
                 <label for="name">{{ 'common.name'|trans }} *</label>
-                <input type="text" id="name" name="name" value="{{ tournament.name }}" required>
+                <input type="text" id="name" name="name" value="{{ tournament.name }}" required {{ readonly ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
                 <label for="started_at">{{ 'tournament.my.start_datetime'|trans }}</label>
-                <input type="datetime-local" id="started_at" name="startedAt" value="{{ tournament.startedAt ? tournament.startedAt|date('Y-m-d\\TH:i') : '' }}">
+                <input type="datetime-local" id="started_at" name="startedAt" value="{{ tournament.startedAt ? tournament.startedAt|date('Y-m-d\\TH:i') : '' }}" {{ readonly ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
                 <label for="ended_at">{{ 'tournament.my.end_datetime'|trans }}</label>
-                <input type="datetime-local" id="ended_at" name="endedAt" value="{{ tournament.endedAt ? tournament.endedAt|date('Y-m-d\\TH:i') : '' }}">
+                <input type="datetime-local" id="ended_at" name="endedAt" value="{{ tournament.endedAt ? tournament.endedAt|date('Y-m-d\\TH:i') : '' }}" {{ readonly ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
                 <label for="tours_count">{{ 'tournament.tours_count'|trans }}</label>
-                <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}">
+                <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}" {{ readonly ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
                 <label for="questions_per_tour">{{ 'tournament.questions_per_tour'|trans }}</label>
-                <input type="number" id="questions_per_tour" name="questionsPerTour" min="1" step="1" value="{{ tournament.questionsPerTour }}">
+                <input type="number" id="questions_per_tour" name="questionsPerTour" min="1" step="1" value="{{ tournament.questionsPerTour }}" {{ readonly ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
                 <label for="difficulty">{{ 'tournament.difficulty'|trans }}</label>
-                <input type="number" id="difficulty" name="difficulty" min="1" max="10" step="0.5" value="{{ tournament.difficulty }}">
+                <input type="number" id="difficulty" name="difficulty" min="1" max="10" step="0.5" value="{{ tournament.difficulty }}" {{ readonly ? 'disabled' : '' }}>
             </div>
 
             {# --- Офіційні особи --- #}
@@ -126,8 +129,10 @@
                 </div>
             {% endfor %}
 
-            <button type="submit" class="btn">{{ 'tournament.my.save'|trans }}</button>
-            <span id="save-status" class="save-status" hidden></span>
+            {% if not readonly %}
+                <button type="submit" class="btn">{{ 'tournament.my.save'|trans }}</button>
+                <span id="save-status" class="save-status" hidden></span>
+            {% endif %}
         </form>
     </div>
 

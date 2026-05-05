@@ -21,6 +21,15 @@ class TournamentModerationClaimRepository extends ServiceEntityRepository
         return $this->findOneBy(['tournament' => $tournament]);
     }
 
+    public function findByTournamentId(int $tournamentId): ?TournamentModerationClaim
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.tournament = :id')
+            ->setParameter('id', $tournamentId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * @param list<Tournament> $tournaments
      * @return array<int, TournamentModerationClaim>

@@ -130,6 +130,12 @@ docker compose up -d
 
 ## Якість коду
 
+Оновлення JS-перекладів (після зміни `translations/messages.uk.yaml`):
+
+```bash
+docker compose exec app php bin/console app:generate-translations
+```
+
 Перевірка стилю коду (PSR-12):
 
 ```bash

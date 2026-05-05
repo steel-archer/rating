@@ -133,6 +133,16 @@
     font-size: 14px;
 }
 
+.flash-info {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    color: #1e40af;
+    font-size: 14px;
+}
+
 .publish-errors {
     margin-top: 24px;
 }

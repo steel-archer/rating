@@ -5,6 +5,7 @@ namespace App\Controller\Tournament;
 use App\Entity\TournamentStatus;
 use App\Entity\User;
 use App\Exception\EntityNotFoundException;
+use App\Repository\TournamentModerationClaimRepository;
 use App\Service\TournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +17,11 @@ use Throwable;
 #[Route('/tournament/{id}', name: 'tournament_show', requirements: ['id' => '\d+'], methods: ['GET'])]
 final class ShowController extends AbstractController
 {
-    public function __invoke(int $id, TournamentService $tournamentService): Response
-    {
+    public function __invoke(
+        int $id,
+        TournamentService $tournamentService,
+        TournamentModerationClaimRepository $claimRepository,
+    ): Response {
         try {
             $tournament = $tournamentService->get($id);
         } catch (EntityNotFoundException $exception) {
@@ -39,6 +43,9 @@ final class ShowController extends AbstractController
 
         return $this->render('tournament/show.html.twig', [
             'tournament' => $tournament,
+            'moderationClaim' => $this->isGranted('ROLE_MODERATOR')
+                ? $claimRepository->findByTournamentId($id)
+                : null,
         ]);
     }
 }

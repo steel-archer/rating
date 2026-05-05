@@ -30,14 +30,19 @@ final class TournamentListController extends AbstractController
 
         $dto ??= new ListRequestDTO();
         $sort = strtolower($dto->sort) === 'asc' ? 'asc' : 'desc';
+        $page = max(1, $dto->page);
 
-        $tournaments = $tournamentRepository->findByCreator($user, $sort);
+        $tournaments = $tournamentRepository->findByCreator($user, $sort, $page);
         $claims = $claimRepository->findByTournaments($tournaments);
+        $total = $tournamentRepository->countByCreator($user);
+        $lastPage = max(1, (int) ceil($total / 50));
 
         return $this->render('my/tournaments.html.twig', [
             'tournaments' => $tournaments,
             'claims' => $claims,
             'sort' => $sort,
+            'page' => $page,
+            'lastPage' => $lastPage,
         ]);
     }
 }

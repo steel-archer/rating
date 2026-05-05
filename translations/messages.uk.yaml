@@ -133,6 +133,7 @@ tournament:
     moderation: 'Модерація'
     publish: 'Опублікувати'
     publish_requirements: 'Вимоги для публікації'
+    readonly_notice: 'Цей турнір вже почався і не може бути відредагований'
     save: 'Зберегти'
     sort: 'Сортування'
     start_datetime: 'Дата та час початку'

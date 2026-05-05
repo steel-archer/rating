@@ -58,6 +58,23 @@
         {% endif %}
     </div>
 
+    {% if moderationClaim and moderationClaim.status.value == 'pending' %}
+        <div class="card moderation-card">
+            <h2>{{ 'nav.moderation'|trans }}</h2>
+            <div class="moderation-actions">
+                <form method="post" action="{{ path('moderator_tournament_approve', {id: tournament.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('tournament_moderate_' ~ tournament.id) }}">
+                    <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
+                </form>
+                <form method="post" action="{{ path('moderator_tournament_reject', {id: tournament.id}) }}" class="reject-form">
+                    <input type="hidden" name="_token" value="{{ csrf_token('tournament_moderate_' ~ tournament.id) }}">
+                    <input type="text" name="comment" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}">
+                    <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
     {% if tournament.teamCount > 0 %}
         <turbo-frame id="tournament-results" src="{{ path('tournament_results', {id: tournament.id}) }}">
             <p>{{ 'common.loading_results'|trans }}</p>

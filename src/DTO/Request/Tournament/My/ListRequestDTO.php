@@ -6,6 +6,8 @@ final readonly class ListRequestDTO
 {
     public function __construct(
         public string $sort = 'desc',
+
+        public int $page = 1,
     ) {
     }
 }

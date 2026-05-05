@@ -2,11 +2,13 @@
 
 namespace App\Controller\My;
 
+use App\Entity\TournamentStatus;
 use App\Entity\User;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
 use App\Service\TournamentValidator;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,11 +33,16 @@ final class TournamentEditController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        $readonly = $tournament->getStatus() === TournamentStatus::Published
+            && $tournament->getStartedAt() !== null
+            && $tournament->getStartedAt() <= new DateTime();
+
         return $this->render('my/tournament_edit.html.twig', [
             'tournament' => $tournament,
             'claim' => $claimRepository->findByTournament($tournament),
             'officials' => $officialRepository->findByTournament($tournament),
             'publishErrors' => $validator->validatePublish($tournament),
+            'readonly' => $readonly,
         ]);
     }
 }

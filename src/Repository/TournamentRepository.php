@@ -82,7 +82,7 @@ class TournamentRepository extends ServiceEntityRepository
     /**
      * @return list<Tournament>
      */
-    public function findByCreator(User $user, string $sort = 'DESC'): array
+    public function findByCreator(User $user, string $sort = 'DESC', int $page = 1): array
     {
         $direction = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
 
@@ -96,8 +96,20 @@ class TournamentRepository extends ServiceEntityRepository
             ->where('t.createdBy = :user')
             ->setParameter('user', $user)
             ->orderBy('CASE WHEN c.resolvedAt IS NOT NULL THEN c.resolvedAt WHEN c.createdAt IS NOT NULL THEN c.createdAt ELSE t.startedAt END', $direction)
+            ->setFirstResult(($page - 1) * self::PER_PAGE)
+            ->setMaxResults(self::PER_PAGE)
             ->getQuery()
             ->getResult();
+    }
+
+    public function countByCreator(User $user): int
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.createdBy = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     private function buildFilteredQuery(TournamentListRequestDTO $requestDto): QueryBuilder

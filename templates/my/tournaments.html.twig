@@ -31,7 +31,7 @@
             </thead>
             <tbody>
                 {% for tournament in tournaments %}
-                    {% set claim = claims[tournament.id] %}
+                    {% set claim = claims[tournament.id] is defined ? claims[tournament.id] : null %}
                     <tr>
                         <td><a href="{{ path('my_tournament_edit', {id: tournament.id}) }}">{{ tournament.name }}</a></td>
                         <td class="meta">
@@ -63,5 +63,12 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        {% include '_pagination.html.twig' with {
+            paginationRoute: 'my_tournaments',
+            paginationParams: {sort: sort},
+            page: page,
+            lastPage: lastPage,
+        } %}
     {% endif %}
 {% endblock %}
