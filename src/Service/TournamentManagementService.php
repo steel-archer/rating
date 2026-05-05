@@ -52,6 +52,7 @@ final readonly class TournamentManagementService
 
     /**
      * @throws DateMalformedStringException
+     * @throws LogicException
      */
     public function update(Tournament $tournament, EditRequestDTO $dto): void
     {
@@ -76,7 +77,7 @@ final readonly class TournamentManagementService
 
         if ($nameChanged) {
             $tournament->setStatus(TournamentStatus::Draft);
-            $this->submitForModeration($tournament);
+            $this->resetModeration($tournament);
         }
 
         $this->em->flush();
@@ -142,6 +143,21 @@ final readonly class TournamentManagementService
 
     public function submitForModeration(Tournament $tournament): void
     {
+        if ($tournament->getStatus() === TournamentStatus::Published) {
+            throw new LogicException('Cannot submit published tournament');
+        }
+
+        $claim = $this->claimRepository->findByTournament($tournament);
+
+        if ($claim !== null && $claim->getStatus() === TournamentModerationStatus::Approved) {
+            throw new LogicException('Tournament is already approved');
+        }
+
+        $this->resetModeration($tournament);
+    }
+
+    private function resetModeration(Tournament $tournament): void
+    {
         $claim = $this->claimRepository->findByTournament($tournament);
 
         if ($claim === null) {
@@ -163,6 +179,10 @@ final readonly class TournamentManagementService
         $claim = $this->claimRepository->findByTournament($tournament)
             ?? throw new LogicException('No moderation claim found');
 
+        if ($claim->getStatus() !== TournamentModerationStatus::Pending) {
+            throw new LogicException('Claim is not pending');
+        }
+
         $claim->setStatus(TournamentModerationStatus::Approved);
         $claim->setResolvedAt(new DateTime());
 
@@ -174,6 +194,10 @@ final readonly class TournamentManagementService
         $claim = $this->claimRepository->findByTournament($tournament)
             ?? throw new LogicException('No moderation claim found');
 
+        if ($claim->getStatus() !== TournamentModerationStatus::Pending) {
+            throw new LogicException('Claim is not pending');
+        }
+
         $claim->setStatus(TournamentModerationStatus::Rejected);
         $claim->setComment($comment);
         $claim->setResolvedAt(new DateTime());
@@ -183,6 +207,10 @@ final readonly class TournamentManagementService
 
     public function publish(Tournament $tournament): void
     {
+        if ($tournament->getStatus() === TournamentStatus::Published) {
+            throw new LogicException('Tournament is already published');
+        }
+
         $errors = $this->validator->validatePublish($tournament);
         if ($errors !== []) {
             throw new LogicException(implode(' ', $errors));

@@ -32,10 +32,7 @@ final class TournamentListController extends AbstractController
         $sort = strtolower($dto->sort) === 'asc' ? 'asc' : 'desc';
 
         $tournaments = $tournamentRepository->findByCreator($user, $sort);
-        $claims = [];
-        foreach ($tournaments as $tournament) {
-            $claims[$tournament->getId()] = $claimRepository->findByTournament($tournament);
-        }
+        $claims = $claimRepository->findByTournaments($tournaments);
 
         return $this->render('my/tournaments.html.twig', [
             'tournaments' => $tournaments,

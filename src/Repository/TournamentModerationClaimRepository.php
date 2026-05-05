@@ -22,6 +22,30 @@ class TournamentModerationClaimRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<Tournament> $tournaments
+     * @return array<int, TournamentModerationClaim>
+     */
+    public function findByTournaments(array $tournaments): array
+    {
+        if ($tournaments === []) {
+            return [];
+        }
+
+        $claims = $this->createQueryBuilder('c')
+            ->where('c.tournament IN (:tournaments)')
+            ->setParameter('tournaments', $tournaments)
+            ->getQuery()
+            ->getResult();
+
+        $indexed = [];
+        foreach ($claims as $claim) {
+            $indexed[$claim->getTournament()->getId()] = $claim;
+        }
+
+        return $indexed;
+    }
+
+    /**
      * @return list<TournamentModerationClaim>
      */
     public function findByStatus(TournamentModerationStatus $status): array
