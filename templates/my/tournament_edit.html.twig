@@ -53,6 +53,13 @@
                         <button type="submit" class="btn btn-success">{{ 'tournament.my.publish'|trans }}</button>
                     </form>
                 {% endif %}
+
+                {% if tournament.status.value != 'published' %}
+                    <form method="post" action="{{ path('my_tournament_delete', {id: tournament.id}) }}" onsubmit="return confirm('{{ 'tournament.my.delete_confirm'|trans }}')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('tournament_delete_' ~ tournament.id) }}">
+                        <button type="submit" class="btn btn-reject">{{ 'tournament.my.delete'|trans }}</button>
+                    </form>
+                {% endif %}
             </div>
         </div>
     </div>

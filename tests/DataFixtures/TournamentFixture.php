@@ -11,6 +11,7 @@ use App\Entity\TournamentOfficialRole;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Entity\TournamentSessionTeamPlayer;
+use App\Entity\TournamentStatus;
 use App\Entity\Venue;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -64,6 +65,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $endDate = (clone $startDate)->modify('+' . $faker->numberBetween(7, 14) . ' days');
             $tournament->setStartedAt($startDate);
             $tournament->setEndedAt($endDate);
+            $tournament->setStatus(TournamentStatus::Published);
             $tournament->setToursCount($faker->boolean(90) ? 3 : $faker->randomElement([4, 5]));
             $tournament->setQuestionsPerTour($faker->boolean(90) ? 12 : $faker->randomElement([13, 14, 15]));
             $tournament->setDifficulty($faker->randomFloat(1, 2, 5));

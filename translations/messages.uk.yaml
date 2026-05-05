@@ -106,8 +106,11 @@ team:
   base_squads: 'Базові склади'
 
 tournament:
+  deleted: 'Турнір видалено'
   difficulty: 'Складність'
   error:
+    cannot_delete_published: 'Не можна видалити опублікований турнір'
+    cannot_edit_started: 'Не можна редагувати турнір, який вже почався'
     end_before_start: 'Дата завершення має бути пізніше дати початку'
     end_in_past: 'Дата завершення не може бути в минулому'
     spans_multiple_seasons: 'Турнір не може охоплювати декілька сезонів'
@@ -121,6 +124,8 @@ tournament:
     add_official: 'Додати особу'
     actions: 'Дії'
     create: 'Створити турнір'
+    delete: 'Видалити'
+    delete_confirm: 'Ви впевнені, що хочете видалити цей турнір?'
     edit: 'Редагування'
     empty: 'У вас ще немає турнірів'
     end_datetime: 'Дата та час завершення'

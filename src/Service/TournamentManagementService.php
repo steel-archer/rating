@@ -56,6 +56,14 @@ final readonly class TournamentManagementService
      */
     public function update(Tournament $tournament, EditRequestDTO $dto): void
     {
+        if (
+            $tournament->getStatus() === TournamentStatus::Published
+            && $tournament->getStartedAt() !== null
+            && $tournament->getStartedAt() <= new DateTime()
+        ) {
+            throw new LogicException('tournament.error.cannot_edit_started');
+        }
+
         $errors = $this->validator->validateEdit($dto);
         if ($errors !== []) {
             throw new LogicException(implode(' ', $errors));
@@ -80,6 +88,7 @@ final readonly class TournamentManagementService
             $this->resetModeration($tournament);
         }
 
+        $tournament->setUpdatedAt(new DateTime());
         $this->em->flush();
     }
 
@@ -217,6 +226,26 @@ final readonly class TournamentManagementService
         }
 
         $tournament->setStatus(TournamentStatus::Published);
+        $this->em->flush();
+    }
+
+    public function delete(Tournament $tournament): void
+    {
+        if ($tournament->getStatus() === TournamentStatus::Published) {
+            throw new LogicException('tournament.error.cannot_delete_published');
+        }
+
+        $claim = $this->claimRepository->findByTournament($tournament);
+        if ($claim !== null) {
+            $this->em->remove($claim);
+        }
+
+        $officials = $this->officialRepository->findByTournament($tournament);
+        foreach ($officials as $official) {
+            $this->em->remove($official);
+        }
+
+        $this->em->remove($tournament);
         $this->em->flush();
     }
 }
