@@ -45,6 +45,7 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
                 $venue = new Venue();
                 $venue->setName($faker->randomElement(self::VENUE_NAMES) . ' ' . $faker->lastName());
                 $venue->setTown($town);
+                $venue->setIsApproved(true);
                 $manager->persist($venue);
                 $this->addReference("venue_$venueIndex", $venue);
                 self::$townVenueMap[$townIndex][] = $venueIndex;
