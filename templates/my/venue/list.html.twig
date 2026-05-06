@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'venue.my.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'venue.my.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'venue.my.title'|trans }}</h1>
+
+    <div class="my-tournaments-toolbar">
+        <a href="{{ path('my_venue_new') }}" class="btn btn-primary">{{ 'venue.my.create'|trans }}</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash flash-success">{{ message|trans }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash flash-error">{{ message|trans }}</div>
+    {% endfor %}
+
+    {% if venues is empty %}
+        <p class="empty-state">{{ 'venue.my.empty'|trans }}</p>
+    {% else %}
+        <table class="my-tournaments-table">
+            <thead>
+                <tr>
+                    <th>{{ 'common.name'|trans }}</th>
+                    <th>{{ 'common.town'|trans }}</th>
+                    <th>{{ 'venue.my.status'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venue in venues %}
+                    <tr>
+                        <td>
+                            {% if venue.isApproved %}
+                                <a href="{{ path('my_venue_edit', {id: venue.id}) }}">{{ venue.name }}</a>
+                            {% else %}
+                                {{ venue.name }}
+                            {% endif %}
+                        </td>
+                        <td class="meta">{{ venue.town.name }}</td>
+                        <td>
+                            {% if venue.isApproved %}
+                                <span class="badge badge-approved">{{ 'venue.status.approved'|trans }}</span>
+                            {% else %}
+                                <span class="badge badge-moderation-pending">{{ 'venue.status.pending'|trans }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

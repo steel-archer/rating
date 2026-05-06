@@ -67,9 +67,11 @@ moderator:
   no_tournament_claims_approved: 'Немає схвалених турнірів'
   no_tournament_claims_pending: 'Немає турнірів на розгляд'
   no_tournament_claims_rejected: 'Немає відхилених турнірів'
+  no_venue_claims: 'Немає майданчиків на розгляд'
   reject: 'Відхилити'
   reject_comment: 'Коментар'
   tournaments: 'Турніри'
+  venues: 'Майданчики'
 
 nav:
   home: 'Головна'
@@ -175,9 +177,28 @@ tournament:
   true_dl: 'True DL'
 
 venue:
+  error:
+    duplicate: 'Майданчик з такою назвою в цьому місті вже існує'
+    no_player: 'Необхідно мати привʼязаного гравця'
+    town_not_found: 'Місто не знайдено'
   host: 'Ведучий'
+  my:
+    add_representative: 'Додати представника'
+    create: 'Створити майданчик'
+    created: 'Майданчик створено та подано на модерацію'
+    current_representatives: 'Поточні представники'
+    edit: 'Редагування'
+    empty: 'У вас ще немає майданчиків'
+    info: 'Інформація'
+    save: 'Зберегти'
+    saved: 'Зміни збережено'
+    status: 'Статус'
+    title: 'Мої майданчики'
   representative: 'Представник'
   representatives: 'Представники'
   search:
     representative: 'ПІБ представника'
+  status:
+    approved: 'Схвалено'
+    pending: 'На розгляді'
   venue: 'Майданчик'

@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\VenueRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VenueRepository::class)]
+#[ORM\UniqueConstraint(name: 'UQ_venue_name_town', columns: ['name', 'town_id'])]
 #[ORM\Index(name: 'IDX_venue_town', columns: ['town_id'])]
+#[ORM\Index(name: 'IDX_venue_created_by', columns: ['created_by_id'])]
 class Venue
 {
     #[ORM\Id]
@@ -20,6 +23,21 @@ class Venue
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private Town $town;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $createdBy = null;
+
+    #[ORM\Column]
+    private bool $isApproved = false;
+
+    #[ORM\Column]
+    private DateTime $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
 
     public function getId(): ?int
     {
@@ -46,6 +64,42 @@ class Venue
     public function setTown(Town $town): static
     {
         $this->town = $town;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->isApproved;
+    }
+
+    public function setIsApproved(bool $isApproved): static
+    {
+        $this->isApproved = $isApproved;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTime $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

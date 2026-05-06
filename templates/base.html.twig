@@ -30,6 +30,7 @@
                                 <div class="dropdown-menu-inner">
                                     <a href="{{ path('moderator_claims') }}">{{ 'moderator.claims'|trans }}</a>
                                     <a href="{{ path('moderator_tournaments') }}">{{ 'moderator.tournaments'|trans }}</a>
+                                    <a href="{{ path('moderator_venues') }}">{{ 'moderator.venues'|trans }}</a>
                                 </div>
                             </div>
                         </div>
@@ -41,6 +42,7 @@
                                 <div class="dropdown-menu-inner">
                                     <a href="{{ path('player_show', {id: app.user.player.id}) }}">{{ 'nav.profile'|trans }}</a>
                                     <a href="{{ path('my_tournaments') }}">{{ 'tournament.my.title'|trans }}</a>
+                                    <a href="{{ path('my_venues') }}">{{ 'venue.my.title'|trans }}</a>
                                 </div>
                             </div>
                         </div>

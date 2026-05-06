@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'moderator.venues'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'moderator.venues'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'moderator.venues'|trans }}</h1>
+
+    {% for message in app.flashes('error') %}
+        <div class="flash flash-error">{{ message|trans }}</div>
+    {% endfor %}
+
+    {% if venues is empty %}
+        <p class="empty-state">{{ 'moderator.no_venue_claims'|trans }}</p>
+    {% else %}
+        {% for venue in venues %}
+            <div class="card moderation-card">
+                <div class="moderation-card-header">
+                    <h2>{{ venue.name }}</h2>
+                    <span class="meta">{{ venue.town.name }} · {{ venue.createdAt|date('d.m.Y H:i') }}</span>
+                </div>
+
+                <div class="moderation-actions">
+                    <form method="post" action="{{ path('moderator_venue_approve', {id: venue.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('venue_moderate_' ~ venue.id) }}">
+                        <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
+                    </form>
+                    <form method="post" action="{{ path('moderator_venue_reject', {id: venue.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('venue_moderate_' ~ venue.id) }}">
+                        <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ venue.name }} — {{ 'venue.my.edit'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_venues') }}">{{ 'venue.my.title'|trans }}</a></span><span>{{ venue.name }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ venue.name }}</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash flash-success">{{ message|trans }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash flash-error">{{ message|trans }}</div>
+    {% endfor %}
+
+    <div class="cards-row">
+        <div class="card">
+            <h2>{{ 'venue.my.info'|trans }}</h2>
+            <dl>
+                <dt>{{ 'common.name'|trans }}</dt>
+                <dd>{{ venue.name }}</dd>
+                <dt>{{ 'common.town'|trans }}</dt>
+                <dd>{{ venue.town.name }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>{{ 'venue.representatives'|trans }}</h2>
+        <form id="venue-edit-form" class="tournament-form" data-url="{{ path('my_venue_update', {id: venue.id}) }}">
+            <div class="form-group">
+                <label>{{ 'venue.my.current_representatives'|trans }}</label>
+                <div class="officials-group" data-role="representatives">
+                    {% for rep in representatives %}
+                        <div class="official-entry">
+                            <input type="hidden" name="representatives[]" value="{{ rep.player.id }}">
+                            <a href="{{ path('player_show', {id: rep.player.id}) }}">{{ rep.player.fullName }}</a>
+                            {% if rep.player.id != venue.createdBy.player.id %}
+                                <button type="button" class="btn-remove">×</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                    <input type="text" data-suggest-input placeholder="{{ 'venue.my.add_representative'|trans }}">
+                    <div data-suggest-dropdown hidden></div>
+                </div>
+            </div>
+            <button type="submit" class="btn">{{ 'venue.my.save'|trans }}</button>
+            <span id="save-status" class="save-status" hidden></span>
+        </form>
+    </div>
+{% endblock %}

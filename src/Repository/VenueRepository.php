@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\DTO\Request\VenueListRequestDTO;
+use App\Entity\User;
 use App\Entity\Venue;
 use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -10,6 +11,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\VenueRepresentative;
 
 /** @extends ServiceEntityRepository<Venue> */
 class VenueRepository extends ServiceEntityRepository
@@ -30,6 +32,7 @@ class VenueRepository extends ServiceEntityRepository
             ->join('v.town', 'town')
             ->addSelect('town')
             ->where('v.id = :id')
+            ->andWhere('v.isApproved = true')
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
@@ -63,11 +66,54 @@ class VenueRepository extends ServiceEntityRepository
         return max(1, (int) ceil($total / self::PER_PAGE));
     }
 
+    /**
+     * @return list<Venue>
+     */
+    public function findByCreator(User $user): array
+    {
+        return $this->createQueryBuilder('v')
+            ->join('v.town', 'town')
+            ->addSelect('town')
+            ->where('v.createdBy = :user')
+            ->setParameter('user', $user)
+            ->orderBy('v.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<Venue>
+     */
+    public function findPendingApproval(): array
+    {
+        return $this->createQueryBuilder('v')
+            ->join('v.town', 'town')
+            ->addSelect('town')
+            ->where('v.isApproved = false')
+            ->orderBy('v.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function existsByNameAndTown(string $name, int $townId): bool
+    {
+        return (bool) $this->createQueryBuilder('v')
+            ->select('1')
+            ->where('v.name = :name')
+            ->andWhere('v.town = :townId')
+            ->setParameter('name', $name)
+            ->setParameter('townId', $townId)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     private function buildFilteredQuery(VenueListRequestDTO $requestDto): QueryBuilder
     {
         $qb = $this->createQueryBuilder('v')
             ->join('v.town', 'town')
-            ->join('town.country', 'country');
+            ->join('town.country', 'country')
+            ->andWhere('v.isApproved = true');
 
         if ($requestDto->name !== null && $requestDto->name !== '') {
             $qb->andWhere('v.name LIKE :name')
@@ -85,7 +131,7 @@ class VenueRepository extends ServiceEntityRepository
         }
 
         if ($requestDto->representative !== null && $requestDto->representative !== '') {
-            $qb->join('App\Entity\VenueRepresentative', 'vr', 'WITH', 'vr.venue = v')
+            $qb->join(VenueRepresentative::class, 'vr', 'WITH', 'vr.venue = v')
                 ->join('vr.player', 'rep')
                 ->andWhere("CONCAT(rep.lastName, ' ', rep.firstName, ' ', COALESCE(rep.patronymic, '')) LIKE :rep")
                 ->setParameter('rep', LikeEscape::contains($requestDto->representative));

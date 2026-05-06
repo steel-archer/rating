@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\VenueRepresentativeRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VenueRepresentativeRepository::class)]
@@ -23,6 +24,14 @@ class VenueRepresentative
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private Player $player;
+
+    #[ORM\Column]
+    private DateTime $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
 
     public function getId(): ?int
     {
@@ -49,6 +58,18 @@ class VenueRepresentative
     public function setPlayer(Player $player): static
     {
         $this->player = $player;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTime $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

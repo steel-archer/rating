@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Controller\My\Venue;
+
+use App\DTO\Request\Venue\UpdateRequestDTO;
+use App\Entity\User;
+use App\Repository\VenueRepository;
+use App\Service\VenueManagementService;
+use LogicException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Throwable;
+
+#[Route('/my/venues/{id}', name: 'my_venue_update', requirements: ['id' => '\d+'], methods: ['POST'])]
+#[IsGranted('ROLE_USER')]
+final class UpdateController extends AbstractController
+{
+    public function __invoke(
+        int $id,
+        #[MapRequestPayload] UpdateRequestDTO $dto,
+        VenueRepository $venueRepository,
+        VenueManagementService $service,
+    ): JsonResponse {
+        /** @var User $user */
+        $user = $this->getUser();
+        $venue = $venueRepository->find($id);
+
+        if ($venue === null || $venue->getCreatedBy() !== $user) {
+            return $this->json(['error' => 'Not found'], 404);
+        }
+
+        try {
+            $service->updateRepresentatives($venue, $dto->representatives);
+        } catch (LogicException $ex) {
+            return $this->json(['error' => $ex->getMessage()], 422);
+        } catch (Throwable) {
+            return $this->json(['error' => 'common.error'], 500);
+        }
+
+        $this->addFlash('success', 'venue.my.saved');
+
+        return $this->json(['success' => true]);
+    }
+}
