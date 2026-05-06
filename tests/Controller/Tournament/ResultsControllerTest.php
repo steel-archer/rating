@@ -6,6 +6,8 @@ namespace App\Tests\Controller\Tournament;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use App\Service\TournamentResultService;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -23,9 +25,14 @@ class ResultsControllerTest extends WebTestCase
         array $fixtures,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
+        }
 
         $resolvedUri = is_callable($uri) ? $uri($objects) : $uri;
         $crawler = $client->request($method, $resolvedUri);

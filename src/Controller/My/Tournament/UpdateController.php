@@ -16,7 +16,7 @@ use Throwable;
 
 #[Route('/my/tournaments/{id}', name: 'my_tournament_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
-final class UpdateController extends AbstractController
+class UpdateController extends AbstractController
 {
     public function __invoke(
         int $id,

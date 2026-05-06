@@ -23,8 +23,7 @@
             <h2>{{ 'player_claim.new_title'|trans }}</h2>
             <p>{{ 'player_claim.new_description'|trans }}</p>
 
-            <form method="post" action="{{ path('player_claim_new') }}">
-                <input type="hidden" name="_token" value="{{ csrf_token('player_claim_new') }}">
+            <form id="player-claim-new-form" data-url="{{ path('player_claim_new') }}">
                 <div class="form-group">
                     <input type="text" name="lastName" required placeholder="{{ 'player.last_name'|trans }}" value="{{ app.user.lastName }}" class="search-input">
                 </div>
@@ -42,6 +41,7 @@
                     </div>
                 </div>
                 <button type="submit" class="search-btn">{{ 'player_claim.submit'|trans }}</button>
+                <span id="claim-new-status" class="save-status" hidden></span>
             </form>
         </div>
     </div>

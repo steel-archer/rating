@@ -41,24 +41,15 @@
             <h2>{{ 'tournament.my.actions'|trans }}</h2>
             <div class="actions-card">
                 {% if (not claim or claim.status.value not in ['pending', 'approved']) and tournament.status.value != 'published' %}
-                    <form method="post" action="{{ path('my_tournament_submit', {id: tournament.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('tournament_submit_' ~ tournament.id) }}">
-                        <button type="submit" class="btn btn-primary">{{ 'tournament.my.submit_moderation'|trans }}</button>
-                    </form>
+                    <button type="button" class="btn btn-primary" data-tournament-submit="{{ tournament.id }}">{{ 'tournament.my.submit_moderation'|trans }}</button>
                 {% endif %}
 
                 {% if publishErrors is empty and tournament.status.value != 'published' %}
-                    <form method="post" action="{{ path('my_tournament_publish', {id: tournament.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('tournament_publish_' ~ tournament.id) }}">
-                        <button type="submit" class="btn btn-success">{{ 'tournament.my.publish'|trans }}</button>
-                    </form>
+                    <button type="button" class="btn btn-success" data-tournament-publish="{{ tournament.id }}">{{ 'tournament.my.publish'|trans }}</button>
                 {% endif %}
 
                 {% if tournament.status.value != 'published' %}
-                    <form method="post" action="{{ path('my_tournament_delete', {id: tournament.id}) }}" onsubmit="return confirm('{{ 'tournament.my.delete_confirm'|trans }}')">
-                        <input type="hidden" name="_token" value="{{ csrf_token('tournament_delete_' ~ tournament.id) }}">
-                        <button type="submit" class="btn btn-reject">{{ 'tournament.my.delete'|trans }}</button>
-                    </form>
+                    <button type="button" class="btn btn-reject" data-tournament-delete="{{ tournament.id }}" data-confirm="{{ 'tournament.my.delete_confirm'|trans }}">{{ 'tournament.my.delete'|trans }}</button>
                 {% endif %}
             </div>
         </div>

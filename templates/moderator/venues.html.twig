@@ -17,21 +17,15 @@
         <p class="empty-state">{{ 'moderator.no_venue_claims'|trans }}</p>
     {% else %}
         {% for venue in venues %}
-            <div class="card moderation-card">
+            <div class="card moderation-card" data-venue-id="{{ venue.id }}">
                 <div class="moderation-card-header">
                     <h2>{{ venue.name }}</h2>
                     <span class="meta">{{ venue.town.name }} · {{ venue.createdAt|date('d.m.Y H:i') }}</span>
                 </div>
 
                 <div class="moderation-actions">
-                    <form method="post" action="{{ path('moderator_venue_approve', {id: venue.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('venue_moderate_' ~ venue.id) }}">
-                        <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
-                    </form>
-                    <form method="post" action="{{ path('moderator_venue_reject', {id: venue.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('venue_moderate_' ~ venue.id) }}">
-                        <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
-                    </form>
+                    <button type="button" class="btn btn-approve" data-venue-approve="{{ venue.id }}">{{ 'moderator.approve'|trans }}</button>
+                    <button type="button" class="btn btn-reject" data-venue-reject="{{ venue.id }}">{{ 'moderator.reject'|trans }}</button>
                 </div>
             </div>
         {% endfor %}

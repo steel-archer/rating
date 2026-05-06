@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Tests\Controller\PlayerClaim;
 
 use App\Entity\PlayerClaim;
-use App\Tests\CsrfTrait;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ClaimExistingControllerTest extends WebTestCase
 {
     use FixturesTrait;
-    use CsrfTrait;
 
     /**
      * @param list<string> $fixtures
@@ -22,7 +21,7 @@ class ClaimExistingControllerTest extends WebTestCase
     public function testClaimExisting(
         array $fixtures,
         ?string $loginAs,
-        string $searchLastName,
+        callable $action,
         int $expectedStatus,
         callable $afterCallback,
     ): void {
@@ -33,17 +32,7 @@ class ClaimExistingControllerTest extends WebTestCase
             $client->loginUser($objects[$loginAs]);
         }
 
-        // search for player via claim search
-        $crawler = $client->request('GET', '/player-claim/search?lastName=' . urlencode($searchLastName));
-
-        if ($client->getResponse()->isSuccessful() && $crawler->filter('form[action*="/player-claim/existing"]')->count() > 0) {
-            $token = self::extractCsrfToken($crawler, '/player-claim/existing');
-            $playerId = $crawler->filter('form[action*="/player-claim/existing"] input[name="playerId"]')->attr('value');
-            $client->request('POST', '/player-claim/existing', [
-                '_token' => $token,
-                'playerId' => $playerId,
-            ]);
-        }
+        $action($client, $objects);
 
         static::assertResponseStatusCodeSame($expectedStatus);
         $afterCallback($objects);
@@ -57,8 +46,15 @@ class ClaimExistingControllerTest extends WebTestCase
         yield 'user claims existing free player' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
-            'searchLastName' => 'Українка',
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/player-claim/existing',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['playerId' => $objects['player_lesya']->getId()], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
             'afterCallback' => static function (array $objects) {
                 $claims = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
                     ->findBy(['user' => $objects['user_regular']]);
@@ -69,12 +65,67 @@ class ClaimExistingControllerTest extends WebTestCase
             },
         ];
 
-        yield 'anonymous gets redirected' => [
+        yield 'claim non-existent player returns 404' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/existing',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['playerId' => 999999], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'claim already taken player returns 404' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/player-claim/existing',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['playerId' => $objects['player_shevchenko']->getId()], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'user with player gets 422' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/player-claim/existing',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['playerId' => $objects['player_lesya']->getId()], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'anonymous gets redirected' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
-            'searchLastName' => 'Франко',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/existing',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['playerId' => 1], JSON_THROW_ON_ERROR),
+            ),
             'expectedStatus' => 302,
-            'afterCallback' => static function (array $objects) {
+            'afterCallback' => static function () {
             },
         ];
     }

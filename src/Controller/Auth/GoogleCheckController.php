@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/connect/google/check', name: 'auth_google_check')]
-final class GoogleCheckController extends AbstractController
+class GoogleCheckController extends AbstractController
 {
     public function __invoke(): Response
     {

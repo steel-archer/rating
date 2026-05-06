@@ -30,11 +30,7 @@
                         <td>{{ p.fullName }}</td>
                         <td>{{ p.townName ?? '' }}</td>
                         <td>
-                            <form method="post" action="{{ path('player_claim_existing') }}" data-turbo-frame="_top">
-                                <input type="hidden" name="_token" value="{{ csrf_token('player_claim_existing') }}">
-                                <input type="hidden" name="playerId" value="{{ p.id }}">
-                                <button type="submit" class="btn-link">{{ 'player_claim.select'|trans }}</button>
-                            </form>
+                            <button type="button" class="btn-link" data-player-claim-existing="{{ p.id }}">{{ 'player_claim.select'|trans }}</button>
                         </td>
                     </tr>
                 {% endfor %}

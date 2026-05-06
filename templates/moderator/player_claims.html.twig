@@ -45,14 +45,8 @@
                             {% endif %}
                         </td>
                         <td class="claim-actions">
-                            <form method="post" action="{{ path('moderator_player_claim_approve', {id: claim.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('player_claim_' ~ claim.id) }}">
-                                <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
-                            </form>
-                            <form method="post" action="{{ path('moderator_player_claim_reject', {id: claim.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('player_claim_' ~ claim.id) }}">
-                                <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
-                            </form>
+                            <button type="button" class="btn btn-approve" data-player-claim-approve="{{ claim.id }}">{{ 'moderator.approve'|trans }}</button>
+                            <button type="button" class="btn btn-reject" data-player-claim-reject="{{ claim.id }}">{{ 'moderator.reject'|trans }}</button>
                         </td>
                     </tr>
                 {% endfor %}

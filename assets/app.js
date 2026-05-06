@@ -4,6 +4,7 @@ import './suggest.js';
 import './officials-suggest.js';
 import './tournament-edit.js';
 import './venue-edit.js';
+import './player-claim.js';
 import './sync-url.js';
 import { trans } from './trans.js';
 

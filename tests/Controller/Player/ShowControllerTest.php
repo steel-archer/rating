@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Player;
 
+use App\Service\PlayerService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -23,9 +25,14 @@ class ShowControllerTest extends WebTestCase
         array $fixtures,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
+        }
 
         $resolvedUri = is_callable($uri) ? $uri($objects) : $uri;
         $crawler = $client->request($method, $resolvedUri);
@@ -90,6 +97,21 @@ class ShowControllerTest extends WebTestCase
             'fixtures' => [],
             'expectedStatus' => 404,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
+        yield 'service unavailable on throwable' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId(),
+            'fixtures' => ['Entity/base.yaml'],
+            'expectedStatus' => 503,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(PlayerService::class);
+                $stub->method('get')->willThrowException(new RuntimeException('DB down'));
+                static::getContainer()->set(PlayerService::class, $stub);
             },
         ];
     }

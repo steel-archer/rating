@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Tests\Controller\PlayerClaim;
 
 use App\Entity\PlayerClaim;
-use App\Tests\CsrfTrait;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ClaimNewControllerTest extends WebTestCase
 {
     use FixturesTrait;
-    use CsrfTrait;
 
     /**
      * @param list<string> $fixtures
@@ -22,6 +21,7 @@ class ClaimNewControllerTest extends WebTestCase
     public function testClaimNew(
         array $fixtures,
         ?string $loginAs,
+        callable $action,
         int $expectedStatus,
         callable $afterCallback,
     ): void {
@@ -32,18 +32,7 @@ class ClaimNewControllerTest extends WebTestCase
             $client->loginUser($objects[$loginAs]);
         }
 
-        // open claim page to get CSRF token
-        $crawler = $client->request('GET', '/player-claim');
-
-        if ($client->getResponse()->isSuccessful()) {
-            $token = self::extractCsrfToken($crawler, '/player-claim/new');
-            $client->request('POST', '/player-claim/new', [
-                '_token' => $token,
-                'lastName' => 'Тестовий',
-                'firstName' => 'Гравець',
-                'patronymic' => 'Тестович',
-            ]);
-        }
+        $action($client, $objects);
 
         static::assertResponseStatusCodeSame($expectedStatus);
         $afterCallback($objects);
@@ -57,7 +46,19 @@ class ClaimNewControllerTest extends WebTestCase
         yield 'user submits new player claim' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'lastName' => 'Тестовий',
+                    'firstName' => 'Гравець',
+                    'patronymic' => 'Тестович',
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
             'afterCallback' => static function (array $objects) {
                 $claims = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
                     ->findBy(['user' => $objects['user_regular']]);
@@ -69,27 +70,51 @@ class ClaimNewControllerTest extends WebTestCase
             },
         ];
 
-        yield 'user with player redirects to home' => [
+        yield 'user with player gets 422' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_with_player',
-            'expectedStatus' => 302,
-            'afterCallback' => static function (array $objects) {
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['lastName' => 'Test'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
             },
         ];
 
-        yield 'user with pending claim redirects to home' => [
+        yield 'user with pending claim gets 422' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => 'user_regular',
-            'expectedStatus' => 302,
-            'afterCallback' => static function (array $objects) {
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['lastName' => 'Test'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
             },
         ];
 
         yield 'anonymous gets redirected' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['lastName' => 'Test'], JSON_THROW_ON_ERROR),
+            ),
             'expectedStatus' => 302,
-            'afterCallback' => static function (array $objects) {
+            'afterCallback' => static function () {
             },
         ];
     }

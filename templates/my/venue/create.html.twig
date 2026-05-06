@@ -14,8 +14,7 @@
     {% endfor %}
 
     <div class="card">
-        <form method="post" action="{{ path('my_venue_store') }}" class="tournament-form">
-            <input type="hidden" name="_token" value="{{ csrf_token('venue_create') }}">
+        <form id="venue-create-form" class="tournament-form" data-url="{{ path('my_venue_store') }}">
             <div class="form-group">
                 <label for="name">{{ 'common.name'|trans }} *</label>
                 <input type="text" id="name" name="name" required>
@@ -29,6 +28,7 @@
                 </div>
             </div>
             <button type="submit" class="btn">{{ 'venue.my.create'|trans }}</button>
+            <span id="save-status" class="save-status" hidden></span>
         </form>
     </div>
 {% endblock %}

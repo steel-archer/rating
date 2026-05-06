@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/connect/google', name: 'auth_google_start')]
-final class GoogleConnectController extends AbstractController
+class GoogleConnectController extends AbstractController
 {
     public function __invoke(ClientRegistry $clientRegistry): RedirectResponse
     {

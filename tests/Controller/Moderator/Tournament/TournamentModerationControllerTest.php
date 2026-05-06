@@ -6,16 +6,16 @@ namespace App\Tests\Controller\Moderator\Tournament;
 
 use App\Entity\TournamentModerationClaim;
 use App\Entity\TournamentModerationStatus;
-use App\Tests\CsrfTrait;
+use App\Service\TournamentManagementService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TournamentModerationControllerTest extends WebTestCase
 {
     use FixturesTrait;
-    use CsrfTrait;
 
     /**
      * @param list<string> $fixtures
@@ -27,12 +27,17 @@ class TournamentModerationControllerTest extends WebTestCase
         callable $action,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
 
         if ($loginAs !== null) {
             $client->loginUser($objects[$loginAs]);
+        }
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
         }
 
         $action($client, $objects);
@@ -74,13 +79,14 @@ class TournamentModerationControllerTest extends WebTestCase
         yield 'approve tournament' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/tournaments');
-                $token = self::extractCsrfToken($crawler, "/moderator/tournaments/$id/approve");
-                $client->request('POST', "/moderator/tournaments/$id/approve", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_pending']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $claim = static::getContainer()->get('doctrine')
                     ->getRepository(TournamentModerationClaim::class)
@@ -92,22 +98,130 @@ class TournamentModerationControllerTest extends WebTestCase
         yield 'reject tournament with comment' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/tournaments');
-                $token = self::extractCsrfToken($crawler, "/moderator/tournaments/$id/reject");
-                $client->request('POST', "/moderator/tournaments/$id/reject", [
-                    '_token' => $token,
-                    'comment' => 'Назва не підходить',
-                ]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_pending']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['comment' => 'Назва не підходить'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $claim = static::getContainer()->get('doctrine')
                     ->getRepository(TournamentModerationClaim::class)
                     ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
                 static::assertSame(TournamentModerationStatus::Rejected, $claim->getStatus());
                 static::assertSame('Назва не підходить', $claim->getComment());
+            },
+        ];
+
+        yield 'approve non-existent tournament returns 404' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/moderator/tournaments/999999/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'reject non-existent tournament returns 404' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/moderator/tournaments/999999/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['comment' => 'test'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'approve throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_pending']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentManagementService::class);
+                $stub->method('approve')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(TournamentManagementService::class, $stub);
+            },
+        ];
+
+        yield 'reject throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_pending']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['comment' => 'test'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentManagementService::class);
+                $stub->method('reject')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(TournamentManagementService::class, $stub);
+            },
+        ];
+
+        yield 'double approve returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static function (KernelBrowser $client, array $objects) {
+                $id = $objects['tournament_pending']->getId();
+                $client->request('POST', "/moderator/tournaments/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
+                $client->request('POST', "/moderator/tournaments/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
+            },
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentModerationClaim::class)
+                    ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
+                static::assertSame(TournamentModerationStatus::Approved, $claim->getStatus());
+            },
+        ];
+
+        yield 'double reject returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static function (KernelBrowser $client, array $objects) {
+                $id = $objects['tournament_pending']->getId();
+                $client->request('POST', "/moderator/tournaments/$id/reject", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['comment' => 'Перший'], JSON_THROW_ON_ERROR));
+                $client->request('POST', "/moderator/tournaments/$id/reject", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['comment' => 'Другий'], JSON_THROW_ON_ERROR));
+            },
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentModerationClaim::class)
+                    ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
+                static::assertSame(TournamentModerationStatus::Rejected, $claim->getStatus());
+                static::assertSame('Перший', $claim->getComment());
             },
         ];
 
@@ -135,53 +249,6 @@ class TournamentModerationControllerTest extends WebTestCase
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request('GET', '/tournament/' . $objects['tournament_pending']->getId()),
             'expectedStatus' => 200,
             'afterCallback' => static function () {
-            },
-        ];
-
-        yield 'double approve redirects without error' => [
-            'fixtures' => $fixtures,
-            'loginAs' => 'user_admin',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/tournaments');
-                $token = self::extractCsrfToken($crawler, "/moderator/tournaments/$id/approve");
-                $client->request('POST', "/moderator/tournaments/$id/approve", ['_token' => $token]);
-                // Second moderator tries to approve the same
-                $client->request('POST', "/moderator/tournaments/$id/approve", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
-            'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $claim = static::getContainer()->get('doctrine')
-                    ->getRepository(TournamentModerationClaim::class)
-                    ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
-                static::assertSame(TournamentModerationStatus::Approved, $claim->getStatus());
-            },
-        ];
-
-        yield 'double reject redirects without error' => [
-            'fixtures' => $fixtures,
-            'loginAs' => 'user_admin',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/tournaments');
-                $token = self::extractCsrfToken($crawler, "/moderator/tournaments/$id/reject");
-                $client->request('POST', "/moderator/tournaments/$id/reject", [
-                    '_token' => $token,
-                    'comment' => 'Перший реджект',
-                ]);
-                // Second moderator tries to reject the same
-                $client->request('POST', "/moderator/tournaments/$id/reject", [
-                    '_token' => $token,
-                    'comment' => 'Другий реджект',
-                ]);
-            },
-            'expectedStatus' => 302,
-            'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $claim = static::getContainer()->get('doctrine')
-                    ->getRepository(TournamentModerationClaim::class)
-                    ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
-                static::assertSame(TournamentModerationStatus::Rejected, $claim->getStatus());
-                static::assertSame('Перший реджект', $claim->getComment());
             },
         ];
     }

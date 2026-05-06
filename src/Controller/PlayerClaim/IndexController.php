@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/player-claim', name: 'player_claim_index', methods: ['GET'])]
 #[IsGranted('ROLE_USER')]
-final class IndexController extends AbstractController
+class IndexController extends AbstractController
 {
     public function __invoke(PlayerClaimRepository $claimRepository): Response
     {

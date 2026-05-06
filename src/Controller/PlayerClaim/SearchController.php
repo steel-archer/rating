@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/player-claim/search', name: 'player_claim_search', methods: ['GET'])]
 #[IsGranted('ROLE_USER')]
-final class SearchController extends AbstractController
+class SearchController extends AbstractController
 {
     public function __invoke(
         PlayerRepository $playerRepository,

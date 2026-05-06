@@ -37,15 +37,11 @@
 
                 {% if currentStatus.value == 'pending' %}
                     <div class="moderation-actions">
-                        <form method="post" action="{{ path('moderator_tournament_approve', {id: claim.tournament.id}) }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('tournament_moderate_' ~ claim.tournament.id) }}">
-                            <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
-                        </form>
-                        <form method="post" action="{{ path('moderator_tournament_reject', {id: claim.tournament.id}) }}" class="reject-form">
-                            <input type="hidden" name="_token" value="{{ csrf_token('tournament_moderate_' ~ claim.tournament.id) }}">
-                            <input type="text" name="comment" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}">
-                            <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
-                        </form>
+                        <button type="button" class="btn btn-approve" data-tournament-approve="{{ claim.tournament.id }}">{{ 'moderator.approve'|trans }}</button>
+                        <div class="reject-form">
+                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-tournament-reject-comment="{{ claim.tournament.id }}">
+                            <button type="button" class="btn btn-reject" data-tournament-reject="{{ claim.tournament.id }}">{{ 'moderator.reject'|trans }}</button>
+                        </div>
                     </div>
                 {% endif %}
             </div>

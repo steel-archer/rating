@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
 #[Route('/team/{id}/tournaments', name: 'team_tournaments', requirements: ['id' => '\d+'], methods: ['GET'])]
-final class TournamentsController extends AbstractController
+class TournamentsController extends AbstractController
 {
     public function __invoke(int $id, Request $request, TeamRepository $teamRepository, TeamTournamentService $tournamentService): Response
     {

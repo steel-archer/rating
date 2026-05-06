@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
 #[Route('/player/{id}', name: 'player_show', requirements: ['id' => '\d+'], methods: ['GET'])]
-final class ShowController extends AbstractController
+class ShowController extends AbstractController
 {
     public function __invoke(int $id, PlayerService $playerService): Response
     {

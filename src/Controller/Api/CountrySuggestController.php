@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/countries/suggest', name: 'api_countries_suggest', methods: ['GET'])]
-final class CountrySuggestController extends AbstractController
+class CountrySuggestController extends AbstractController
 {
     public function __invoke(
         #[MapQueryString] SuggestRequestDTO $requestDto,

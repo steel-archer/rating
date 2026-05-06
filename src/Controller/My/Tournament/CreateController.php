@@ -9,7 +9,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/new', name: 'my_tournament_new', methods: ['GET'])]
 #[IsGranted('ROLE_PLAYER')]
-final class CreateController extends AbstractController
+class CreateController extends AbstractController
 {
     public function __invoke(): Response
     {

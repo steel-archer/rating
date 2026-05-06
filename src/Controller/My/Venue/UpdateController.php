@@ -16,7 +16,7 @@ use Throwable;
 
 #[Route('/my/venues/{id}', name: 'my_venue_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
-final class UpdateController extends AbstractController
+class UpdateController extends AbstractController
 {
     public function __invoke(
         int $id,
@@ -29,7 +29,7 @@ final class UpdateController extends AbstractController
         $venue = $venueRepository->find($id);
 
         if ($venue === null || $venue->getCreatedBy() !== $user) {
-            return $this->json(['error' => 'Not found'], 404);
+            return $this->json(['error' => 'common.not_found'], 404);
         }
 
         try {

@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/moderator/tournaments', name: 'moderator_tournaments', methods: ['GET'])]
 #[IsGranted('ROLE_MODERATOR')]
-final class ListController extends AbstractController
+class ListController extends AbstractController
 {
     public function __invoke(
         #[MapQueryString] ?ListRequestDTO $dto,

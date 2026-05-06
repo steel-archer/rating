@@ -10,17 +10,17 @@ use App\Entity\TournamentModerationStatus;
 use App\Entity\TournamentOfficial;
 use App\Entity\TournamentOfficialRole;
 use App\Entity\TournamentStatus;
-use App\Tests\CsrfTrait;
+use App\Service\TournamentManagementService;
 use App\Tests\FixturesTrait;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TournamentControllerTest extends WebTestCase
 {
     use FixturesTrait;
-    use CsrfTrait;
 
     /**
      * @param list<string> $fixtures
@@ -32,12 +32,17 @@ class TournamentControllerTest extends WebTestCase
         callable $action,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
 
         if ($loginAs !== null) {
             $client->loginUser($objects[$loginAs]);
+        }
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
         }
 
         $action($client, $objects);
@@ -111,12 +116,15 @@ class TournamentControllerTest extends WebTestCase
         yield 'create tournament' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
-            'action' => static function (KernelBrowser $client) {
-                $crawler = $client->request('GET', '/my/tournaments/new');
-                $token = $crawler->filter('input[name="_token"]')->attr('value');
-                $client->request('POST', '/my/tournaments', ['name' => 'Новий тестовий турнір', '_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Новий тестовий турнір'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
             'afterCallback' => static function () {
                 $tournament = static::getContainer()->get('doctrine')
                     ->getRepository(Tournament::class)
@@ -129,11 +137,15 @@ class TournamentControllerTest extends WebTestCase
         yield 'store denied without player' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_regular',
-            'action' => static function (KernelBrowser $client) {
-                $crawler = $client->request('GET', '/my/tournaments/new');
-                $client->request('POST', '/my/tournaments', ['name' => 'test', '_token' => 'fake']);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'test'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 403,
             'afterCallback' => static function () {
                 $tournament = static::getContainer()->get('doctrine')
                     ->getRepository(Tournament::class)
@@ -198,18 +210,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode([
-                    'name' => 'Hack',
-                    'startedAt' => null,
-                    'endedAt' => null,
-                    'toursCount' => null,
-                    'questionsPerTour' => null,
-                    'difficulty' => null,
-                    'organizers' => [],
-                    'editors' => [],
-                    'gameJury' => [],
-                    'appealJury' => [],
-                ], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Hack', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
@@ -225,18 +226,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode([
-                    'name' => 'Hack',
-                    'startedAt' => null,
-                    'endedAt' => null,
-                    'toursCount' => null,
-                    'questionsPerTour' => null,
-                    'difficulty' => null,
-                    'organizers' => [],
-                    'editors' => [],
-                    'gameJury' => [],
-                    'appealJury' => [],
-                ], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Hack', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
@@ -261,18 +251,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode([
-                    'name' => 'Спроба',
-                    'startedAt' => null,
-                    'endedAt' => null,
-                    'toursCount' => null,
-                    'questionsPerTour' => null,
-                    'difficulty' => null,
-                    'organizers' => [],
-                    'editors' => [],
-                    'gameJury' => [],
-                    'appealJury' => [],
-                ], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Спроба', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -282,13 +261,14 @@ class TournamentControllerTest extends WebTestCase
         yield 'submit for moderation' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_draft']->getId();
-                $crawler = $client->request('GET', "/my/tournaments/$id/edit");
-                $token = self::extractCsrfToken($crawler, "/my/tournaments/$id/submit");
-                $client->request('POST', "/my/tournaments/$id/submit", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $claim = static::getContainer()->get('doctrine')
                     ->getRepository(TournamentModerationClaim::class)
@@ -304,27 +284,56 @@ class TournamentControllerTest extends WebTestCase
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
                 '/my/tournaments/' . $objects['tournament_draft']->getId() . '/submit',
-                ['_token' => 'fake'],
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
             ),
-            'expectedStatus' => 302,
-            'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $claim = static::getContainer()->get('doctrine')
-                    ->getRepository(TournamentModerationClaim::class)
-                    ->findOneBy(['tournament' => $objects['tournament_draft']->getId()]);
-                static::assertNull($claim);
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'submit published tournament fails' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_published']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'submit non-existent tournament' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments/999999/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
             },
         ];
 
         yield 'publish approved tournament' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_approved']->getId();
-                $crawler = $client->request('GET', "/my/tournaments/$id/edit");
-                $token = self::extractCsrfToken($crawler, "/my/tournaments/$id/publish");
-                $client->request('POST', "/my/tournaments/$id/publish", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_approved']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $tournament = static::getContainer()->get('doctrine')
                     ->getRepository(Tournament::class)
@@ -333,21 +342,109 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
-        yield 'delete draft tournament' => [
+        yield 'publish fails without approval' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_draft']->getId();
-                $crawler = $client->request('GET', "/my/tournaments/$id/edit");
-                $token = self::extractCsrfToken($crawler, "/my/tournaments/$id/delete");
-                $client->request('POST', "/my/tournaments/$id/delete", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $tournament = static::getContainer()->get('doctrine')
                     ->getRepository(Tournament::class)
                     ->find($objects['tournament_draft']->getId());
+                static::assertSame(TournamentStatus::Draft, $tournament->getStatus());
+            },
+        ];
+
+        yield 'publish non-existent tournament' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments/999999/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'publish denied for other user' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_with_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_approved']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'delete draft tournament' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId() . '/delete',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function () {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->findOneBy(['name' => 'Мій чернетковий турнір']);
                 static::assertNull($tournament);
+            },
+        ];
+
+        yield 'delete published tournament fails' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_published']->getId() . '/delete',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_published']->getId());
+                static::assertNotNull($tournament);
+            },
+        ];
+
+        yield 'delete denied for other user' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_with_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId() . '/delete',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_draft']->getId());
+                static::assertNotNull($tournament);
             },
         ];
 
@@ -357,7 +454,7 @@ class TournamentControllerTest extends WebTestCase
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request('GET', '/my/tournaments/' . $objects['tournament_published']->getId() . '/edit'),
             'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client) {
-                static::assertCount(0, $client->getCrawler()->filter('form[action*="delete"]'));
+                static::assertCount(0, $client->getCrawler()->filter('[data-tournament-delete]'));
             },
         ];
 
@@ -372,8 +469,8 @@ class TournamentControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode([
                     'name' => 'Змінена назва',
-                    'startedAt' => new DateTime('+30 days')->format('Y-m-d\TH:i'),
-                    'endedAt' => new DateTime('+31 days')->format('Y-m-d\TH:i'),
+                    'startedAt' => (new DateTime('+30 days'))->format('Y-m-d\TH:i'),
+                    'endedAt' => (new DateTime('+31 days'))->format('Y-m-d\TH:i'),
                     'toursCount' => 3,
                     'questionsPerTour' => 12,
                     'difficulty' => 3.5,
@@ -405,18 +502,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode([
-                    'name' => 'Мій чернетковий турнір',
-                    'startedAt' => '2020-01-01T10:00',
-                    'endedAt' => '2020-01-02T10:00',
-                    'toursCount' => null,
-                    'questionsPerTour' => null,
-                    'difficulty' => null,
-                    'organizers' => [],
-                    'editors' => [],
-                    'gameJury' => [],
-                    'appealJury' => [],
-                ], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Мій чернетковий турнір', 'startedAt' => '2020-01-01T10:00', 'endedAt' => '2020-01-02T10:00', 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -426,12 +512,15 @@ class TournamentControllerTest extends WebTestCase
         yield 'create adds creator as organizer' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
-            'action' => static function (KernelBrowser $client) {
-                $crawler = $client->request('GET', '/my/tournaments/new');
-                $token = $crawler->filter('input[name="_token"]')->attr('value');
-                $client->request('POST', '/my/tournaments', ['name' => 'Турнір з оргом', '_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Турнір з оргом'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
             'afterCallback' => static function () {
                 $tournament = static::getContainer()->get('doctrine')
                     ->getRepository(Tournament::class)
@@ -440,10 +529,116 @@ class TournamentControllerTest extends WebTestCase
                     ->getRepository(TournamentOfficial::class)
                     ->findBy(['tournament' => $tournament]);
                 static::assertCount(1, $officials);
-                static::assertSame(
-                    TournamentOfficialRole::Organizer,
-                    $officials[0]->getRole(),
-                );
+                static::assertSame(TournamentOfficialRole::Organizer, $officials[0]->getRole());
+            },
+        ];
+
+        yield 'store throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Throwable'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('common.error', $json['error']);
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentManagementService::class);
+                $stub->method('create')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(TournamentManagementService::class, $stub);
+            },
+        ];
+
+        yield 'submit throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentManagementService::class);
+                $stub->method('submitForModeration')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(TournamentManagementService::class, $stub);
+            },
+        ];
+
+        yield 'publish throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_approved']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentManagementService::class);
+                $stub->method('publish')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(TournamentManagementService::class, $stub);
+            },
+        ];
+
+        yield 'delete throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId() . '/delete',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentManagementService::class);
+                $stub->method('delete')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(TournamentManagementService::class, $stub);
+            },
+        ];
+
+        yield 'update throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'x', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentManagementService::class);
+                $stub->method('update')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(TournamentManagementService::class, $stub);
             },
         ];
 
@@ -475,63 +670,6 @@ class TournamentControllerTest extends WebTestCase
                     ->getRepository(TournamentOfficial::class)
                     ->findBy(['tournament' => $objects['tournament_draft']->getId()]);
                 static::assertCount(4, $officials);
-            },
-        ];
-
-        yield 'publish fails without approval' => [
-            'fixtures' => $fixtures,
-            'loginAs' => 'user_creator',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_draft']->getId();
-                $crawler = $client->request('GET', "/my/tournaments/$id/edit");
-                $token = self::extractCsrfToken($crawler, "/my/tournaments/$id/submit");
-                // Use submit token for publish (same page, different action)
-                $client->request('POST', "/my/tournaments/$id/publish", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
-            'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $tournament = static::getContainer()->get('doctrine')
-                    ->getRepository(Tournament::class)
-                    ->find($objects['tournament_draft']->getId());
-                static::assertSame(TournamentStatus::Draft, $tournament->getStatus());
-            },
-        ];
-
-        yield 'delete published tournament fails' => [
-            'fixtures' => $fixtures,
-            'loginAs' => 'user_creator',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $draftId = $objects['tournament_draft']->getId();
-                $publishedId = $objects['tournament_published']->getId();
-                $crawler = $client->request('GET', "/my/tournaments/$draftId/edit");
-                $token = self::extractCsrfToken($crawler, "/my/tournaments/$draftId/delete");
-                $client->request('POST', "/my/tournaments/$publishedId/delete", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
-            'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $tournament = static::getContainer()->get('doctrine')
-                    ->getRepository(Tournament::class)
-                    ->find($objects['tournament_published']->getId());
-                static::assertNotNull($tournament);
-            },
-        ];
-
-        yield 'delete other users tournament returns 404' => [
-            'fixtures' => $fixtures,
-            'loginAs' => 'user_with_player',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['tournament_draft']->getId();
-                // Visit any page to get session, then use correct CSRF token pattern
-                $client->request('GET', '/my/tournaments');
-                // CSRF will fail anyway for wrong user, but let's test the flow
-                $client->request('POST', "/my/tournaments/$id/delete", ['_token' => 'any']);
-            },
-            'expectedStatus' => 302,
-            'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $tournament = static::getContainer()->get('doctrine')
-                    ->getRepository(Tournament::class)
-                    ->find($objects['tournament_draft']->getId());
-                static::assertNotNull($tournament);
             },
         ];
     }

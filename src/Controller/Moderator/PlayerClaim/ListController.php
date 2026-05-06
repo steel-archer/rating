@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/moderator/player-claims', name: 'moderator_player_claims', methods: ['GET'])]
 #[IsGranted('ROLE_MODERATOR')]
-final class ListController extends AbstractController
+class ListController extends AbstractController
 {
     public function __invoke(PlayerClaimRepository $claimRepository): Response
     {

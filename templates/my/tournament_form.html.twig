@@ -14,13 +14,13 @@
     {% endfor %}
 
     <div class="card">
-        <form method="post" action="{{ path('my_tournament_store') }}" class="tournament-form">
-            <input type="hidden" name="_token" value="{{ csrf_token('tournament_create') }}">
+        <form id="tournament-create-form" class="tournament-form" data-url="{{ path('my_tournament_store') }}">
             <div class="form-group">
                 <label for="name">{{ 'common.name'|trans }} *</label>
                 <input type="text" id="name" name="name" required>
             </div>
             <button type="submit" class="btn">{{ 'tournament.my.create'|trans }}</button>
+            <span id="save-status" class="save-status" hidden></span>
         </form>
     </div>
 {% endblock %}

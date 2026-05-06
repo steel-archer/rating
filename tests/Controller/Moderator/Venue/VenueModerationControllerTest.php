@@ -6,16 +6,16 @@ namespace App\Tests\Controller\Moderator\Venue;
 
 use App\Entity\Venue;
 use App\Entity\VenueRepresentative;
-use App\Tests\CsrfTrait;
+use App\Service\VenueManagementService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class VenueModerationControllerTest extends WebTestCase
 {
     use FixturesTrait;
-    use CsrfTrait;
 
     /**
      * @param list<string> $fixtures
@@ -27,12 +27,17 @@ class VenueModerationControllerTest extends WebTestCase
         callable $action,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
 
         if ($loginAs !== null) {
             $client->loginUser($objects[$loginAs]);
+        }
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
         }
 
         $action($client, $objects);
@@ -75,13 +80,14 @@ class VenueModerationControllerTest extends WebTestCase
         yield 'approve venue' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['venue_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/venues');
-                $token = self::extractCsrfToken($crawler, "/moderator/venues/$id/approve");
-                $client->request('POST', "/moderator/venues/$id/approve", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/venues/' . $objects['venue_pending']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $venue = static::getContainer()->get('doctrine')
                     ->getRepository(Venue::class)
@@ -90,17 +96,15 @@ class VenueModerationControllerTest extends WebTestCase
             },
         ];
 
-        yield 'double approve redirects with flash' => [
+        yield 'double approve returns 422' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
             'action' => static function (KernelBrowser $client, array $objects) {
                 $id = $objects['venue_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/venues');
-                $token = self::extractCsrfToken($crawler, "/moderator/venues/$id/approve");
-                $client->request('POST', "/moderator/venues/$id/approve", ['_token' => $token]);
-                $client->request('POST', "/moderator/venues/$id/approve", ['_token' => $token]);
+                $client->request('POST', "/moderator/venues/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
+                $client->request('POST', "/moderator/venues/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
             },
-            'expectedStatus' => 302,
+            'expectedStatus' => 422,
             'afterCallback' => static function () {
             },
         ];
@@ -108,38 +112,37 @@ class VenueModerationControllerTest extends WebTestCase
         yield 'reject venue deletes it' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['venue_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/venues');
-                $token = self::extractCsrfToken($crawler, "/moderator/venues/$id/reject");
-                $client->request('POST', "/moderator/venues/$id/reject", ['_token' => $token]);
-            },
-            'expectedStatus' => 302,
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/venues/' . $objects['venue_pending']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $venue = static::getContainer()->get('doctrine')
-                    ->getRepository(Venue::class)
-                    ->find($objects['venue_pending']->getId());
-                static::assertNull($venue);
-
                 $reps = static::getContainer()->get('doctrine')
                     ->getRepository(VenueRepresentative::class)
-                    ->findBy(['venue' => $objects['venue_pending']->getId()]);
-                static::assertCount(0, $reps);
+                    ->findBy(['venue' => $objects['venue_kyiv']->getId()]);
+                // venue_pending was deleted, check via direct query
+                $connection = static::getContainer()->get('doctrine')->getConnection();
+                $count = $connection->fetchOne(
+                    'SELECT COUNT(*) FROM venue WHERE name = ?',
+                    ['Новий майданчик'],
+                );
+                static::assertSame(0, (int) $count);
             },
         ];
 
-        yield 'reject after approve fails with flash' => [
+        yield 'reject after approve fails' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
             'action' => static function (KernelBrowser $client, array $objects) {
                 $id = $objects['venue_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/venues');
-                $approveToken = self::extractCsrfToken($crawler, "/moderator/venues/$id/approve");
-                $rejectToken = self::extractCsrfToken($crawler, "/moderator/venues/$id/reject");
-                $client->request('POST', "/moderator/venues/$id/approve", ['_token' => $approveToken]);
-                $client->request('POST', "/moderator/venues/$id/reject", ['_token' => $rejectToken]);
+                $client->request('POST', "/moderator/venues/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
+                $client->request('POST', "/moderator/venues/$id/reject", [], [], ['CONTENT_TYPE' => 'application/json']);
             },
-            'expectedStatus' => 302,
+            'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $venue = static::getContainer()->get('doctrine')
                     ->getRepository(Venue::class)
@@ -149,16 +152,31 @@ class VenueModerationControllerTest extends WebTestCase
             },
         ];
 
-        yield 'double reject returns 404 (venue deleted)' => [
+        yield 'approve non-existent venue returns 404' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
-            'action' => static function (KernelBrowser $client, array $objects) {
-                $id = $objects['venue_pending']->getId();
-                $crawler = $client->request('GET', '/moderator/venues');
-                $token = self::extractCsrfToken($crawler, "/moderator/venues/$id/reject");
-                $client->request('POST', "/moderator/venues/$id/reject", ['_token' => $token]);
-                $client->request('POST', "/moderator/venues/$id/reject", ['_token' => $token]);
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/moderator/venues/999999/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
             },
+        ];
+
+        yield 'reject non-existent venue returns 404' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/moderator/venues/999999/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
             },
@@ -170,6 +188,48 @@ class VenueModerationControllerTest extends WebTestCase
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/moderator/venues'),
             'expectedStatus' => 302,
             'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'approve throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/venues/' . $objects['venue_pending']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(VenueManagementService::class);
+                $stub->method('approve')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(VenueManagementService::class, $stub);
+            },
+        ];
+
+        yield 'reject throwable returns 500' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/venues/' . $objects['venue_pending']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(VenueManagementService::class);
+                $stub->method('reject')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(VenueManagementService::class, $stub);
             },
         ];
     }

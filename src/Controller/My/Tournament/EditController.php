@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/{id}/edit', name: 'my_tournament_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
 #[IsGranted('ROLE_PLAYER')]
-final class EditController extends AbstractController
+class EditController extends AbstractController
 {
     public function __invoke(
         int $id,

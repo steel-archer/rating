@@ -6,6 +6,8 @@ namespace App\Tests\Controller\Tournament;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use App\Repository\TournamentRepository;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -23,6 +25,7 @@ class ListControllerTest extends WebTestCase
         array $fixtures,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);

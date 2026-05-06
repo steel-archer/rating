@@ -6,6 +6,8 @@ namespace App\Tests\Controller\Venue;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use App\Repository\VenueRepository;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -23,9 +25,14 @@ class ListControllerTest extends WebTestCase
         array $fixtures,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
+        }
 
         $resolvedUri = is_callable($uri) ? $uri($objects) : $uri;
         $crawler = $client->request($method, $resolvedUri);
@@ -126,6 +133,20 @@ class ListControllerTest extends WebTestCase
             'fixtures' => [],
             'expectedStatus' => 405,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+        yield 'service unavailable on throwable' => [
+            'method' => 'GET',
+            'uri' => '/venues/list',
+            'fixtures' => ['Entity/base.yaml'],
+            'expectedStatus' => 503,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(VenueRepository::class);
+                $stub->method('findForList')->willThrowException(new RuntimeException('DB down'));
+                static::getContainer()->set(VenueRepository::class, $stub);
             },
         ];
     }

@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
 #[Route('/players/list', name: 'player_list', methods: ['GET'])]
-final class ListController extends AbstractController
+class ListController extends AbstractController
 {
     public function __construct(
         private readonly PlayerRepository $playerRepository,
