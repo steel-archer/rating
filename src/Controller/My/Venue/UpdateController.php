@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
 #[Route('/my/venues/{id}', name: 'my_venue_update', requirements: ['id' => '\d+'], methods: ['POST'])]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_PLAYER')]
 final class UpdateController extends AbstractController
 {
     public function __invoke(

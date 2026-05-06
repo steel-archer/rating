@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
 #[Route('/my/tournaments/{id}/delete', name: 'my_tournament_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_PLAYER')]
 #[IsCsrfTokenValid(new Expression("'tournament_delete_' ~ args['id']"))]
 final class TournamentDeleteController extends AbstractController
 {

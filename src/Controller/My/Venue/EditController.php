@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/venues/{id}/edit', name: 'my_venue_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_PLAYER')]
 final class EditController extends AbstractController
 {
     public function __invoke(

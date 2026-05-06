@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments', name: 'my_tournament_store', methods: ['POST'])]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_PLAYER')]
 #[IsCsrfTokenValid('tournament_create')]
 final class TournamentStoreController extends AbstractController
 {
@@ -23,10 +23,6 @@ final class TournamentStoreController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
-
-        if ($user->getPlayer() === null) {
-            throw $this->createAccessDeniedException();
-        }
 
         $tournament = $service->create($dto->name, $user);
 

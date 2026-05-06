@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments', name: 'my_tournaments', methods: ['GET'])]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_PLAYER')]
 final class TournamentListController extends AbstractController
 {
     public function __invoke(
@@ -23,10 +23,6 @@ final class TournamentListController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
-
-        if ($user->getPlayer() === null) {
-            throw $this->createAccessDeniedException();
-        }
 
         $dto ??= new ListRequestDTO();
         $sort = strtolower($dto->sort) === 'asc' ? 'asc' : 'desc';

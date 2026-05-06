@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
 #[Route('/my/venues', name: 'my_venue_store', methods: ['POST'])]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_PLAYER')]
 #[IsCsrfTokenValid('venue_create')]
 final class StoreController extends AbstractController
 {
@@ -25,10 +25,6 @@ final class StoreController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
-
-        if ($user->getPlayer() === null) {
-            throw $this->createAccessDeniedException();
-        }
 
         try {
             $service->create($dto->name, $dto->townId, $user);

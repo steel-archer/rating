@@ -10,17 +10,13 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/venues', name: 'my_venues', methods: ['GET'])]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_PLAYER')]
 final class ListController extends AbstractController
 {
     public function __invoke(VenueRepository $venueRepository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-
-        if ($user->getPlayer() === null) {
-            throw $this->createAccessDeniedException();
-        }
 
         return $this->render('my/venue/list.html.twig', [
             'venues' => $venueRepository->findByCreator($user),
