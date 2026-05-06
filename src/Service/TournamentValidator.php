@@ -12,7 +12,7 @@ use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
 use DateTime;
 
-final readonly class TournamentValidator
+class TournamentValidator
 {
     public function __construct(
         private TournamentModerationClaimRepository $claimRepository,

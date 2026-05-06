@@ -10,7 +10,7 @@ use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Doctrine\DBAL\Exception as DbalException;
 
-final readonly class PlayerTournamentService
+class PlayerTournamentService
 {
     private const int PER_PAGE = 50;
 

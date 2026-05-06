@@ -28,8 +28,8 @@ final class ListController extends AbstractController
                 'lastPage' => $this->tournamentRepository->getLastPageNumber($requestDto),
                 'filters' => $requestDto->getFilters(),
             ]);
-        } catch (Throwable $ex) { // @codeCoverageIgnoreStart
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex); // @codeCoverageIgnoreEnd
+        } catch (Throwable $ex) {
+            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
         }
     }
 }

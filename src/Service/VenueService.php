@@ -9,7 +9,7 @@ use App\Repository\TournamentSessionRepository;
 use App\Repository\VenueRepository;
 use App\Repository\VenueRepresentativeRepository;
 
-final readonly class VenueService
+class VenueService
 {
     public function __construct(
         private VenueRepository $venueRepository,

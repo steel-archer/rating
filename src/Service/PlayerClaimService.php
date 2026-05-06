@@ -9,7 +9,7 @@ use App\Repository\PlayerClaimRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-final readonly class PlayerClaimService
+class PlayerClaimService
 {
     public function __construct(
         private EntityManagerInterface $em,

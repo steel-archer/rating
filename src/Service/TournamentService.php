@@ -10,7 +10,7 @@ use App\Repository\TournamentRepository;
 use App\Repository\TournamentSessionRepository;
 use App\Repository\TournamentSessionTeamRepository;
 
-final readonly class TournamentService
+class TournamentService
 {
     public function __construct(
         private TournamentRepository $tournamentRepository,

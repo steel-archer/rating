@@ -20,8 +20,8 @@ final class ShowController extends AbstractController
             $player = $playerService->get($id);
         } catch (EntityNotFoundException $ex) {
             throw new NotFoundHttpException($ex->getMessage(), $ex);
-        } catch (Throwable $ex) { // @codeCoverageIgnoreStart
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex); // @codeCoverageIgnoreEnd
+        } catch (Throwable $ex) {
+            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
         }
 
         return $this->render('player/show.html.twig', [

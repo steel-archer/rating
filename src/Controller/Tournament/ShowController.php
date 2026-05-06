@@ -26,8 +26,8 @@ final class ShowController extends AbstractController
             $tournament = $tournamentService->get($id);
         } catch (EntityNotFoundException $ex) {
             throw new NotFoundHttpException($ex->getMessage(), $ex);
-        } catch (Throwable $ex) { // @codeCoverageIgnoreStart
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex); // @codeCoverageIgnoreEnd
+        } catch (Throwable $ex) {
+            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
         }
 
         if ($tournament->status !== TournamentStatus::Published->value) {

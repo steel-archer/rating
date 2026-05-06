@@ -12,7 +12,7 @@ use App\Repository\VenueRepresentativeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 
-final readonly class VenueManagementService
+class VenueManagementService
 {
     public function __construct(
         private EntityManagerInterface $em,

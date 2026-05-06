@@ -1,0 +1,30 @@
+App\Entity\User:
+    user_venue_creator:
+        email: 'venue_creator@example.com'
+        googleId: 'google_venue_creator'
+        roles: []
+        player: '@player_franko'
+
+App\Entity\Venue:
+    venue_pending:
+        name: 'Новий майданчик'
+        town: '@town_kyiv'
+        createdBy: '@user_venue_creator'
+        isApproved: false
+        createdAt: '<(new DateTime())>'
+    venue_approved_owned:
+        name: 'Мій схвалений майданчик'
+        town: '@town_lviv'
+        createdBy: '@user_venue_creator'
+        isApproved: true
+        createdAt: '<(new DateTime("-1 day"))>'
+
+App\Entity\VenueRepresentative:
+    rep_pending:
+        venue: '@venue_pending'
+        player: '@player_franko'
+        createdAt: '<(new DateTime())>'
+    rep_approved:
+        venue: '@venue_approved_owned'
+        player: '@player_franko'
+        createdAt: '<(new DateTime("-1 day"))>'

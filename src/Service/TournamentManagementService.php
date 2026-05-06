@@ -19,7 +19,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 
-final readonly class TournamentManagementService
+class TournamentManagementService
 {
     public function __construct(
         private EntityManagerInterface $em,
