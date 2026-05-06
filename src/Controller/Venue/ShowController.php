@@ -18,10 +18,10 @@ final class ShowController extends AbstractController
     {
         try {
             $venue = $venueService->get($id);
-        } catch (EntityNotFoundException $exception) {
-            throw new NotFoundHttpException($exception->getMessage(), $exception);
-        } catch (Throwable $exception) { // @codeCoverageIgnoreStart
-            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
+        } catch (EntityNotFoundException $ex) {
+            throw new NotFoundHttpException($ex->getMessage(), $ex);
+        } catch (Throwable $ex) { // @codeCoverageIgnoreStart
+            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex); // @codeCoverageIgnoreEnd
         }
 
         return $this->render('venue/show.html.twig', [

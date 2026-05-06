@@ -20,8 +20,8 @@ final class ClaimRejectController extends AbstractController
     {
         try {
             $claimService->reject($id);
-        } catch (PlayerClaimException $e) {
-            $this->addFlash('error', $e->getMessage());
+        } catch (PlayerClaimException $ex) {
+            $this->addFlash('error', $ex->getMessage());
         }
 
         return $this->redirectToRoute('moderator_claims');

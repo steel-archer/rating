@@ -34,8 +34,8 @@ final class ListController extends AbstractController
                 'townName' => $requestDto->townId ? $this->townRepository->find($requestDto->townId)?->getName() : null,
                 'countryName' => $requestDto->countryId ? $this->countryRepository->find($requestDto->countryId)?->getName() : null,
             ]);
-        } catch (Throwable $exception) { // @codeCoverageIgnoreStart
-            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
+        } catch (Throwable $ex) { // @codeCoverageIgnoreStart
+            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex); // @codeCoverageIgnoreEnd
         }
     }
 }

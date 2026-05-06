@@ -34,10 +34,10 @@ final class TournamentsController extends AbstractController
                 'page' => $page,
                 'lastPage' => $sessionRepository->getLastPageNumberByVenue($venue),
             ]);
-        } catch (NotFoundHttpException $exception) { // @codeCoverageIgnoreStart
-            throw $exception; // @codeCoverageIgnoreEnd
-        } catch (Throwable $exception) { // @codeCoverageIgnoreStart
-            throw new ServiceUnavailableHttpException(message: $exception->getMessage(), previous: $exception); // @codeCoverageIgnoreEnd
+        } catch (NotFoundHttpException $ex) { // @codeCoverageIgnoreStart
+            throw $ex; // @codeCoverageIgnoreEnd
+        } catch (Throwable $ex) { // @codeCoverageIgnoreStart
+            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex); // @codeCoverageIgnoreEnd
         }
     }
 }
