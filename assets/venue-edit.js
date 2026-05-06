@@ -113,6 +113,15 @@ function moderateVenue(id, action, btn) {
             if (ok) {
                 const card = btn.closest('[data-venue-id]');
                 card?.remove();
+                if (document.querySelectorAll('[data-venue-id]').length === 0) {
+                    const container = document.querySelector('.moderation-card')?.parentElement || document.querySelector('h1')?.parentElement;
+                    if (container && !container.querySelector('.empty-state')) {
+                        const emptyState = document.createElement('p');
+                        emptyState.className = 'empty-state';
+                        emptyState.textContent = trans('moderator.no_venue_claims');
+                        container.appendChild(emptyState);
+                    }
+                }
             } else {
                 btn.disabled = false;
                 alert(body.error ? trans(body.error) : trans('common.error'));
@@ -124,8 +133,9 @@ function moderateVenue(id, action, btn) {
         });
 }
 
+initVenueModeration();
+
 document.addEventListener('turbo:load', () => {
     initVenueCreateForm();
     initVenueEditForm();
-    initVenueModeration();
 });

@@ -176,6 +176,15 @@ function moderateTournament(id, action, comment, btn) {
             if (ok) {
                 const card = btn.closest('.moderation-card');
                 card?.remove();
+                if (document.querySelectorAll('.moderation-card').length === 0) {
+                    const container = document.querySelector('h1')?.parentElement;
+                    if (container && !container.querySelector('.empty-state')) {
+                        const emptyState = document.createElement('p');
+                        emptyState.className = 'empty-state';
+                        emptyState.textContent = trans('moderator.no_tournament_claims_pending');
+                        container.appendChild(emptyState);
+                    }
+                }
             } else {
                 btn.disabled = false;
                 alert(data.error ? trans(data.error) : trans('common.error'));
@@ -187,8 +196,9 @@ function moderateTournament(id, action, comment, btn) {
         });
 }
 
+initTournamentActions();
+
 document.addEventListener('turbo:load', () => {
     initTournamentCreateForm();
     initTournamentEditForm();
-    initTournamentActions();
 });

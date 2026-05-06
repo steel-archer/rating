@@ -95,6 +95,14 @@ function moderatePlayerClaim(id, action, btn) {
             if (ok) {
                 const row = btn.closest('tr');
                 row?.remove();
+                if (document.querySelectorAll('table tbody tr').length === 0) {
+                    const table = document.querySelector('table');
+                    if (table) {
+                        const emptyState = document.createElement('p');
+                        emptyState.textContent = trans('moderator.no_pending_claims');
+                        table.replaceWith(emptyState);
+                    }
+                }
             } else {
                 btn.disabled = false;
                 alert(body.error ? trans(body.error) : trans('common.error'));
@@ -106,7 +114,8 @@ function moderatePlayerClaim(id, action, btn) {
         });
 }
 
+initPlayerClaimActions();
+
 document.addEventListener('turbo:load', () => {
     initPlayerClaimNewForm();
-    initPlayerClaimActions();
 });
