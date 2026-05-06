@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Claim;
+namespace App\Tests\Controller\PlayerClaim;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -40,14 +40,14 @@ class SubmittedControllerTest extends WebTestCase
     public static function dataProvider(): iterable
     {
         yield 'anonymous gets redirected' => [
-            'uri' => '/claim/submitted',
+            'uri' => '/player-claim/submitted',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
             'expectedStatus' => 302,
         ];
 
         yield 'logged in user sees submitted page' => [
-            'uri' => '/claim/submitted',
+            'uri' => '/player-claim/submitted',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,

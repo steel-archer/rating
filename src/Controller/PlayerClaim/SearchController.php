@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Claim;
+namespace App\Controller\PlayerClaim;
 
 use App\DTO\Request\PlayerListRequestDTO;
 use App\Repository\PlayerRepository;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/claim/search', name: 'claim_search', methods: ['GET'])]
+#[Route('/player-claim/search', name: 'player_claim_search', methods: ['GET'])]
 #[IsGranted('ROLE_USER')]
 final class SearchController extends AbstractController
 {
@@ -20,7 +20,7 @@ final class SearchController extends AbstractController
         TownRepository $townRepository,
         #[MapQueryString] PlayerListRequestDTO $requestDto = new PlayerListRequestDTO(),
     ): Response {
-        return $this->render('claim/_search_results.html.twig', [
+        return $this->render('player_claim/_search_results.html.twig', [
             'players' => $playerRepository->findFreeForList($requestDto),
             'page' => $requestDto->page,
             'lastPage' => $playerRepository->getFreeLastPageNumber($requestDto),

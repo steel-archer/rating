@@ -70,7 +70,7 @@ final class GoogleAuthenticator extends OAuth2Authenticator implements Authentic
         /** @var User $user */
         $user = $token->getUser();
 
-        $route = $user->getPlayer() === null && !$user->isAdmin() ? 'claim_index' : 'home';
+        $route = $user->getPlayer() === null && !$user->isAdmin() ? 'player_claim_index' : 'home';
 
         return new RedirectResponse($this->router->generate($route));
     }

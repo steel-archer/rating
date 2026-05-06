@@ -2,17 +2,6 @@ auth:
   login: 'Увійти'
   logout: 'Вийти'
 
-claim:
-  existing_description: 'Знайдіть себе серед гравців рейтингу'
-  existing_title: 'Я вже є в рейтингу'
-  new_description: 'Заповніть дані для створення нового гравця'
-  new_title: 'Я новий гравець'
-  select: 'Обрати'
-  submit: 'Подати заявку'
-  submitted_description: 'Вашу заявку буде розглянуто модератором.'
-  submitted_title: 'Заявку подано'
-  title: 'Привʼязка гравця'
-
 common:
   back_home: 'На головну'
   country: 'Країна'
@@ -57,17 +46,17 @@ home:
 
 moderator:
   approve: 'Схвалити'
-  claim_details: 'Деталі'
-  claim_existing_player: 'Існуючий гравець'
-  claim_new_player: 'Новий гравець'
-  claim_type: 'Тип'
-  claim_user: 'Користувач'
-  claims: 'Заявки гравців'
   no_pending_claims: 'Немає заявок на розгляд'
   no_tournament_claims_approved: 'Немає схвалених турнірів'
   no_tournament_claims_pending: 'Немає турнірів на розгляд'
   no_tournament_claims_rejected: 'Немає відхилених турнірів'
   no_venue_claims: 'Немає майданчиків на розгляд'
+  player_claim_details: 'Деталі'
+  player_claim_existing: 'Існуючий гравець'
+  player_claim_new: 'Новий гравець'
+  player_claim_type: 'Тип'
+  player_claim_user: 'Користувач'
+  player_claims: 'Заявки гравців'
   reject: 'Відхилити'
   reject_comment: 'Коментар'
   tournaments: 'Турніри'
@@ -93,6 +82,17 @@ player:
   full_name: 'ПІБ'
   last_name: 'Прізвище'
   patronymic: 'По батькові'
+
+player_claim:
+  existing_description: 'Знайдіть себе серед гравців рейтингу'
+  existing_title: 'Я вже є в рейтингу'
+  new_description: 'Заповніть дані для створення нового гравця'
+  new_title: 'Я новий гравець'
+  select: 'Обрати'
+  submit: 'Подати заявку'
+  submitted_description: 'Вашу заявку буде розглянуто модератором.'
+  submitted_title: 'Заявку подано'
+  title: 'Привʼязка гравця'
 
 site:
   description: 'Рейтингова система інтелектуальних ігор: турніри, команди, гравці, майданчики'
@@ -124,8 +124,8 @@ tournament:
     pending: 'На розгляді'
     rejected: 'Відхилено'
   my:
-    add_official: 'Додати особу'
     actions: 'Дії'
+    add_official: 'Додати особу'
     create: 'Створити турнір'
     delete: 'Видалити'
     delete_confirm: 'Ви впевнені, що хочете видалити цей турнір?'
@@ -133,6 +133,7 @@ tournament:
     empty: 'У вас ще немає турнірів'
     end_datetime: 'Дата та час завершення'
     general_info: 'Основна інформація'
+    last_moderation: 'Остання дія'
     moderation: 'Модерація'
     publish: 'Опублікувати'
     publish_requirements: 'Вимоги для публікації'
@@ -143,7 +144,6 @@ tournament:
     status: 'Статус'
     submit_moderation: 'Подати на модерацію'
     submitted_at: 'Подано'
-    last_moderation: 'Остання дія'
     title: 'Мої турніри'
     tournament_status: 'Стан'
   officials: 'Офіційні особи'

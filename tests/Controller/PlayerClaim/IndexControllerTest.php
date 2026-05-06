@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Claim;
+namespace App\Tests\Controller\PlayerClaim;
 
 use App\Entity\User;
 use App\Tests\FixturesTrait;
@@ -45,7 +45,7 @@ class IndexControllerTest extends WebTestCase
     public static function dataProvider(): iterable
     {
         yield 'anonymous gets redirected' => [
-            'uri' => '/claim',
+            'uri' => '/player-claim',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
             'expectedStatus' => 302,
@@ -53,7 +53,7 @@ class IndexControllerTest extends WebTestCase
         ];
 
         yield 'regular user sees claim page' => [
-            'uri' => '/claim',
+            'uri' => '/player-claim',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,
@@ -61,7 +61,7 @@ class IndexControllerTest extends WebTestCase
         ];
 
         yield 'user with player redirects to home' => [
-            'uri' => '/claim',
+            'uri' => '/player-claim',
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_with_player',
             'expectedStatus' => 302,
@@ -69,7 +69,7 @@ class IndexControllerTest extends WebTestCase
         ];
 
         yield 'admin redirects to home' => [
-            'uri' => '/claim',
+            'uri' => '/player-claim',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_admin',
             'expectedStatus' => 302,
@@ -77,11 +77,11 @@ class IndexControllerTest extends WebTestCase
         ];
 
         yield 'user with pending claim redirects to submitted' => [
-            'uri' => '/claim',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
+            'uri' => '/player-claim',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 302,
-            'expectedRedirect' => '/claim/submitted',
+            'expectedRedirect' => '/player-claim/submitted',
         ];
     }
 }

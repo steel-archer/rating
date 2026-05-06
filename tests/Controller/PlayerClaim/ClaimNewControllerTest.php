@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Claim;
+namespace App\Tests\Controller\PlayerClaim;
 
 use App\Entity\PlayerClaim;
 use App\Tests\CsrfTrait;
@@ -10,7 +10,7 @@ use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ClaimExistingControllerTest extends WebTestCase
+class ClaimNewControllerTest extends WebTestCase
 {
     use FixturesTrait;
     use CsrfTrait;
@@ -19,10 +19,9 @@ class ClaimExistingControllerTest extends WebTestCase
      * @param list<string> $fixtures
      */
     #[DataProvider('dataProvider')]
-    public function testClaimExisting(
+    public function testClaimNew(
         array $fixtures,
         ?string $loginAs,
-        string $searchLastName,
         int $expectedStatus,
         callable $afterCallback,
     ): void {
@@ -33,15 +32,16 @@ class ClaimExistingControllerTest extends WebTestCase
             $client->loginUser($objects[$loginAs]);
         }
 
-        // search for player via claim search
-        $crawler = $client->request('GET', '/claim/search?lastName=' . urlencode($searchLastName));
+        // open claim page to get CSRF token
+        $crawler = $client->request('GET', '/player-claim');
 
-        if ($client->getResponse()->isSuccessful() && $crawler->filter('form[action*="/claim/existing"]')->count() > 0) {
-            $token = self::extractCsrfToken($crawler, '/claim/existing');
-            $playerId = $crawler->filter('form[action*="/claim/existing"] input[name="playerId"]')->attr('value');
-            $client->request('POST', '/claim/existing', [
+        if ($client->getResponse()->isSuccessful()) {
+            $token = self::extractCsrfToken($crawler, '/player-claim/new');
+            $client->request('POST', '/player-claim/new', [
                 '_token' => $token,
-                'playerId' => $playerId,
+                'lastName' => 'Тестовий',
+                'firstName' => 'Гравець',
+                'patronymic' => 'Тестович',
             ]);
         }
 
@@ -54,25 +54,40 @@ class ClaimExistingControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'user claims existing free player' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+        yield 'user submits new player claim' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
-            'searchLastName' => 'Українка',
             'expectedStatus' => 302,
             'afterCallback' => static function (array $objects) {
                 $claims = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
                     ->findBy(['user' => $objects['user_regular']]);
                 static::assertCount(1, $claims);
-                static::assertSame('Українка', $claims[0]->getLastName());
-                static::assertNotNull($claims[0]->getPlayer());
+                static::assertSame('Тестовий', $claims[0]->getLastName());
+                static::assertSame('Гравець', $claims[0]->getFirstName());
                 static::assertSame(PlayerClaim::STATUS_PENDING, $claims[0]->getStatus());
+                static::assertNull($claims[0]->getPlayer());
+            },
+        ];
+
+        yield 'user with player redirects to home' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 302,
+            'afterCallback' => static function (array $objects) {
+            },
+        ];
+
+        yield 'user with pending claim redirects to home' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
+            'loginAs' => 'user_regular',
+            'expectedStatus' => 302,
+            'afterCallback' => static function (array $objects) {
             },
         ];
 
         yield 'anonymous gets redirected' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
-            'searchLastName' => 'Франко',
             'expectedStatus' => 302,
             'afterCallback' => static function (array $objects) {
             },

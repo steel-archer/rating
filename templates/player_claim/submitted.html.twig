@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'player_claim.submitted_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1>{{ 'player_claim.submitted_title'|trans }}</h1>
+        <p>{{ 'player_claim.submitted_description'|trans }}</p>
+        <a href="{{ path('home') }}">{{ 'common.back_home'|trans }}</a>
+    </div>
+{% endblock %}

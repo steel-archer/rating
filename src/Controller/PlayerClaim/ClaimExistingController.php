@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Claim;
+namespace App\Controller\PlayerClaim;
 
 use App\DTO\Request\ClaimExistingRequestDTO;
 use App\Entity\PlayerClaim;
@@ -17,9 +17,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/claim/existing', name: 'claim_existing', methods: ['POST'])]
+#[Route('/player-claim/existing', name: 'player_claim_existing', methods: ['POST'])]
 #[IsGranted('ROLE_USER')]
-#[IsCsrfTokenValid('claim_existing')]
+#[IsCsrfTokenValid('player_claim_existing')]
 final class ClaimExistingController extends AbstractController
 {
     public function __invoke(
@@ -54,6 +54,6 @@ final class ClaimExistingController extends AbstractController
         $em->persist($claim);
         $em->flush();
 
-        return $this->redirectToRoute('claim_submitted');
+        return $this->redirectToRoute('player_claim_submitted');
     }
 }

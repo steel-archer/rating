@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Claim;
+namespace App\Tests\Controller\PlayerClaim;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -43,7 +43,7 @@ class SearchControllerTest extends WebTestCase
     public static function dataProvider(): iterable
     {
         yield 'anonymous gets redirected' => [
-            'uri' => '/claim/search',
+            'uri' => '/player-claim/search',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
             'expectedStatus' => 302,
@@ -52,7 +52,7 @@ class SearchControllerTest extends WebTestCase
         ];
 
         yield 'logged in user searches free players' => [
-            'uri' => '/claim/search?lastName=%D0%A4%D1%80%D0%B0%D0%BD',
+            'uri' => '/player-claim/search?lastName=%D0%A4%D1%80%D0%B0%D0%BD',
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,
@@ -63,7 +63,7 @@ class SearchControllerTest extends WebTestCase
         ];
 
         yield 'search with firstName and patronymic filters' => [
-            'uri' => '/claim/search?firstName=%D0%86%D0%B2%D0%B0%D0%BD&patronymic=%D0%AF%D0%BA%D0%BE%D0%B2',
+            'uri' => '/player-claim/search?firstName=%D0%86%D0%B2%D0%B0%D0%BD&patronymic=%D0%AF%D0%BA%D0%BE%D0%B2',
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,
@@ -73,7 +73,7 @@ class SearchControllerTest extends WebTestCase
         ];
 
         yield 'search with no results' => [
-            'uri' => '/claim/search?lastName=Nonexistent',
+            'uri' => '/player-claim/search?lastName=Nonexistent',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,

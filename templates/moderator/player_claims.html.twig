@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'moderator.claims'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+{% block title %}{{ 'moderator.player_claims'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'moderator.claims'|trans }}</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'moderator.player_claims'|trans }}</span></nav>
 {% endblock %}
 
 {% block body %}
-    <h1>{{ 'moderator.claims'|trans }}</h1>
+    <h1>{{ 'moderator.player_claims'|trans }}</h1>
 
     {% for message in app.flashes('error') %}
         <div class="flash-error">{{ message }}</div>
@@ -16,12 +16,12 @@
     {% if claims is empty %}
         <p>{{ 'moderator.no_pending_claims'|trans }}</p>
     {% else %}
-        <table aria-label="{{ 'moderator.claims'|trans }}">
+        <table aria-label="{{ 'moderator.player_claims'|trans }}">
             <thead>
                 <tr>
-                    <th>{{ 'moderator.claim_user'|trans }}</th>
-                    <th>{{ 'moderator.claim_type'|trans }}</th>
-                    <th>{{ 'moderator.claim_details'|trans }}</th>
+                    <th>{{ 'moderator.player_claim_user'|trans }}</th>
+                    <th>{{ 'moderator.player_claim_type'|trans }}</th>
+                    <th>{{ 'moderator.player_claim_details'|trans }}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -31,9 +31,9 @@
                         <td>{{ claim.user.email }}</td>
                         <td>
                             {% if claim.new %}
-                                {{ 'moderator.claim_new_player'|trans }}
+                                {{ 'moderator.player_claim_new'|trans }}
                             {% else %}
-                                {{ 'moderator.claim_existing_player'|trans }}
+                                {{ 'moderator.player_claim_existing'|trans }}
                             {% endif %}
                         </td>
                         <td>
@@ -45,12 +45,12 @@
                             {% endif %}
                         </td>
                         <td class="claim-actions">
-                            <form method="post" action="{{ path('moderator_claim_approve', {id: claim.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('claim_' ~ claim.id) }}">
+                            <form method="post" action="{{ path('moderator_player_claim_approve', {id: claim.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('player_claim_' ~ claim.id) }}">
                                 <button type="submit" class="btn btn-approve">{{ 'moderator.approve'|trans }}</button>
                             </form>
-                            <form method="post" action="{{ path('moderator_claim_reject', {id: claim.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('claim_' ~ claim.id) }}">
+                            <form method="post" action="{{ path('moderator_player_claim_reject', {id: claim.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('player_claim_' ~ claim.id) }}">
                                 <button type="submit" class="btn btn-reject">{{ 'moderator.reject'|trans }}</button>
                             </form>
                         </td>

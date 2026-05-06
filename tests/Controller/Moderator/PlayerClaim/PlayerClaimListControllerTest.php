@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Moderator;
+namespace App\Tests\Controller\Moderator\PlayerClaim;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ClaimListControllerTest extends WebTestCase
+class PlayerClaimListControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
@@ -43,7 +43,7 @@ class ClaimListControllerTest extends WebTestCase
     public static function dataProvider(): iterable
     {
         yield 'anonymous gets redirected' => [
-            'uri' => '/moderator/claims',
+            'uri' => '/moderator/player-claims',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
             'expectedStatus' => 302,
@@ -52,7 +52,7 @@ class ClaimListControllerTest extends WebTestCase
         ];
 
         yield 'regular user gets 403' => [
-            'uri' => '/moderator/claims',
+            'uri' => '/moderator/player-claims',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 403,
@@ -61,8 +61,8 @@ class ClaimListControllerTest extends WebTestCase
         ];
 
         yield 'moderator sees pending claims' => [
-            'uri' => '/moderator/claims',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
+            'uri' => '/moderator/player-claims',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => 'user_moderator',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
@@ -71,8 +71,8 @@ class ClaimListControllerTest extends WebTestCase
         ];
 
         yield 'admin sees claims (role hierarchy)' => [
-            'uri' => '/moderator/claims',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
+            'uri' => '/moderator/player-claims',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => 'user_admin',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {

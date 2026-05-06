@@ -1,10 +1,10 @@
 App\Entity\PlayerClaim:
-    claim_pending:
+    player_claim_pending:
         user: '@user_regular'
         player: '@player_franko'
         lastName: 'Франко'
         status: 'pending'
-    claim_new_pending:
+    player_claim_new_pending:
         user: '@user_moderator'
         player: null
         lastName: 'Новий'

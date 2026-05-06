@@ -1,5 +1,5 @@
 App\Entity\PlayerClaim:
-    claim_approved:
+    player_claim_approved:
         user: '@user_admin'
         player: '@player_lesya'
         lastName: 'Українка'

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Claim;
+namespace App\Controller\PlayerClaim;
 
 use App\Entity\User;
 use App\Repository\PlayerClaimRepository;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/claim', name: 'claim_index', methods: ['GET'])]
+#[Route('/player-claim', name: 'player_claim_index', methods: ['GET'])]
 #[IsGranted('ROLE_USER')]
 final class IndexController extends AbstractController
 {
@@ -23,9 +23,9 @@ final class IndexController extends AbstractController
         }
 
         if ($claimRepository->hasPendingClaim($user)) {
-            return $this->redirectToRoute('claim_submitted');
+            return $this->redirectToRoute('player_claim_submitted');
         }
 
-        return $this->render('claim/index.html.twig');
+        return $this->render('player_claim/index.html.twig');
     }
 }

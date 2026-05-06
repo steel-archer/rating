@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Moderator;
+namespace App\Tests\Controller\Moderator\PlayerClaim;
 
 use App\Entity\PlayerClaim;
 use App\Tests\CsrfTrait;
@@ -10,7 +10,7 @@ use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ClaimApproveControllerTest extends WebTestCase
+class PlayerClaimApproveControllerTest extends WebTestCase
 {
     use FixturesTrait;
     use CsrfTrait;
@@ -18,59 +18,59 @@ class ClaimApproveControllerTest extends WebTestCase
     public function testApproveAlreadyProcessedClaimShowsFlash(): void
     {
         $client = static::createClient();
-        $objects = self::loadFixtures(['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml']);
+        $objects = self::loadFixtures(['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml']);
         $client->loginUser($objects['user_admin']);
 
-        $claimId = $objects['claim_pending']->getId();
-        $approveUrl = '/moderator/claims/' . $claimId . '/approve';
+        $claimId = $objects['player_claim_pending']->getId();
+        $approveUrl = '/moderator/player-claims/' . $claimId . '/approve';
 
         // get token from claims page
-        $crawler = $client->request('GET', '/moderator/claims');
+        $crawler = $client->request('GET', '/moderator/player-claims');
         $token = self::extractCsrfToken($crawler, $approveUrl);
 
         // first approve
         $client->request('POST', $approveUrl, ['_token' => $token]);
-        static::assertResponseRedirects('/moderator/claims');
+        static::assertResponseRedirects('/moderator/player-claims');
 
         // second approve with same token — claim already processed
         $client->request('POST', $approveUrl, ['_token' => $token]);
-        static::assertResponseRedirects('/moderator/claims');
+        static::assertResponseRedirects('/moderator/player-claims');
     }
 
     public function testApproveClaimForUserWhoAlreadyHasPlayerShowsFlash(): void
     {
         $client = static::createClient();
         $objects = self::loadFixtures([
-            'Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims_user_has_player.yaml',
+            'Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims_user_has_player.yaml',
         ]);
         $client->loginUser($objects['user_admin']);
 
-        $claimId = $objects['claim_user_has_player']->getId();
-        $approveUrl = '/moderator/claims/' . $claimId . '/approve';
+        $claimId = $objects['player_claim_user_has_player']->getId();
+        $approveUrl = '/moderator/player-claims/' . $claimId . '/approve';
 
-        $crawler = $client->request('GET', '/moderator/claims');
+        $crawler = $client->request('GET', '/moderator/player-claims');
         $token = self::extractCsrfToken($crawler, $approveUrl);
         $client->request('POST', $approveUrl, ['_token' => $token]);
 
         // should redirect with error flash (user already has a player)
-        static::assertResponseRedirects('/moderator/claims');
+        static::assertResponseRedirects('/moderator/player-claims');
     }
 
     public function testApproveClaimForAlreadyTakenPlayerShowsFlash(): void
     {
         $client = static::createClient();
-        $objects = self::loadFixtures(['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims_conflict.yaml']);
+        $objects = self::loadFixtures(['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims_conflict.yaml']);
         $client->loginUser($objects['user_admin']);
 
-        $claimId = $objects['claim_already_taken']->getId();
-        $approveUrl = '/moderator/claims/' . $claimId . '/approve';
+        $claimId = $objects['player_claim_already_taken']->getId();
+        $approveUrl = '/moderator/player-claims/' . $claimId . '/approve';
 
-        $crawler = $client->request('GET', '/moderator/claims');
+        $crawler = $client->request('GET', '/moderator/player-claims');
         $token = self::extractCsrfToken($crawler, $approveUrl);
         $client->request('POST', $approveUrl, ['_token' => $token]);
 
         // should redirect with error flash (player already claimed by another user)
-        static::assertResponseRedirects('/moderator/claims');
+        static::assertResponseRedirects('/moderator/player-claims');
     }
 
     /**
@@ -92,10 +92,10 @@ class ClaimApproveControllerTest extends WebTestCase
         }
 
         $claimId = $objects[$claimKey]->getId();
-        $crawler = $client->request('GET', '/moderator/claims');
+        $crawler = $client->request('GET', '/moderator/player-claims');
 
         if ($client->getResponse()->isSuccessful()) {
-            $approveUrl = '/moderator/claims/' . $claimId . '/approve';
+            $approveUrl = '/moderator/player-claims/' . $claimId . '/approve';
             $token = self::extractCsrfToken($crawler, $approveUrl);
             $client->request('POST', $approveUrl, ['_token' => $token]);
         }
@@ -110,9 +110,9 @@ class ClaimApproveControllerTest extends WebTestCase
     public static function dataProvider(): iterable
     {
         yield 'moderator approves existing player claim' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => 'user_admin',
-            'claimKey' => 'claim_pending',
+            'claimKey' => 'player_claim_pending',
             'expectedStatus' => 302,
             'afterCallback' => static function (array $objects, string $claimKey) {
                 $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
@@ -122,9 +122,9 @@ class ClaimApproveControllerTest extends WebTestCase
         ];
 
         yield 'moderator approves new player claim and player is created' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => 'user_admin',
-            'claimKey' => 'claim_new_pending',
+            'claimKey' => 'player_claim_new_pending',
             'expectedStatus' => 302,
             'afterCallback' => static function (array $objects, string $claimKey) {
                 $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
@@ -138,18 +138,18 @@ class ClaimApproveControllerTest extends WebTestCase
         ];
 
         yield 'regular user gets 403' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => 'user_regular',
-            'claimKey' => 'claim_pending',
+            'claimKey' => 'player_claim_pending',
             'expectedStatus' => 403,
             'afterCallback' => static function (array $objects, string $claimKey) {
             },
         ];
 
         yield 'anonymous gets redirected' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/claims.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
             'loginAs' => null,
-            'claimKey' => 'claim_pending',
+            'claimKey' => 'player_claim_pending',
             'expectedStatus' => 302,
             'afterCallback' => static function (array $objects, string $claimKey) {
             },

@@ -1,6 +1,6 @@
 <turbo-frame id="claim-search">
     <div class="search-form">
-        <form action="{{ path('claim_search') }}" method="get">
+        <form action="{{ path('player_claim_search') }}" method="get">
             <div class="search-row">
                 <input type="text" name="lastName" value="{{ filters.lastName ?? '' }}" placeholder="{{ 'player.last_name'|trans }}" class="search-input">
                 <input type="text" name="firstName" value="{{ filters.firstName ?? '' }}" placeholder="{{ 'player.first_name'|trans }}" class="search-input">
@@ -16,7 +16,7 @@
     </div>
 
     {% if players is not empty %}
-        <table aria-label="{{ 'claim.existing_title'|trans }}">
+        <table aria-label="{{ 'player_claim.existing_title'|trans }}">
             <thead>
                 <tr>
                     <th>{{ 'player.full_name'|trans }}</th>
@@ -30,10 +30,10 @@
                         <td>{{ p.fullName }}</td>
                         <td>{{ p.townName ?? '' }}</td>
                         <td>
-                            <form method="post" action="{{ path('claim_existing') }}" data-turbo-frame="_top">
-                                <input type="hidden" name="_token" value="{{ csrf_token('claim_existing') }}">
+                            <form method="post" action="{{ path('player_claim_existing') }}" data-turbo-frame="_top">
+                                <input type="hidden" name="_token" value="{{ csrf_token('player_claim_existing') }}">
                                 <input type="hidden" name="playerId" value="{{ p.id }}">
-                                <button type="submit" class="btn-link">{{ 'claim.select'|trans }}</button>
+                                <button type="submit" class="btn-link">{{ 'player_claim.select'|trans }}</button>
                             </form>
                         </td>
                     </tr>
@@ -41,7 +41,7 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'claim_search', paginationParams: filters} %}
+        {% include '_pagination.html.twig' with {paginationRoute: 'player_claim_search', paginationParams: filters} %}
     {% elseif filters is not empty %}
         <p>{{ 'common.not_found'|trans }}</p>
     {% endif %}

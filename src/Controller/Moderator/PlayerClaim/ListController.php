@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Moderator;
+namespace App\Controller\Moderator\PlayerClaim;
 
 use App\Repository\PlayerClaimRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -8,13 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/moderator/claims', name: 'moderator_claims', methods: ['GET'])]
+#[Route('/moderator/player-claims', name: 'moderator_player_claims', methods: ['GET'])]
 #[IsGranted('ROLE_MODERATOR')]
-final class ClaimListController extends AbstractController
+final class ListController extends AbstractController
 {
     public function __invoke(PlayerClaimRepository $claimRepository): Response
     {
-        return $this->render('moderator/claims.html.twig', [
+        return $this->render('moderator/player_claims.html.twig', [
             'claims' => $claimRepository->findPending(),
         ]);
     }

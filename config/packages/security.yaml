@@ -31,7 +31,7 @@ security:
 
     access_control:
         - { path: ^/moderator, roles: ROLE_MODERATOR }
-        - { path: ^/claim, roles: ROLE_USER }
+        - { path: ^/player-claim, roles: ROLE_USER }
 
 when@test:
     security:

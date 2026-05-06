@@ -6,7 +6,7 @@ App\Entity\User:
         player: '@player_franko'
 
 App\Entity\PlayerClaim:
-    claim_already_taken:
+    player_claim_already_taken:
         user: '@user_regular'
         player: '@player_franko'
         lastName: 'Франко'
