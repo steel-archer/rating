@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Throwable;
 
 #[Route('/my/tournaments/{id}', name: 'my_tournament_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_USER')]
@@ -33,8 +34,10 @@ final class TournamentUpdateController extends AbstractController
 
         try {
             $service->update($tournament, $dto);
-        } catch (LogicException $e) {
-            return $this->json(['error' => $e->getMessage()], 422);
+        } catch (LogicException $ex) {
+            return $this->json(['error' => $ex->getMessage()], 422);
+        } catch (Throwable) {
+            return $this->json(['error' => 'common.error'], 500);
         }
 
         $this->addFlash('success', 'tournament.saved');

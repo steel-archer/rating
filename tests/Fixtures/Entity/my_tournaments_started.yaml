@@ -1,0 +1,24 @@
+App\Entity\User:
+    user_creator:
+        email: 'creator@example.com'
+        googleId: 'google_creator_123'
+        roles: []
+        player: '@player_franko'
+
+App\Entity\Tournament:
+    tournament_started:
+        name: 'Турнір що почався'
+        status: '<(App\Entity\TournamentStatus::Published)>'
+        createdBy: '@user_creator'
+        season: '@season_current'
+        startedAt: '<(new DateTime("-1 day"))>'
+        endedAt: '<(new DateTime("+1 day"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        difficulty: 3.0
+
+App\Entity\TournamentOfficial:
+    official_started_org:
+        tournament: '@tournament_started'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'

@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Throwable;
 
 #[Route('/my/tournaments/{id}/publish', name: 'my_tournament_publish', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_USER')]
@@ -34,8 +35,10 @@ final class TournamentPublishController extends AbstractController
         try {
             $service->publish($tournament);
             $this->addFlash('success', 'tournament.published');
-        } catch (LogicException $e) {
-            $this->addFlash('error', $e->getMessage());
+        } catch (LogicException $ex) {
+            $this->addFlash('error', $ex->getMessage());
+        } catch (Throwable) {
+            $this->addFlash('error', 'common.error');
         }
 
         return $this->redirectToRoute('my_tournament_edit', ['id' => $id]);

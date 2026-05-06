@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Throwable;
 
 #[Route('/my/tournaments/{id}/delete', name: 'my_tournament_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_USER')]
@@ -34,8 +35,12 @@ final class TournamentDeleteController extends AbstractController
         try {
             $service->delete($tournament);
             $this->addFlash('success', 'tournament.deleted');
-        } catch (LogicException $e) {
-            $this->addFlash('error', $e->getMessage());
+        } catch (LogicException $ex) {
+            $this->addFlash('error', $ex->getMessage());
+
+            return $this->redirectToRoute('my_tournament_edit', ['id' => $id]);
+        } catch (Throwable) {
+            $this->addFlash('error', 'common.error');
 
             return $this->redirectToRoute('my_tournament_edit', ['id' => $id]);
         }

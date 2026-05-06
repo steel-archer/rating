@@ -1,0 +1,82 @@
+App\Entity\User:
+    user_creator:
+        email: 'creator@example.com'
+        googleId: 'google_creator_123'
+        roles: []
+        player: '@player_franko'
+
+App\Entity\Tournament:
+    tournament_draft:
+        name: 'Мій чернетковий турнір'
+        status: '<(App\Entity\TournamentStatus::Draft)>'
+        createdBy: '@user_creator'
+    tournament_approved:
+        name: 'Схвалений турнір'
+        status: '<(App\Entity\TournamentStatus::Draft)>'
+        createdBy: '@user_creator'
+        season: '@season_current'
+        startedAt: '<(new DateTime("+30 days"))>'
+        endedAt: '<(new DateTime("+31 days"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        difficulty: 3.5
+    tournament_published:
+        name: 'Опублікований турнір'
+        status: '<(App\Entity\TournamentStatus::Published)>'
+        createdBy: '@user_creator'
+        season: '@season_current'
+        startedAt: '<(new DateTime("+60 days"))>'
+        endedAt: '<(new DateTime("+61 days"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        difficulty: 4.0
+
+App\Entity\TournamentOfficial:
+    official_draft_org:
+        tournament: '@tournament_draft'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+    official_approved_org:
+        tournament: '@tournament_approved'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+    official_approved_editor:
+        tournament: '@tournament_approved'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::Editor)>'
+    official_approved_game_jury:
+        tournament: '@tournament_approved'
+        player: '@player_lesya'
+        role: '<(App\Entity\TournamentOfficialRole::GameJury)>'
+    official_approved_appeal_jury:
+        tournament: '@tournament_approved'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::AppealJury)>'
+    official_published_org:
+        tournament: '@tournament_published'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+    official_published_editor:
+        tournament: '@tournament_published'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::Editor)>'
+    official_published_game_jury:
+        tournament: '@tournament_published'
+        player: '@player_lesya'
+        role: '<(App\Entity\TournamentOfficialRole::GameJury)>'
+    official_published_appeal_jury:
+        tournament: '@tournament_published'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::AppealJury)>'
+
+App\Entity\TournamentModerationClaim:
+    claim_approved:
+        tournament: '@tournament_approved'
+        status: '<(App\Entity\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new DateTime("-1 day"))>'
+        resolvedAt: '<(new DateTime())>'
+    claim_published:
+        tournament: '@tournament_published'
+        status: '<(App\Entity\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new DateTime("-5 days"))>'
+        resolvedAt: '<(new DateTime("-4 days"))>'

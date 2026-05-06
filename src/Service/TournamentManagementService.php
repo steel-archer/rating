@@ -127,7 +127,7 @@ final readonly class TournamentManagementService
 
         // Add new ones that don't exist yet
         $existingKeys = array_map(
-            static fn(TournamentOfficial $o) => $o->getRole()->value . '_' . $o->getPlayer()->getId(),
+            static fn(TournamentOfficial $official) => $official->getRole()->value . '_' . $official->getPlayer()->getId(),
             $existing,
         );
 

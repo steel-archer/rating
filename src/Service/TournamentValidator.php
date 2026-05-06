@@ -60,7 +60,7 @@ final readonly class TournamentValidator
         }
 
         $officials = $this->officialRepository->findByTournament($tournament);
-        $roles = array_map(static fn(TournamentOfficial $o) => $o->getRole(), $officials);
+        $roles = array_map(static fn(TournamentOfficial $official) => $official->getRole(), $officials);
         foreach (TournamentOfficialRole::cases() as $role) {
             if (!in_array($role, $roles, true)) {
                 $errors[] = 'tournament.publish_error.missing_role.' . $role->value;
