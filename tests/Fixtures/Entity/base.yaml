@@ -48,14 +48,20 @@ App\Entity\Venue:
     venue_kyiv:
         name: 'Квіз-бар Київ'
         town: '@town_kyiv'
+        isApproved: true
+        createdAt: '<(new DateTime("2025-01-01"))>'
     venue_lviv:
         name: 'Арт-простір Львів'
         town: '@town_lviv'
+        isApproved: true
+        createdAt: '<(new DateTime("2025-01-01"))>'
 
 App\Entity\VenueRepresentative:
     venue_rep_kyiv:
         venue: '@venue_kyiv'
         player: '@player_shevchenko'
+        createdAt: '<(new DateTime("2025-01-01"))>'
     venue_rep_lviv:
         venue: '@venue_lviv'
         player: '@player_franko'
+        createdAt: '<(new DateTime("2025-01-01"))>'
