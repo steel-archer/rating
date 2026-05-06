@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Controller\My;
+namespace App\Controller\My\Tournament;
 
 use App\Entity\User;
 use App\Repository\TournamentRepository;
 use App\Service\TournamentManagementService;
-use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Throwable;
 
-#[Route('/my/tournaments/{id}/publish', name: 'my_tournament_publish', requirements: ['id' => '\d+'], methods: ['POST'])]
+#[Route('/my/tournaments/{id}/submit', name: 'my_tournament_submit', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
-#[IsCsrfTokenValid(new Expression("'tournament_publish_' ~ args['id']"))]
-final class TournamentPublishController extends AbstractController
+#[IsCsrfTokenValid(new Expression("'tournament_submit_' ~ args['id']"))]
+final class SubmitController extends AbstractController
 {
     public function __invoke(
         int $id,
@@ -32,14 +30,8 @@ final class TournamentPublishController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        try {
-            $service->publish($tournament);
-            $this->addFlash('success', 'tournament.published');
-        } catch (LogicException $ex) {
-            $this->addFlash('error', $ex->getMessage());
-        } catch (Throwable) {
-            $this->addFlash('error', 'common.error');
-        }
+        $service->submitForModeration($tournament);
+        $this->addFlash('success', 'tournament.submitted');
 
         return $this->redirectToRoute('my_tournament_edit', ['id' => $id]);
     }

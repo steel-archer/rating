@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Moderator;
+namespace App\Controller\Moderator\Tournament;
 
 use App\Repository\TournamentRepository;
 use App\Service\TournamentManagementService;
@@ -16,7 +16,7 @@ use Throwable;
 #[Route('/moderator/tournaments/{id}/approve', name: 'moderator_tournament_approve', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_MODERATOR')]
 #[IsCsrfTokenValid(new Expression("'tournament_moderate_' ~ args['id']"))]
-final class TournamentClaimApproveController extends AbstractController
+final class ApproveController extends AbstractController
 {
     public function __invoke(
         int $id,

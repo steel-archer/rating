@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\My;
+namespace App\Controller\My\Tournament;
 
 use App\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\Entity\User;
@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/my/tournaments', name: 'my_tournament_store', methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
 #[IsCsrfTokenValid('tournament_create')]
-final class TournamentStoreController extends AbstractController
+final class StoreController extends AbstractController
 {
     public function __invoke(
         #[MapRequestPayload] CreateRequestDTO $dto,

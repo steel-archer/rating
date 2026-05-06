@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Moderator;
+namespace App\Controller\Moderator\Tournament;
 
 use App\DTO\Request\Tournament\Moderation\ListRequestDTO;
 use App\Entity\TournamentModerationStatus;
@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/moderator/tournaments', name: 'moderator_tournaments', methods: ['GET'])]
 #[IsGranted('ROLE_MODERATOR')]
-final class TournamentClaimListController extends AbstractController
+final class ListController extends AbstractController
 {
     public function __invoke(
         #[MapQueryString] ?ListRequestDTO $dto,

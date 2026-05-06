@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\My;
+namespace App\Controller\My\Tournament;
 
 use App\DTO\Request\Tournament\My\ListRequestDTO;
 use App\Entity\User;
@@ -14,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments', name: 'my_tournaments', methods: ['GET'])]
 #[IsGranted('ROLE_PLAYER')]
-final class TournamentListController extends AbstractController
+final class ListController extends AbstractController
 {
     public function __invoke(
         #[MapQueryString] ?ListRequestDTO $dto,

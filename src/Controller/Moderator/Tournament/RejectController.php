@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Moderator;
+namespace App\Controller\Moderator\Tournament;
 
 use App\DTO\Request\Tournament\Moderation\RejectRequestDTO;
 use App\Repository\TournamentRepository;
@@ -18,7 +18,7 @@ use Throwable;
 #[Route('/moderator/tournaments/{id}/reject', name: 'moderator_tournament_reject', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_MODERATOR')]
 #[IsCsrfTokenValid(new Expression("'tournament_moderate_' ~ args['id']"))]
-final class TournamentClaimRejectController extends AbstractController
+final class RejectController extends AbstractController
 {
     public function __invoke(
         int $id,

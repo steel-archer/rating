@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Moderator;
+namespace App\Tests\Controller\Moderator\Tournament;
 
 use App\Entity\TournamentModerationClaim;
 use App\Entity\TournamentModerationStatus;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\My;
+namespace App\Controller\My\Tournament;
 
 use App\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Entity\User;
@@ -16,7 +16,7 @@ use Throwable;
 
 #[Route('/my/tournaments/{id}', name: 'my_tournament_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
-final class TournamentUpdateController extends AbstractController
+final class UpdateController extends AbstractController
 {
     public function __invoke(
         int $id,

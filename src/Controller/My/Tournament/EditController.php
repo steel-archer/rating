@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\My;
+namespace App\Controller\My\Tournament;
 
 use App\Entity\TournamentStatus;
 use App\Entity\User;
@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/{id}/edit', name: 'my_tournament_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
 #[IsGranted('ROLE_PLAYER')]
-final class TournamentEditController extends AbstractController
+final class EditController extends AbstractController
 {
     public function __invoke(
         int $id,
