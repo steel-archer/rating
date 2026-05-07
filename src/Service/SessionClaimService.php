@@ -11,10 +11,8 @@ use App\Entity\Player;
 use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
-use App\Enum\TournamentOfficialRole;
 use App\Entity\TournamentSession;
 use App\Entity\User;
-use App\Entity\Venue;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionClaimRepository;
 use App\Repository\TournamentOfficialRepository;
@@ -51,7 +49,7 @@ class SessionClaimService
         $venue = $this->venueRepository->find($dto->venueId)
             ?? throw new LogicException('common.not_found');
 
-        if (!$this->isRepresentative($player, $venue)) {
+        if (!$this->representativeRepository->isRepresentative($player, $venue)) {
             throw new LogicException('session_claim.error.not_representative');
         }
 
@@ -183,20 +181,6 @@ class SessionClaimService
         $this->em->flush();
     }
 
-    public function isOrganizer(Player $player, Tournament $tournament): bool
-    {
-        $officials = $this->officialRepository->findByTournament($tournament);
-
-        return array_any($officials, fn($official) => $official->getPlayer() === $player && $official->getRole() === TournamentOfficialRole::Organizer);
-    }
-
-    private function isRepresentative(Player $player, Venue $venue): bool
-    {
-        $representatives = $this->representativeRepository->findByVenueWithPlayer($venue);
-
-        return array_any($representatives, fn($representative) => $representative->getPlayer() === $player);
-    }
-
     /**
      * @throws LogicException
      */
@@ -205,7 +189,7 @@ class SessionClaimService
         $player = $user->getPlayer()
             ?? throw new LogicException('common.error');
 
-        if (!$this->isOrganizer($player, $tournament)) {
+        if (!$this->officialRepository->isOrganizer($player, $tournament)) {
             throw new LogicException('common.error');
         }
     }

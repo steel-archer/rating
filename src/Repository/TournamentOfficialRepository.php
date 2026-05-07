@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Player;
 use App\Entity\Tournament;
 use App\Entity\TournamentOfficial;
+use App\Enum\TournamentOfficialRole;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -29,5 +31,20 @@ class TournamentOfficialRepository extends ServiceEntityRepository
             ->addOrderBy('p.lastName')
             ->getQuery()
             ->getResult();
+    }
+
+    public function isOrganizer(Player $player, Tournament $tournament): bool
+    {
+        return (bool) $this->createQueryBuilder('o')
+            ->select('1')
+            ->where('o.tournament = :tournament')
+            ->andWhere('o.player = :player')
+            ->andWhere('o.role = :role')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::Organizer)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

@@ -33,6 +33,19 @@ class VenueRepresentativeRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function isRepresentative(Player $player, Venue $venue): bool
+    {
+        return (bool) $this->createQueryBuilder('vr')
+            ->select('1')
+            ->where('vr.venue = :venue')
+            ->andWhere('vr.player = :player')
+            ->setParameter('venue', $venue)
+            ->setParameter('player', $player)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * @return list<Venue>
      */

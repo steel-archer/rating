@@ -7,9 +7,9 @@ namespace App\Controller\Tournament;
 use App\Enum\SessionClaimStatus;
 use App\Entity\User;
 use App\Repository\SessionClaimRepository;
+use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
 use App\Repository\VenueRepresentativeRepository;
-use App\Service\SessionClaimService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -24,7 +24,7 @@ class SessionsController extends AbstractController
         int $id,
         TournamentRepository $tournamentRepository,
         SessionClaimRepository $sessionClaimRepository,
-        SessionClaimService $service,
+        TournamentOfficialRepository $officialRepository,
         VenueRepresentativeRepository $representativeRepository,
     ): Response {
         try {
@@ -40,7 +40,7 @@ class SessionsController extends AbstractController
             $claims = [];
 
             if ($player !== null) {
-                $isOrganizer = $service->isOrganizer($player, $tournament);
+                $isOrganizer = $officialRepository->isOrganizer($player, $tournament);
                 $venues = $representativeRepository->findVenuesByPlayer($player);
             }
 

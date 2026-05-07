@@ -2,7 +2,7 @@ doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
 
-        server_version: '8.0'
+        server_version: '8.4'
 
         profiling_collect_backtrace: '%kernel.debug%'
         schema_filter: '~^(?!messenger_messages)~'
