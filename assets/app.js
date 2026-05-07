@@ -1,3 +1,4 @@
+// @ts-check
 import './stimulus_bootstrap.js';
 import './styles/app.css';
 import './suggest.js';
@@ -10,21 +11,21 @@ import { trans } from './trans.js';
 
 let allExpanded = false;
 
-document.addEventListener('click', (e) => {
-    const singleToggle = e.target.closest('[data-toggle-squad]');
+document.addEventListener('click', (event) => {
+    const singleToggle = /** @type {HTMLElement} */ (event.target).closest('[data-toggle-squad]');
     if (singleToggle) {
-        const list = singleToggle.parentElement.querySelector('.squad-list');
+        const list = /** @type {HTMLElement} */ (singleToggle.parentElement?.querySelector('.squad-list'));
         const isHidden = list.hidden;
         list.hidden = !isHidden;
         singleToggle.textContent = isHidden ? trans('squad.hide') : trans('squad.show');
         return;
     }
 
-    const allToggle = e.target.closest('[data-toggle-all-squads]');
+    const allToggle = /** @type {HTMLElement} */ (event.target).closest('[data-toggle-all-squads]');
     if (allToggle) {
         allExpanded = !allExpanded;
-        document.querySelectorAll('.squad-list').forEach(l => l.hidden = !allExpanded);
-        document.querySelectorAll('[data-toggle-squad]').forEach(b => b.textContent = allExpanded ? trans('squad.hide') : trans('squad.show'));
+        document.querySelectorAll('.squad-list').forEach(list => /** @type {HTMLElement} */ (list).hidden = !allExpanded);
+        document.querySelectorAll('[data-toggle-squad]').forEach(btn => btn.textContent = allExpanded ? trans('squad.hide') : trans('squad.show'));
         allToggle.textContent = allExpanded ? trans('squad.hide_all') : trans('squad.show_all');
     }
 });

@@ -1,9 +1,13 @@
+// @ts-check
 import { initSuggestBehavior } from './suggest-base.js';
 
+/**
+ * @param {HTMLElement} wrapper
+ */
 function initSuggest(wrapper) {
-    const input = wrapper.querySelector('[data-suggest-input]');
-    const hidden = wrapper.querySelector('[data-suggest-hidden]');
-    const dropdown = wrapper.querySelector('[data-suggest-dropdown]');
+    const input = /** @type {HTMLInputElement|null} */ (wrapper.querySelector('[data-suggest-input]'));
+    const hidden = /** @type {HTMLInputElement|null} */ (wrapper.querySelector('[data-suggest-hidden]'));
+    const dropdown = /** @type {HTMLElement|null} */ (wrapper.querySelector('[data-suggest-dropdown]'));
     const apiUrl = wrapper.dataset.suggestUrl;
     if (!input || !hidden || !dropdown || !apiUrl || wrapper.dataset.suggestInit) {
         return;
@@ -21,14 +25,14 @@ function initSuggest(wrapper) {
 }
 
 function initAllSuggests() {
-    document.querySelectorAll('[data-suggest-url]').forEach(initSuggest);
+    document.querySelectorAll('[data-suggest-url]').forEach(element => initSuggest(/** @type {HTMLElement} */ (element)));
 }
 
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.suggest-wrapper')) {
-        document.querySelectorAll('[data-suggest-dropdown]').forEach(d => {
-            d.innerHTML = '';
-            d.hidden = true;
+document.addEventListener('click', (event) => {
+    if (!/** @type {HTMLElement} */ (event.target).closest('.suggest-wrapper')) {
+        document.querySelectorAll('[data-suggest-dropdown]').forEach(dropdown => {
+            /** @type {HTMLElement} */ (dropdown).innerHTML = '';
+            /** @type {HTMLElement} */ (dropdown).hidden = true;
         });
     }
 });

@@ -1,24 +1,27 @@
+// @ts-check
+
 /**
  * @param {HTMLInputElement} input
  * @param {HTMLElement} dropdown
  * @param {string} apiUrl
- * @param {function(object): void} onSelect
+ * @param {function({id: string, name: string}): void} onSelect
  */
 export function initSuggestBehavior(input, dropdown, apiUrl, onSelect) {
+    /** @type {ReturnType<typeof setTimeout>|undefined} */
     let debounceTimer;
 
     input.addEventListener('input', () => {
         clearTimeout(debounceTimer);
-        const q = input.value.trim();
-        if (q.length < 2) {
+        const query = input.value.trim();
+        if (query.length < 2) {
             dropdown.innerHTML = '';
             dropdown.hidden = true;
             return;
         }
         debounceTimer = setTimeout(() => {
-            fetch(`${apiUrl}?q=${encodeURIComponent(q)}`)
-                .then(r => r.json())
-                .then(items => {
+            fetch(`${apiUrl}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(/** @param {Array<{id: string, name: string}>} items */ (items) => {
                     if (items.length === 0) {
                         dropdown.innerHTML = '';
                         dropdown.hidden = true;
@@ -36,12 +39,12 @@ export function initSuggestBehavior(input, dropdown, apiUrl, onSelect) {
         }, 200);
     });
 
-    dropdown.addEventListener('click', (e) => {
-        const item = e.target.closest('.suggest-item');
+    dropdown.addEventListener('click', (event) => {
+        const item = /** @type {HTMLElement} */ (event.target).closest('.suggest-item');
         if (!item) {
             return;
         }
-        onSelect({ id: item.dataset.id, name: item.textContent });
+        onSelect({ id: /** @type {string} */ (item.dataset.id), name: /** @type {string} */ (item.textContent) });
         dropdown.innerHTML = '';
         dropdown.hidden = true;
     });

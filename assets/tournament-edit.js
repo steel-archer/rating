@@ -1,18 +1,19 @@
+// @ts-check
 import { trans } from './trans.js';
 import { apiPost, showError } from './api.js';
 
 function initTournamentCreateForm() {
-    const form = document.getElementById('tournament-create-form');
+    const form = /** @type {HTMLFormElement|null} */ (document.getElementById('tournament-create-form'));
     if (!form) {
         return;
     }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        const url = form.dataset.url;
-        const status = document.getElementById('save-status');
-        const data = { name: form.querySelector('[name="name"]').value };
+        const url = /** @type {string} */ (form.dataset.url);
+        const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
+        const data = { name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value };
 
         apiPost(url, data)
             .then(({ok, body}) => {
@@ -29,24 +30,30 @@ function initTournamentCreateForm() {
 }
 
 function initTournamentEditForm() {
-    const form = document.getElementById('tournament-edit-form');
+    const form = /** @type {HTMLFormElement|null} */ (document.getElementById('tournament-edit-form'));
     if (!form) {
         return;
     }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        const url = form.dataset.url;
-        const status = document.getElementById('save-status');
+        const url = /** @type {string} */ (form.dataset.url);
+        const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
 
         const data = {
-            name: form.querySelector('[name="name"]').value,
-            startedAt: form.querySelector('[name="startedAt"]').value || null,
-            endedAt: form.querySelector('[name="endedAt"]').value || null,
-            toursCount: form.querySelector('[name="toursCount"]').value ? parseInt(form.querySelector('[name="toursCount"]').value) : null,
-            questionsPerTour: form.querySelector('[name="questionsPerTour"]').value ? parseInt(form.querySelector('[name="questionsPerTour"]').value) : null,
-            difficulty: form.querySelector('[name="difficulty"]').value ? parseFloat(form.querySelector('[name="difficulty"]').value) : null,
+            name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
+            startedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="startedAt"]')).value || null,
+            endedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="endedAt"]')).value || null,
+            toursCount: /** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value
+                ? parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value)
+                : null,
+            questionsPerTour: /** @type {HTMLInputElement} */ (form.querySelector('[name="questionsPerTour"]')).value
+                ? parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="questionsPerTour"]')).value)
+                : null,
+            difficulty: /** @type {HTMLInputElement} */ (form.querySelector('[name="difficulty"]')).value
+                ? parseFloat(/** @type {HTMLInputElement} */ (form.querySelector('[name="difficulty"]')).value)
+                : null,
             organizers: getOfficialIds('organizers'),
             editors: getOfficialIds('editors'),
             gameJury: getOfficialIds('gameJury'),
@@ -67,55 +74,67 @@ function initTournamentEditForm() {
     });
 }
 
+/**
+ * @param {string} role
+ * @returns {number[]}
+ */
 function getOfficialIds(role) {
     const group = document.querySelector(`.officials-group[data-role="${role}"]`);
     if (!group) {
         return [];
     }
-    return Array.from(group.querySelectorAll('input[type="hidden"]')).map(i => parseInt(i.value));
+    return Array.from(group.querySelectorAll('input[type="hidden"]'))
+        .map(input => parseInt(/** @type {HTMLInputElement} */ (input).value));
 }
 
 function initTournamentActions() {
-    document.addEventListener('click', (e) => {
-        const submitBtn = e.target.closest('[data-tournament-submit]');
+    document.addEventListener('click', (event) => {
+        const submitBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-submit]');
         if (submitBtn) {
-            tournamentAction(submitBtn.dataset.tournamentSubmit, 'submit', submitBtn);
+            tournamentAction(/** @type {HTMLElement} */ (submitBtn).dataset.tournamentSubmit || '', 'submit', /** @type {HTMLButtonElement} */ (submitBtn));
             return;
         }
 
-        const publishBtn = e.target.closest('[data-tournament-publish]');
+        const publishBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-publish]');
         if (publishBtn) {
-            tournamentAction(publishBtn.dataset.tournamentPublish, 'publish', publishBtn);
+            tournamentAction(/** @type {HTMLElement} */ (publishBtn).dataset.tournamentPublish || '', 'publish', /** @type {HTMLButtonElement} */ (publishBtn));
             return;
         }
 
-        const deleteBtn = e.target.closest('[data-tournament-delete]');
+        const deleteBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-delete]');
         if (deleteBtn) {
-            if (!confirm(deleteBtn.dataset.confirm || trans('tournament.my.delete_confirm'))) {
+            const confirmMessage = /** @type {HTMLElement} */ (deleteBtn).dataset.confirm || trans('tournament.my.delete_confirm');
+            if (!confirm(confirmMessage)) {
                 return;
             }
-            tournamentAction(deleteBtn.dataset.tournamentDelete, 'delete', deleteBtn, () => {
+            tournamentAction(/** @type {HTMLElement} */ (deleteBtn).dataset.tournamentDelete || '', 'delete', /** @type {HTMLButtonElement} */ (deleteBtn), () => {
                 window.location.href = '/my/tournaments';
             });
             return;
         }
 
-        const approveBtn = e.target.closest('[data-tournament-approve]');
+        const approveBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-approve]');
         if (approveBtn) {
-            moderateTournament(approveBtn.dataset.tournamentApprove, 'approve', null, approveBtn);
+            moderateTournament(/** @type {HTMLElement} */ (approveBtn).dataset.tournamentApprove || '', 'approve', null, /** @type {HTMLButtonElement} */ (approveBtn));
             return;
         }
 
-        const rejectBtn = e.target.closest('[data-tournament-reject]');
+        const rejectBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-reject]');
         if (rejectBtn) {
-            const id = rejectBtn.dataset.tournamentReject;
-            const commentInput = document.querySelector(`[data-tournament-reject-comment="${id}"]`);
+            const id = /** @type {HTMLElement} */ (rejectBtn).dataset.tournamentReject || '';
+            const commentInput = /** @type {HTMLInputElement|null} */ (document.querySelector(`[data-tournament-reject-comment="${id}"]`));
             const comment = commentInput ? commentInput.value : null;
-            moderateTournament(id, 'reject', comment, rejectBtn);
+            moderateTournament(id, 'reject', comment, /** @type {HTMLButtonElement} */ (rejectBtn));
         }
     });
 }
 
+/**
+ * @param {string} id
+ * @param {string} action
+ * @param {HTMLButtonElement} btn
+ * @param {function(): void} [onSuccess]
+ */
 function tournamentAction(id, action, btn, onSuccess) {
     btn.disabled = true;
 
@@ -138,13 +157,19 @@ function tournamentAction(id, action, btn, onSuccess) {
         });
 }
 
+/**
+ * @param {string} id
+ * @param {string} action
+ * @param {string|null} comment
+ * @param {HTMLButtonElement} btn
+ */
 function moderateTournament(id, action, comment, btn) {
     btn.disabled = true;
 
     const data = action === 'reject' ? {comment} : undefined;
 
     apiPost(`/moderator/tournaments/${id}/${action}`, data)
-        .then(({ok, data: responseData}) => {
+        .then(({ok, body}) => {
             if (ok) {
                 const card = btn.closest('.moderation-card');
                 card?.remove();
@@ -159,7 +184,7 @@ function moderateTournament(id, action, comment, btn) {
                 }
             } else {
                 btn.disabled = false;
-                alert(responseData.error ? trans(responseData.error) : trans('common.error'));
+                alert(body.error ? trans(body.error) : trans('common.error'));
             }
         })
         .catch(() => {

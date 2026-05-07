@@ -1,21 +1,22 @@
+// @ts-check
 import { trans } from './trans.js';
 import { apiPost, showError } from './api.js';
 
 function initVenueCreateForm() {
-    const form = document.getElementById('venue-create-form');
+    const form = /** @type {HTMLFormElement|null} */ (document.getElementById('venue-create-form'));
     if (!form) {
         return;
     }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        const url = form.dataset.url;
-        const status = document.getElementById('save-status');
+        const url = /** @type {string} */ (form.dataset.url);
+        const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
 
         const data = {
-            name: form.querySelector('[name="name"]').value,
-            townId: parseInt(form.querySelector('[name="townId"]').value) || null,
+            name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
+            townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
         };
 
         apiPost(url, data)
@@ -33,20 +34,21 @@ function initVenueCreateForm() {
 }
 
 function initVenueEditForm() {
-    const form = document.getElementById('venue-edit-form');
+    const form = /** @type {HTMLFormElement|null} */ (document.getElementById('venue-edit-form'));
     if (!form) {
         return;
     }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        const url = form.dataset.url;
-        const status = document.getElementById('save-status');
-        const group = form.querySelector('.officials-group[data-role="representatives"]');
+        const url = /** @type {string} */ (form.dataset.url);
+        const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
+        const group = /** @type {HTMLElement} */ (form.querySelector('.officials-group[data-role="representatives"]'));
 
         const data = {
-            representatives: Array.from(group.querySelectorAll('input[type="hidden"]')).map(i => parseInt(i.value)),
+            representatives: Array.from(group.querySelectorAll('input[type="hidden"]'))
+                .map(input => parseInt(/** @type {HTMLInputElement} */ (input).value)),
         };
 
         apiPost(url, data)
@@ -64,22 +66,27 @@ function initVenueEditForm() {
 }
 
 function initVenueModeration() {
-    document.addEventListener('click', (e) => {
-        const approveBtn = e.target.closest('[data-venue-approve]');
+    document.addEventListener('click', (event) => {
+        const approveBtn = /** @type {HTMLElement} */ (event.target).closest('[data-venue-approve]');
         if (approveBtn) {
-            const id = approveBtn.dataset.venueApprove;
-            moderateVenue(id, 'approve', approveBtn);
+            const id = /** @type {HTMLElement} */ (approveBtn).dataset.venueApprove || '';
+            moderateVenue(id, 'approve', /** @type {HTMLButtonElement} */ (approveBtn));
             return;
         }
 
-        const rejectBtn = e.target.closest('[data-venue-reject]');
+        const rejectBtn = /** @type {HTMLElement} */ (event.target).closest('[data-venue-reject]');
         if (rejectBtn) {
-            const id = rejectBtn.dataset.venueReject;
-            moderateVenue(id, 'reject', rejectBtn);
+            const id = /** @type {HTMLElement} */ (rejectBtn).dataset.venueReject || '';
+            moderateVenue(id, 'reject', /** @type {HTMLButtonElement} */ (rejectBtn));
         }
     });
 }
 
+/**
+ * @param {string} id
+ * @param {string} action
+ * @param {HTMLButtonElement} btn
+ */
 function moderateVenue(id, action, btn) {
     btn.disabled = true;
 

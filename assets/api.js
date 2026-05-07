@@ -1,21 +1,22 @@
+// @ts-check
 import { trans } from './trans.js';
 
 /**
  * @param {string} url
- * @param {object|undefined} data
- * @returns {Promise<{ok: boolean, body: object}>}
+ * @param {object} [data]
+ * @returns {Promise<{ok: boolean, body: Record<string, any>}>}
  */
 export function apiPost(url, data) {
     return fetch(url, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: data !== undefined ? JSON.stringify(data) : undefined,
-    }).then(r => r.json().then(body => ({ok: r.ok, body})));
+    }).then(response => response.json().then(body => ({ok: response.ok, body})));
 }
 
 /**
  * @param {HTMLElement} statusEl
- * @param {string} errorKey
+ * @param {string|null} errorKey
  */
 export function showError(statusEl, errorKey) {
     statusEl.textContent = errorKey

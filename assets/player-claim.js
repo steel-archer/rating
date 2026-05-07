@@ -1,23 +1,24 @@
+// @ts-check
 import { trans } from './trans.js';
 import { apiPost, showError } from './api.js';
 
 function initPlayerClaimNewForm() {
-    const form = document.getElementById('player-claim-new-form');
+    const form = /** @type {HTMLFormElement|null} */ (document.getElementById('player-claim-new-form'));
     if (!form) {
         return;
     }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        const url = form.dataset.url;
-        const status = document.getElementById('claim-new-status');
+        const url = /** @type {string} */ (form.dataset.url);
+        const status = /** @type {HTMLElement} */ (document.getElementById('claim-new-status'));
 
         const data = {
-            lastName: form.querySelector('[name="lastName"]').value,
-            firstName: form.querySelector('[name="firstName"]').value || null,
-            patronymic: form.querySelector('[name="patronymic"]').value || null,
-            townId: parseInt(form.querySelector('[name="townId"]').value) || null,
+            lastName: /** @type {HTMLInputElement} */ (form.querySelector('[name="lastName"]')).value,
+            firstName: /** @type {HTMLInputElement} */ (form.querySelector('[name="firstName"]')).value || null,
+            patronymic: /** @type {HTMLInputElement} */ (form.querySelector('[name="patronymic"]')).value || null,
+            townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
         };
 
         apiPost(url, data)
@@ -35,41 +36,46 @@ function initPlayerClaimNewForm() {
 }
 
 function initPlayerClaimActions() {
-    document.addEventListener('click', (e) => {
-        const existingBtn = e.target.closest('[data-player-claim-existing]');
+    document.addEventListener('click', (event) => {
+        const existingBtn = /** @type {HTMLElement} */ (event.target).closest('[data-player-claim-existing]');
         if (existingBtn) {
-            const playerId = parseInt(existingBtn.dataset.playerClaimExisting);
-            existingBtn.disabled = true;
+            const playerId = parseInt(/** @type {HTMLElement} */ (existingBtn).dataset.playerClaimExisting || '');
+            /** @type {HTMLButtonElement} */ (existingBtn).disabled = true;
 
             apiPost('/player-claim/existing', {playerId})
                 .then(({ok, body}) => {
                     if (ok) {
                         window.location.href = '/player-claim/submitted';
                     } else {
-                        existingBtn.disabled = false;
+                        /** @type {HTMLButtonElement} */ (existingBtn).disabled = false;
                         alert(body.error ? trans(body.error) : trans('common.error'));
                     }
                 })
                 .catch(() => {
-                    existingBtn.disabled = false;
+                    /** @type {HTMLButtonElement} */ (existingBtn).disabled = false;
                     alert(trans('common.error'));
                 });
             return;
         }
 
-        const approveBtn = e.target.closest('[data-player-claim-approve]');
+        const approveBtn = /** @type {HTMLElement} */ (event.target).closest('[data-player-claim-approve]');
         if (approveBtn) {
-            moderatePlayerClaim(approveBtn.dataset.playerClaimApprove, 'approve', approveBtn);
+            moderatePlayerClaim(/** @type {HTMLElement} */ (approveBtn).dataset.playerClaimApprove || '', 'approve', /** @type {HTMLButtonElement} */ (approveBtn));
             return;
         }
 
-        const rejectBtn = e.target.closest('[data-player-claim-reject]');
+        const rejectBtn = /** @type {HTMLElement} */ (event.target).closest('[data-player-claim-reject]');
         if (rejectBtn) {
-            moderatePlayerClaim(rejectBtn.dataset.playerClaimReject, 'reject', rejectBtn);
+            moderatePlayerClaim(/** @type {HTMLElement} */ (rejectBtn).dataset.playerClaimReject || '', 'reject', /** @type {HTMLButtonElement} */ (rejectBtn));
         }
     });
 }
 
+/**
+ * @param {string} id
+ * @param {string} action
+ * @param {HTMLButtonElement} btn
+ */
 function moderatePlayerClaim(id, action, btn) {
     btn.disabled = true;
 
