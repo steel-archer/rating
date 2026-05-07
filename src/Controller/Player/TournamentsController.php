@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Player;
 
-use App\Repository\PlayerRepository;
+use App\Entity\Player;
 use App\Service\PlayerTournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
@@ -18,12 +17,9 @@ use Throwable;
 #[Route('/player/{id}/tournaments', name: 'player_tournaments', requirements: ['id' => '\d+'], methods: ['GET'])]
 class TournamentsController extends AbstractController
 {
-    public function __invoke(int $id, Request $request, PlayerRepository $playerRepository, PlayerTournamentService $tournamentService): Response
+    public function __invoke(Player $player, Request $request, PlayerTournamentService $tournamentService): Response
     {
         try {
-            $player = $playerRepository->find($id)
-                ?? throw new NotFoundHttpException("Player #$id not found");
-
             $page = PageResolver::resolve($request);
 
             return $this->render('player/_tournaments.html.twig', [
@@ -32,8 +28,6 @@ class TournamentsController extends AbstractController
                 'page' => $page,
                 'lastPage' => $tournamentService->getLastPageNumber($player),
             ]);
-        } catch (NotFoundHttpException $ex) {
-            throw $ex;
         } catch (Throwable $ex) {
             throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
         }

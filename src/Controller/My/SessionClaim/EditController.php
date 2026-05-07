@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\My\SessionClaim;
 
+use App\Entity\TournamentSession;
 use App\Entity\User;
 use App\Repository\SessionClaimRepository;
-use App\Repository\TournamentSessionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,15 +17,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EditController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        TournamentSessionRepository $sessionRepository,
+        TournamentSession $session,
         SessionClaimRepository $claimRepository,
     ): Response {
-        $session = $sessionRepository->find($id);
-        if ($session === null) {
-            throw $this->createNotFoundException();
-        }
-
         /** @var User $user */
         $user = $this->getUser();
 

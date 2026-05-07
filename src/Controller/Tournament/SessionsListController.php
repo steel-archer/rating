@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Tournament;
 
-use App\Repository\TournamentRepository;
+use App\Entity\Tournament;
 use App\Repository\TournamentSessionRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
@@ -20,16 +19,12 @@ use Throwable;
 class SessionsListController extends AbstractController
 {
     public function __invoke(
-        int $id,
+        Tournament $tournament,
         Request $request,
-        TournamentRepository $tournamentRepository,
         TournamentSessionRepository $sessionRepository,
         TournamentSessionTeamRepository $sessionTeamRepository,
     ): Response {
         try {
-            $tournament = $tournamentRepository->find($id)
-                ?? throw new NotFoundHttpException("Tournament #$id not found");
-
             $page = PageResolver::resolve($request);
             $sessions = $sessionRepository->findByTournamentPaginated($tournament, $page);
 
@@ -44,8 +39,6 @@ class SessionsListController extends AbstractController
                 'page' => $page,
                 'lastPage' => $sessionRepository->getLastPageNumberByTournament($tournament),
             ]);
-        } catch (NotFoundHttpException $ex) {
-            throw $ex;
         } catch (Throwable $ex) {
             throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
         }
