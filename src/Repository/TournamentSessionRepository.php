@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\Venue;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -60,7 +63,7 @@ class TournamentSessionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{tournamentId: int, tournamentName: string, playedAt: ?\DateTime}>
+     * @return list<array{tournamentId: int, tournamentName: string, playedAt: ?DateTimeImmutable}>
      */
     public function findByVenuePaginated(Venue $venue, int $page): array
     {

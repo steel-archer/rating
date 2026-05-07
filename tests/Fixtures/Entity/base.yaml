@@ -13,8 +13,8 @@ App\Entity\Town:
 App\Entity\Season:
     season_current:
         name: '2025-2026'
-        startedAt: '<(new DateTime("2025-10-01"))>'
-        endedAt: '<(new DateTime("2026-09-30"))>'
+        startedAt: '<(new \DateTimeImmutable("2025-10-01"))>'
+        endedAt: '<(new \DateTimeImmutable("2026-09-30"))>'
 
 App\Entity\Player:
     player_shevchenko:
@@ -49,19 +49,19 @@ App\Entity\Venue:
         name: 'Квіз-бар Київ'
         town: '@town_kyiv'
         isApproved: true
-        createdAt: '<(new DateTime("2025-01-01"))>'
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
     venue_lviv:
         name: 'Арт-простір Львів'
         town: '@town_lviv'
         isApproved: true
-        createdAt: '<(new DateTime("2025-01-01"))>'
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
 
 App\Entity\VenueRepresentative:
     venue_rep_kyiv:
         venue: '@venue_kyiv'
         player: '@player_shevchenko'
-        createdAt: '<(new DateTime("2025-01-01"))>'
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
     venue_rep_lviv:
         venue: '@venue_lviv'
         player: '@player_franko'
-        createdAt: '<(new DateTime("2025-01-01"))>'
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'

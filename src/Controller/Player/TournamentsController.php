@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Player;
 
 use App\Repository\PlayerRepository;

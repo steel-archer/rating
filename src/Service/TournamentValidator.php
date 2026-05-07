@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\DTO\Request\Tournament\My\EditRequestDTO;
@@ -10,7 +12,7 @@ use App\Entity\TournamentOfficialRole;
 use App\Repository\SeasonRepository;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
-use DateTime;
+use DateTimeImmutable;
 use Psr\Clock\ClockInterface;
 
 class TournamentValidator
@@ -26,8 +28,8 @@ class TournamentValidator
     /** @return list<string> */
     public function validateEdit(EditRequestDTO $dto): array
     {
-        $startedAt = $dto->startedAt ? new DateTime($dto->startedAt) : null;
-        $endedAt = $dto->endedAt ? new DateTime($dto->endedAt) : null;
+        $startedAt = $dto->startedAt ? new DateTimeImmutable($dto->startedAt) : null;
+        $endedAt = $dto->endedAt ? new DateTimeImmutable($dto->endedAt) : null;
 
         return $this->validateDates($startedAt, $endedAt);
     }
@@ -73,10 +75,10 @@ class TournamentValidator
     }
 
     /** @return list<string> */
-    private function validateDates(?DateTime $startedAt, ?DateTime $endedAt): array
+    private function validateDates(?DateTimeImmutable $startedAt, ?DateTimeImmutable $endedAt): array
     {
         $errors = [];
-        $now = DateTime::createFromInterface($this->clock->now());
+        $now = DateTimeImmutable::createFromInterface($this->clock->now());
 
         if ($startedAt !== null && $startedAt <= $now) {
             $errors[] = 'tournament.error.start_in_past';

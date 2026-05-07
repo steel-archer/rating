@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\TournamentRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
 #[ORM\Index(name: 'IDX_tournament_season', columns: ['season_id'])]
 #[ORM\Index(name: 'IDX_tournament_created_by', columns: ['created_by_id'])]
+#[ORM\HasLifecycleCallbacks]
 class Tournament
 {
     #[ORM\Id]
@@ -30,10 +33,10 @@ class Tournament
     private ?Season $season = null;
 
     #[ORM\Column(nullable: true)]
-    private ?DateTime $startedAt = null;
+    private ?DateTimeImmutable $startedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?DateTime $endedAt = null;
+    private ?DateTimeImmutable $endedAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $toursCount = null;
@@ -48,15 +51,21 @@ class Tournament
     private ?float $trueDl = null;
 
     #[ORM\Column]
-    private DateTime $createdAt;
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column]
-    private DateTime $updatedAt;
+    private DateTimeImmutable $updatedAt;
 
     public function __construct()
     {
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -88,24 +97,24 @@ class Tournament
         return $this;
     }
 
-    public function getStartedAt(): ?DateTime
+    public function getStartedAt(): ?DateTimeImmutable
     {
         return $this->startedAt;
     }
 
-    public function setStartedAt(?DateTime $startedAt): static
+    public function setStartedAt(?DateTimeImmutable $startedAt): static
     {
         $this->startedAt = $startedAt;
 
         return $this;
     }
 
-    public function getEndedAt(): ?DateTime
+    public function getEndedAt(): ?DateTimeImmutable
     {
         return $this->endedAt;
     }
 
-    public function setEndedAt(?DateTime $endedAt): static
+    public function setEndedAt(?DateTimeImmutable $endedAt): static
     {
         $this->endedAt = $endedAt;
 
@@ -184,27 +193,13 @@ class Tournament
         return $this;
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): DateTime
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 }

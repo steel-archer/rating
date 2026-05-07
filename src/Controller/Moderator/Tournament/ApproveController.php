@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Moderator\Tournament;
 
 use App\Repository\TournamentRepository;
-use App\Service\TournamentManagementService;
+use App\Service\TournamentModerationService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +20,7 @@ class ApproveController extends AbstractController
     public function __invoke(
         int $id,
         TournamentRepository $tournamentRepository,
-        TournamentManagementService $service,
+        TournamentModerationService $service,
     ): JsonResponse {
         $tournament = $tournamentRepository->find($id);
         if ($tournament === null) {

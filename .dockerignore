@@ -1,0 +1,13 @@
+.git
+.github
+.phpunit.cache
+coverage
+var
+vendor
+node_modules
+.env
+.env.local
+.env.test
+docker-compose.yml
+README.md
+LICENSE

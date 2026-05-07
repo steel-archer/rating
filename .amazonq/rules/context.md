@@ -5,6 +5,7 @@
 * В кінці файлу має бути новий рядок.
 
 PHP:
+* Використовувати `declare(strict_types=1);`.
 * Завжди робити імпорти: щоб, наприклад, було Exception, а не \Exception, DateTime, а не \DateTime тощо.
 * Але при цьому `use Doctrine\DBAL\Exception as DbalException`. І взагалі класи з назвою Exception не з core PP якось імпортувати з аліасом.
 * json-функції мають викликатися з аргументом, що включає кидання виключень.

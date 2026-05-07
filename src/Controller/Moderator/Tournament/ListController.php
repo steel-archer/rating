@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Moderator\Tournament;
 
 use App\DTO\Request\Tournament\Moderation\ListRequestDTO;

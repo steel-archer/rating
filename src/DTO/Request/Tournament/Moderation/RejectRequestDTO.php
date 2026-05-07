@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO\Request\Tournament\Moderation;
 
 use Symfony\Component\Validator\Constraints as Assert;

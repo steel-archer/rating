@@ -2,8 +2,8 @@ App\Entity\Tournament:
     tournament_spring:
         name: 'Весняний кубок'
         season: '@season_current'
-        startedAt: '<(new DateTime("2025-03-01"))>'
-        endedAt: '<(new DateTime("2025-03-15"))>'
+        startedAt: '<(new \DateTimeImmutable("2025-03-01"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.5
@@ -12,8 +12,8 @@ App\Entity\Tournament:
     tournament_autumn:
         name: 'Осінній бриз'
         season: '@season_current'
-        startedAt: '<(new DateTime("2024-10-10"))>'
-        endedAt: '<(new DateTime("2024-10-20"))>'
+        startedAt: '<(new \DateTimeImmutable("2024-10-10"))>'
+        endedAt: '<(new \DateTimeImmutable("2024-10-20"))>'
         toursCount: 4
         questionsPerTour: 15
         difficulty: 4.2
@@ -36,19 +36,19 @@ App\Entity\TournamentSession:
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
         host: '@player_lesya'
-        playedAt: '<(new DateTime("2025-03-01 19:00"))>'
+        playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
     session_spring_lviv:
         tournament: '@tournament_spring'
         venue: '@venue_lviv'
         representative: '@player_franko'
         host: null
-        playedAt: '<(new DateTime("2025-03-01 19:00"))>'
+        playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
     session_autumn_kyiv:
         tournament: '@tournament_autumn'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
         host: '@player_lesya'
-        playedAt: '<(new DateTime("2024-10-10 19:00"))>'
+        playedAt: '<(new \DateTimeImmutable("2024-10-10 19:00"))>'
 
 App\Entity\TeamPlayer:
     team_player_alpha_shevchenko:

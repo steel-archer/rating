@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\TournamentModerationClaimRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentModerationClaimRepository::class)]
@@ -26,14 +28,14 @@ class TournamentModerationClaim
     private ?string $comment = null;
 
     #[ORM\Column]
-    private DateTime $createdAt;
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
-    private ?DateTime $resolvedAt = null;
+    private ?DateTimeImmutable $resolvedAt = null;
 
     public function __construct()
     {
-        $this->createdAt = new DateTime();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -77,24 +79,24 @@ class TournamentModerationClaim
         return $this;
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt): static
+    public function setCreatedAt(DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getResolvedAt(): ?DateTime
+    public function getResolvedAt(): ?DateTimeImmutable
     {
         return $this->resolvedAt;
     }
 
-    public function setResolvedAt(?DateTime $resolvedAt): static
+    public function setResolvedAt(?DateTimeImmutable $resolvedAt): static
     {
         $this->resolvedAt = $resolvedAt;
 

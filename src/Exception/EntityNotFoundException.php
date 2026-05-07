@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exception;
 
-use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class EntityNotFoundException extends RuntimeException
+class EntityNotFoundException extends NotFoundHttpException
 {
     public static function forId(string $entity, int $id): self
     {

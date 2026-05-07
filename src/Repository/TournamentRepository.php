@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\DTO\Request\TournamentListRequestDTO;
@@ -41,7 +43,7 @@ class TournamentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, name: string, startedAt: ?\DateTime, endedAt: ?\DateTime, difficulty: ?float, trueDl: ?float, teamCount: int}>
+     * @return list<array{id: int, name: string, startedAt: ?\DateTimeImmutable, endedAt: ?\DateTimeImmutable, difficulty: ?float, trueDl: ?float, teamCount: int}>
      */
     public function findForList(TournamentListRequestDTO $requestDto): array
     {

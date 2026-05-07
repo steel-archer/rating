@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Season;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -32,7 +34,7 @@ class SeasonRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function findByDate(DateTime $date): ?Season
+    public function findByDate(DateTimeImmutable $date): ?Season
     {
         return $this->createQueryBuilder('s')
             ->where('s.startedAt <= :date')

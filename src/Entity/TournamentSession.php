@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\TournamentSessionRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentSessionRepository::class)]
@@ -35,7 +37,7 @@ class TournamentSession
     private ?Player $host = null;
 
     #[ORM\Column(nullable: true)]
-    private ?DateTime $playedAt = null;
+    private ?DateTimeImmutable $playedAt = null;
 
     public function getId(): ?int
     {
@@ -90,12 +92,12 @@ class TournamentSession
         return $this;
     }
 
-    public function getPlayedAt(): ?DateTime
+    public function getPlayedAt(): ?DateTimeImmutable
     {
         return $this->playedAt;
     }
 
-    public function setPlayedAt(?DateTime $playedAt): static
+    public function setPlayedAt(?DateTimeImmutable $playedAt): static
     {
         $this->playedAt = $playedAt;
 

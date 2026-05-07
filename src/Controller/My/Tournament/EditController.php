@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\My\Tournament;
 
 use App\Entity\TournamentStatus;
@@ -9,7 +11,7 @@ use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
 use App\Security\TournamentOwnerVoter;
 use App\Service\TournamentValidator;
-use DateTime;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,7 +38,7 @@ class EditController extends AbstractController
 
         $readonly = $tournament->getStatus() === TournamentStatus::Published
             && $tournament->getStartedAt() !== null
-            && $tournament->getStartedAt() <= new DateTime();
+            && $tournament->getStartedAt() <= new DateTimeImmutable();
 
         return $this->render('my/tournament_edit.html.twig', [
             'tournament' => $tournament,

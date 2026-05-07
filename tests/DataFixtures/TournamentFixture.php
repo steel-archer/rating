@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\DataFixtures;
 
 use App\Entity\Player;
@@ -13,7 +15,7 @@ use App\Entity\TournamentSessionTeam;
 use App\Entity\TournamentSessionTeamPlayer;
 use App\Entity\TournamentStatus;
 use App\Entity\Venue;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -61,8 +63,8 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $tournament->setSeason($season);
             $month = str_pad((string)(($i % 3) + 10), 2, '0', STR_PAD_LEFT);
             $day = str_pad((string)($faker->numberBetween(1, 28)), 2, '0', STR_PAD_LEFT);
-            $startDate = new DateTime("2024-$month-$day");
-            $endDate = (clone $startDate)->modify('+' . $faker->numberBetween(7, 14) . ' days');
+            $startDate = new DateTimeImmutable("2024-$month-$day");
+            $endDate = $startDate->modify('+' . $faker->numberBetween(7, 14) . ' days');
             $tournament->setStartedAt($startDate);
             $tournament->setEndedAt($endDate);
             $tournament->setStatus(TournamentStatus::Published);
@@ -113,7 +115,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                 $session->setVenue($this->getReference("venue_$venueIndex", Venue::class));
                 $session->setRepresentative($this->getReference('player_' . $faker->numberBetween(0, $playerCount - 1), Player::class));
                 $session->setHost($this->getReference('player_' . $faker->numberBetween(0, $playerCount - 1), Player::class));
-                $session->setPlayedAt(new DateTime("2024-$month-$day 19:00"));
+                $session->setPlayedAt(new DateTimeImmutable("2024-$month-$day 19:00"));
                 $manager->persist($session);
 
                 // Teams from this town (skip already used in this tournament)

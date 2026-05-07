@@ -21,4 +21,4 @@ App\Entity\TournamentModerationClaim:
     claim_pending_tournament:
         tournament: '@tournament_pending'
         status: '<(App\Entity\TournamentModerationStatus::Pending)>'
-        createdAt: '<(new DateTime())>'
+        createdAt: '<(new \DateTimeImmutable())>'

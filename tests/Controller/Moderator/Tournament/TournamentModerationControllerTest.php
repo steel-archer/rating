@@ -6,7 +6,7 @@ namespace App\Tests\Controller\Moderator\Tournament;
 
 use App\Entity\TournamentModerationClaim;
 use App\Entity\TournamentModerationStatus;
-use App\Service\TournamentManagementService;
+use App\Service\TournamentModerationService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
@@ -162,9 +162,9 @@ class TournamentModerationControllerTest extends WebTestCase
             },
             'mockSetup' => static function (self $test, KernelBrowser $client) {
                 $client->disableReboot();
-                $stub = $test->createStub(TournamentManagementService::class);
+                $stub = $test->createStub(TournamentModerationService::class);
                 $stub->method('approve')->willThrowException(new RuntimeException('unexpected'));
-                static::getContainer()->set(TournamentManagementService::class, $stub);
+                static::getContainer()->set(TournamentModerationService::class, $stub);
             },
         ];
 
@@ -184,9 +184,9 @@ class TournamentModerationControllerTest extends WebTestCase
             },
             'mockSetup' => static function (self $test, KernelBrowser $client) {
                 $client->disableReboot();
-                $stub = $test->createStub(TournamentManagementService::class);
+                $stub = $test->createStub(TournamentModerationService::class);
                 $stub->method('reject')->willThrowException(new RuntimeException('unexpected'));
-                static::getContainer()->set(TournamentManagementService::class, $stub);
+                static::getContainer()->set(TournamentModerationService::class, $stub);
             },
         ];
 

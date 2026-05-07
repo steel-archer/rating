@@ -11,8 +11,8 @@ App\Entity\Tournament:
         status: '<(App\Entity\TournamentStatus::Published)>'
         createdBy: '@user_creator'
         season: '@season_current'
-        startedAt: '<(new DateTime("-1 day"))>'
-        endedAt: '<(new DateTime("+1 day"))>'
+        startedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        endedAt: '<(new \DateTimeImmutable("+1 day"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.0

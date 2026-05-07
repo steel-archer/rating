@@ -11,20 +11,20 @@ App\Entity\Venue:
         town: '@town_kyiv'
         createdBy: '@user_venue_creator'
         isApproved: false
-        createdAt: '<(new DateTime())>'
+        createdAt: '<(new \DateTimeImmutable())>'
     venue_approved_owned:
         name: 'Мій схвалений майданчик'
         town: '@town_lviv'
         createdBy: '@user_venue_creator'
         isApproved: true
-        createdAt: '<(new DateTime("-1 day"))>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
 
 App\Entity\VenueRepresentative:
     rep_pending:
         venue: '@venue_pending'
         player: '@player_franko'
-        createdAt: '<(new DateTime())>'
+        createdAt: '<(new \DateTimeImmutable())>'
     rep_approved:
         venue: '@venue_approved_owned'
         player: '@player_franko'
-        createdAt: '<(new DateTime("-1 day"))>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'

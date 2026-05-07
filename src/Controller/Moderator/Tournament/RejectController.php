@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Moderator\Tournament;
 
 use App\DTO\Request\Tournament\Moderation\RejectRequestDTO;
 use App\Repository\TournamentRepository;
-use App\Service\TournamentManagementService;
+use App\Service\TournamentModerationService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,7 +23,7 @@ class RejectController extends AbstractController
         int $id,
         #[MapRequestPayload] RejectRequestDTO $dto,
         TournamentRepository $tournamentRepository,
-        TournamentManagementService $service,
+        TournamentModerationService $service,
     ): JsonResponse {
         $tournament = $tournamentRepository->find($id);
         if ($tournament === null) {

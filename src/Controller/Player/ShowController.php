@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Player;
 
 use App\Exception\EntityNotFoundException;
 use App\Service\PlayerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
@@ -18,8 +19,8 @@ class ShowController extends AbstractController
     {
         try {
             $player = $playerService->get($id);
-        } catch (EntityNotFoundException $ex) {
-            throw new NotFoundHttpException($ex->getMessage(), $ex);
+        } catch (EntityNotFoundException) {
+            throw $this->createNotFoundException();
         } catch (Throwable $ex) {
             throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
         }

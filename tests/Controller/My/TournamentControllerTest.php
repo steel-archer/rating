@@ -11,6 +11,7 @@ use App\Entity\TournamentOfficial;
 use App\Entity\TournamentOfficialRole;
 use App\Entity\TournamentStatus;
 use App\Service\TournamentManagementService;
+use App\Service\TournamentModerationService;
 use App\Tests\FixturesTrait;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -572,9 +573,9 @@ class TournamentControllerTest extends WebTestCase
             },
             'mockSetup' => static function (self $test, KernelBrowser $client) {
                 $client->disableReboot();
-                $stub = $test->createStub(TournamentManagementService::class);
+                $stub = $test->createStub(TournamentModerationService::class);
                 $stub->method('submitForModeration')->willThrowException(new RuntimeException('unexpected'));
-                static::getContainer()->set(TournamentManagementService::class, $stub);
+                static::getContainer()->set(TournamentModerationService::class, $stub);
             },
         ];
 

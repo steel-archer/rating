@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mapping\Team;
 
 use App\DTO\Response\Team\TournamentEntryDTO;

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\SeasonRepository;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SeasonRepository::class)]
@@ -18,10 +20,10 @@ class Season
     private string $name;
 
     #[ORM\Column(nullable: true)]
-    private ?DateTime $startedAt = null;
+    private ?DateTimeImmutable $startedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?DateTime $endedAt = null;
+    private ?DateTimeImmutable $endedAt = null;
 
     public function getId(): ?int
     {
@@ -40,24 +42,24 @@ class Season
         return $this;
     }
 
-    public function getStartedAt(): ?DateTime
+    public function getStartedAt(): ?DateTimeImmutable
     {
         return $this->startedAt;
     }
 
-    public function setStartedAt(?DateTime $startedAt): static
+    public function setStartedAt(?DateTimeImmutable $startedAt): static
     {
         $this->startedAt = $startedAt;
 
         return $this;
     }
 
-    public function getEndedAt(): ?DateTime
+    public function getEndedAt(): ?DateTimeImmutable
     {
         return $this->endedAt;
     }
 
-    public function setEndedAt(?DateTime $endedAt): static
+    public function setEndedAt(?DateTimeImmutable $endedAt): static
     {
         $this->endedAt = $endedAt;
 

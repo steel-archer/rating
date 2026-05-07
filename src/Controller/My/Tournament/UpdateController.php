@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\My\Tournament;
 
 use App\DTO\Request\Tournament\My\EditRequestDTO;
