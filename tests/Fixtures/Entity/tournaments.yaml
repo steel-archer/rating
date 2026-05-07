@@ -102,3 +102,23 @@ App\Entity\TournamentSessionTeamPlayer:
         tournamentSessionTeam: '@session_team_spring_gamma'
         player: '@player_shevchenko'
         isLegionary: true
+
+App\Entity\SessionClaim:
+    session_claim_spring_kyiv:
+        session: '@session_spring_kyiv'
+        player: '@player_shevchenko'
+        status: '<(App\Entity\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'
+    session_claim_spring_lviv:
+        session: '@session_spring_lviv'
+        player: '@player_franko'
+        status: '<(App\Entity\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'
+    session_claim_autumn_kyiv:
+        session: '@session_autumn_kyiv'
+        player: '@player_shevchenko'
+        status: '<(App\Entity\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2024-10-05"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2024-10-06"))>'

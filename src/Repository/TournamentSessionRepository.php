@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\SessionClaim;
+use App\Entity\SessionClaimStatus;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\Venue;
@@ -33,9 +35,12 @@ class TournamentSessionRepository extends ServiceEntityRepository
             ->join('v.town', 'town')
             ->join('ts.representative', 'rep')
             ->leftJoin('ts.host', 'host')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
             ->addSelect('v', 'town', 'rep', 'host')
             ->where('ts.tournament = :t')
+            ->andWhere('sc.status = :status')
             ->setParameter('t', $tournament)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
             ->orderBy('town.name', 'ASC')
             ->setFirstResult(($page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)
@@ -56,8 +61,11 @@ class TournamentSessionRepository extends ServiceEntityRepository
     {
         return (int) $this->createQueryBuilder('ts')
             ->select('COUNT(ts.id)')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
             ->where('ts.tournament = :t')
+            ->andWhere('sc.status = :status')
             ->setParameter('t', $tournament)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -69,9 +77,12 @@ class TournamentSessionRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('ts')
             ->join('ts.tournament', 't')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
             ->select('t.id AS tournamentId', 't.name AS tournamentName', 'ts.playedAt')
             ->where('ts.venue = :venue')
+            ->andWhere('sc.status = :status')
             ->setParameter('venue', $venue)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
             ->orderBy('ts.playedAt', 'DESC')
             ->setFirstResult(($page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)
@@ -92,8 +103,11 @@ class TournamentSessionRepository extends ServiceEntityRepository
     {
         return (int) $this->createQueryBuilder('ts')
             ->select('COUNT(ts.id)')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
             ->where('ts.venue = :venue')
+            ->andWhere('sc.status = :status')
             ->setParameter('venue', $venue)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
             ->getQuery()
             ->getSingleScalarResult();
     }

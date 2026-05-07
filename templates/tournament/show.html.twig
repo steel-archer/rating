@@ -38,6 +38,9 @@
                 {% if tournament.sessionCount %}
                     <dt>{{ 'tournament.sessions'|trans }}</dt>
                     <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">{{ tournament.sessionCount }}</a></dd>
+                {% else %}
+                    <dt>{{ 'tournament.sessions'|trans }}</dt>
+                    <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">0</a></dd>
                 {% endif %}
             </dl>
         </div>

@@ -94,6 +94,34 @@ player_claim:
   submitted_title: 'Заявку подано'
   title: 'Привʼязка гравця'
 
+session_claim:
+  add_host: 'Вкажіть ведучого'
+  claims_title: 'Заявки на відіграш'
+  delete: 'Видалити'
+  edit_title: 'Редагування заявки'
+  error:
+    date_after_end: 'Дата не може бути пізніше завершення турніру'
+    date_before_start: 'Дата не може бути раніше початку турніру'
+    has_results: 'Неможливо видалити: є результати команд'
+    no_claim: 'Заявку не знайдено'
+    not_pending: 'Заявка не очікує розгляду'
+    not_rejected: 'Заявка не відхилена'
+    not_representative: 'Ви не є представником цього майданчика'
+  estimated_date: 'Дата'
+  estimated_teams: 'Орієнтовна кількість команд'
+  my_empty: 'У вас немає заявок на відіграші'
+  my_title: 'Мої заявки на відіграші'
+  no_pending: 'Немає заявок на розгляд'
+  reject_reason: 'Причина відмови'
+  resubmit: 'Подати повторно'
+  status:
+    approved: 'Схвалено'
+    pending: 'На розгляді'
+    rejected: 'Відхилено'
+  submit: 'Подати заявку'
+  submit_title: 'Подати заявку на відіграш'
+  submitted_by: 'Представник'
+
 site:
   description: 'Рейтингова система інтелектуальних ігор: турніри, команди, гравці, майданчики'
   title: 'Рейтинг ЩДК'
@@ -146,6 +174,7 @@ tournament:
     submitted_at: 'Подано'
     title: 'Мої турніри'
     tournament_status: 'Стан'
+  no_sessions: 'Немає відіграшів'
   officials: 'Офіційні особи'
   publish_error:
     missing_role:

@@ -6,6 +6,8 @@ namespace App\Tests\DataFixtures;
 
 use App\Entity\Player;
 use App\Entity\Season;
+use App\Entity\SessionClaim;
+use App\Entity\SessionClaimStatus;
 use App\Entity\Team;
 use App\Entity\Tournament;
 use App\Entity\TournamentOfficial;
@@ -117,6 +119,13 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                 $session->setHost($this->getReference('player_' . $faker->numberBetween(0, $playerCount - 1), Player::class));
                 $session->setPlayedAt(new DateTimeImmutable("2024-$month-$day 19:00"));
                 $manager->persist($session);
+
+                $claim = new SessionClaim();
+                $claim->setSession($session);
+                $claim->setPlayer($session->getRepresentative());
+                $claim->setStatus(SessionClaimStatus::Approved);
+                $claim->setResolvedAt(new DateTimeImmutable("2024-$month-$day"));
+                $manager->persist($claim);
 
                 // Teams from this town (skip already used in this tournament)
                 $teams = $townTeams[$townIndex] ?? [];

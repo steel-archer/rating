@@ -1,36 +1,42 @@
 <turbo-frame id="tournament-sessions">
     <div class="card card-wide">
-        <table aria-label="{{ 'tournament.sessions'|trans }}">
-            <thead>
-                <tr>
-                    <th>{{ 'venue.venue'|trans }}</th>
-                    <th>{{ 'common.town'|trans }}</th>
-                    <th>{{ 'common.date'|trans }}</th>
-                    <th>{{ 'venue.representative'|trans }}</th>
-                    <th>{{ 'venue.host'|trans }}</th>
-                    <th>{{ 'common.teams_count'|trans }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in sessions %}
-                    <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td><a href="{{ path('venue_show', {id: s.venue.id}) }}" data-turbo-frame="_top">{{ s.venue.name }}</a></td>
-                        <td>{{ s.venue.town.name }}</td>
-                        <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
-                        <td><a href="{{ path('player_show', {id: s.representative.id}) }}" data-turbo-frame="_top">{{ s.representative.fullName }}</a></td>
-                        <td>
-                            {% if s.host %}
-                                <a href="{{ path('player_show', {id: s.host.id}) }}" data-turbo-frame="_top">{{ s.host.fullName }}</a>
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
-                        <td>{{ teamCounts[s.id] ?? 0 }}</td>
+        {% if sessions is empty %}
+            <p class="empty-state">{{ 'tournament.no_sessions'|trans }}</p>
+        {% else %}
+            <table aria-label="{{ 'tournament.sessions'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'venue.venue'|trans }}</th>
+                        <th>{{ 'common.town'|trans }}</th>
+                        <th>{{ 'common.date'|trans }}</th>
+                        <th>{{ 'venue.representative'|trans }}</th>
+                        <th>{{ 'venue.host'|trans }}</th>
+                        <th>{{ 'session_claim.estimated_teams'|trans }}</th>
+                        <th>{{ 'common.teams_count'|trans }}</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for s in sessions %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                            <td><a href="{{ path('venue_show', {id: s.venue.id}) }}" data-turbo-frame="_top">{{ s.venue.name }}</a></td>
+                            <td>{{ s.venue.town.name }}</td>
+                            <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
+                            <td><a href="{{ path('player_show', {id: s.representative.id}) }}" data-turbo-frame="_top">{{ s.representative.fullName }}</a></td>
+                            <td>
+                                {% if s.host %}
+                                    <a href="{{ path('player_show', {id: s.host.id}) }}" data-turbo-frame="_top">{{ s.host.fullName }}</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>{{ s.estimatedTeams ?? '—' }}</td>
+                            <td>{{ teamCounts[s.id] ?? 0 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'tournament_sessions_list', paginationParams: {id: tournament.id}} %}
+            {% include '_pagination.html.twig' with {paginationRoute: 'tournament_sessions_list', paginationParams: {id: tournament.id}} %}
+        {% endif %}
     </div>
 </turbo-frame>

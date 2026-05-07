@@ -12,4 +12,108 @@
     <turbo-frame id="tournament-sessions" src="{{ path('tournament_sessions_list', {id: tournament.id}) }}">
         <p>{{ 'common.loading'|trans }}</p>
     </turbo-frame>
+
+    {% if claims is not empty %}
+        <div class="card card-wide" id="session-claims-list">
+            <h2>{{ 'session_claim.claims_title'|trans }}</h2>
+
+            <table aria-label="{{ 'session_claim.claims_title'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'venue.venue'|trans }}</th>
+                        <th>{{ 'common.town'|trans }}</th>
+                        <th>{{ 'session_claim.estimated_date'|trans }}</th>
+                        <th>{{ 'session_claim.estimated_teams'|trans }}</th>
+                        {% if isOrganizer %}
+                            <th>{{ 'venue.representative'|trans }}</th>
+                        {% endif %}
+                        <th>{{ 'venue.host'|trans }}</th>
+                        <th>{{ 'tournament.my.status'|trans }}</th>
+                        <th>{{ 'tournament.my.actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for claim in claims %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}" data-session-claim-id="{{ claim.session.id }}">
+                            <td><a href="{{ path('venue_show', {id: claim.session.venue.id}) }}">{{ claim.session.venue.name }}</a></td>
+                            <td>{{ claim.session.venue.town.name }}</td>
+                            <td>{{ claim.session.playedAt ? claim.session.playedAt|date('d.m.Y') : '—' }}</td>
+                            <td>{{ claim.session.estimatedTeams ?? '—' }}</td>
+                            {% if isOrganizer %}
+                                <td><a href="{{ path('player_show', {id: claim.player.id}) }}">{{ claim.player.fullName }}</a></td>
+                            {% endif %}
+                            <td>
+                                {% if claim.session.host %}
+                                    <a href="{{ path('player_show', {id: claim.session.host.id}) }}">{{ claim.session.host.fullName }}</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if claim.status.value == 'pending' %}badge-moderation-pending{% elseif claim.status.value == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status.value)|trans }}</span>
+                                {% if claim.comment %}
+                                    <br><small class="meta">{{ claim.comment }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if isOrganizer and claim.status.value == 'pending' %}
+                                    <div class="moderation-actions">
+                                        <button type="button" class="btn btn-approve" data-session-approve="{{ claim.session.id }}">{{ 'moderator.approve'|trans }}</button>
+                                        <div class="reject-form">
+                                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-session-reject-comment="{{ claim.session.id }}">
+                                            <button type="button" class="btn btn-reject" data-session-reject="{{ claim.session.id }}">{{ 'moderator.reject'|trans }}</button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if not isOrganizer and claim.status.value == 'rejected' %}
+                                    <div class="moderation-actions">
+                                        <button type="button" class="btn btn-primary" data-session-resubmit="{{ claim.session.id }}">{{ 'session_claim.resubmit'|trans }}</button>
+                                        <button type="button" class="btn btn-reject" data-session-delete="{{ claim.session.id }}">{{ 'session_claim.delete'|trans }}</button>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {% if canSubmitClaim %}
+        <div class="card" id="session-claim-form-card">
+            <h2>{{ 'session_claim.submit_title'|trans }}</h2>
+            <form id="session-claim-form" class="tournament-form session-claim-form" data-url="{{ path('tournament_session_claim_submit', {id: tournament.id}) }}">
+                <div id="session-claim-status" class="form-error" hidden></div>
+                <div class="session-claim-fields">
+                    <div class="form-group">
+                        <label for="claim-venue">{{ 'venue.venue'|trans }}</label>
+                        <select id="claim-venue" name="venueId" required>
+                            <option value="">—</option>
+                            {% for venue in venues %}
+                                <option value="{{ venue.id }}">{{ venue.name }} ({{ venue.town.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="claim-date">{{ 'session_claim.estimated_date'|trans }}</label>
+                        <input type="date" id="claim-date" name="playedAt">
+                    </div>
+                    <div class="form-group">
+                        <label for="claim-teams">{{ 'session_claim.estimated_teams'|trans }}</label>
+                        <input type="number" id="claim-teams" name="estimatedTeams" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>{{ 'venue.host'|trans }}</label>
+                        <div class="officials-group" data-role="claim-host" data-single>
+                        </div>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                            <input type="text" data-suggest-input placeholder="{{ 'session_claim.add_host'|trans }}">
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">{{ 'session_claim.submit'|trans }}</button>
+            </form>
+        </div>
+    {% endif %}
 {% endblock %}

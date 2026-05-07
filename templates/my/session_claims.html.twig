@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'session_claim.my_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'session_claim.my_title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'session_claim.my_title'|trans }}</h1>
+
+    {% if claims is empty %}
+        <p class="empty-state">{{ 'session_claim.my_empty'|trans }}</p>
+    {% else %}
+        <div class="card card-wide">
+            <table aria-label="{{ 'session_claim.my_title'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'common.tournament'|trans }}</th>
+                        <th>{{ 'venue.venue'|trans }}</th>
+                        <th>{{ 'common.town'|trans }}</th>
+                        <th>{{ 'session_claim.estimated_date'|trans }}</th>
+                        <th>{{ 'session_claim.estimated_teams'|trans }}</th>
+                        <th>{{ 'tournament.my.status'|trans }}</th>
+                        <th>{{ 'tournament.my.actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for claim in claims %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                            <td><a href="{{ path('tournament_show', {id: claim.session.tournament.id}) }}">{{ claim.session.tournament.name }}</a></td>
+                            <td><a href="{{ path('venue_show', {id: claim.session.venue.id}) }}">{{ claim.session.venue.name }}</a></td>
+                            <td>{{ claim.session.venue.town.name }}</td>
+                            <td>{{ claim.session.playedAt ? claim.session.playedAt|date('d.m.Y') : '—' }}</td>
+                            <td>{{ claim.session.estimatedTeams ?? '—' }}</td>
+                            <td>
+                                <span class="badge {% if claim.status.value == 'pending' %}badge-moderation-pending{% elseif claim.status.value == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status.value)|trans }}</span>
+                                {% if claim.comment %}
+                                    <br><small class="meta">{{ claim.comment }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('my_session_claim_edit', {id: claim.session.id}) }}">{{ 'tournament.my.edit'|trans }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

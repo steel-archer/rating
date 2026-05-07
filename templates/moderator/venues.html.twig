@@ -16,18 +16,38 @@
     {% if venues is empty %}
         <p class="empty-state">{{ 'moderator.no_venue_claims'|trans }}</p>
     {% else %}
-        {% for venue in venues %}
-            <div class="card moderation-card" data-venue-id="{{ venue.id }}">
-                <div class="moderation-card-header">
-                    <h2>{{ venue.name }}</h2>
-                    <span class="meta">{{ venue.town.name }} · {{ venue.createdAt|date('d.m.Y H:i') }}</span>
-                </div>
-
-                <div class="moderation-actions">
-                    <button type="button" class="btn btn-approve" data-venue-approve="{{ venue.id }}">{{ 'moderator.approve'|trans }}</button>
-                    <button type="button" class="btn btn-reject" data-venue-reject="{{ venue.id }}">{{ 'moderator.reject'|trans }}</button>
-                </div>
-            </div>
-        {% endfor %}
+        <div class="card card-wide">
+            <table aria-label="{{ 'moderator.venues'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'common.name'|trans }}</th>
+                        <th>{{ 'common.town'|trans }}</th>
+                        <th>{{ 'venue.representative'|trans }}</th>
+                        <th>{{ 'common.date'|trans }}</th>
+                        <th>{{ 'tournament.my.actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venue in venues %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}" data-venue-id="{{ venue.id }}">
+                            <td>{{ venue.name }}</td>
+                            <td>{{ venue.town.name }}</td>
+                            <td>
+                                {% if venue.createdBy and venue.createdBy.player %}
+                                    <a href="{{ path('player_show', {id: venue.createdBy.player.id}) }}">{{ venue.createdBy.player.fullName }}</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>{{ venue.createdAt|date('d.m.Y H:i') }}</td>
+                            <td>
+                                <button type="button" class="btn btn-approve" data-venue-approve="{{ venue.id }}">{{ 'moderator.approve'|trans }}</button>
+                                <button type="button" class="btn btn-reject" data-venue-reject="{{ venue.id }}">{{ 'moderator.reject'|trans }}</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 {% endblock %}

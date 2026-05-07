@@ -90,7 +90,9 @@ class VenueRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('v')
             ->join('v.town', 'town')
-            ->addSelect('town')
+            ->leftJoin('v.createdBy', 'creator')
+            ->leftJoin('creator.player', 'player')
+            ->addSelect('town', 'creator', 'player')
             ->where('v.isApproved = false')
             ->orderBy('v.createdAt', 'ASC')
             ->getQuery()

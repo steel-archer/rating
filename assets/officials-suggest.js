@@ -25,6 +25,12 @@ function initOfficialsSuggest(wrapper) {
             return;
         }
 
+        const isSingle = group.dataset.single !== undefined;
+        if (isSingle && group.children.length > 0) {
+            input.value = '';
+            return;
+        }
+
         const entry = document.createElement('div');
         entry.className = 'official-entry';
 
@@ -46,7 +52,15 @@ function initOfficialsSuggest(wrapper) {
         group.appendChild(entry);
 
         input.value = '';
+
+        if (isSingle) {
+            input.disabled = true;
+        }
     });
+
+    if (group.dataset.single !== undefined && group.children.length > 0) {
+        input.disabled = true;
+    }
 }
 
 function initAllOfficialsSuggests() {
@@ -64,7 +78,16 @@ document.addEventListener('click', (event) => {
 
     const removeBtn = /** @type {HTMLElement} */ (event.target).closest('.official-entry .btn-remove');
     if (removeBtn) {
-        removeBtn.closest('.official-entry')?.remove();
+        const entry = removeBtn.closest('.official-entry');
+        const group = entry?.closest('.officials-group');
+        entry?.remove();
+
+        if (group && /** @type {HTMLElement} */ (group).dataset.single !== undefined && group.children.length === 0) {
+            const wrapper = group.closest('.form-group')?.querySelector('.suggest-wrapper [data-suggest-input]');
+            if (wrapper) {
+                /** @type {HTMLInputElement} */ (wrapper).disabled = false;
+            }
+        }
     }
 });
 

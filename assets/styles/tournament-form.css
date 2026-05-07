@@ -1,3 +1,49 @@
+.tournament-form select {
+    font-family: var(--font), sans-serif;
+    font-size: 17px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+}
+
+.tournament-form select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.tournament-form input[type="date"] {
+    font-family: var(--font), sans-serif;
+    font-size: 17px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 480px;
+}
+
+.session-claim-form .session-claim-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+    max-width: 400px;
+}
+
+.session-claim-form .form-group {
+    margin-bottom: 0;
+}
+
+.session-claim-form select,
+.session-claim-form input[type="date"],
+.session-claim-form input[type="number"] {
+    max-width: 100%;
+    width: 100%;
+}
+
 .tournament-form label {
     display: block;
     font-size: 15px;
@@ -52,6 +98,26 @@
 
 .save-status-error {
     color: #dc2626;
+}
+
+.form-error {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+    font-size: 14px;
+}
+
+.rejection-notice {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #991b1b;
+    font-size: 14px;
 }
 
 .tournament-form .suggest-wrapper input[type="text"] {

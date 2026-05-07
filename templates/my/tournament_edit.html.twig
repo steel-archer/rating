@@ -34,6 +34,8 @@
                         {{ 'tournament.moderation_status.none'|trans }}
                     {% endif %}
                 </dd>
+                <dt>{{ 'tournament.sessions'|trans }}</dt>
+                <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">{{ 'tournament.sessions'|trans }}</a></dd>
             </dl>
         </div>
 

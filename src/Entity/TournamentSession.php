@@ -9,11 +9,13 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentSessionRepository::class)]
-#[ORM\UniqueConstraint(name: 'UQ_tournament_venue', columns: ['tournament_id', 'venue_id'])]
 #[ORM\Index(name: 'IDX_ts_tournament', columns: ['tournament_id'])]
 #[ORM\Index(name: 'IDX_ts_venue', columns: ['venue_id'])]
 #[ORM\Index(name: 'IDX_ts_representative', columns: ['representative_id'])]
 #[ORM\Index(name: 'IDX_ts_host', columns: ['host_id'])]
+#[ORM\Index(name: 'IDX_ts_created_at', columns: ['created_at'])]
+#[ORM\Index(name: 'IDX_ts_updated_at', columns: ['updated_at'])]
+#[ORM\HasLifecycleCallbacks]
 class TournamentSession
 {
     #[ORM\Id]
@@ -38,6 +40,27 @@ class TournamentSession
 
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $playedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $estimatedTeams = null;
+
+    #[ORM\Column]
+    private DateTimeImmutable $createdAt;
+
+    #[ORM\Column]
+    private DateTimeImmutable $updatedAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -102,5 +125,27 @@ class TournamentSession
         $this->playedAt = $playedAt;
 
         return $this;
+    }
+
+    public function getEstimatedTeams(): ?int
+    {
+        return $this->estimatedTeams;
+    }
+
+    public function setEstimatedTeams(?int $estimatedTeams): static
+    {
+        $this->estimatedTeams = $estimatedTeams;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 }

@@ -29,6 +29,7 @@
                     <th>{{ 'common.name'|trans }}</th>
                     <th>{{ 'common.town'|trans }}</th>
                     <th>{{ 'venue.my.status'|trans }}</th>
+                    <th>{{ 'tournament.my.actions'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +37,7 @@
                     <tr>
                         <td>
                             {% if venue.isApproved %}
-                                <a href="{{ path('my_venue_edit', {id: venue.id}) }}">{{ venue.name }}</a>
+                                <a href="{{ path('venue_show', {id: venue.id}) }}">{{ venue.name }}</a>
                             {% else %}
                                 {{ venue.name }}
                             {% endif %}
@@ -47,6 +48,11 @@
                                 <span class="badge badge-approved">{{ 'venue.status.approved'|trans }}</span>
                             {% else %}
                                 <span class="badge badge-moderation-pending">{{ 'venue.status.pending'|trans }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if venue.isApproved %}
+                                <a href="{{ path('my_venue_edit', {id: venue.id}) }}">{{ 'tournament.my.edit'|trans }}</a>
                             {% endif %}
                         </td>
                     </tr>
