@@ -6,9 +6,9 @@ namespace App\Service;
 
 use App\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Entity\Tournament;
-use App\Entity\TournamentModerationStatus;
+use App\Enum\TournamentModerationStatus;
 use App\Entity\TournamentOfficial;
-use App\Entity\TournamentOfficialRole;
+use App\Enum\TournamentOfficialRole;
 use App\Repository\SeasonRepository;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;

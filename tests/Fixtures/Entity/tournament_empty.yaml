@@ -6,4 +6,4 @@ App\Entity\Tournament:
         endedAt: '<(new \DateTimeImmutable("2026-01-15"))>'
         toursCount: 3
         questionsPerTour: 12
-        status: '<(App\Entity\TournamentStatus::Published)>'
+        status: '<(App\Enum\TournamentStatus::Published)>'

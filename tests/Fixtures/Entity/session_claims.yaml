@@ -18,7 +18,7 @@ App\Entity\User:
 App\Entity\Tournament:
     tournament_session_test:
         name: 'Тестовий турнір'
-        status: '<(App\Entity\TournamentStatus::Published)>'
+        status: '<(App\Enum\TournamentStatus::Published)>'
         startedAt: '<(new \DateTimeImmutable("2025-06-01"))>'
         endedAt: '<(new \DateTimeImmutable("2025-06-30"))>'
         toursCount: 3
@@ -28,7 +28,7 @@ App\Entity\TournamentOfficial:
     official_org_test:
         tournament: '@tournament_session_test'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
 
 App\Entity\TournamentSession:
     session_pending:
@@ -54,18 +54,18 @@ App\Entity\SessionClaim:
     claim_pending:
         session: '@session_pending'
         player: '@player_shevchenko'
-        status: '<(App\Entity\SessionClaimStatus::Pending)>'
+        status: '<(App\Enum\SessionClaimStatus::Pending)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
     claim_rejected:
         session: '@session_rejected'
         player: '@player_shevchenko'
-        status: '<(App\Entity\SessionClaimStatus::Rejected)>'
+        status: '<(App\Enum\SessionClaimStatus::Rejected)>'
         comment: 'Дата не підходить'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
     claim_approved:
         session: '@session_approved'
         player: '@player_shevchenko'
-        status: '<(App\Entity\SessionClaimStatus::Approved)>'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'

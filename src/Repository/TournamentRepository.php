@@ -9,7 +9,7 @@ use App\Entity\Tournament;
 use App\Entity\TournamentModerationClaim;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
-use App\Entity\TournamentStatus;
+use App\Enum\TournamentStatus;
 use App\Entity\User;
 use App\Helper\LikeEscape;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

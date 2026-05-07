@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Tournament;
 
-use App\Entity\SessionClaimStatus;
+use App\Enum\SessionClaimStatus;
 use App\Entity\User;
 use App\Repository\SessionClaimRepository;
 use App\Repository\TournamentRepository;

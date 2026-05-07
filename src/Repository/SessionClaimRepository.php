@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Player;
 use App\Entity\SessionClaim;
-use App\Entity\SessionClaimStatus;
+use App\Enum\SessionClaimStatus;
 use App\Entity\TournamentSession;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

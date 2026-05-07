@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\SessionClaim;
-use App\Entity\SessionClaimStatus;
+use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\Venue;

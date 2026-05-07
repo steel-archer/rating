@@ -6,10 +6,10 @@ namespace App\Tests\Controller\My;
 
 use App\Entity\Tournament;
 use App\Entity\TournamentModerationClaim;
-use App\Entity\TournamentModerationStatus;
+use App\Enum\TournamentModerationStatus;
 use App\Entity\TournamentOfficial;
-use App\Entity\TournamentOfficialRole;
-use App\Entity\TournamentStatus;
+use App\Enum\TournamentOfficialRole;
+use App\Enum\TournamentStatus;
 use App\Service\TournamentManagementService;
 use App\Service\TournamentModerationService;
 use App\Tests\FixturesTrait;

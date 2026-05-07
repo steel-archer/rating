@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Tournament;
 use App\Entity\TournamentModerationClaim;
-use App\Entity\TournamentModerationStatus;
+use App\Enum\TournamentModerationStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

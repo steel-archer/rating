@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller\Moderator\PlayerClaim;
 
 use App\Entity\PlayerClaim;
-use App\Entity\PlayerClaimStatus;
+use App\Enum\PlayerClaimStatus;
 use App\Service\PlayerClaimService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;

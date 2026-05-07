@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Moderator\Tournament;
 
 use App\DTO\Request\Tournament\Moderation\ListRequestDTO;
-use App\Entity\TournamentModerationStatus;
+use App\Enum\TournamentModerationStatus;
 use App\Repository\TournamentModerationClaimRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

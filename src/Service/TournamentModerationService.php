@@ -6,8 +6,8 @@ namespace App\Service;
 
 use App\Entity\Tournament;
 use App\Entity\TournamentModerationClaim;
-use App\Entity\TournamentModerationStatus;
-use App\Entity\TournamentStatus;
+use App\Enum\TournamentModerationStatus;
+use App\Enum\TournamentStatus;
 use App\Repository\TournamentModerationClaimRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;

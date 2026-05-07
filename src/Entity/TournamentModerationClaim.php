@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\TournamentModerationStatus;
 use App\Repository\TournamentModerationClaimRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;

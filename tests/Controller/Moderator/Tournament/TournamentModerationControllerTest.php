@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller\Moderator\Tournament;
 
 use App\Entity\TournamentModerationClaim;
-use App\Entity\TournamentModerationStatus;
+use App\Enum\TournamentModerationStatus;
 use App\Service\TournamentModerationService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;

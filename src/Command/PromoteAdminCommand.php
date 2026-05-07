@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\PlayerClaimStatus;
+use App\Enum\PlayerClaimStatus;
 use App\Repository\PlayerClaimRepository;
 use App\Repository\UserRepository;
 use App\Service\PlayerClaimService;

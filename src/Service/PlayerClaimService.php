@@ -6,7 +6,7 @@ namespace App\Service;
 
 use App\Entity\Player;
 use App\Entity\PlayerClaim;
-use App\Entity\PlayerClaimStatus;
+use App\Enum\PlayerClaimStatus;
 use App\Exception\PlayerClaimException;
 use App\Repository\PlayerClaimRepository;
 use App\Repository\UserRepository;

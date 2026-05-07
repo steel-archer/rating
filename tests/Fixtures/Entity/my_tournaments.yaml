@@ -8,11 +8,11 @@ App\Entity\User:
 App\Entity\Tournament:
     tournament_draft:
         name: 'Мій чернетковий турнір'
-        status: '<(App\Entity\TournamentStatus::Draft)>'
+        status: '<(App\Enum\TournamentStatus::Draft)>'
         createdBy: '@user_creator'
     tournament_approved:
         name: 'Схвалений турнір'
-        status: '<(App\Entity\TournamentStatus::Draft)>'
+        status: '<(App\Enum\TournamentStatus::Draft)>'
         createdBy: '@user_creator'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+30 days"))>'
@@ -22,7 +22,7 @@ App\Entity\Tournament:
         difficulty: 3.5
     tournament_published:
         name: 'Опублікований турнір'
-        status: '<(App\Entity\TournamentStatus::Published)>'
+        status: '<(App\Enum\TournamentStatus::Published)>'
         createdBy: '@user_creator'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+60 days"))>'
@@ -35,48 +35,48 @@ App\Entity\TournamentOfficial:
     official_draft_org:
         tournament: '@tournament_draft'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
     official_approved_org:
         tournament: '@tournament_approved'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
     official_approved_editor:
         tournament: '@tournament_approved'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::Editor)>'
+        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
     official_approved_game_jury:
         tournament: '@tournament_approved'
         player: '@player_lesya'
-        role: '<(App\Entity\TournamentOfficialRole::GameJury)>'
+        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
     official_approved_appeal_jury:
         tournament: '@tournament_approved'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::AppealJury)>'
+        role: '<(App\Enum\TournamentOfficialRole::AppealJury)>'
     official_published_org:
         tournament: '@tournament_published'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
     official_published_editor:
         tournament: '@tournament_published'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::Editor)>'
+        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
     official_published_game_jury:
         tournament: '@tournament_published'
         player: '@player_lesya'
-        role: '<(App\Entity\TournamentOfficialRole::GameJury)>'
+        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
     official_published_appeal_jury:
         tournament: '@tournament_published'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::AppealJury)>'
+        role: '<(App\Enum\TournamentOfficialRole::AppealJury)>'
 
 App\Entity\TournamentModerationClaim:
     claim_approved:
         tournament: '@tournament_approved'
-        status: '<(App\Entity\TournamentModerationStatus::Approved)>'
+        status: '<(App\Enum\TournamentModerationStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-1 day"))>'
         resolvedAt: '<(new \DateTimeImmutable())>'
     claim_published:
         tournament: '@tournament_published'
-        status: '<(App\Entity\TournamentModerationStatus::Approved)>'
+        status: '<(App\Enum\TournamentModerationStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'

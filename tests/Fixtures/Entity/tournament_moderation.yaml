@@ -8,17 +8,17 @@ App\Entity\User:
 App\Entity\Tournament:
     tournament_pending:
         name: 'Турнір на модерації'
-        status: '<(App\Entity\TournamentStatus::Draft)>'
+        status: '<(App\Enum\TournamentStatus::Draft)>'
         createdBy: '@user_creator'
 
 App\Entity\TournamentOfficial:
     official_pending_org:
         tournament: '@tournament_pending'
         player: '@player_franko'
-        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
 
 App\Entity\TournamentModerationClaim:
     claim_pending_tournament:
         tournament: '@tournament_pending'
-        status: '<(App\Entity\TournamentModerationStatus::Pending)>'
+        status: '<(App\Enum\TournamentModerationStatus::Pending)>'
         createdAt: '<(new \DateTimeImmutable())>'

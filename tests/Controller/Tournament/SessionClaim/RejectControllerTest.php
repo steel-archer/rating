@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller\Tournament\SessionClaim;
 
 use App\Entity\SessionClaim;
-use App\Entity\SessionClaimStatus;
+use App\Enum\SessionClaimStatus;
 use App\Service\SessionClaimService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;

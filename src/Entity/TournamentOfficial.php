@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\TournamentOfficialRole;
 use App\Repository\TournamentOfficialRepository;
 use Doctrine\ORM\Mapping as ORM;
 

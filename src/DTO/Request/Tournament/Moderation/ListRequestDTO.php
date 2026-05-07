@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Request\Tournament\Moderation;
 
-use App\Entity\TournamentModerationStatus;
+use App\Enum\TournamentModerationStatus;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class ListRequestDTO
