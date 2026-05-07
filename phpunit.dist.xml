@@ -35,6 +35,7 @@
 
         <exclude>
             <directory>src/Entity</directory>
+            <directory>src/Enum</directory>
             <file>src/Command/GenerateTranslationsCommand.php</file>
             <file>src/Command/PromoteAdminCommand.php</file>
             <directory>src/Controller/Auth</directory>

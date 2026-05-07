@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\Request\ClaimExistingRequestDTO;
+use App\DTO\Request\ClaimNewRequestDTO;
 use App\Entity\Player;
 use App\Entity\PlayerClaim;
 use App\Enum\PlayerClaimStatus;
 use App\Exception\PlayerClaimException;
 use App\Repository\PlayerClaimRepository;
+use App\Repository\PlayerRepository;
+use App\Repository\TownRepository;
 use App\Repository\UserRepository;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PlayerClaimService
@@ -17,7 +22,9 @@ class PlayerClaimService
     public function __construct(
         private EntityManagerInterface $em,
         private UserRepository $userRepository,
+        private PlayerRepository $playerRepository,
         private PlayerClaimRepository $claimRepository,
+        private TownRepository $townRepository,
     ) {
     }
 
@@ -42,6 +49,53 @@ class PlayerClaimService
     {
         $claim = $this->findPendingClaim($id);
         $claim->setStatus(PlayerClaimStatus::Rejected);
+        $this->em->flush();
+    }
+
+    /**
+     * @throws PlayerClaimException
+     */
+    public function claimExisting(ClaimExistingRequestDTO $dto, User $user): void
+    {
+        if ($user->getPlayer() !== null || $this->claimRepository->hasPendingClaim($user)) {
+            throw new PlayerClaimException('common.error');
+        }
+
+        $player = $this->playerRepository->find($dto->playerId);
+
+        if ($player === null || $this->userRepository->findOneBy(['player' => $player]) !== null) {
+            throw new PlayerClaimException('common.not_found');
+        }
+
+        $claim = new PlayerClaim();
+        $claim->setUser($user);
+        $claim->setPlayer($player);
+        $claim->setLastName($player->getLastName());
+
+        $this->em->persist($claim);
+        $this->em->flush();
+    }
+
+    /**
+     * @throws PlayerClaimException
+     */
+    public function claimNew(ClaimNewRequestDTO $dto, User $user): void
+    {
+        if ($user->getPlayer() !== null || $this->claimRepository->hasPendingClaim($user)) {
+            throw new PlayerClaimException('common.error');
+        }
+
+        $claim = new PlayerClaim();
+        $claim->setUser($user);
+        $claim->setLastName($dto->lastName);
+        $claim->setFirstName($dto->firstName);
+        $claim->setPatronymic($dto->patronymic);
+
+        if ($dto->townId !== null) {
+            $claim->setTown($this->townRepository->find($dto->townId));
+        }
+
+        $this->em->persist($claim);
         $this->em->flush();
     }
 

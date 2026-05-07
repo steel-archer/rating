@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\Request\Venue\CreateRequestDTO;
+use App\DTO\Request\Venue\UpdateRequestDTO;
 use App\Entity\User;
 use App\Entity\Venue;
 use App\Entity\VenueRepresentative;
@@ -25,20 +27,20 @@ class VenueManagementService
     ) {
     }
 
-    public function create(string $name, int $townId, User $user): Venue
+    public function create(CreateRequestDTO $dto, User $user): Venue
     {
         $player = $user->getPlayer()
             ?? throw new LogicException('venue.error.no_player');
 
-        $town = $this->townRepository->find($townId)
+        $town = $this->townRepository->find($dto->townId)
             ?? throw new LogicException('venue.error.town_not_found');
 
-        if ($this->venueRepository->existsByNameAndTown($name, $townId)) {
+        if ($this->venueRepository->existsByNameAndTown($dto->name, $dto->townId)) {
             throw new LogicException('venue.error.duplicate');
         }
 
         $venue = new Venue();
-        $venue->setName($name);
+        $venue->setName($dto->name);
         $venue->setTown($town);
         $venue->setCreatedBy($user);
 
@@ -79,15 +81,20 @@ class VenueManagementService
         $this->em->flush();
     }
 
-    /**
-     * @param list<int> $playerIds
-     */
-    public function updateRepresentatives(Venue $venue, array $playerIds): void
+    public function updateRepresentatives(Venue $venue, UpdateRequestDTO $dto): void
     {
         if (!$venue->isApproved()) {
             throw new LogicException('Cannot edit unapproved venue');
         }
 
+        $this->syncRepresentatives($venue, $dto->representatives);
+    }
+
+    /**
+     * @param list<int> $playerIds
+     */
+    private function syncRepresentatives(Venue $venue, array $playerIds): void
+    {
         $creatorPlayerId = $venue->getCreatedBy()?->getPlayer()?->getId();
 
         // Ensure creator is always among representatives

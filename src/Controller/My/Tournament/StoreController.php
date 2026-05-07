@@ -26,7 +26,7 @@ class StoreController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $tournament = $service->create($dto->name, $user);
+            $tournament = $service->create($dto, $user);
         } catch (Throwable) {
             return $this->json(['error' => 'common.error'], 500);
         }

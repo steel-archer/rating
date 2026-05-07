@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Entity\Tournament;
 use App\Entity\TournamentOfficial;
@@ -34,10 +35,10 @@ class TournamentManagementService
     ) {
     }
 
-    public function create(string $name, User $user): Tournament
+    public function create(CreateRequestDTO $dto, User $user): Tournament
     {
         $tournament = new Tournament();
-        $tournament->setName($name);
+        $tournament->setName($dto->name);
         $tournament->setCreatedBy($user);
 
         $this->em->persist($tournament);

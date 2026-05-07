@@ -35,7 +35,7 @@ class UpdateController extends AbstractController
         }
 
         try {
-            $service->updateRepresentatives($venue, $dto->representatives);
+            $service->updateRepresentatives($venue, $dto);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         } catch (Throwable) {
