@@ -17,8 +17,10 @@ final readonly class EditRequestDTO
         #[Assert\Length(max: 255)]
         public string $name = '',
 
+        #[Assert\DateTime(format: 'Y-m-d\TH:i')]
         public ?string $startedAt = null,
 
+        #[Assert\DateTime(format: 'Y-m-d\TH:i')]
         public ?string $endedAt = null,
 
         #[Assert\Positive]

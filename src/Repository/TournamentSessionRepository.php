@@ -82,14 +82,7 @@ class TournamentSessionRepository extends ServiceEntityRepository
      */
     public function getLastPageNumberByVenue(Venue $venue): int
     {
-        $total = (int) $this->createQueryBuilder('ts')
-            ->select('COUNT(ts.id)')
-            ->where('ts.venue = :venue')
-            ->setParameter('venue', $venue)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return max(1, (int) ceil($total / self::PER_PAGE));
+        return max(1, (int) ceil($this->countByVenue($venue) / self::PER_PAGE));
     }
 
     public function countByVenue(Venue $venue): int

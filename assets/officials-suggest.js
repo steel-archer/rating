@@ -1,3 +1,5 @@
+import { initSuggestBehavior } from './suggest-base.js';
+
 const initializedWrappers = new WeakSet();
 
 function initOfficialsSuggest(wrapper) {
@@ -12,48 +14,9 @@ function initOfficialsSuggest(wrapper) {
     }
     initializedWrappers.add(wrapper);
 
-    let debounceTimer;
-
-    input.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        const q = input.value.trim();
-        if (q.length < 2) {
-            dropdown.innerHTML = '';
-            dropdown.hidden = true;
-            return;
-        }
-        debounceTimer = setTimeout(() => {
-            fetch(`${apiUrl}?q=${encodeURIComponent(q)}`)
-                .then(r => r.json())
-                .then(items => {
-                    if (items.length === 0) {
-                        dropdown.innerHTML = '';
-                        dropdown.hidden = true;
-                        return;
-                    }
-                    dropdown.replaceChildren(...items.map(item => {
-                        const div = document.createElement('div');
-                        div.className = 'suggest-item';
-                        div.dataset.id = item.id;
-                        div.textContent = item.name;
-                        return div;
-                    }));
-                    dropdown.hidden = false;
-                });
-        }, 200);
-    });
-
-    dropdown.addEventListener('click', (e) => {
-        const item = e.target.closest('.suggest-item');
-        if (!item) {
-            return;
-        }
-
-        const playerId = item.dataset.id;
-        const existing = group.querySelectorAll(`input[value="${playerId}"]`);
+    initSuggestBehavior(input, dropdown, apiUrl, (item) => {
+        const existing = group.querySelectorAll(`input[value="${item.id}"]`);
         if (existing.length > 0) {
-            dropdown.innerHTML = '';
-            dropdown.hidden = true;
             input.value = '';
             return;
         }
@@ -64,11 +27,11 @@ function initOfficialsSuggest(wrapper) {
         const hidden = document.createElement('input');
         hidden.type = 'hidden';
         hidden.name = `${fieldName}[]`;
-        hidden.value = playerId;
+        hidden.value = item.id;
 
         const link = document.createElement('a');
-        link.href = `/player/${playerId}`;
-        link.textContent = item.textContent;
+        link.href = `/player/${item.id}`;
+        link.textContent = item.name;
 
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -78,8 +41,6 @@ function initOfficialsSuggest(wrapper) {
         entry.append(hidden, link, btn);
         group.appendChild(entry);
 
-        dropdown.innerHTML = '';
-        dropdown.hidden = true;
         input.value = '';
     });
 }

@@ -47,7 +47,7 @@ final class GenerateTranslationsCommand extends Command
         foreach ($array as $key => $value) {
             $fullKey = $prefix !== '' ? $prefix . '.' . $key : $key;
             if (is_array($value)) {
-                $result = array_merge($result, $this->flatten($value, $fullKey));
+                $result = [...$result, ...$this->flatten($value, $fullKey)];
             } else {
                 $result[$fullKey] = (string) $value;
             }

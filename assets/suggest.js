@@ -1,3 +1,5 @@
+import { initSuggestBehavior } from './suggest-base.js';
+
 function initSuggest(wrapper) {
     const input = wrapper.querySelector('[data-suggest-input]');
     const hidden = wrapper.querySelector('[data-suggest-hidden]');
@@ -8,47 +10,13 @@ function initSuggest(wrapper) {
     }
     wrapper.dataset.suggestInit = '1';
 
-    let debounceTimer;
-
     input.addEventListener('input', () => {
         hidden.value = '';
-        clearTimeout(debounceTimer);
-        const q = input.value.trim();
-        if (q.length < 2) {
-            dropdown.innerHTML = '';
-            dropdown.hidden = true;
-            return;
-        }
-        debounceTimer = setTimeout(() => {
-            fetch(`${apiUrl}?q=${encodeURIComponent(q)}`)
-                .then(r => r.json())
-                .then(items => {
-                    if (items.length === 0) {
-                        dropdown.innerHTML = '';
-                        dropdown.hidden = true;
-                        return;
-                    }
-                    dropdown.replaceChildren(...items.map(item => {
-                        const div = document.createElement('div');
-                        div.className = 'suggest-item';
-                        div.dataset.id = item.id;
-                        div.textContent = item.name;
-                        return div;
-                    }));
-                    dropdown.hidden = false;
-                });
-        }, 200);
     });
 
-    dropdown.addEventListener('click', (e) => {
-        const item = e.target.closest('.suggest-item');
-        if (!item) {
-            return;
-        }
-        input.value = item.textContent;
-        hidden.value = item.dataset.id;
-        dropdown.innerHTML = '';
-        dropdown.hidden = true;
+    initSuggestBehavior(input, dropdown, apiUrl, (item) => {
+        input.value = item.name;
+        hidden.value = item.id;
     });
 }
 
