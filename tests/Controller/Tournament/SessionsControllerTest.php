@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Tournament;
 
+use App\Service\SessionClaimService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -23,12 +26,17 @@ class SessionsControllerTest extends WebTestCase
         string|callable $uri,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
 
         if ($loginAs !== null) {
             $client->loginUser($objects[$loginAs]);
+        }
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
         }
 
         $resolvedUri = is_callable($uri) ? $uri($objects) : $uri;
@@ -104,6 +112,21 @@ class SessionsControllerTest extends WebTestCase
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler) {
                 static::assertCount(0, $crawler->filter('#session-claim-form-card'));
+            },
+        ];
+
+        yield 'service unavailable on throwable' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims.yaml'],
+            'loginAs' => 'user_representative',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
+            'expectedStatus' => 503,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(SessionClaimService::class);
+                $stub->method('isOrganizer')->willThrowException(new RuntimeException('DB down'));
+                static::getContainer()->set(SessionClaimService::class, $stub);
             },
         ];
     }

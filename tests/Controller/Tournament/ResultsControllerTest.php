@@ -121,5 +121,20 @@ class ResultsControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
+        yield 'service unavailable on throwable' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId() . '/results',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'expectedStatus' => 503,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(TournamentResultService::class);
+                $stub->method('getResults')->willThrowException(new RuntimeException('DB down'));
+                static::getContainer()->set(TournamentResultService::class, $stub);
+            },
+        ];
     }
 }

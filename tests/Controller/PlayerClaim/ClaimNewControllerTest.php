@@ -6,8 +6,10 @@ namespace App\Tests\Controller\PlayerClaim;
 
 use App\Entity\PlayerClaim;
 use App\Enum\PlayerClaimStatus;
+use App\Service\PlayerClaimService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -25,12 +27,17 @@ class ClaimNewControllerTest extends WebTestCase
         callable $action,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
 
         if ($loginAs !== null) {
             $client->loginUser($objects[$loginAs]);
+        }
+
+        if ($mockSetup !== null) {
+            $mockSetup($this, $client);
         }
 
         $action($client, $objects);
@@ -116,6 +123,28 @@ class ClaimNewControllerTest extends WebTestCase
             ),
             'expectedStatus' => 302,
             'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'throwable returns 500' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['lastName' => 'Тестовий'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 500,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(PlayerClaimService::class);
+                $stub->method('claimNew')->willThrowException(new RuntimeException('unexpected'));
+                static::getContainer()->set(PlayerClaimService::class, $stub);
             },
         ];
     }
