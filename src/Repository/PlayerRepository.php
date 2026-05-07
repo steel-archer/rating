@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\Request\PlayerListRequestDTO;
+use App\DTO\Response\Player\FreePlayerListItemDTO;
+use App\DTO\Response\Player\PlayerListItemDTO;
+use App\DTO\Response\SuggestItemDTO;
 use App\Entity\Player;
 use App\Entity\Season;
 use App\Entity\TeamPlayer;
 use App\Entity\User;
 use App\Helper\LikeEscape;
+use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -21,7 +25,7 @@ class PlayerRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private Mapper $mapper)
     {
         parent::__construct($registry, Player::class);
     }
@@ -42,7 +46,7 @@ class PlayerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, fullName: string, townName: ?string, teamId: ?int, teamName: ?string, hasUser: bool}>
+     * @return list<PlayerListItemDTO>
      */
     public function findForList(PlayerListRequestDTO $requestDto, ?Season $currentSeason = null): array
     {
@@ -68,7 +72,7 @@ class PlayerRepository extends ServiceEntityRepository
             $qb->addSelect('0 AS teamId', "'' AS teamName");
         }
 
-        return $qb->getQuery()->getArrayResult();
+        return $this->mapper->mapMultiple($qb->getQuery()->getArrayResult(), PlayerListItemDTO::class);
     }
 
     /**
@@ -86,11 +90,11 @@ class PlayerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, fullName: string, townName: ?string}>
+     * @return list<FreePlayerListItemDTO>
      */
     public function findFreeForList(PlayerListRequestDTO $requestDto): array
     {
-        return $this->buildFilteredQuery($requestDto)
+        $rows = $this->buildFilteredQuery($requestDto)
             ->select(
                 'p.id',
                 "CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) AS fullName",
@@ -104,6 +108,8 @@ class PlayerRepository extends ServiceEntityRepository
             ->setMaxResults(self::PER_PAGE)
             ->getQuery()
             ->getArrayResult();
+
+        return $this->mapper->mapMultiple($rows, FreePlayerListItemDTO::class);
     }
 
     /**
@@ -123,7 +129,7 @@ class PlayerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, name: string}>
+     * @return list<SuggestItemDTO>
      */
     public function suggest(string $query): array
     {
@@ -141,10 +147,12 @@ class PlayerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
 
-        return array_map(static fn(array $row) => [
+        $rows = array_map(static fn(array $row) => [
             'id' => $row['id'],
             'name' => trim($row['name']) . ($row['townName'] ? ' (' . $row['townName'] . ')' : ''),
         ], $rows);
+
+        return $this->mapper->mapMultiple($rows, SuggestItemDTO::class);
     }
 
     private function buildFilteredQuery(PlayerListRequestDTO $requestDto): QueryBuilder

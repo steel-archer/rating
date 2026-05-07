@@ -23,7 +23,7 @@
                 <dt>{{ 'common.name'|trans }}</dt>
                 <dd>{{ venue.name }}</dd>
                 <dt>{{ 'common.town'|trans }}</dt>
-                <dd>{{ venue.town.name }}</dd>
+                <dd>{{ venue.townName }}</dd>
             </dl>
         </div>
     </div>
@@ -36,9 +36,9 @@
                 <div class="officials-group" data-role="representatives">
                     {% for rep in representatives %}
                         <div class="official-entry">
-                            <input type="hidden" name="representatives[]" value="{{ rep.player.id }}">
-                            {% include '_player_link.html.twig' with {playerId: rep.player.id, playerName: rep.player.fullName, hasUser: rep.player.hasUser} only %}
-                            {% if rep.player.id != venue.createdBy.player.id %}
+                            <input type="hidden" name="representatives[]" value="{{ rep.playerId }}">
+                            {% include '_player_link.html.twig' with {playerId: rep.playerId, playerName: rep.playerName, hasUser: rep.hasUser} only %}
+                            {% if rep.playerId != venue.createdByPlayerId %}
                                 <button type="button" class="btn-remove">×</button>
                             {% endif %}
                         </div>

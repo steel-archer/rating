@@ -28,19 +28,19 @@
                 <tbody>
                     {% for claim in claims %}
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                            <td><a href="{{ path('tournament_show', {id: claim.session.tournament.id}) }}">{{ claim.session.tournament.name }}</a></td>
-                            <td><a href="{{ path('venue_show', {id: claim.session.venue.id}) }}">{{ claim.session.venue.name }}</a></td>
-                            <td>{{ claim.session.venue.town.name }}</td>
-                            <td>{{ claim.session.playedAt ? claim.session.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td>{{ claim.session.estimatedTeams ?? '—' }}</td>
+                            <td><a href="{{ path('tournament_show', {id: claim.tournamentId}) }}">{{ claim.tournamentName }}</a></td>
+                            <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
+                            <td>{{ claim.townName }}</td>
+                            <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
+                            <td>{{ claim.estimatedTeams ?? '—' }}</td>
                             <td>
-                                <span class="badge {% if claim.status.value == 'pending' %}badge-moderation-pending{% elseif claim.status.value == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status.value)|trans }}</span>
+                                <span class="badge {% if claim.status == 'pending' %}badge-moderation-pending{% elseif claim.status == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status)|trans }}</span>
                                 {% if claim.comment %}
                                     <br><small class="meta">{{ claim.comment }}</small>
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{{ path('my_session_claim_edit', {id: claim.session.id}) }}">{{ 'tournament.my.edit'|trans }}</a>
+                                <a href="{{ path('my_session_claim_edit', {id: claim.sessionId}) }}">{{ 'tournament.my.edit'|trans }}</a>
                             </td>
                         </tr>
                     {% endfor %}

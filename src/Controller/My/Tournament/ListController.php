@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Controller\My\Tournament;
 
 use App\DTO\Request\Tournament\My\ListRequestDTO;
+use App\DTO\Response\My\TournamentListDTO;
+use App\DTO\Response\My\TournamentModerationListDTO;
+use App\Entity\TournamentModerationClaim;
 use App\Entity\User;
+use App\Mapping\Mapper;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +26,7 @@ class ListController extends AbstractController
         #[MapQueryString] ?ListRequestDTO $dto,
         TournamentRepository $tournamentRepository,
         TournamentModerationClaimRepository $claimRepository,
+        Mapper $mapper,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -29,12 +34,20 @@ class ListController extends AbstractController
         $dto ??= new ListRequestDTO();
 
         $tournaments = $tournamentRepository->findByCreator($user, $dto->sort, $dto->page);
-        $claims = $claimRepository->findByTournaments($tournaments);
+        $claimEntities = $claimRepository->findByTournaments($tournaments);
         $total = $tournamentRepository->countByCreator($user);
         $lastPage = max(1, (int) ceil($total / 50));
 
+        $tournamentDtos = $mapper->mapMultiple($tournaments, TournamentListDTO::class);
+
+        $claims = [];
+        foreach ($claimEntities as $tournamentId => $claim) {
+            /** @var TournamentModerationClaim $claim */
+            $claims[$tournamentId] = $mapper->map($claim, TournamentModerationListDTO::class);
+        }
+
         return $this->render('my/tournaments.html.twig', [
-            'tournaments' => $tournaments,
+            'tournaments' => $tournamentDtos,
             'claims' => $claims,
             'sort' => $dto->sort,
             'page' => $dto->page,

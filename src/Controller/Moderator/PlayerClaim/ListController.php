@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Moderator\PlayerClaim;
 
+use App\DTO\Response\Moderator\PlayerClaimDTO;
+use App\Mapping\Mapper;
 use App\Repository\PlayerClaimRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,10 +16,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_MODERATOR')]
 class ListController extends AbstractController
 {
-    public function __invoke(PlayerClaimRepository $claimRepository): Response
+    public function __invoke(PlayerClaimRepository $claimRepository, Mapper $mapper): Response
     {
         return $this->render('moderator/player_claims.html.twig', [
-            'claims' => $claimRepository->findPending(),
+            'claims' => $mapper->mapMultiple($claimRepository->findPending(), PlayerClaimDTO::class),
         ]);
     }
 }

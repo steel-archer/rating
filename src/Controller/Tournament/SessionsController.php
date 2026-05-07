@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Tournament;
 
+use App\DTO\Response\Tournament\SessionClaimDTO;
+use App\DTO\Response\Tournament\TournamentContextDTO;
+use App\DTO\Response\Tournament\VenueOptionDTO;
 use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
 use App\Entity\User;
+use App\Mapping\Mapper;
 use App\Repository\SessionClaimRepository;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\VenueRepresentativeRepository;
@@ -24,6 +28,7 @@ class SessionsController extends AbstractController
         SessionClaimRepository $sessionClaimRepository,
         TournamentOfficialRepository $officialRepository,
         VenueRepresentativeRepository $representativeRepository,
+        Mapper $mapper,
     ): Response {
         try {
             /** @var User|null $user */
@@ -36,17 +41,26 @@ class SessionsController extends AbstractController
 
             if ($player !== null) {
                 $isOrganizer = $officialRepository->isOrganizer($player, $tournament);
-                $venues = $representativeRepository->findVenuesByPlayer($player);
+                $venues = $mapper->mapMultiple(
+                    $representativeRepository->findVenuesByPlayer($player),
+                    VenueOptionDTO::class,
+                );
             }
 
             if ($isOrganizer) {
-                $claims = $sessionClaimRepository->findByTournamentAndStatus($tournament->getId(), SessionClaimStatus::Pending);
+                $claims = $mapper->mapMultiple(
+                    $sessionClaimRepository->findByTournamentAndStatus($tournament->getId(), SessionClaimStatus::Pending),
+                    SessionClaimDTO::class,
+                );
             } elseif ($player !== null) {
-                $claims = $sessionClaimRepository->findByTournamentAndPlayer($tournament->getId(), $player);
+                $claims = $mapper->mapMultiple(
+                    $sessionClaimRepository->findByTournamentAndPlayer($tournament->getId(), $player),
+                    SessionClaimDTO::class,
+                );
             }
 
             return $this->render('tournament/sessions.html.twig', [
-                'tournament' => $tournament,
+                'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
                 'isOrganizer' => $isOrganizer,
                 'venues' => $venues,
                 'claims' => $claims,

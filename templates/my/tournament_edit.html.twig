@@ -22,11 +22,11 @@
             <h2>{{ 'tournament.my.status'|trans }}</h2>
             <dl>
                 <dt>{{ 'tournament.my.tournament_status'|trans }}</dt>
-                <dd>{{ ('tournament.status.' ~ tournament.status.value)|trans }}</dd>
+                <dd>{{ ('tournament.status.' ~ tournament.status)|trans }}</dd>
                 <dt>{{ 'tournament.my.moderation'|trans }}</dt>
                 <dd>
                     {% if claim %}
-                        {{ ('tournament.moderation_status.' ~ claim.status.value)|trans }}
+                        {{ ('tournament.moderation_status.' ~ claim.status)|trans }}
                         {% if claim.comment %}
                             <br><small>{{ claim.comment }}</small>
                         {% endif %}
@@ -42,15 +42,15 @@
         <div class="card">
             <h2>{{ 'tournament.my.actions'|trans }}</h2>
             <div class="actions-card">
-                {% if (not claim or claim.status.value not in ['pending', 'approved']) and tournament.status.value != 'published' %}
+                {% if (not claim or claim.status not in ['pending', 'approved']) and tournament.status != 'published' %}
                     <button type="button" class="btn btn-primary" data-tournament-submit="{{ tournament.id }}">{{ 'tournament.my.submit_moderation'|trans }}</button>
                 {% endif %}
 
-                {% if publishErrors is empty and tournament.status.value != 'published' %}
+                {% if publishErrors is empty and tournament.status != 'published' %}
                     <button type="button" class="btn btn-success" data-tournament-publish="{{ tournament.id }}">{{ 'tournament.my.publish'|trans }}</button>
                 {% endif %}
 
-                {% if tournament.status.value != 'published' %}
+                {% if tournament.status != 'published' %}
                     <button type="button" class="btn btn-reject" data-tournament-delete="{{ tournament.id }}" data-confirm="{{ 'tournament.my.delete_confirm'|trans }}">{{ 'tournament.my.delete'|trans }}</button>
                 {% endif %}
             </div>
@@ -104,12 +104,12 @@
                 <div class="form-group">
                     <label>{{ cfg.label|trans }}</label>
                     <div class="officials-group" data-role="{{ cfg.key }}">
-                        {% set roleOfficials = officials|filter(o => o.role.value == cfg.role) %}
+                        {% set roleOfficials = officials|filter(o => o.role == cfg.role) %}
                         {% for official in roleOfficials %}
                             <div class="official-entry">
-                                <input type="hidden" name="{{ cfg.key }}[]" value="{{ official.player.id }}">
-                                {% include '_player_link.html.twig' with {playerId: official.player.id, playerName: official.player.fullName, hasUser: official.player.hasUser} only %}
-                                {% if not readonly and not (cfg.role == 'organizer' and official.player.id == tournament.createdBy.player.id) %}
+                                <input type="hidden" name="{{ cfg.key }}[]" value="{{ official.playerId }}">
+                                {% include '_player_link.html.twig' with {playerId: official.playerId, playerName: official.playerName, hasUser: official.hasUser} only %}
+                                {% if not readonly and not (cfg.role == 'organizer' and official.playerId == tournament.createdByPlayerId) %}
                                     <button type="button" class="btn-remove">×</button>
                                 {% endif %}
                             </div>

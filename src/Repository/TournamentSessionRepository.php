@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\DTO\Response\Venue\VenueTournamentDTO;
 use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\Venue;
 use DateTimeImmutable;
+use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -20,7 +22,7 @@ class TournamentSessionRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private Mapper $mapper)
     {
         parent::__construct($registry, TournamentSession::class);
     }
@@ -73,11 +75,11 @@ class TournamentSessionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{tournamentId: int, tournamentName: string, playedAt: ?DateTimeImmutable}>
+     * @return list<VenueTournamentDTO>
      */
     public function findByVenuePaginated(Venue $venue, int $page): array
     {
-        return $this->createQueryBuilder('ts')
+        $rows = $this->createQueryBuilder('ts')
             ->join('ts.tournament', 't')
             ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
             ->select('t.id AS tournamentId', 't.name AS tournamentName', 'ts.playedAt')
@@ -90,6 +92,8 @@ class TournamentSessionRepository extends ServiceEntityRepository
             ->setMaxResults(self::PER_PAGE)
             ->getQuery()
             ->getArrayResult();
+
+        return $this->mapper->mapMultiple($rows, VenueTournamentDTO::class);
     }
 
     /**

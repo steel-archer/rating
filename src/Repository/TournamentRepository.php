@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\Request\TournamentListRequestDTO;
+use App\DTO\Response\Tournament\TournamentListItemDTO;
 use App\Entity\Tournament;
 use App\Entity\TournamentModerationClaim;
 use App\Entity\TournamentSession;
@@ -12,6 +13,7 @@ use App\Entity\TournamentSessionTeam;
 use App\Enum\TournamentStatus;
 use App\Entity\User;
 use App\Helper\LikeEscape;
+use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -23,7 +25,7 @@ class TournamentRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private Mapper $mapper)
     {
         parent::__construct($registry, Tournament::class);
     }
@@ -43,11 +45,11 @@ class TournamentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, name: string, startedAt: ?\DateTimeImmutable, endedAt: ?\DateTimeImmutable, difficulty: ?float, trueDl: ?float, teamCount: int}>
+     * @return list<TournamentListItemDTO>
      */
     public function findForList(TournamentListRequestDTO $requestDto): array
     {
-        return $this->buildFilteredQuery($requestDto)
+        $rows = $this->buildFilteredQuery($requestDto)
             ->leftJoin(TournamentSession::class, 'ts', 'WITH', 'ts.tournament = t')
             ->leftJoin(TournamentSessionTeam::class, 'tst', 'WITH', 'tst.tournamentSession = ts')
             ->select(
@@ -65,6 +67,8 @@ class TournamentRepository extends ServiceEntityRepository
             ->setMaxResults(self::PER_PAGE)
             ->getQuery()
             ->getArrayResult();
+
+        return $this->mapper->mapMultiple($rows, TournamentListItemDTO::class);
     }
 
     /**

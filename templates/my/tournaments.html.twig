@@ -42,9 +42,9 @@
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge badge-{{ tournament.status.value }}">{{ ('tournament.status.' ~ tournament.status.value)|trans }}</span>
+                            <span class="badge badge-{{ tournament.status }}">{{ ('tournament.status.' ~ tournament.status)|trans }}</span>
                             {% if claim %}
-                                <span class="badge badge-moderation-{{ claim.status.value }}">{{ ('tournament.moderation_status.' ~ claim.status.value)|trans }}</span>
+                                <span class="badge badge-moderation-{{ claim.status }}">{{ ('tournament.moderation_status.' ~ claim.status)|trans }}</span>
                             {% endif %}
                         </td>
                         <td class="meta">

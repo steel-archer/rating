@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\My\SessionClaim;
 
+use App\DTO\Response\My\SessionClaimEditDTO;
 use App\Entity\TournamentSession;
 use App\Entity\User;
+use App\Mapping\Mapper;
 use App\Repository\SessionClaimRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +21,7 @@ class EditController extends AbstractController
     public function __invoke(
         TournamentSession $session,
         SessionClaimRepository $claimRepository,
+        Mapper $mapper,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -33,8 +36,7 @@ class EditController extends AbstractController
         }
 
         return $this->render('my/session_claim_edit.html.twig', [
-            'session' => $session,
-            'claim' => $claim,
+            'claim' => $mapper->map($claim, SessionClaimEditDTO::class),
         ]);
     }
 }

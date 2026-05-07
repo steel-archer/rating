@@ -34,41 +34,41 @@
                 </thead>
                 <tbody>
                     {% for claim in claims %}
-                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}" data-session-claim-id="{{ claim.session.id }}">
-                            <td><a href="{{ path('venue_show', {id: claim.session.venue.id}) }}">{{ claim.session.venue.name }}</a></td>
-                            <td>{{ claim.session.venue.town.name }}</td>
-                            <td>{{ claim.session.playedAt ? claim.session.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td>{{ claim.session.estimatedTeams ?? '—' }}</td>
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}" data-session-claim-id="{{ claim.sessionId }}">
+                            <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
+                            <td>{{ claim.townName }}</td>
+                            <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
+                            <td>{{ claim.estimatedTeams ?? '—' }}</td>
                             {% if isOrganizer %}
-                                <td>{% include '_player_link.html.twig' with {playerId: claim.player.id, playerName: claim.player.fullName, hasUser: claim.player.hasUser} only %}</td>
+                                <td>{% include '_player_link.html.twig' with {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser} only %}</td>
                             {% endif %}
                             <td>
-                                {% if claim.session.host %}
-                                    {% include '_player_link.html.twig' with {playerId: claim.session.host.id, playerName: claim.session.host.fullName, hasUser: claim.session.host.hasUser} only %}
+                                {% if claim.hostId %}
+                                    {% include '_player_link.html.twig' with {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser} only %}
                                 {% else %}
                                     —
                                 {% endif %}
                             </td>
                             <td>
-                                <span class="badge {% if claim.status.value == 'pending' %}badge-moderation-pending{% elseif claim.status.value == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status.value)|trans }}</span>
+                                <span class="badge {% if claim.status == 'pending' %}badge-moderation-pending{% elseif claim.status == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status)|trans }}</span>
                                 {% if claim.comment %}
                                     <br><small class="meta">{{ claim.comment }}</small>
                                 {% endif %}
                             </td>
                             <td>
-                                {% if isOrganizer and claim.status.value == 'pending' %}
+                                {% if isOrganizer and claim.status == 'pending' %}
                                     <div class="moderation-actions">
-                                        <button type="button" class="btn btn-approve" data-session-approve="{{ claim.session.id }}">{{ 'moderator.approve'|trans }}</button>
+                                        <button type="button" class="btn btn-approve" data-session-approve="{{ claim.sessionId }}">{{ 'moderator.approve'|trans }}</button>
                                         <div class="reject-form">
-                                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-session-reject-comment="{{ claim.session.id }}">
-                                            <button type="button" class="btn btn-reject" data-session-reject="{{ claim.session.id }}">{{ 'moderator.reject'|trans }}</button>
+                                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-session-reject-comment="{{ claim.sessionId }}">
+                                            <button type="button" class="btn btn-reject" data-session-reject="{{ claim.sessionId }}">{{ 'moderator.reject'|trans }}</button>
                                         </div>
                                     </div>
                                 {% endif %}
-                                {% if not isOrganizer and claim.status.value == 'rejected' %}
+                                {% if not isOrganizer and claim.status == 'rejected' %}
                                     <div class="moderation-actions">
-                                        <button type="button" class="btn btn-primary" data-session-resubmit="{{ claim.session.id }}">{{ 'session_claim.resubmit'|trans }}</button>
-                                        <button type="button" class="btn btn-reject" data-session-delete="{{ claim.session.id }}">{{ 'session_claim.delete'|trans }}</button>
+                                        <button type="button" class="btn btn-primary" data-session-resubmit="{{ claim.sessionId }}">{{ 'session_claim.resubmit'|trans }}</button>
+                                        <button type="button" class="btn btn-reject" data-session-delete="{{ claim.sessionId }}">{{ 'session_claim.delete'|trans }}</button>
                                     </div>
                                 {% endif %}
                             </td>
@@ -90,7 +90,7 @@
                         <select id="claim-venue" name="venueId" required>
                             <option value="">—</option>
                             {% for venue in venues %}
-                                <option value="{{ venue.id }}">{{ venue.name }} ({{ venue.town.name }})</option>
+                                <option value="{{ venue.id }}">{{ venue.name }} ({{ venue.townName }})</option>
                             {% endfor %}
                         </select>
                     </div>

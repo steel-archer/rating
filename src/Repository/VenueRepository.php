@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\Request\VenueListRequestDTO;
+use App\DTO\Response\Venue\VenueListItemDTO;
 use App\Entity\User;
 use App\Entity\Venue;
 use App\Helper\LikeEscape;
+use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -20,7 +22,7 @@ class VenueRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private Mapper $mapper)
     {
         parent::__construct($registry, Venue::class);
     }
@@ -41,17 +43,19 @@ class VenueRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, name: string, townName: string, countryName: string}>
+     * @return list<VenueListItemDTO>
      */
     public function findForList(VenueListRequestDTO $requestDto): array
     {
-        return $this->buildFilteredQuery($requestDto)
+        $rows = $this->buildFilteredQuery($requestDto)
             ->select('v.id', 'v.name', 'town.name AS townName', 'country.name AS countryName')
             ->orderBy('v.name', 'ASC')
             ->setFirstResult(($requestDto->page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)
             ->getQuery()
             ->getArrayResult();
+
+        return $this->mapper->mapMultiple($rows, VenueListItemDTO::class);
     }
 
     /**

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Venue;
 
+use App\DTO\Response\My\VenueEditDTO;
+use App\DTO\Response\My\VenueRepresentativeDTO;
 use App\Entity\User;
+use App\Mapping\Mapper;
 use App\Repository\VenueRepository;
 use App\Repository\VenueRepresentativeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +23,7 @@ class EditController extends AbstractController
         int $id,
         VenueRepository $venueRepository,
         VenueRepresentativeRepository $representativeRepository,
+        Mapper $mapper,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -33,9 +37,16 @@ class EditController extends AbstractController
             return $this->redirectToRoute('my_venues');
         }
 
+        $venueDto = $mapper->map($venue, VenueEditDTO::class);
+
+        $representatives = $mapper->mapMultiple(
+            $representativeRepository->findByVenueWithPlayer($venue),
+            VenueRepresentativeDTO::class,
+        );
+
         return $this->render('my/venue/edit.html.twig', [
-            'venue' => $venue,
-            'representatives' => $representativeRepository->findByVenueWithPlayer($venue),
+            'venue' => $venueDto,
+            'representatives' => $representatives,
         ]);
     }
 }

@@ -18,13 +18,13 @@
                 <tbody>
                     {% for s in sessions %}
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                            <td><a href="{{ path('venue_show', {id: s.venue.id}) }}" data-turbo-frame="_top">{{ s.venue.name }}</a></td>
-                            <td>{{ s.venue.town.name }}</td>
+                            <td><a href="{{ path('venue_show', {id: s.venueId}) }}" data-turbo-frame="_top">{{ s.venueName }}</a></td>
+                            <td>{{ s.townName }}</td>
                             <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td>{% include '_player_link.html.twig' with {playerId: s.representative.id, playerName: s.representative.fullName, hasUser: s.representative.hasUser, turboFrame: true} only %}</td>
+                            <td>{% include '_player_link.html.twig' with {playerId: s.representativeId, playerName: s.representativeName, hasUser: s.representativeHasUser, turboFrame: true} only %}</td>
                             <td>
-                                {% if s.host %}
-                                    {% include '_player_link.html.twig' with {playerId: s.host.id, playerName: s.host.fullName, hasUser: s.host.hasUser, turboFrame: true} only %}
+                                {% if s.hostId %}
+                                    {% include '_player_link.html.twig' with {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true} only %}
                                 {% else %}
                                     —
                                 {% endif %}

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Tournament;
 
+use App\DTO\Response\Tournament\ModerationClaimDTO;
 use App\Enum\TournamentStatus;
 use App\Entity\User;
 use App\Exception\EntityNotFoundException;
+use App\Mapping\Mapper;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Service\TournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +24,7 @@ class ShowController extends AbstractController
         int $id,
         TournamentService $tournamentService,
         TournamentModerationClaimRepository $claimRepository,
+        Mapper $mapper,
     ): Response {
         try {
             $tournament = $tournamentService->get($id);
@@ -42,11 +45,13 @@ class ShowController extends AbstractController
             }
         }
 
+        $claim = $this->isGranted('ROLE_MODERATOR')
+            ? $claimRepository->findByTournamentId($id)
+            : null;
+
         return $this->render('tournament/show.html.twig', [
             'tournament' => $tournament,
-            'moderationClaim' => $this->isGranted('ROLE_MODERATOR')
-                ? $claimRepository->findByTournamentId($id)
-                : null,
+            'moderationClaim' => $claim !== null ? $mapper->map($claim, ModerationClaimDTO::class) : null,
         ]);
     }
 }

@@ -23,9 +23,8 @@ final class Mapper
     {
         foreach ($mappings as $mapping) {
             $reflection = new ReflectionClass($mapping);
-            $attributes = $reflection->getAttributes(AsMapper::class);
 
-            foreach ($attributes as $attribute) {
+            foreach ($reflection->getAttributes(AsMapper::class) as $attribute) {
                 $asMapper = $attribute->newInstance();
                 $key = $asMapper->source . '::' . $asMapper->destination;
                 $this->registry[$key] = $mapping;
@@ -34,17 +33,33 @@ final class Mapper
     }
 
     /**
+     * @param object|array<string, mixed> $source
      * @param array<string, mixed> $context
      * @throws InvalidArgumentException
      */
-    public function map(object $source, string $destinationClass, array $context = []): object
+    public function map(object|array $source, string $destinationClass, array $context = []): object
     {
-        $key = $source::class . '::' . $destinationClass;
+        $sourceKey = is_array($source) ? 'array' : $source::class;
+        $key = $sourceKey . '::' . $destinationClass;
         $mapping = $this->registry[$key]
             ?? throw new InvalidArgumentException("No mapping registered for $key");
 
         $context['mapper'] = $this;
 
         return $mapping->map($source, $destinationClass, $context);
+    }
+
+    /**
+     * @param list<object|array<string, mixed>> $sources
+     * @param array<string, mixed> $context
+     * @return list<object>
+     * @throws InvalidArgumentException
+     */
+    public function mapMultiple(array $sources, string $destinationClass, array $context = []): array
+    {
+        return array_map(
+            fn(object|array $source) => $this->map($source, $destinationClass, $context),
+            $sources,
+        );
     }
 }

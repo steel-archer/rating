@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Tournament;
 
-use App\Enum\TournamentStatus;
+use App\DTO\Response\My\ModerationClaimDTO;
+use App\DTO\Response\My\TournamentEditDTO;
+use App\DTO\Response\My\TournamentOfficialDTO;
 use App\Entity\User;
+use App\Enum\TournamentStatus;
+use App\Mapping\Mapper;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
@@ -27,6 +31,7 @@ class EditController extends AbstractController
         TournamentModerationClaimRepository $claimRepository,
         TournamentOfficialRepository $officialRepository,
         TournamentValidator $validator,
+        Mapper $mapper,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -40,10 +45,20 @@ class EditController extends AbstractController
             && $tournament->getStartedAt() !== null
             && $tournament->getStartedAt() <= new DateTimeImmutable();
 
+        $moderationClaim = $claimRepository->findByTournament($tournament);
+        $claimDto = $moderationClaim !== null
+            ? $mapper->map($moderationClaim, ModerationClaimDTO::class)
+            : null;
+
+        $officials = $mapper->mapMultiple(
+            $officialRepository->findByTournament($tournament),
+            TournamentOfficialDTO::class,
+        );
+
         return $this->render('my/tournament_edit.html.twig', [
-            'tournament' => $tournament,
-            'claim' => $claimRepository->findByTournament($tournament),
-            'officials' => $officialRepository->findByTournament($tournament),
+            'tournament' => $mapper->map($tournament, TournamentEditDTO::class),
+            'claim' => $claimDto,
+            'officials' => $officials,
             'publishErrors' => $validator->validatePublish($tournament),
             'readonly' => $readonly,
         ]);

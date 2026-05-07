@@ -28,20 +28,20 @@
             <tbody>
                 {% for claim in claims %}
                     <tr>
-                        <td>{{ claim.user.email }}</td>
+                        <td>{{ claim.userEmail }}</td>
                         <td>
-                            {% if claim.new %}
+                            {% if claim.isNew %}
                                 {{ 'moderator.player_claim_new'|trans }}
                             {% else %}
                                 {{ 'moderator.player_claim_existing'|trans }}
                             {% endif %}
                         </td>
                         <td>
-                            {% if claim.new %}
+                            {% if claim.isNew %}
                                 {{ claim.lastName }} {{ claim.firstName ?? '' }} {{ claim.patronymic ?? '' }}
-                                {% if claim.town %} ({{ claim.town.name }}){% endif %}
+                                {% if claim.townName %} ({{ claim.townName }}){% endif %}
                             {% else %}
-                                {% include '_player_link.html.twig' with {playerId: claim.player.id, playerName: claim.player.fullName, hasUser: claim.player.hasUser} only %}
+                                {% include '_player_link.html.twig' with {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser} only %}
                             {% endif %}
                         </td>
                         <td class="claim-actions">

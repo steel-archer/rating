@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\Request\TeamListRequestDTO;
+use App\DTO\Response\Team\TeamListItemDTO;
 use App\Entity\Team;
 use App\Helper\LikeEscape;
+use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -18,7 +20,7 @@ class TeamRepository extends ServiceEntityRepository
 {
     private const int PER_PAGE = 50;
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private Mapper $mapper)
     {
         parent::__construct($registry, Team::class);
     }
@@ -38,19 +40,21 @@ class TeamRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, name: string, townName: string, countryName: string}>
+     * @return list<TeamListItemDTO>
      */
     public function findForList(TeamListRequestDTO $requestDto): array
     {
         $orderField = $requestDto->sort === 'town' ? 'town.name' : 't.name';
 
-        return $this->buildFilteredQuery($requestDto)
+        $rows = $this->buildFilteredQuery($requestDto)
             ->select('t.id', 't.name', 'town.name AS townName', 'country.name AS countryName')
             ->orderBy($orderField, strtoupper($requestDto->dir))
             ->setFirstResult(($requestDto->page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)
             ->getQuery()
             ->getArrayResult();
+
+        return $this->mapper->mapMultiple($rows, TeamListItemDTO::class);
     }
 
     /**

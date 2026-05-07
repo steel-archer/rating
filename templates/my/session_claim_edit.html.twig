@@ -3,21 +3,21 @@
 {% block title %}{{ 'session_claim.edit_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
-    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a></span><span>{{ session.venue.name }}</span></nav>
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a></span><span>{{ claim.venueName }}</span></nav>
 {% endblock %}
 
 {% block body %}
-    <h1>{{ 'session_claim.edit_title'|trans }}: {{ session.venue.name }}</h1>
+    <h1>{{ 'session_claim.edit_title'|trans }}: {{ claim.venueName }}</h1>
 
     <div class="card">
         <dl>
             <dt>{{ 'common.tournament'|trans }}</dt>
-            <dd><a href="{{ path('tournament_show', {id: session.tournament.id}) }}">{{ session.tournament.name }}</a></dd>
+            <dd><a href="{{ path('tournament_show', {id: claim.tournamentId}) }}">{{ claim.tournamentName }}</a></dd>
             <dt>{{ 'venue.venue'|trans }}</dt>
-            <dd>{{ session.venue.name }} ({{ session.venue.town.name }})</dd>
+            <dd>{{ claim.venueName }} ({{ claim.townName }})</dd>
             <dt>{{ 'tournament.my.status'|trans }}</dt>
             <dd>
-                <span class="badge {% if claim.status.value == 'pending' %}badge-moderation-pending{% elseif claim.status.value == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status.value)|trans }}</span>
+                <span class="badge {% if claim.status == 'pending' %}badge-moderation-pending{% elseif claim.status == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status)|trans }}</span>
             </dd>
         </dl>
         {% if claim.comment %}
@@ -28,23 +28,23 @@
     </div>
 
     <div class="card">
-        <form id="session-claim-edit-form" class="tournament-form" data-url="{{ path('my_session_claim_update', {id: session.id}) }}">
+        <form id="session-claim-edit-form" class="tournament-form" data-url="{{ path('my_session_claim_update', {id: claim.sessionId}) }}">
             <div id="save-status" class="form-error" hidden></div>
             <div class="form-group">
                 <label for="edit-date">{{ 'session_claim.estimated_date'|trans }}</label>
-                <input type="date" id="edit-date" name="playedAt" value="{{ session.playedAt ? session.playedAt|date('Y-m-d') : '' }}">
+                <input type="date" id="edit-date" name="playedAt" value="{{ claim.playedAt ? claim.playedAt|date('Y-m-d') : '' }}">
             </div>
             <div class="form-group">
                 <label for="edit-teams">{{ 'session_claim.estimated_teams'|trans }}</label>
-                <input type="number" id="edit-teams" name="estimatedTeams" min="1" value="{{ session.estimatedTeams }}">
+                <input type="number" id="edit-teams" name="estimatedTeams" min="1" value="{{ claim.estimatedTeams }}">
             </div>
             <div class="form-group">
                 <label>{{ 'venue.host'|trans }}</label>
                 <div class="officials-group" data-role="host" data-single>
-                    {% if session.host %}
+                    {% if claim.hostId %}
                         <div class="official-entry">
-                            <input type="hidden" name="hostId" value="{{ session.host.id }}">
-                            {% include '_player_link.html.twig' with {playerId: session.host.id, playerName: session.host.fullName, hasUser: session.host.hasUser} only %}
+                            <input type="hidden" name="hostId" value="{{ claim.hostId }}">
+                            {% include '_player_link.html.twig' with {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser} only %}
                             <button type="button" class="btn-remove">×</button>
                         </div>
                     {% endif %}
@@ -58,11 +58,11 @@
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{ 'tournament.my.save'|trans }}</button>
 
-                {% if claim.status.value == 'rejected' %}
-                    <button type="button" class="btn btn-success" data-session-resubmit="{{ session.id }}">{{ 'session_claim.resubmit'|trans }}</button>
+                {% if claim.status == 'rejected' %}
+                    <button type="button" class="btn btn-success" data-session-resubmit="{{ claim.sessionId }}">{{ 'session_claim.resubmit'|trans }}</button>
                 {% endif %}
-                {% if claim.status.value != 'approved' %}
-                    <button type="button" class="btn btn-reject" data-session-delete="{{ session.id }}" data-redirect="{{ path('my_session_claims') }}">{{ 'session_claim.delete'|trans }}</button>
+                {% if claim.status != 'approved' %}
+                    <button type="button" class="btn btn-reject" data-session-delete="{{ claim.sessionId }}" data-redirect="{{ path('my_session_claims') }}">{{ 'session_claim.delete'|trans }}</button>
                 {% endif %}
             </div>
         </form>

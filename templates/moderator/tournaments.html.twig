@@ -10,15 +10,15 @@
     <h1>{{ 'moderator.tournaments'|trans }}</h1>
 
     <div class="tabs">
-        <a href="{{ path('moderator_tournaments', {status: 'pending'}) }}" class="tab {% if currentStatus.value == 'pending' %}tab-active{% endif %}">{{ 'tournament.moderation_status.pending'|trans }}</a>
-        <a href="{{ path('moderator_tournaments', {status: 'approved'}) }}" class="tab {% if currentStatus.value == 'approved' %}tab-active{% endif %}">{{ 'tournament.moderation_status.approved'|trans }}</a>
-        <a href="{{ path('moderator_tournaments', {status: 'rejected'}) }}" class="tab {% if currentStatus.value == 'rejected' %}tab-active{% endif %}">{{ 'tournament.moderation_status.rejected'|trans }}</a>
+        <a href="{{ path('moderator_tournaments', {status: 'pending'}) }}" class="tab {% if currentStatus == 'pending' %}tab-active{% endif %}">{{ 'tournament.moderation_status.pending'|trans }}</a>
+        <a href="{{ path('moderator_tournaments', {status: 'approved'}) }}" class="tab {% if currentStatus == 'approved' %}tab-active{% endif %}">{{ 'tournament.moderation_status.approved'|trans }}</a>
+        <a href="{{ path('moderator_tournaments', {status: 'rejected'}) }}" class="tab {% if currentStatus == 'rejected' %}tab-active{% endif %}">{{ 'tournament.moderation_status.rejected'|trans }}</a>
     </div>
 
     {% if claims is empty %}
-        {% if currentStatus.value == 'pending' %}
+        {% if currentStatus == 'pending' %}
             <p class="empty-state">{{ 'moderator.no_tournament_claims_pending'|trans }}</p>
-        {% elseif currentStatus.value == 'approved' %}
+        {% elseif currentStatus == 'approved' %}
             <p class="empty-state">{{ 'moderator.no_tournament_claims_approved'|trans }}</p>
         {% else %}
             <p class="empty-state">{{ 'moderator.no_tournament_claims_rejected'|trans }}</p>
@@ -27,7 +27,7 @@
         {% for claim in claims %}
             <div class="card moderation-card">
                 <div class="moderation-card-header">
-                    <h2><a href="{{ path('tournament_show', {id: claim.tournament.id}) }}">{{ claim.tournament.name }}</a></h2>
+                    <h2><a href="{{ path('tournament_show', {id: claim.tournamentId}) }}">{{ claim.tournamentName }}</a></h2>
                     <span class="meta">{{ claim.createdAt|date('d.m.Y H:i') }}</span>
                 </div>
 
@@ -35,12 +35,12 @@
                     <p class="moderation-comment">{{ claim.comment }}</p>
                 {% endif %}
 
-                {% if currentStatus.value == 'pending' %}
+                {% if currentStatus == 'pending' %}
                     <div class="moderation-actions">
-                        <button type="button" class="btn btn-approve" data-tournament-approve="{{ claim.tournament.id }}">{{ 'moderator.approve'|trans }}</button>
+                        <button type="button" class="btn btn-approve" data-tournament-approve="{{ claim.tournamentId }}">{{ 'moderator.approve'|trans }}</button>
                         <div class="reject-form">
-                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-tournament-reject-comment="{{ claim.tournament.id }}">
-                            <button type="button" class="btn btn-reject" data-tournament-reject="{{ claim.tournament.id }}">{{ 'moderator.reject'|trans }}</button>
+                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-tournament-reject-comment="{{ claim.tournamentId }}">
+                            <button type="button" class="btn btn-reject" data-tournament-reject="{{ claim.tournamentId }}">{{ 'moderator.reject'|trans }}</button>
                         </div>
                     </div>
                 {% endif %}

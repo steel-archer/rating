@@ -22,8 +22,8 @@
             <div class="form-group">
                 <label for="town">{{ 'common.town'|trans }} *</label>
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
-                    <input type="text" id="town" data-suggest-input placeholder="{{ 'common.town'|trans }}" value="{{ town ? town.name : '' }}" required>
-                    <input type="hidden" name="townId" data-suggest-hidden value="{{ town ? town.id : '' }}">
+                    <input type="text" id="town" data-suggest-input placeholder="{{ 'common.town'|trans }}" value="{{ townName ?? '' }}" required>
+                    <input type="hidden" name="townId" data-suggest-hidden value="{{ townId ?? '' }}">
                     <div data-suggest-dropdown hidden></div>
                 </div>
             </div>

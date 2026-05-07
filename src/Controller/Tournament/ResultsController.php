@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Tournament;
 
+use App\DTO\Response\Tournament\TournamentContextDTO;
+use App\Mapping\Mapper;
 use App\Repository\TournamentRepository;
 use App\Service\TournamentResultService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +20,7 @@ use Throwable;
 #[Route('/tournament/{id}/results', name: 'tournament_results', requirements: ['id' => '\d+'], methods: ['GET'])]
 class ResultsController extends AbstractController
 {
-    public function __invoke(int $id, Request $request, TournamentRepository $tournamentRepository, TournamentResultService $resultService): Response
+    public function __invoke(int $id, Request $request, TournamentRepository $tournamentRepository, TournamentResultService $resultService, Mapper $mapper): Response
     {
         try {
             $tournament = $tournamentRepository->findWithSeason($id)
@@ -27,7 +29,7 @@ class ResultsController extends AbstractController
             $page = PageResolver::resolve($request);
 
             return $this->render('tournament/_results.html.twig', [
-                'tournament' => $tournament,
+                'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
                 'teams' => $resultService->getResults($tournament, $page),
                 'page' => $page,
                 'lastPage' => $resultService->getLastPageNumber($tournament),

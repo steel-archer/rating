@@ -23,7 +23,7 @@ class TournamentsController extends AbstractController
             $page = PageResolver::resolve($request);
 
             return $this->render('player/_tournaments.html.twig', [
-                'player' => $player,
+                'playerId' => $player->getId(),
                 'tournaments' => $tournamentService->getTournaments($player, $page),
                 'page' => $page,
                 'lastPage' => $tournamentService->getLastPageNumber($player),

@@ -26,7 +26,7 @@ class TournamentsController extends AbstractController
             $page = PageResolver::resolve($request);
 
             return $this->render('venue/_tournaments.html.twig', [
-                'venue' => $venue,
+                'venueId' => $venue->getId(),
                 'tournaments' => $sessionRepository->findByVenuePaginated($venue, $page),
                 'page' => $page,
                 'lastPage' => $sessionRepository->getLastPageNumberByVenue($venue),
