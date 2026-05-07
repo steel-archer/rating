@@ -1,6 +1,7 @@
 // @ts-check
 import { trans } from './trans.js';
 import { apiPost, showError } from './api.js';
+import { buttonAction } from './button-action.js';
 
 function initTournamentCreateForm() {
     const form = /** @type {HTMLFormElement|null} */ (document.getElementById('tournament-create-form'));
@@ -91,13 +92,19 @@ function initTournamentActions() {
     document.addEventListener('click', (event) => {
         const submitBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-submit]');
         if (submitBtn) {
-            tournamentAction(/** @type {HTMLElement} */ (submitBtn).dataset.tournamentSubmit || '', 'submit', /** @type {HTMLButtonElement} */ (submitBtn));
+            buttonAction(
+                `/my/tournaments/${/** @type {HTMLElement} */ (submitBtn).dataset.tournamentSubmit}/submit`,
+                /** @type {HTMLButtonElement} */ (submitBtn),
+            );
             return;
         }
 
         const publishBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-publish]');
         if (publishBtn) {
-            tournamentAction(/** @type {HTMLElement} */ (publishBtn).dataset.tournamentPublish || '', 'publish', /** @type {HTMLButtonElement} */ (publishBtn));
+            buttonAction(
+                `/my/tournaments/${/** @type {HTMLElement} */ (publishBtn).dataset.tournamentPublish}/publish`,
+                /** @type {HTMLButtonElement} */ (publishBtn),
+            );
             return;
         }
 
@@ -107,15 +114,22 @@ function initTournamentActions() {
             if (!confirm(confirmMessage)) {
                 return;
             }
-            tournamentAction(/** @type {HTMLElement} */ (deleteBtn).dataset.tournamentDelete || '', 'delete', /** @type {HTMLButtonElement} */ (deleteBtn), () => {
-                window.location.href = '/my/tournaments';
-            });
+            buttonAction(
+                `/my/tournaments/${/** @type {HTMLElement} */ (deleteBtn).dataset.tournamentDelete}/delete`,
+                /** @type {HTMLButtonElement} */ (deleteBtn),
+                { onSuccess: () => { window.location.href = '/my/tournaments'; } },
+            );
             return;
         }
 
         const approveBtn = /** @type {HTMLElement} */ (event.target).closest('[data-tournament-approve]');
         if (approveBtn) {
-            moderateTournament(/** @type {HTMLElement} */ (approveBtn).dataset.tournamentApprove || '', 'approve', null, /** @type {HTMLButtonElement} */ (approveBtn));
+            const id = /** @type {HTMLElement} */ (approveBtn).dataset.tournamentApprove || '';
+            buttonAction(
+                `/moderator/tournaments/${id}/approve`,
+                /** @type {HTMLButtonElement} */ (approveBtn),
+                { onSuccess: () => removeModerationCard(approveBtn) },
+            );
             return;
         }
 
@@ -124,73 +138,30 @@ function initTournamentActions() {
             const id = /** @type {HTMLElement} */ (rejectBtn).dataset.tournamentReject || '';
             const commentInput = /** @type {HTMLInputElement|null} */ (document.querySelector(`[data-tournament-reject-comment="${id}"]`));
             const comment = commentInput ? commentInput.value : null;
-            moderateTournament(id, 'reject', comment, /** @type {HTMLButtonElement} */ (rejectBtn));
+            buttonAction(
+                `/moderator/tournaments/${id}/reject`,
+                /** @type {HTMLButtonElement} */ (rejectBtn),
+                { data: {comment}, onSuccess: () => removeModerationCard(rejectBtn) },
+            );
         }
     });
 }
 
 /**
- * @param {string} id
- * @param {string} action
- * @param {HTMLButtonElement} btn
- * @param {function(): void} [onSuccess]
+ * @param {Element} btn
  */
-function tournamentAction(id, action, btn, onSuccess) {
-    btn.disabled = true;
-
-    apiPost(`/my/tournaments/${id}/${action}`)
-        .then(({ok, body}) => {
-            if (ok) {
-                if (onSuccess) {
-                    onSuccess();
-                } else {
-                    window.location.reload();
-                }
-            } else {
-                btn.disabled = false;
-                alert(body.error ? trans(body.error) : trans('common.error'));
-            }
-        })
-        .catch(() => {
-            btn.disabled = false;
-            alert(trans('common.error'));
-        });
-}
-
-/**
- * @param {string} id
- * @param {string} action
- * @param {string|null} comment
- * @param {HTMLButtonElement} btn
- */
-function moderateTournament(id, action, comment, btn) {
-    btn.disabled = true;
-
-    const data = action === 'reject' ? {comment} : undefined;
-
-    apiPost(`/moderator/tournaments/${id}/${action}`, data)
-        .then(({ok, body}) => {
-            if (ok) {
-                const card = btn.closest('.moderation-card');
-                card?.remove();
-                if (document.querySelectorAll('.moderation-card').length === 0) {
-                    const container = document.querySelector('h1')?.parentElement;
-                    if (container && !container.querySelector('.empty-state')) {
-                        const emptyState = document.createElement('p');
-                        emptyState.className = 'empty-state';
-                        emptyState.textContent = trans('moderator.no_tournament_claims_pending');
-                        container.appendChild(emptyState);
-                    }
-                }
-            } else {
-                btn.disabled = false;
-                alert(body.error ? trans(body.error) : trans('common.error'));
-            }
-        })
-        .catch(() => {
-            btn.disabled = false;
-            alert(trans('common.error'));
-        });
+function removeModerationCard(btn) {
+    const card = btn.closest('.moderation-card');
+    card?.remove();
+    if (document.querySelectorAll('.moderation-card').length === 0) {
+        const container = document.querySelector('h1')?.parentElement;
+        if (container && !container.querySelector('.empty-state')) {
+            const emptyState = document.createElement('p');
+            emptyState.className = 'empty-state';
+            emptyState.textContent = trans('moderator.no_tournament_claims_pending');
+            container.appendChild(emptyState);
+        }
+    }
 }
 
 initTournamentActions();

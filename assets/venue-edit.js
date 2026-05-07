@@ -1,6 +1,7 @@
 // @ts-check
 import { trans } from './trans.js';
 import { apiPost, showError } from './api.js';
+import { buttonAction } from './button-action.js';
 
 function initVenueCreateForm() {
     const form = /** @type {HTMLFormElement|null} */ (document.getElementById('venue-create-form'));
@@ -70,49 +71,41 @@ function initVenueModeration() {
         const approveBtn = /** @type {HTMLElement} */ (event.target).closest('[data-venue-approve]');
         if (approveBtn) {
             const id = /** @type {HTMLElement} */ (approveBtn).dataset.venueApprove || '';
-            moderateVenue(id, 'approve', /** @type {HTMLButtonElement} */ (approveBtn));
+            buttonAction(
+                `/moderator/venues/${id}/approve`,
+                /** @type {HTMLButtonElement} */ (approveBtn),
+                { onSuccess: () => removeVenueCard(approveBtn) },
+            );
             return;
         }
 
         const rejectBtn = /** @type {HTMLElement} */ (event.target).closest('[data-venue-reject]');
         if (rejectBtn) {
             const id = /** @type {HTMLElement} */ (rejectBtn).dataset.venueReject || '';
-            moderateVenue(id, 'reject', /** @type {HTMLButtonElement} */ (rejectBtn));
+            buttonAction(
+                `/moderator/venues/${id}/reject`,
+                /** @type {HTMLButtonElement} */ (rejectBtn),
+                { onSuccess: () => removeVenueCard(rejectBtn) },
+            );
         }
     });
 }
 
 /**
- * @param {string} id
- * @param {string} action
- * @param {HTMLButtonElement} btn
+ * @param {Element} btn
  */
-function moderateVenue(id, action, btn) {
-    btn.disabled = true;
-
-    apiPost(`/moderator/venues/${id}/${action}`)
-        .then(({ok, body}) => {
-            if (ok) {
-                const card = btn.closest('[data-venue-id]');
-                card?.remove();
-                if (document.querySelectorAll('[data-venue-id]').length === 0) {
-                    const container = document.querySelector('.moderation-card')?.parentElement || document.querySelector('h1')?.parentElement;
-                    if (container && !container.querySelector('.empty-state')) {
-                        const emptyState = document.createElement('p');
-                        emptyState.className = 'empty-state';
-                        emptyState.textContent = trans('moderator.no_venue_claims');
-                        container.appendChild(emptyState);
-                    }
-                }
-            } else {
-                btn.disabled = false;
-                alert(body.error ? trans(body.error) : trans('common.error'));
-            }
-        })
-        .catch(() => {
-            btn.disabled = false;
-            alert(trans('common.error'));
-        });
+function removeVenueCard(btn) {
+    const card = btn.closest('[data-venue-id]');
+    card?.remove();
+    if (document.querySelectorAll('[data-venue-id]').length === 0) {
+        const container = document.querySelector('.moderation-card')?.parentElement || document.querySelector('h1')?.parentElement;
+        if (container && !container.querySelector('.empty-state')) {
+            const emptyState = document.createElement('p');
+            emptyState.className = 'empty-state';
+            emptyState.textContent = trans('moderator.no_venue_claims');
+            container.appendChild(emptyState);
+        }
+    }
 }
 
 initVenueModeration();
