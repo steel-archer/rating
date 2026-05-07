@@ -76,7 +76,7 @@ class SessionsListControllerTest extends WebTestCase
                 static::assertContains('Франко Іван Якович', $reps);
 
                 // calculated team counts: Kyiv session has 2 teams, Lviv has 1
-                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(5)->text()));
+                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(6)->text()));
                 static::assertContains('2', $teamCounts);
                 static::assertContains('1', $teamCounts);
             },

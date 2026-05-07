@@ -1,0 +1,71 @@
+App\Entity\User:
+    user_representative:
+        email: 'representative@example.com'
+        googleId: 'google_rep_123'
+        roles: []
+        player: '@player_shevchenko'
+    user_organizer:
+        email: 'organizer@example.com'
+        googleId: 'google_org_123'
+        roles: []
+        player: '@player_franko'
+    user_other:
+        email: 'other@example.com'
+        googleId: 'google_other_123'
+        roles: []
+        player: '@player_lesya'
+
+App\Entity\Tournament:
+    tournament_session_test:
+        name: 'Тестовий турнір'
+        status: '<(App\Entity\TournamentStatus::Published)>'
+        startedAt: '<(new \DateTimeImmutable("2025-06-01"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-06-30"))>'
+        toursCount: 3
+        questionsPerTour: 12
+
+App\Entity\TournamentOfficial:
+    official_org_test:
+        tournament: '@tournament_session_test'
+        player: '@player_franko'
+        role: '<(App\Entity\TournamentOfficialRole::Organizer)>'
+
+App\Entity\TournamentSession:
+    session_pending:
+        tournament: '@tournament_session_test'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-06-10 19:00"))>'
+        estimatedTeams: 8
+    session_rejected:
+        tournament: '@tournament_session_test'
+        venue: '@venue_lviv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-06-15 19:00"))>'
+        estimatedTeams: 5
+    session_approved:
+        tournament: '@tournament_session_test'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-06-20 19:00"))>'
+        estimatedTeams: 10
+
+App\Entity\SessionClaim:
+    claim_pending:
+        session: '@session_pending'
+        player: '@player_shevchenko'
+        status: '<(App\Entity\SessionClaimStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
+    claim_rejected:
+        session: '@session_rejected'
+        player: '@player_shevchenko'
+        status: '<(App\Entity\SessionClaimStatus::Rejected)>'
+        comment: 'Дата не підходить'
+        createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
+    claim_approved:
+        session: '@session_approved'
+        player: '@player_shevchenko'
+        status: '<(App\Entity\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
