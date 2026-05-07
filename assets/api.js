@@ -11,7 +11,11 @@ export function apiPost(url, data) {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: data !== undefined ? JSON.stringify(data) : undefined,
-    }).then(response => response.json().then(body => ({ok: response.ok, body})));
+    }).then(response =>
+        response.json()
+            .then(body => ({ok: response.ok, body}))
+            .catch(() => ({ok: false, body: /** @type {Record<string, any>} */ ({error: 'common.error'})}))
+    );
 }
 
 /**
