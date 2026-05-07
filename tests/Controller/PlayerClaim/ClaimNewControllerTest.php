@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller\PlayerClaim;
 
 use App\Entity\PlayerClaim;
+use App\Entity\PlayerClaimStatus;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -65,7 +66,7 @@ class ClaimNewControllerTest extends WebTestCase
                 static::assertCount(1, $claims);
                 static::assertSame('Тестовий', $claims[0]->getLastName());
                 static::assertSame('Гравець', $claims[0]->getFirstName());
-                static::assertSame(PlayerClaim::STATUS_PENDING, $claims[0]->getStatus());
+                static::assertSame(PlayerClaimStatus::Pending, $claims[0]->getStatus());
                 static::assertNull($claims[0]->getPlayer());
             },
         ];

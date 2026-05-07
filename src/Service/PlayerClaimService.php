@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Player;
 use App\Entity\PlayerClaim;
+use App\Entity\PlayerClaimStatus;
 use App\Exception\PlayerClaimException;
 use App\Repository\PlayerClaimRepository;
 use App\Repository\UserRepository;
@@ -29,7 +30,7 @@ class PlayerClaimService
         $player = $claim->isNew() ? $this->createPlayer($claim) : $this->resolveExistingPlayer($claim);
 
         $claim->getUser()->setPlayer($player);
-        $claim->setStatus(PlayerClaim::STATUS_APPROVED);
+        $claim->setStatus(PlayerClaimStatus::Approved);
         $this->em->flush();
 
         $this->claimRepository->rejectOtherPendingClaims($claim);
@@ -38,7 +39,7 @@ class PlayerClaimService
     public function reject(int $id): void
     {
         $claim = $this->findPendingClaim($id);
-        $claim->setStatus(PlayerClaim::STATUS_REJECTED);
+        $claim->setStatus(PlayerClaimStatus::Rejected);
         $this->em->flush();
     }
 
@@ -46,7 +47,7 @@ class PlayerClaimService
     {
         $claim = $this->em->getRepository(PlayerClaim::class)->find($id);
 
-        if ($claim === null || $claim->getStatus() !== PlayerClaim::STATUS_PENDING) {
+        if ($claim === null || $claim->getStatus() !== PlayerClaimStatus::Pending) {
             throw new PlayerClaimException('Claim not found or already processed.');
         }
 

@@ -1,4 +1,5 @@
 import { trans } from './trans.js';
+import { apiPost, showError } from './api.js';
 
 function initVenueCreateForm() {
     const form = document.getElementById('venue-create-form');
@@ -17,27 +18,16 @@ function initVenueCreateForm() {
             townId: parseInt(form.querySelector('[name="townId"]').value) || null,
         };
 
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data),
-        })
-            .then(r => r.json().then(body => ({ok: r.ok, body})))
+        apiPost(url, data)
             .then(({ok, body}) => {
                 if (ok) {
                     window.location.href = '/my/venues';
                 } else {
-                    status.textContent = body.error
-                        ? body.error.split(' ').map(key => trans(key)).join('. ')
-                        : trans('common.error');
-                    status.className = 'save-status save-status-error';
-                    status.hidden = false;
+                    showError(status, body.error);
                 }
             })
             .catch(() => {
-                status.textContent = trans('common.error');
-                status.className = 'save-status save-status-error';
-                status.hidden = false;
+                showError(status, null);
             });
     });
 }
@@ -59,27 +49,16 @@ function initVenueEditForm() {
             representatives: Array.from(group.querySelectorAll('input[type="hidden"]')).map(i => parseInt(i.value)),
         };
 
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data),
-        })
-            .then(r => r.json().then(body => ({ok: r.ok, body})))
+        apiPost(url, data)
             .then(({ok, body}) => {
                 if (ok) {
                     window.location.reload();
                 } else {
-                    status.textContent = body.error
-                        ? body.error.split(' ').map(key => trans(key)).join('. ')
-                        : trans('common.error');
-                    status.className = 'save-status save-status-error';
-                    status.hidden = false;
+                    showError(status, body.error);
                 }
             })
             .catch(() => {
-                status.textContent = trans('common.error');
-                status.className = 'save-status save-status-error';
-                status.hidden = false;
+                showError(status, null);
             });
     });
 }
@@ -104,11 +83,7 @@ function initVenueModeration() {
 function moderateVenue(id, action, btn) {
     btn.disabled = true;
 
-    fetch(`/moderator/venues/${id}/${action}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-    })
-        .then(r => r.json().then(body => ({ok: r.ok, body})))
+    apiPost(`/moderator/venues/${id}/${action}`)
         .then(({ok, body}) => {
             if (ok) {
                 const card = btn.closest('[data-venue-id]');

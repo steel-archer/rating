@@ -11,6 +11,7 @@ use App\Repository\SeasonRepository;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
 use DateTime;
+use Psr\Clock\ClockInterface;
 
 class TournamentValidator
 {
@@ -18,6 +19,7 @@ class TournamentValidator
         private TournamentModerationClaimRepository $claimRepository,
         private TournamentOfficialRepository $officialRepository,
         private SeasonRepository $seasonRepository,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -74,7 +76,7 @@ class TournamentValidator
     private function validateDates(?DateTime $startedAt, ?DateTime $endedAt): array
     {
         $errors = [];
-        $now = new DateTime();
+        $now = DateTime::createFromInterface($this->clock->now());
 
         if ($startedAt !== null && $startedAt <= $now) {
             $errors[] = 'tournament.error.start_in_past';

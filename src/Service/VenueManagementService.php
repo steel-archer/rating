@@ -111,11 +111,21 @@ class VenueManagementService
         }
 
         // Add new representatives
-        foreach (array_unique($playerIds) as $playerId) {
-            if (in_array($playerId, $existingPlayerIds, true)) {
-                continue;
-            }
-            $player = $this->playerRepository->find($playerId);
+        $newPlayerIds = array_filter(
+            array_unique($playerIds),
+            static fn(int $playerId) => !in_array($playerId, $existingPlayerIds, true),
+        );
+
+        $players = $newPlayerIds !== []
+            ? $this->playerRepository->findBy(['id' => array_values($newPlayerIds)])
+            : [];
+        $playerIndex = [];
+        foreach ($players as $player) {
+            $playerIndex[$player->getId()] = $player;
+        }
+
+        foreach ($newPlayerIds as $playerId) {
+            $player = $playerIndex[$playerId] ?? null;
             if ($player === null) {
                 continue;
             }

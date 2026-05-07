@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\PlayerClaim;
+use App\Entity\PlayerClaimStatus;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,7 +25,7 @@ class PlayerClaimRepository extends ServiceEntityRepository
             ->leftJoin('c.town', 't')
             ->addSelect('u', 'p', 't')
             ->andWhere('c.status = :status')
-            ->setParameter('status', PlayerClaim::STATUS_PENDING)
+            ->setParameter('status', PlayerClaimStatus::Pending)
             ->orderBy('c.id', 'ASC')
             ->getQuery()
             ->getResult();
@@ -32,7 +33,7 @@ class PlayerClaimRepository extends ServiceEntityRepository
 
     public function hasPendingClaim(User $user): bool
     {
-        return $this->count(['user' => $user, 'status' => PlayerClaim::STATUS_PENDING]) > 0;
+        return $this->count(['user' => $user, 'status' => PlayerClaimStatus::Pending]) > 0;
     }
 
     public function rejectOtherPendingClaims(PlayerClaim $approvedClaim): void
@@ -47,8 +48,8 @@ class PlayerClaimRepository extends ServiceEntityRepository
             ->where('c.status = :pending')
             ->andWhere('c.id != :id')
             ->andWhere('c.player = :player')
-            ->setParameter('rejected', PlayerClaim::STATUS_REJECTED)
-            ->setParameter('pending', PlayerClaim::STATUS_PENDING)
+            ->setParameter('rejected', PlayerClaimStatus::Rejected->value)
+            ->setParameter('pending', PlayerClaimStatus::Pending->value)
             ->setParameter('id', $approvedClaim->getId())
             ->setParameter('player', $approvedClaim->getPlayer())
             ->getQuery()

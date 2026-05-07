@@ -1,4 +1,5 @@
 import { trans } from './trans.js';
+import { apiPost, showError } from './api.js';
 
 function initPlayerClaimNewForm() {
     const form = document.getElementById('player-claim-new-form');
@@ -19,25 +20,16 @@ function initPlayerClaimNewForm() {
             townId: parseInt(form.querySelector('[name="townId"]').value) || null,
         };
 
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data),
-        })
-            .then(r => r.json().then(body => ({ok: r.ok, body})))
+        apiPost(url, data)
             .then(({ok, body}) => {
                 if (ok) {
                     window.location.href = '/player-claim/submitted';
                 } else {
-                    status.textContent = body.error ? trans(body.error) : trans('common.error');
-                    status.className = 'save-status save-status-error';
-                    status.hidden = false;
+                    showError(status, body.error);
                 }
             })
             .catch(() => {
-                status.textContent = trans('common.error');
-                status.className = 'save-status save-status-error';
-                status.hidden = false;
+                showError(status, null);
             });
     });
 }
@@ -49,12 +41,7 @@ function initPlayerClaimActions() {
             const playerId = parseInt(existingBtn.dataset.playerClaimExisting);
             existingBtn.disabled = true;
 
-            fetch('/player-claim/existing', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({playerId}),
-            })
-                .then(r => r.json().then(body => ({ok: r.ok, body})))
+            apiPost('/player-claim/existing', {playerId})
                 .then(({ok, body}) => {
                     if (ok) {
                         window.location.href = '/player-claim/submitted';
@@ -86,11 +73,7 @@ function initPlayerClaimActions() {
 function moderatePlayerClaim(id, action, btn) {
     btn.disabled = true;
 
-    fetch(`/moderator/player-claims/${id}/${action}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-    })
-        .then(r => r.json().then(body => ({ok: r.ok, body})))
+    apiPost(`/moderator/player-claims/${id}/${action}`)
         .then(({ok, body}) => {
             if (ok) {
                 const row = btn.closest('tr');

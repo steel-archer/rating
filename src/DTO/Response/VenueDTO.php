@@ -2,7 +2,7 @@
 
 namespace App\DTO\Response;
 
-use App\Entity\VenueRepresentative;
+use App\DTO\Response\Venue\RepresentativeDTO;
 
 final readonly class VenueDTO
 {
@@ -11,7 +11,7 @@ final readonly class VenueDTO
         public string $name,
         public string $townName,
         public int $tournamentCount = 0,
-        /** @var list<VenueRepresentative> */
+        /** @var list<RepresentativeDTO> */
         public array $representatives = [],
     ) {
     }

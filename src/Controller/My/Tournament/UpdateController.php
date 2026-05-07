@@ -3,8 +3,8 @@
 namespace App\Controller\My\Tournament;
 
 use App\DTO\Request\Tournament\My\EditRequestDTO;
-use App\Entity\User;
 use App\Repository\TournamentRepository;
+use App\Security\TournamentOwnerVoter;
 use App\Service\TournamentManagementService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,12 +24,10 @@ class UpdateController extends AbstractController
         TournamentRepository $tournamentRepository,
         TournamentManagementService $service,
     ): JsonResponse {
-        /** @var User $user */
-        $user = $this->getUser();
         $tournament = $tournamentRepository->find($id);
 
-        if ($tournament === null || $tournament->getCreatedBy() !== $user) {
-            return $this->json(['error' => 'Not found'], 404);
+        if ($tournament === null || !$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
+            return $this->json(['error' => 'common.not_found'], 404);
         }
 
         try {

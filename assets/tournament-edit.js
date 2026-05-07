@@ -1,4 +1,5 @@
 import { trans } from './trans.js';
+import { apiPost, showError } from './api.js';
 
 function initTournamentCreateForm() {
     const form = document.getElementById('tournament-create-form');
@@ -13,25 +14,16 @@ function initTournamentCreateForm() {
         const status = document.getElementById('save-status');
         const data = { name: form.querySelector('[name="name"]').value };
 
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data),
-        })
-            .then(r => r.json().then(body => ({ok: r.ok, body})))
+        apiPost(url, data)
             .then(({ok, body}) => {
                 if (ok) {
                     window.location.href = `/my/tournaments/${body.id}/edit`;
                 } else {
-                    status.textContent = body.error ? trans(body.error) : trans('common.error');
-                    status.className = 'save-status save-status-error';
-                    status.hidden = false;
+                    showError(status, body.error);
                 }
             })
             .catch(() => {
-                status.textContent = trans('common.error');
-                status.className = 'save-status save-status-error';
-                status.hidden = false;
+                showError(status, null);
             });
     });
 }
@@ -61,27 +53,16 @@ function initTournamentEditForm() {
             appealJury: getOfficialIds('appealJury'),
         };
 
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data),
-        })
-            .then(r => r.json().then(body => ({ok: r.ok, body})))
+        apiPost(url, data)
             .then(({ok, body}) => {
                 if (ok) {
                     window.location.reload();
                 } else {
-                    status.textContent = body.error
-                        ? body.error.split(' ').map(key => trans(key)).join('. ')
-                        : trans('common.error');
-                    status.className = 'save-status save-status-error';
-                    status.hidden = false;
+                    showError(status, body.error);
                 }
             })
             .catch(() => {
-                status.textContent = trans('common.error');
-                status.className = 'save-status save-status-error';
-                status.hidden = false;
+                showError(status, null);
             });
     });
 }
@@ -138,11 +119,7 @@ function initTournamentActions() {
 function tournamentAction(id, action, btn, onSuccess) {
     btn.disabled = true;
 
-    fetch(`/my/tournaments/${id}/${action}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-    })
-        .then(r => r.json().then(body => ({ok: r.ok, body})))
+    apiPost(`/my/tournaments/${id}/${action}`)
         .then(({ok, body}) => {
             if (ok) {
                 if (onSuccess) {
@@ -164,15 +141,10 @@ function tournamentAction(id, action, btn, onSuccess) {
 function moderateTournament(id, action, comment, btn) {
     btn.disabled = true;
 
-    const body = action === 'reject' ? JSON.stringify({comment}) : undefined;
+    const data = action === 'reject' ? {comment} : undefined;
 
-    fetch(`/moderator/tournaments/${id}/${action}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body,
-    })
-        .then(r => r.json().then(data => ({ok: r.ok, data})))
-        .then(({ok, data}) => {
+    apiPost(`/moderator/tournaments/${id}/${action}`, data)
+        .then(({ok, data: responseData}) => {
             if (ok) {
                 const card = btn.closest('.moderation-card');
                 card?.remove();
@@ -187,7 +159,7 @@ function moderateTournament(id, action, comment, btn) {
                 }
             } else {
                 btn.disabled = false;
-                alert(data.error ? trans(data.error) : trans('common.error'));
+                alert(responseData.error ? trans(responseData.error) : trans('common.error'));
             }
         })
         .catch(() => {

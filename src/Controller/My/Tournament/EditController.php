@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
+use App\Security\TournamentOwnerVoter;
 use App\Service\TournamentValidator;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +30,7 @@ class EditController extends AbstractController
         $user = $this->getUser();
         $tournament = $tournamentRepository->find($id);
 
-        if ($tournament === null || $tournament->getCreatedBy() !== $user) {
+        if ($tournament === null || !$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
             throw $this->createNotFoundException();
         }
 

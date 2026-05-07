@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\PlayerClaimStatus;
 use App\Repository\PlayerClaimRepository;
 use App\Repository\UserRepository;
 use App\Service\PlayerClaimService;
@@ -41,7 +42,7 @@ final class PromoteAdminCommand extends Command
             return Command::FAILURE;
         }
 
-        $claim = $this->claimRepository->findOneBy(['user' => $user, 'status' => 'pending']);
+        $claim = $this->claimRepository->findOneBy(['user' => $user, 'status' => PlayerClaimStatus::Pending]);
         if ($claim !== null) {
             $this->claimService->approve($claim->getId());
             $io->info('Pending claim approved.');

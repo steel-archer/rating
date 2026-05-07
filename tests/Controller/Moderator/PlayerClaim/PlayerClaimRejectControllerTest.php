@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller\Moderator\PlayerClaim;
 
 use App\Entity\PlayerClaim;
+use App\Entity\PlayerClaimStatus;
 use App\Service\PlayerClaimService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -66,7 +67,7 @@ class PlayerClaimRejectControllerTest extends WebTestCase
             'afterCallback' => static function (array $objects) {
                 $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
                     ->find($objects['player_claim_pending']->getId());
-                static::assertSame(PlayerClaim::STATUS_REJECTED, $claim->getStatus());
+                static::assertSame(PlayerClaimStatus::Rejected, $claim->getStatus());
             },
         ];
 

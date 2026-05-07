@@ -11,10 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'IDX_player_claim_town', columns: ['town_id'])]
 class PlayerClaim
 {
-    public const string STATUS_PENDING = 'pending';
-    public const string STATUS_APPROVED = 'approved';
-    public const string STATUS_REJECTED = 'rejected';
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -39,8 +35,8 @@ class PlayerClaim
     #[ORM\ManyToOne]
     private ?Town $town = null;
 
-    #[ORM\Column(length: 20)]
-    private string $status = self::STATUS_PENDING;
+    #[ORM\Column(length: 20, enumType: PlayerClaimStatus::class)]
+    private PlayerClaimStatus $status = PlayerClaimStatus::Pending;
 
     public function getId(): ?int
     {
@@ -119,12 +115,12 @@ class PlayerClaim
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): PlayerClaimStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(PlayerClaimStatus $status): static
     {
         $this->status = $status;
 

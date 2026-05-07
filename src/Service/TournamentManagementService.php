@@ -18,6 +18,7 @@ use DateMalformedStringException;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Psr\Clock\ClockInterface;
 
 class TournamentManagementService
 {
@@ -28,6 +29,7 @@ class TournamentManagementService
         private PlayerRepository $playerRepository,
         private SeasonRepository $seasonRepository,
         private TournamentValidator $validator,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -59,7 +61,7 @@ class TournamentManagementService
         if (
             $tournament->getStatus() === TournamentStatus::Published
             && $tournament->getStartedAt() !== null
-            && $tournament->getStartedAt() <= new DateTime()
+            && $tournament->getStartedAt() <= DateTime::createFromInterface($this->clock->now())
         ) {
             throw new LogicException('tournament.error.cannot_edit_started');
         }
@@ -131,13 +133,30 @@ class TournamentManagementService
             $existing,
         );
 
+        $allNewPlayerIds = [];
+        foreach ($roleMap as $roleValue => $playerIds) {
+            foreach (array_unique($playerIds) as $playerId) {
+                if (!in_array($roleValue . '_' . $playerId, $existingKeys, true)) {
+                    $allNewPlayerIds[] = $playerId;
+                }
+            }
+        }
+
+        $players = $allNewPlayerIds !== []
+            ? $this->playerRepository->findBy(['id' => array_unique($allNewPlayerIds)])
+            : [];
+        $playerIndex = [];
+        foreach ($players as $player) {
+            $playerIndex[$player->getId()] = $player;
+        }
+
         foreach ($roleMap as $roleValue => $playerIds) {
             $role = TournamentOfficialRole::from($roleValue);
             foreach (array_unique($playerIds) as $playerId) {
                 if (in_array($roleValue . '_' . $playerId, $existingKeys, true)) {
                     continue;
                 }
-                $player = $this->playerRepository->find($playerId);
+                $player = $playerIndex[$playerId] ?? null;
                 if ($player === null) {
                     continue;
                 }
