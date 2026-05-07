@@ -12,6 +12,7 @@ final readonly class TournamentPlayerDTO
         public bool $isBaseSquad,
         public bool $isCaptain,
         public bool $isLegionary,
+        public bool $hasUser = false,
     ) {
     }
 }

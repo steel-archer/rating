@@ -9,6 +9,7 @@ final readonly class RepresentativeDTO
     public function __construct(
         public int $playerId,
         public string $playerName,
+        public bool $hasUser = false,
     ) {
     }
 }

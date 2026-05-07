@@ -22,6 +22,7 @@ final class VenueMapping implements MappingInterface
             static fn(VenueRepresentative $rep) => new RepresentativeDTO(
                 playerId: $rep->getPlayer()->getId(),
                 playerName: $rep->getPlayer()->getFullName(),
+                hasUser: $rep->getPlayer()->hasUser(),
             ),
             $context['representatives'] ?? [],
         );

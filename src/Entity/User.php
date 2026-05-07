@@ -38,7 +38,7 @@ class User implements UserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\OneToOne(cascade: ['persist'])]
+    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?Player $player = null;
 

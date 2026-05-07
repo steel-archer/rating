@@ -30,6 +30,9 @@ class Player
     #[ORM\ManyToOne]
     private ?Town $town = null;
 
+    #[ORM\OneToOne(mappedBy: 'player')]
+    private ?User $user = null;
+
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
@@ -109,6 +112,16 @@ class Player
     public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function hasUser(): bool
+    {
+        return $this->user !== null;
     }
 
     public function getFullName(): string

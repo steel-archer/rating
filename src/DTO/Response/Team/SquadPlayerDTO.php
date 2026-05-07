@@ -10,6 +10,7 @@ final readonly class SquadPlayerDTO
         public int $playerId,
         public string $playerName,
         public bool $isCaptain,
+        public bool $hasUser = false,
     ) {
     }
 }

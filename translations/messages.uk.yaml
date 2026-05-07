@@ -80,7 +80,9 @@ pagination:
 player:
   first_name: "Ім'я"
   full_name: 'ПІБ'
+  has_user: 'Зареєстрований користувач'
   last_name: 'Прізвище'
+  no_user: 'Незареєстрований користувач'
   patronymic: 'По батькові'
 
 player_claim:

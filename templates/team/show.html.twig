@@ -17,7 +17,7 @@
                     <dt>{{ squad.seasonName }}</dt>
                     <dd>
                         {% for player in squad.players %}
-                            <a href="{{ path('player_show', {id: player.playerId}) }}">{{ player.playerName }}</a>{% if player.isCaptain %} <span class="captain">(к)</span>{% endif %}<br>
+                            {% include '_player_link.html.twig' with {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser} only %}{% if player.isCaptain %} <span class="captain">(к)</span>{% endif %}<br>
                         {% endfor %}
                     </dd>
                 {% endfor %}

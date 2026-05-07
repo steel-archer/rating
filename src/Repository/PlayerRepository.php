@@ -33,7 +33,8 @@ class PlayerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.town', 't')
-            ->addSelect('t')
+            ->leftJoin('p.user', 'u')
+            ->addSelect('t', 'u')
             ->where('p.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
@@ -41,7 +42,7 @@ class PlayerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{id: int, fullName: string, townName: ?string, teamId: ?int, teamName: ?string}>
+     * @return list<array{id: int, fullName: string, townName: ?string, teamId: ?int, teamName: ?string, hasUser: bool}>
      */
     public function findForList(PlayerListRequestDTO $requestDto, ?Season $currentSeason = null): array
     {
@@ -50,7 +51,9 @@ class PlayerRepository extends ServiceEntityRepository
                 'p.id',
                 "CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) AS fullName",
                 'town.name AS townName',
+                'CASE WHEN u.id IS NOT NULL THEN true ELSE false END AS hasUser',
             )
+            ->leftJoin(User::class, 'u', 'WITH', 'u.player = p')
             ->orderBy('p.lastName', 'ASC')
             ->addOrderBy('p.firstName', 'ASC')
             ->setFirstResult(($requestDto->page - 1) * self::PER_PAGE)

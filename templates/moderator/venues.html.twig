@@ -34,7 +34,7 @@
                             <td>{{ venue.town.name }}</td>
                             <td>
                                 {% if venue.createdBy and venue.createdBy.player %}
-                                    <a href="{{ path('player_show', {id: venue.createdBy.player.id}) }}">{{ venue.createdBy.player.fullName }}</a>
+                                    {% include '_player_link.html.twig' with {playerId: venue.createdBy.player.id, playerName: venue.createdBy.player.fullName, hasUser: true} only %}
                                 {% else %}
                                     —
                                 {% endif %}

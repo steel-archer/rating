@@ -31,7 +31,8 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('stp')
             ->join('stp.player', 'p')
-            ->addSelect('p')
+            ->leftJoin('p.user', 'pu')
+            ->addSelect('p', 'pu')
             ->where('stp.tournamentSessionTeam IN (:ids)')
             ->setParameter('ids', $sessionTeamIds)
             ->orderBy('p.lastName')

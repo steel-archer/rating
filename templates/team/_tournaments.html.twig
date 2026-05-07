@@ -19,7 +19,7 @@
                         <td>
                             {% for player in entry.players %}
                                 <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
-                                    <a href="{{ path('player_show', {id: player.playerId}) }}" data-turbo-frame="_top">{{- player.playerName -}}</a>
+                                    {% include '_player_link.html.twig' with {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser, turboFrame: true} only %}
                                     {%- if player.isCaptain %} (к){% endif -%}
                                 </div>
                             {% endfor %}

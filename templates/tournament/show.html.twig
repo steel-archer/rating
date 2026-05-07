@@ -53,7 +53,12 @@
                     {% for role in roleOrder %}
                         {% if tournament.officials[role] is defined %}
                             <dt>{{ ('tournament.role.' ~ role)|trans }}</dt>
-                            <dd>{{ tournament.officials[role]|map(p => '<a href="' ~ path('player_show', {id: p.playerId}) ~ '">' ~ p.playerName|e ~ '</a>')|join(', ')|raw }}</dd>
+                            <dd>
+                                {% for p in tournament.officials[role] %}
+                                    {% if not loop.first %}, {% endif %}
+                                    {% include '_player_link.html.twig' with {playerId: p.playerId, playerName: p.playerName, hasUser: p.hasUser} only %}
+                                {% endfor %}
+                            </dd>
                         {% endif %}
                     {% endfor %}
                 </dl>

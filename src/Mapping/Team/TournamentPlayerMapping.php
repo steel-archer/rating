@@ -28,6 +28,7 @@ final class TournamentPlayerMapping implements MappingInterface
             isBaseSquad: in_array($playerId, $squadInfo['playerIds'], true),
             isCaptain: $playerId === $squadInfo['captainId'],
             isLegionary: $source->isLegionary(),
+            hasUser: $player->hasUser(),
         );
     }
 }

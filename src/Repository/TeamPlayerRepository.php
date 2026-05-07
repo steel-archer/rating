@@ -60,8 +60,9 @@ class TeamPlayerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('tp')
             ->join('tp.player', 'player')
+            ->leftJoin('player.user', 'playerUser')
             ->join('tp.season', 'season')
-            ->addSelect('player', 'season')
+            ->addSelect('player', 'playerUser', 'season')
             ->where('tp.team = :team')
             ->setParameter('team', $team)
             ->orderBy('season.startedAt', 'DESC')

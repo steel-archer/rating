@@ -44,7 +44,7 @@
                     {% if session.host %}
                         <div class="official-entry">
                             <input type="hidden" name="hostId" value="{{ session.host.id }}">
-                            <a href="{{ path('player_show', {id: session.host.id}) }}">{{ session.host.fullName }}</a>
+                            {% include '_player_link.html.twig' with {playerId: session.host.id, playerName: session.host.fullName, hasUser: session.host.hasUser} only %}
                             <button type="button" class="btn-remove">×</button>
                         </div>
                     {% endif %}

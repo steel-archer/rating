@@ -21,10 +21,10 @@
                             <td><a href="{{ path('venue_show', {id: s.venue.id}) }}" data-turbo-frame="_top">{{ s.venue.name }}</a></td>
                             <td>{{ s.venue.town.name }}</td>
                             <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td><a href="{{ path('player_show', {id: s.representative.id}) }}" data-turbo-frame="_top">{{ s.representative.fullName }}</a></td>
+                            <td>{% include '_player_link.html.twig' with {playerId: s.representative.id, playerName: s.representative.fullName, hasUser: s.representative.hasUser, turboFrame: true} only %}</td>
                             <td>
                                 {% if s.host %}
-                                    <a href="{{ path('player_show', {id: s.host.id}) }}" data-turbo-frame="_top">{{ s.host.fullName }}</a>
+                                    {% include '_player_link.html.twig' with {playerId: s.host.id, playerName: s.host.fullName, hasUser: s.host.hasUser, turboFrame: true} only %}
                                 {% else %}
                                     —
                                 {% endif %}

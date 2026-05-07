@@ -25,7 +25,8 @@ class VenueRepresentativeRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('vr')
             ->join('vr.player', 'player')
-            ->addSelect('player')
+            ->leftJoin('player.user', 'playerUser')
+            ->addSelect('player', 'playerUser')
             ->where('vr.venue = :venue')
             ->setParameter('venue', $venue)
             ->orderBy('player.lastName')

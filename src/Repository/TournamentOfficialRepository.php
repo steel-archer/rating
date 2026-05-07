@@ -24,7 +24,8 @@ class TournamentOfficialRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('o')
             ->join('o.player', 'p')
-            ->addSelect('p')
+            ->leftJoin('p.user', 'pu')
+            ->addSelect('p', 'pu')
             ->where('o.tournament = :t')
             ->setParameter('t', $tournament)
             ->orderBy('o.role')

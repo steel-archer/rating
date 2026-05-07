@@ -29,6 +29,7 @@ final class PlayerMapping implements MappingInterface
             id: $source->getId(),
             fullName: $source->getFullName(),
             townName: $source->getTown()?->getName(),
+            hasUser: $source->hasUser(),
             tournamentCount: $context['tournamentCount'] ?? 0,
             squads: $squads,
         );

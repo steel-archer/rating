@@ -10,6 +10,7 @@ final readonly class OfficialDTO
         public int $playerId,
         public string $playerName,
         public string $role,
+        public bool $hasUser = false,
     ) {
     }
 }

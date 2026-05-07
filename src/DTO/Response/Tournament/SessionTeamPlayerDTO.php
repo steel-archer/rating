@@ -11,6 +11,7 @@ final readonly class SessionTeamPlayerDTO
         public string $playerName,
         public bool $isBaseSquad,
         public bool $isCaptain,
+        public bool $hasUser = false,
     ) {
     }
 }

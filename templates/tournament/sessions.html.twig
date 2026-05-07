@@ -40,11 +40,11 @@
                             <td>{{ claim.session.playedAt ? claim.session.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>{{ claim.session.estimatedTeams ?? '—' }}</td>
                             {% if isOrganizer %}
-                                <td><a href="{{ path('player_show', {id: claim.player.id}) }}">{{ claim.player.fullName }}</a></td>
+                                <td>{% include '_player_link.html.twig' with {playerId: claim.player.id, playerName: claim.player.fullName, hasUser: claim.player.hasUser} only %}</td>
                             {% endif %}
                             <td>
                                 {% if claim.session.host %}
-                                    <a href="{{ path('player_show', {id: claim.session.host.id}) }}">{{ claim.session.host.fullName }}</a>
+                                    {% include '_player_link.html.twig' with {playerId: claim.session.host.id, playerName: claim.session.host.fullName, hasUser: claim.session.host.hasUser} only %}
                                 {% else %}
                                     —
                                 {% endif %}

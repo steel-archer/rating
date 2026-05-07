@@ -41,7 +41,7 @@
                                 {{ claim.lastName }} {{ claim.firstName ?? '' }} {{ claim.patronymic ?? '' }}
                                 {% if claim.town %} ({{ claim.town.name }}){% endif %}
                             {% else %}
-                                <a href="{{ path('player_show', {id: claim.player.id}) }}">{{ claim.player.fullName }}</a>
+                                {% include '_player_link.html.twig' with {playerId: claim.player.id, playerName: claim.player.fullName, hasUser: claim.player.hasUser} only %}
                             {% endif %}
                         </td>
                         <td class="claim-actions">

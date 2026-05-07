@@ -32,7 +32,7 @@
             <tbody>
                 {% for p in players %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td><a href="{{ path('player_show', {id: p.id}) }}" data-turbo-frame="_top">{{ p.fullName }}</a></td>
+                        <td>{% include '_player_link.html.twig' with {playerId: p.id, playerName: p.fullName, hasUser: p.hasUser, turboFrame: true} only %}</td>
                         <td>{{ p.townName ?? '' }}</td>
                         <td>
                             {% if p.teamId %}

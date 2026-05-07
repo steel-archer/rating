@@ -24,6 +24,7 @@ final class OfficialMapping implements MappingInterface
             playerId: $player->getId(),
             playerName: $player->getFullName(),
             role: $source->getRole()->value,
+            hasUser: $player->hasUser(),
         );
     }
 }

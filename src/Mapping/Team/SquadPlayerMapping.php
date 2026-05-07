@@ -18,10 +18,13 @@ final class SquadPlayerMapping implements MappingInterface
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
+        $player = $source->getPlayer();
+
         return new $destinationClass(
-            playerId: $source->getPlayer()->getId(),
-            playerName: $source->getPlayer()->getFullName(),
+            playerId: $player->getId(),
+            playerName: $player->getFullName(),
             isCaptain: $source->isCaptain(),
+            hasUser: $player->hasUser(),
         );
     }
 }

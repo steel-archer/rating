@@ -1,0 +1,17 @@
+.player-icon {
+    width: 18px;
+    height: 18px;
+    vertical-align: -3px;
+    margin-right: 3px;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+}
+
+.player-icon--active {
+    stroke: #0055b3;
+}
+
+.player-icon--inactive {
+    stroke: #999;
+}
