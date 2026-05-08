@@ -11,9 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 #[Route('/team/{id}/tournaments', name: 'team_tournaments', requirements: ['id' => '\d+'], methods: ['GET'])]
 class TournamentsController extends AbstractController
@@ -23,17 +21,13 @@ class TournamentsController extends AbstractController
         Request $request,
         TeamTournamentService $tournamentService,
     ): Response {
-        try {
-            $page = PageResolver::resolve($request);
+        $page = PageResolver::resolve($request);
 
-            return $this->render('team/_tournaments.html.twig', [
-                'teamId' => $team->getId(),
-                'tournaments' => $tournamentService->getTournaments($team, $page),
-                'page' => $page,
-                'lastPage' => $tournamentService->getLastPageNumber($team),
-            ]);
-        } catch (Throwable $ex) {
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
-        }
+        return $this->render('team/_tournaments.html.twig', [
+            'teamId' => $team->getId(),
+            'tournaments' => $tournamentService->getTournaments($team, $page),
+            'page' => $page,
+            'lastPage' => $tournamentService->getLastPageNumber($team),
+        ]);
     }
 }

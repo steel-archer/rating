@@ -138,7 +138,7 @@ class ListControllerTest extends WebTestCase
             'method' => 'GET',
             'uri' => '/players/list',
             'fixtures' => ['Entity/base.yaml'],
-            'expectedStatus' => 503,
+            'expectedStatus' => 500,
             'afterCallback' => static function () {
             },
             'mockSetup' => static function (self $test, $client) {

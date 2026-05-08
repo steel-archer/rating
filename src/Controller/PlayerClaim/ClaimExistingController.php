@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Throwable;
 
 #[Route('/player-claim/existing', name: 'player_claim_existing', methods: ['POST'])]
 #[IsGranted('ROLE_USER')]
@@ -31,8 +30,6 @@ class ClaimExistingController extends AbstractController
         } catch (PlayerClaimException $ex) {
             $code = $ex->getMessage() === 'common.not_found' ? 404 : 422;
             return $this->json(['error' => $ex->getMessage()], $code);
-        } catch (Throwable) {
-            return $this->json(['error' => 'common.error'], 500);
         }
 
         return $this->json(['success' => true], 201);

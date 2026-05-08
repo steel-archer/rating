@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Throwable;
 
 #[Route('/my/session-claims/{id}/update', name: 'my_session_claim_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
@@ -32,8 +31,6 @@ class UpdateController extends AbstractController
             $service->update($session, $user, $dto);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
-        } catch (Throwable) {
-            return $this->json(['error' => 'common.error'], 500);
         }
 
         return $this->json(['success' => true]);

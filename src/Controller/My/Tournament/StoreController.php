@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Throwable;
 
 #[Route('/my/tournaments', name: 'my_tournament_store', methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
@@ -25,11 +24,7 @@ class StoreController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        try {
-            $tournament = $service->create($dto, $user);
-        } catch (Throwable) {
-            return $this->json(['error' => 'common.error'], 500);
-        }
+        $tournament = $service->create($dto, $user);
 
         return $this->json(['success' => true, 'id' => $tournament->getId()], 201);
     }

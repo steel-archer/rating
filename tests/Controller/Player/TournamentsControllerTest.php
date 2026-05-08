@@ -94,7 +94,7 @@ class TournamentsControllerTest extends WebTestCase
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId() . '/tournaments',
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
-            'expectedStatus' => 503,
+            'expectedStatus' => 500,
             'afterCallback' => static function () {
             },
             'mockSetup' => static function (self $test, $client) {

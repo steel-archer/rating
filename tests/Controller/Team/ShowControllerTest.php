@@ -105,7 +105,7 @@ class ShowControllerTest extends WebTestCase
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/team/' . $objects['team_alpha']->getId(),
             'fixtures' => ['Entity/base.yaml'],
-            'expectedStatus' => 503,
+            'expectedStatus' => 500,
             'afterCallback' => static function () {
             },
             'mockSetup' => static function (self $test, $client) {

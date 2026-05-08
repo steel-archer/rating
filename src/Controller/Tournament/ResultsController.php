@@ -13,9 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Helper\PageResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 #[Route('/tournament/{id}/results', name: 'tournament_results', requirements: ['id' => '\d+'], methods: ['GET'])]
 class ResultsController extends AbstractController
@@ -26,17 +24,13 @@ class ResultsController extends AbstractController
         TournamentResultService $resultService,
         Mapper $mapper,
     ): Response {
-        try {
-            $page = PageResolver::resolve($request);
+        $page = PageResolver::resolve($request);
 
-            return $this->render('tournament/_results.html.twig', [
-                'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
-                'teams' => $resultService->getResults($tournament, $page),
-                'page' => $page,
-                'lastPage' => $resultService->getLastPageNumber($tournament),
-            ]);
-        } catch (Throwable $ex) {
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
-        }
+        return $this->render('tournament/_results.html.twig', [
+            'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
+            'teams' => $resultService->getResults($tournament, $page),
+            'page' => $page,
+            'lastPage' => $resultService->getLastPageNumber($tournament),
+        ]);
     }
 }

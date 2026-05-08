@@ -7,15 +7,12 @@ namespace App\Controller\Tournament;
 use App\DTO\Response\Tournament\ModerationClaimDTO;
 use App\Enum\TournamentStatus;
 use App\Entity\User;
-use App\Exception\EntityNotFoundException;
 use App\Mapping\Mapper;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Service\TournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 #[Route('/tournament/{id}', name: 'tournament_show', requirements: ['id' => '\d+'], methods: ['GET'])]
 class ShowController extends AbstractController
@@ -26,13 +23,7 @@ class ShowController extends AbstractController
         TournamentModerationClaimRepository $claimRepository,
         Mapper $mapper,
     ): Response {
-        try {
-            $tournament = $tournamentService->get($id);
-        } catch (EntityNotFoundException) {
-            throw $this->createNotFoundException();
-        } catch (Throwable $ex) {
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
-        }
+        $tournament = $tournamentService->get($id);
 
         if ($tournament->status !== TournamentStatus::Published->value) {
             /** @var User|null $user */

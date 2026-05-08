@@ -126,7 +126,7 @@ class ResultsControllerTest extends WebTestCase
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId() . '/results',
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
-            'expectedStatus' => 503,
+            'expectedStatus' => 500,
             'afterCallback' => static function () {
             },
             'mockSetup' => static function (self $test, $client) {

@@ -11,9 +11,7 @@ use App\Repository\TownRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 #[Route('/teams/list', name: 'team_list', methods: ['GET'])]
 class ListController extends AbstractController
@@ -27,20 +25,16 @@ class ListController extends AbstractController
 
     public function __invoke(#[MapQueryString] TeamListRequestDTO $requestDto = new TeamListRequestDTO()): Response
     {
-        try {
-            return $this->render('team/_list.html.twig', [
-                'teams' => $this->teamRepository->findForList($requestDto),
-                'page' => $requestDto->page,
-                'lastPage' => $this->teamRepository->getLastPageNumber($requestDto),
-                'filters' => $requestDto->getFilters(),
-                'sort' => $requestDto->sort,
-                'dir' => $requestDto->dir,
-                'toggleDir' => $requestDto->toggleDir(),
-                'townName' => $requestDto->townId ? $this->townRepository->find($requestDto->townId)?->getName() : null,
-                'countryName' => $requestDto->countryId ? $this->countryRepository->find($requestDto->countryId)?->getName() : null,
-            ]);
-        } catch (Throwable $ex) {
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
-        }
+        return $this->render('team/_list.html.twig', [
+            'teams' => $this->teamRepository->findForList($requestDto),
+            'page' => $requestDto->page,
+            'lastPage' => $this->teamRepository->getLastPageNumber($requestDto),
+            'filters' => $requestDto->getFilters(),
+            'sort' => $requestDto->sort,
+            'dir' => $requestDto->dir,
+            'toggleDir' => $requestDto->toggleDir(),
+            'townName' => $requestDto->townId ? $this->townRepository->find($requestDto->townId)?->getName() : null,
+            'countryName' => $requestDto->countryId ? $this->countryRepository->find($requestDto->countryId)?->getName() : null,
+        ]);
     }
 }

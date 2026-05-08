@@ -11,9 +11,7 @@ use App\Repository\VenueRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 #[Route('/venues/list', name: 'venue_list', methods: ['GET'])]
 class ListController extends AbstractController
@@ -27,17 +25,13 @@ class ListController extends AbstractController
 
     public function __invoke(#[MapQueryString] VenueListRequestDTO $requestDto = new VenueListRequestDTO()): Response
     {
-        try {
-            return $this->render('venue/_list.html.twig', [
-                'venues' => $this->venueRepository->findForList($requestDto),
-                'page' => $requestDto->page,
-                'lastPage' => $this->venueRepository->getLastPageNumber($requestDto),
-                'filters' => $requestDto->getFilters(),
-                'townName' => $requestDto->townId ? $this->townRepository->find($requestDto->townId)?->getName() : null,
-                'countryName' => $requestDto->countryId ? $this->countryRepository->find($requestDto->countryId)?->getName() : null,
-            ]);
-        } catch (Throwable $ex) {
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
-        }
+        return $this->render('venue/_list.html.twig', [
+            'venues' => $this->venueRepository->findForList($requestDto),
+            'page' => $requestDto->page,
+            'lastPage' => $this->venueRepository->getLastPageNumber($requestDto),
+            'filters' => $requestDto->getFilters(),
+            'townName' => $requestDto->townId ? $this->townRepository->find($requestDto->townId)?->getName() : null,
+            'countryName' => $requestDto->countryId ? $this->countryRepository->find($requestDto->countryId)?->getName() : null,
+        ]);
     }
 }
