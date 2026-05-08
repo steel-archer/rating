@@ -16,7 +16,7 @@ class PlayerFixture extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('uk_UA');
-        $townCount = count(TownFixture::TOWNS);
+        $townCount = TownFixture::$townCount;
 
         for ($i = 0; $i < TeamFixture::PLAYER_COUNT; $i++) {
             $gender = $faker->randomElement(['male', 'female']);

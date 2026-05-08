@@ -93,7 +93,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('uk_UA');
-        $townCount = count(TownFixture::TOWNS);
+        $townCount = TownFixture::$townCount;
         $seasons = $manager->getRepository(Season::class)->findAll();
         if (count($seasons) < 2) {
             throw new RuntimeException('Need at least 2 seasons. Run migrations first.');

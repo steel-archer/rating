@@ -34,7 +34,7 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('uk_UA');
-        $townCount = count(TownFixture::TOWNS);
+        $townCount = TownFixture::$townCount;
         $playerCount = TeamFixture::PLAYER_COUNT;
         $venueIndex = 0;
 

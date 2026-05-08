@@ -49,7 +49,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
         $seasons = $manager->getRepository(Season::class)->findAll();
         $season = $seasons[0] ?? throw new RuntimeException('No seasons found');
 
-        $townCount = count(TownFixture::TOWNS);
+        $townCount = TownFixture::$townCount;
         $teamCount = TeamFixture::TEAM_COUNT;
         $playerCount = TeamFixture::PLAYER_COUNT;
 
