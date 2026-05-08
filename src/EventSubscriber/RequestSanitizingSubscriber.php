@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use JsonException;
-use PHPUnit\Framework\Attributes\CodeCoverageIgnore;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 final class RequestSanitizingSubscriber implements EventSubscriberInterface
 {
-    #[CodeCoverageIgnore]
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): array
     {
         return [KernelEvents::REQUEST => ['onRequest', 128]];
