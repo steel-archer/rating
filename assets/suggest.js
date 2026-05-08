@@ -9,18 +9,23 @@ function initSuggest(wrapper) {
     const hidden = /** @type {HTMLInputElement|null} */ (wrapper.querySelector('[data-suggest-hidden]'));
     const dropdown = /** @type {HTMLElement|null} */ (wrapper.querySelector('[data-suggest-dropdown]'));
     const apiUrl = wrapper.dataset.suggestUrl;
-    if (!input || !hidden || !dropdown || !apiUrl || wrapper.dataset.suggestInit) {
+    if (!input || !dropdown || !apiUrl || wrapper.dataset.suggestInit) {
         return;
     }
     wrapper.dataset.suggestInit = '1';
 
     input.addEventListener('input', () => {
-        hidden.value = '';
+        if (hidden) {
+            hidden.value = '';
+        }
     });
 
     initSuggestBehavior(input, dropdown, apiUrl, (item) => {
         input.value = item.name;
-        hidden.value = item.id;
+        if (hidden) {
+            hidden.value = item.id;
+        }
+        delete input.dataset.townIsNew;
     });
 }
 
