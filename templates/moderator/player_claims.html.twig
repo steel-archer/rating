@@ -22,6 +22,7 @@
                     <th>{{ 'moderator.player_claim_user'|trans }}</th>
                     <th>{{ 'moderator.player_claim_type'|trans }}</th>
                     <th>{{ 'moderator.player_claim_details'|trans }}</th>
+                    <th>{{ 'common.town'|trans }}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -39,9 +40,23 @@
                         <td>
                             {% if claim.isNew %}
                                 {{ claim.lastName }} {{ claim.firstName ?? '' }} {{ claim.patronymic ?? '' }}
-                                {% if claim.townName %} ({{ claim.townName }}){% endif %}
                             {% else %}
                                 {% include '_player_link.html.twig' with {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser} only %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if claim.isNew %}
+                                <div class="suggest-wrapper claim-town-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-claim-id="{{ claim.id }}">
+                                    <input type="text"
+                                           data-suggest-input
+                                           class="search-input search-input-sm"
+                                           autocomplete="off"
+                                           value="{{ claim.townName ?? '' }}"
+                                           {% if claim.townIsNew %}data-town-is-new{% endif %}>
+                                    <div class="suggest-dropdown" data-suggest-dropdown></div>
+                                </div>
+                            {% else %}
+                                {{ claim.townName ?? '' }}
                             {% endif %}
                         </td>
                         <td class="claim-actions">

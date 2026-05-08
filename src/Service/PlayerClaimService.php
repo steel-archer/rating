@@ -6,8 +6,10 @@ namespace App\Service;
 
 use App\DTO\Request\ClaimExistingRequestDTO;
 use App\DTO\Request\ClaimNewRequestDTO;
+use App\Entity\Country;
 use App\Entity\Player;
 use App\Entity\PlayerClaim;
+use App\Entity\Town;
 use App\Enum\PlayerClaimStatus;
 use App\Exception\PlayerClaimException;
 use App\Repository\PlayerClaimRepository;
@@ -19,6 +21,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PlayerClaimService
 {
+    private const string DEFAULT_COUNTRY = 'Україна';
+
     public function __construct(
         private EntityManagerInterface $em,
         private UserRepository $userRepository,
@@ -28,13 +32,19 @@ class PlayerClaimService
     ) {
     }
 
-    public function approve(int $id): void
+    /**
+     * @throws PlayerClaimException
+     */
+    public function approve(int $id, ?string $townName = null): void
     {
         $claim = $this->findPendingClaim($id);
 
         if ($claim->getUser()->getPlayer() !== null) {
             throw new PlayerClaimException('User already has a player.');
         }
+
+        $town = $this->resolveTown($townName);
+        $claim->setTown($town);
 
         $player = $claim->isNew() ? $this->createPlayer($claim) : $this->resolveExistingPlayer($claim);
 
@@ -93,6 +103,8 @@ class PlayerClaimService
 
         if ($dto->townId !== null) {
             $claim->setTown($this->townRepository->find($dto->townId));
+        } elseif ($dto->townName !== null && $dto->townName !== '') {
+            $claim->setTownName($dto->townName);
         }
 
         $this->em->persist($claim);
@@ -108,6 +120,30 @@ class PlayerClaimService
         }
 
         return $claim;
+    }
+
+    private function resolveTown(?string $townName): ?Town
+    {
+        if ($townName === null || $townName === '') {
+            return null;
+        }
+
+        $existing = $this->townRepository->findOneBy(['name' => $townName]);
+        if ($existing !== null) {
+            return $existing;
+        }
+
+        $country = $this->em->getRepository(Country::class)->findOneBy(['name' => self::DEFAULT_COUNTRY]);
+        if ($country === null) {
+            return null;
+        }
+
+        $town = new Town();
+        $town->setName($townName);
+        $town->setCountry($country);
+        $this->em->persist($town);
+
+        return $town;
     }
 
     private function createPlayer(PlayerClaim $claim): Player

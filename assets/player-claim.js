@@ -17,10 +17,16 @@ function initPlayerClaimNewForm() {
 
         const data = {
             lastName: /** @type {HTMLInputElement} */ (form.querySelector('[name="lastName"]')).value,
-            firstName: /** @type {HTMLInputElement} */ (form.querySelector('[name="firstName"]')).value || null,
+            firstName: /** @type {HTMLInputElement} */ (form.querySelector('[name="firstName"]')).value,
             patronymic: /** @type {HTMLInputElement} */ (form.querySelector('[name="patronymic"]')).value || null,
             townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
+            townName: null,
         };
+
+        if (!data.townId) {
+            const townInput = /** @type {HTMLInputElement} */ (form.querySelector('[data-suggest-input]'));
+            data.townName = townInput.value.trim() || null;
+        }
 
         apiPost(url, data)
             .then(({ok, body}) => {
@@ -55,10 +61,16 @@ function initPlayerClaimActions() {
         const approveBtn = /** @type {HTMLElement} */ (event.target).closest('[data-player-claim-approve]');
         if (approveBtn) {
             const id = /** @type {HTMLElement} */ (approveBtn).dataset.playerClaimApprove || '';
+            const row = approveBtn.closest('tr');
+            const townInput = row ? /** @type {HTMLInputElement|null} */ (row.querySelector('[data-suggest-input]')) : null;
+            const townName = townInput ? townInput.value.trim() : null;
             buttonAction(
                 `/moderator/player-claims/${id}/approve`,
                 /** @type {HTMLButtonElement} */ (approveBtn),
-                { onSuccess: () => removeClaimRow(approveBtn) },
+                {
+                    data: { townName: townName || null },
+                    onSuccess: () => removeClaimRow(approveBtn),
+                },
             );
             return;
         }

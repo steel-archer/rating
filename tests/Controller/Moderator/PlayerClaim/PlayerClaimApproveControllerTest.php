@@ -62,6 +62,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
             'afterCallback' => static function (array $objects) {
@@ -80,6 +81,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
             'afterCallback' => static function (array $objects) {
@@ -92,13 +94,37 @@ class PlayerClaimApproveControllerTest extends WebTestCase
             },
         ];
 
+        yield 'moderator approves new player claim with new town' => [
+            'fixtures' => $claimFixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/player-claims/' . $objects['player_claim_new_pending']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => 'Бучанськ'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (array $objects) {
+                $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
+                    ->find($objects['player_claim_new_pending']->getId());
+                static::assertSame(PlayerClaimStatus::Approved, $claim->getStatus());
+                $player = $claim->getUser()->getPlayer();
+                static::assertNotNull($player);
+                static::assertNotNull($player->getTown());
+                static::assertSame('Бучанськ', $player->getTown()->getName());
+            },
+        ];
+
         yield 'double approve returns 422' => [
             'fixtures' => $claimFixtures,
             'loginAs' => 'user_admin',
             'action' => static function (KernelBrowser $client, array $objects) {
                 $id = $objects['player_claim_pending']->getId();
-                $client->request('POST', "/moderator/player-claims/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
-                $client->request('POST', "/moderator/player-claims/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
+                $body = json_encode(['townName' => null], JSON_THROW_ON_ERROR);
+                $client->request('POST', "/moderator/player-claims/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json'], $body);
+                $client->request('POST', "/moderator/player-claims/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json'], $body);
             },
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -114,6 +140,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -129,6 +156,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -144,6 +172,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 403,
             'afterCallback' => static function () {
@@ -159,6 +188,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 302,
             'afterCallback' => static function () {
@@ -174,6 +204,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 500,
             'afterCallback' => static function () {

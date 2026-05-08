@@ -46,7 +46,10 @@ final class PromoteAdminCommand extends Command
 
         $claim = $this->claimRepository->findOneBy(['user' => $user, 'status' => PlayerClaimStatus::Pending]);
         if ($claim !== null) {
-            $this->claimService->approve($claim->getId());
+            $this->claimService->approve(
+                $claim->getId(),
+                $claim->getTown()?->getName() ?? $claim->getTownName(),
+            );
             $io->info('Pending claim approved.');
         } elseif ($user->getPlayer() === null) {
             $io->error('No pending claim found. Submit a player claim on the site first.');

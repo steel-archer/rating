@@ -19,6 +19,8 @@ final class PlayerClaimMapping implements MappingInterface
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
         $player = $source->getPlayer();
+        $town = $source->getTown();
+        $townName = $town?->getName() ?? $source->getTownName() ?? $player?->getTown()?->getName();
 
         return new $destinationClass(
             id: $source->getId(),
@@ -30,7 +32,9 @@ final class PlayerClaimMapping implements MappingInterface
             lastName: $source->getLastName(),
             firstName: $source->getFirstName(),
             patronymic: $source->getPatronymic(),
-            townName: $source->getTown()?->getName(),
+            townName: $townName,
+            townId: $town?->getId(),
+            townIsNew: $town === null && $townName !== null,
         );
     }
 }

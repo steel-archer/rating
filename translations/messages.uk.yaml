@@ -59,6 +59,7 @@ moderator:
   player_claims: 'Заявки гравців'
   reject: 'Відхилити'
   reject_comment: 'Коментар'
+  town_is_new: 'Нове місто'
   tournaments: 'Турніри'
   venues: 'Майданчики'
 
@@ -95,6 +96,7 @@ player_claim:
   submitted_description: 'Вашу заявку буде розглянуто модератором.'
   submitted_title: 'Заявку подано'
   title: 'Привʼязка гравця'
+  town_required: 'Вкажіть місто'
 
 session_claim:
   add_host: 'Вкажіть ведучого'

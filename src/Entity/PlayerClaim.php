@@ -38,6 +38,9 @@ class PlayerClaim
     #[ORM\ManyToOne]
     private ?Town $town = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $townName = null;
+
     #[ORM\Column(length: 20, enumType: PlayerClaimStatus::class)]
     private PlayerClaimStatus $status = PlayerClaimStatus::Pending;
 
@@ -114,6 +117,18 @@ class PlayerClaim
     public function setTown(?Town $town): static
     {
         $this->town = $town;
+
+        return $this;
+    }
+
+    public function getTownName(): ?string
+    {
+        return $this->townName;
+    }
+
+    public function setTownName(?string $townName): static
+    {
+        $this->townName = $townName;
 
         return $this;
     }

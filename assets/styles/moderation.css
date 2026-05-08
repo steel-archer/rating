@@ -81,3 +81,13 @@
     outline: none;
     border-color: var(--accent);
 }
+
+[data-town-is-new] {
+    border-color: var(--warning, #e6a700);
+    background-color: rgba(230, 167, 0, 0.05);
+}
+
+.search-input-sm {
+    padding: 4px 8px;
+    font-size: 14px;
+}
