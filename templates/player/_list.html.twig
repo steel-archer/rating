@@ -36,7 +36,7 @@
                         <td>{{ p.townName ?? '' }}</td>
                         <td>
                             {% if p.teamId %}
-                                <a href="{{ path('team_show', {id: p.teamId}) }}" data-turbo-frame="_top">{{ p.teamName }}</a>
+                                <a href="{{ path('team_show', {id: p.teamId}) }}" data-turbo-frame="_top" data-turbo="false">{{ p.teamName }}</a>
                             {% endif %}
                         </td>
                     </tr>

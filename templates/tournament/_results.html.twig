@@ -18,7 +18,7 @@
                 {% for team in teams %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
                         <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
-                        <td><a href="{{ path('team_show', {id: team.teamId}) }}" data-turbo-frame="_top">{{ team.teamName }}</a></td>
+                        <td><a href="{{ path('team_show', {id: team.teamId}) }}" data-turbo-frame="_top" data-turbo="false">{{ team.teamName }}</a></td>
                         <td>{{ team.teamTownName }}</td>
                         <td>{{ team.score ?? '—' }}</td>
                         <td>

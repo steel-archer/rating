@@ -14,7 +14,7 @@
             <tbody>
                 {% for entry in tournaments %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ entry.baseSquadCount < 3 ? ' squad-weak' : '' }}">
-                        <td><a href="{{ path('tournament_show', {id: entry.tournamentId}) }}" data-turbo-frame="_top">{{ entry.tournamentName }}</a></td>
+                        <td><a href="{{ path('tournament_show', {id: entry.tournamentId}) }}" data-turbo-frame="_top" data-turbo="false">{{ entry.tournamentName }}</a></td>
                         <td>{{ entry.playedAt ? entry.playedAt|date('d.m.Y') : '—' }}</td>
                         <td>
                             {% for player in entry.players %}

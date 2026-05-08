@@ -3,4 +3,4 @@
 {%- else -%}
     <svg class="player-icon player-icon--inactive" viewBox="0 0 16 16" aria-hidden="true"><title>{{ 'player.no_user'|trans }}</title><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
 {%- endif -%}
-<a href="{{ path('player_show', {id: playerId}) }}"{% if turboFrame is defined and turboFrame %} data-turbo-frame="_top"{% endif %}>{{ playerName }}</a>
+<a href="{{ path('player_show', {id: playerId}) }}" data-turbo-frame="_top" data-turbo="false">{{ playerName }}</a>

@@ -22,7 +22,7 @@
             <tbody>
                 {% for t in tournaments %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td><a href="{{ path('tournament_show', {id: t.id}) }}" data-turbo-frame="_top">{{ t.name }}</a></td>
+                        <td><a href="{{ path('tournament_show', {id: t.id}) }}" data-turbo-frame="_top" data-turbo="false">{{ t.name }}</a></td>
                         <td>{{ t.startedAt ? t.startedAt|date('d.m.Y') : '—' }}{% if t.endedAt %} — {{ t.endedAt|date('d.m.Y') }}{% endif %}</td>
                         <td>{{ t.difficulty ?? '—' }}</td>
                         <td>{{ t.trueDl ?? '—' }}</td>

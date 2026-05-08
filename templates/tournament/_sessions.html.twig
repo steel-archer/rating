@@ -18,7 +18,7 @@
                 <tbody>
                     {% for s in sessions %}
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                            <td><a href="{{ path('venue_show', {id: s.venueId}) }}" data-turbo-frame="_top">{{ s.venueName }}</a></td>
+                            <td><a href="{{ path('venue_show', {id: s.venueId}) }}" data-turbo-frame="_top" data-turbo="false">{{ s.venueName }}</a></td>
                             <td>{{ s.townName }}</td>
                             <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>{% include '_player_link.html.twig' with {playerId: s.representativeId, playerName: s.representativeName, hasUser: s.representativeHasUser, turboFrame: true} only %}</td>

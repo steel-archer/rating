@@ -31,7 +31,7 @@
             <tbody>
                 {% for v in venues %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td><a href="{{ path('venue_show', {id: v.id}) }}" data-turbo-frame="_top">{{ v.name }}</a></td>
+                        <td><a href="{{ path('venue_show', {id: v.id}) }}" data-turbo-frame="_top" data-turbo="false">{{ v.name }}</a></td>
                         <td>{{ v.townName }}</td>
                         <td>{{ v.countryName }}</td>
                     </tr>

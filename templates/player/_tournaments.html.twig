@@ -15,9 +15,9 @@
             <tbody>
                 {% for appearance in tournaments %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td><a href="{{ path('tournament_show', {id: appearance.tournamentId}) }}" data-turbo-frame="_top">{{ appearance.tournamentName }}</a></td>
+                        <td><a href="{{ path('tournament_show', {id: appearance.tournamentId}) }}" data-turbo-frame="_top" data-turbo="false">{{ appearance.tournamentName }}</a></td>
                         <td>{{ appearance.playedAt ? appearance.playedAt|date('d.m.Y') : '—' }}</td>
-                        <td><a href="{{ path('team_show', {id: appearance.teamId}) }}" data-turbo-frame="_top">{{ appearance.teamName }}</a>{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
+                        <td><a href="{{ path('team_show', {id: appearance.teamId}) }}" data-turbo-frame="_top" data-turbo="false">{{ appearance.teamName }}</a>{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
                         <td>{{ appearance.teamTownName }}</td>
                         <td>{{ appearance.place ? (appearance.place == appearance.place|round(0) ? appearance.place|number_format(0) : appearance.place) : '—' }}</td>
                         <td>{{ appearance.score ?? '—' }}</td>

@@ -38,7 +38,7 @@
             <tbody>
                 {% for t in teams %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td><a href="{{ path('team_show', {id: t.id}) }}" data-turbo-frame="_top">{{ t.name }}</a></td>
+                        <td><a href="{{ path('team_show', {id: t.id}) }}" data-turbo-frame="_top" data-turbo="false">{{ t.name }}</a></td>
                         <td>{{ t.townName }}</td>
                         <td>{{ t.countryName }}</td>
                     </tr>
