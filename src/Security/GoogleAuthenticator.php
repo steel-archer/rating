@@ -47,6 +47,10 @@ final class GoogleAuthenticator extends OAuth2Authenticator implements Authentic
                 /** @var GoogleUser $googleUser */
                 $googleUser = $client->fetchUserFromToken($accessToken);
 
+                if ($googleUser->getEmail() === null) {
+                    throw new AuthenticationException('Google account has no email.');
+                }
+
                 $user = $this->userRepository->findByGoogleId($googleUser->getId());
 
                 if ($user === null) {

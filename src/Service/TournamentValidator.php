@@ -12,6 +12,7 @@ use App\Enum\TournamentOfficialRole;
 use App\Repository\SeasonRepository;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Psr\Clock\ClockInterface;
 
@@ -28,8 +29,12 @@ class TournamentValidator
     /** @return list<string> */
     public function validateEdit(EditRequestDTO $dto): array
     {
-        $startedAt = $dto->startedAt ? new DateTimeImmutable($dto->startedAt) : null;
-        $endedAt = $dto->endedAt ? new DateTimeImmutable($dto->endedAt) : null;
+        try {
+            $startedAt = $dto->startedAt ? new DateTimeImmutable($dto->startedAt) : null;
+            $endedAt = $dto->endedAt ? new DateTimeImmutable($dto->endedAt) : null;
+        } catch (DateMalformedStringException) {
+            return ['tournament.error.invalid_date'];
+        }
 
         return $this->validateDates($startedAt, $endedAt);
     }

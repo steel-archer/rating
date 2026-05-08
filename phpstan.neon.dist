@@ -6,7 +6,6 @@ parameters:
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
     ignoreErrors:
-        - '#Attribute class PHPUnit\\Framework\\Attributes\\CodeCoverageIgnore does not exist#'
         -
             identifier: arguments.count
             path: src/Controller/Auth/GoogleConnectController.php

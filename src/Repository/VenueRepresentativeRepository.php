@@ -47,6 +47,19 @@ class VenueRepresentativeRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function hasVenuesByPlayer(Player $player): bool
+    {
+        return (bool) $this->createQueryBuilder('vr')
+            ->select('1')
+            ->join('vr.venue', 'v')
+            ->where('vr.player = :player')
+            ->andWhere('v.isApproved = true')
+            ->setParameter('player', $player)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * @return list<Venue>
      */

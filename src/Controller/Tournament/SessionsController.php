@@ -27,7 +27,7 @@ class SessionsController extends AbstractController
 
         $canSubmitClaim = false;
         if ($player !== null) {
-            $canSubmitClaim = $representativeRepository->findVenuesByPlayer($player) !== [];
+            $canSubmitClaim = $representativeRepository->hasVenuesByPlayer($player);
         }
 
         return $this->render('tournament/sessions.html.twig', [
