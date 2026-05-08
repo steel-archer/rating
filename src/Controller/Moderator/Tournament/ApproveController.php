@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Moderator\Tournament;
 
-use App\Repository\TournamentRepository;
+use App\Entity\Tournament;
 use App\Service\TournamentModerationService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,15 +18,9 @@ use Throwable;
 class ApproveController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        TournamentRepository $tournamentRepository,
+        Tournament $tournament,
         TournamentModerationService $service,
     ): JsonResponse {
-        $tournament = $tournamentRepository->find($id);
-        if ($tournament === null) {
-            return $this->json(['error' => 'common.not_found'], 404);
-        }
-
         try {
             $service->approve($tournament);
         } catch (LogicException $ex) {

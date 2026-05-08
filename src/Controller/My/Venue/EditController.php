@@ -7,8 +7,8 @@ namespace App\Controller\My\Venue;
 use App\DTO\Response\My\VenueEditDTO;
 use App\DTO\Response\My\VenueRepresentativeDTO;
 use App\Entity\User;
+use App\Entity\Venue;
 use App\Mapping\Mapper;
-use App\Repository\VenueRepository;
 use App\Repository\VenueRepresentativeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,16 +20,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EditController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        VenueRepository $venueRepository,
+        Venue $venue,
         VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
-        $venue = $venueRepository->find($id);
 
-        if ($venue === null || $venue->getCreatedBy() !== $user) {
+        if ($venue->getCreatedBy() !== $user) {
             throw $this->createNotFoundException();
         }
 

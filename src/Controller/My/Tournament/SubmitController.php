@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Tournament;
 
-use App\Repository\TournamentRepository;
+use App\Entity\Tournament;
 use App\Security\TournamentOwnerVoter;
 use App\Service\TournamentModerationService;
 use LogicException;
@@ -19,13 +19,10 @@ use Throwable;
 class SubmitController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        TournamentRepository $tournamentRepository,
+        Tournament $tournament,
         TournamentModerationService $service,
     ): JsonResponse {
-        $tournament = $tournamentRepository->find($id);
-
-        if ($tournament === null || !$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
+        if (!$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
             return $this->json(['error' => 'common.not_found'], 404);
         }
 

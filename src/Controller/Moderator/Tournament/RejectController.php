@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Moderator\Tournament;
 
 use App\DTO\Request\Tournament\Moderation\RejectRequestDTO;
-use App\Repository\TournamentRepository;
+use App\Entity\Tournament;
 use App\Service\TournamentModerationService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,16 +20,10 @@ use Throwable;
 class RejectController extends AbstractController
 {
     public function __invoke(
-        int $id,
+        Tournament $tournament,
         #[MapRequestPayload] RejectRequestDTO $dto,
-        TournamentRepository $tournamentRepository,
         TournamentModerationService $service,
     ): JsonResponse {
-        $tournament = $tournamentRepository->find($id);
-        if ($tournament === null) {
-            return $this->json(['error' => 'common.not_found'], 404);
-        }
-
         try {
             $service->reject($tournament, $dto->comment);
         } catch (LogicException $ex) {

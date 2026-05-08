@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Moderator\Venue;
 
-use App\Repository\VenueRepository;
+use App\Entity\Venue;
 use App\Service\VenueManagementService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,15 +18,9 @@ use Throwable;
 class ClaimApproveController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        VenueRepository $venueRepository,
+        Venue $venue,
         VenueManagementService $service,
     ): JsonResponse {
-        $venue = $venueRepository->find($id);
-        if ($venue === null) {
-            return $this->json(['error' => 'common.not_found'], 404);
-        }
-
         try {
             $service->approve($venue);
         } catch (LogicException $ex) {

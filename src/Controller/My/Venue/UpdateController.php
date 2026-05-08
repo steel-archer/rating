@@ -6,7 +6,7 @@ namespace App\Controller\My\Venue;
 
 use App\DTO\Request\Venue\UpdateRequestDTO;
 use App\Entity\User;
-use App\Repository\VenueRepository;
+use App\Entity\Venue;
 use App\Service\VenueManagementService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,16 +21,14 @@ use Throwable;
 class UpdateController extends AbstractController
 {
     public function __invoke(
-        int $id,
+        Venue $venue,
         #[MapRequestPayload] UpdateRequestDTO $dto,
-        VenueRepository $venueRepository,
         VenueManagementService $service,
     ): JsonResponse {
         /** @var User $user */
         $user = $this->getUser();
-        $venue = $venueRepository->find($id);
 
-        if ($venue === null || $venue->getCreatedBy() !== $user) {
+        if ($venue->getCreatedBy() !== $user) {
             return $this->json(['error' => 'common.not_found'], 404);
         }
 

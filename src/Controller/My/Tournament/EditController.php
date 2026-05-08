@@ -7,12 +7,11 @@ namespace App\Controller\My\Tournament;
 use App\DTO\Response\My\ModerationClaimDTO;
 use App\DTO\Response\My\TournamentEditDTO;
 use App\DTO\Response\My\TournamentOfficialDTO;
-use App\Entity\User;
+use App\Entity\Tournament;
 use App\Enum\TournamentStatus;
 use App\Mapping\Mapper;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
-use App\Repository\TournamentRepository;
 use App\Security\TournamentOwnerVoter;
 use App\Service\TournamentValidator;
 use DateTimeImmutable;
@@ -26,18 +25,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EditController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        TournamentRepository $tournamentRepository,
+        Tournament $tournament,
         TournamentModerationClaimRepository $claimRepository,
         TournamentOfficialRepository $officialRepository,
         TournamentValidator $validator,
         Mapper $mapper,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-        $tournament = $tournamentRepository->find($id);
-
-        if ($tournament === null || !$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
+        if (!$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
             throw $this->createNotFoundException();
         }
 
