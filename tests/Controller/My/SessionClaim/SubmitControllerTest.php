@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Tournament\SessionClaim;
+namespace App\Tests\Controller\My\SessionClaim;
 
 use App\Entity\TournamentSession;
 use App\Service\SessionClaimService;
@@ -60,7 +60,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -84,7 +84,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -103,7 +103,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -125,7 +125,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -147,7 +147,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_other',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -169,7 +169,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client) => $client->request(
                 'POST',
-                '/tournament/999999/session-claims',
+                '/my/session-claims/999999/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -185,7 +185,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -203,7 +203,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -228,7 +228,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -247,7 +247,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -266,7 +266,7 @@ class SubmitControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/' . $objects['tournament_session_test']->getId() . '/session-claims',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],

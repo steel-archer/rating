@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\My\SessionClaim;
 
 use App\DTO\Request\Session\UpdateRequestDTO;
+use App\Entity\TournamentSession;
 use App\Entity\User;
-use App\Repository\TournamentSessionRepository;
 use App\Service\SessionClaimService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,16 +21,10 @@ use Throwable;
 class UpdateController extends AbstractController
 {
     public function __invoke(
-        int $id,
+        TournamentSession $session,
         #[MapRequestPayload] UpdateRequestDTO $dto,
-        TournamentSessionRepository $sessionRepository,
         SessionClaimService $service,
     ): JsonResponse {
-        $session = $sessionRepository->find($id);
-        if ($session === null) {
-            return $this->json(['error' => 'common.not_found'], 404);
-        }
-
         /** @var User $user */
         $user = $this->getUser();
 

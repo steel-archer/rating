@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Entity\Player;
 use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
+use App\Enum\TournamentOfficialRole;
 use App\Entity\TournamentSession;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,12 +26,13 @@ class SessionClaimRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<SessionClaim>
+     * @return list<array{tournamentId: int, tournamentName: string, claims: list<SessionClaim>}>
      */
-    public function findByTournamentAndStatus(int $tournamentId, SessionClaimStatus $status): array
+    public function findPendingByOrganizer(Player $player): array
     {
-        return $this->createQueryBuilder('sc')
+        $claims = $this->createQueryBuilder('sc')
             ->join('sc.session', 's')
+            ->join('s.tournament', 't')
             ->join('s.venue', 'v')
             ->join('v.town', 'town')
             ->join('s.representative', 'rep')
@@ -39,37 +41,36 @@ class SessionClaimRepository extends ServiceEntityRepository
             ->leftJoin('host.user', 'hostUser')
             ->join('sc.player', 'p')
             ->leftJoin('p.user', 'pUser')
-            ->addSelect('s', 'v', 'town', 'rep', 'repUser', 'host', 'hostUser', 'p', 'pUser')
-            ->where('s.tournament = :tournamentId')
-            ->andWhere('sc.status = :status')
-            ->setParameter('tournamentId', $tournamentId)
-            ->setParameter('status', $status->value)
-            ->orderBy('sc.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @return list<SessionClaim>
-     */
-    public function findByTournamentAndPlayer(int $tournamentId, Player $player): array
-    {
-        return $this->createQueryBuilder('sc')
-            ->join('sc.session', 's')
-            ->join('s.venue', 'v')
-            ->join('v.town', 'town')
-            ->join('s.representative', 'rep')
-            ->leftJoin('rep.user', 'repUser')
-            ->leftJoin('s.host', 'host')
-            ->leftJoin('host.user', 'hostUser')
-            ->addSelect('s', 'v', 'town', 'rep', 'repUser', 'host', 'hostUser')
-            ->where('s.tournament = :tournamentId')
-            ->andWhere('sc.player = :player')
-            ->setParameter('tournamentId', $tournamentId)
+            ->addSelect('s', 't', 'v', 'town', 'rep', 'repUser', 'host', 'hostUser', 'p', 'pUser')
+            ->where('sc.status = :status')
+            ->andWhere('t.id IN (
+                SELECT IDENTITY(o.tournament)
+                FROM App\Entity\TournamentOfficial o
+                WHERE o.player = :player AND o.role = :role
+            )')
+            ->setParameter('status', SessionClaimStatus::Pending->value)
             ->setParameter('player', $player)
-            ->orderBy('sc.createdAt', 'DESC')
+            ->setParameter('role', TournamentOfficialRole::Organizer->value)
+            ->orderBy('t.name', 'ASC')
+            ->addOrderBy('sc.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
+
+        $grouped = [];
+        foreach ($claims as $claim) {
+            $tournament = $claim->getSession()->getTournament();
+            $tournamentId = $tournament->getId();
+            if (!isset($grouped[$tournamentId])) {
+                $grouped[$tournamentId] = [
+                    'tournamentId' => $tournamentId,
+                    'tournamentName' => $tournament->getName(),
+                    'claims' => [],
+                ];
+            }
+            $grouped[$tournamentId]['claims'][] = $claim;
+        }
+
+        return array_values($grouped);
     }
 
     /**

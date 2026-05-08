@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Tournament\SessionClaim;
+namespace App\Tests\Controller\My\TournamentSessionClaim;
 
 use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
@@ -61,7 +61,7 @@ class ApproveControllerTest extends WebTestCase
             'loginAs' => 'user_organizer',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/sessions/' . $objects['session_pending']->getId() . '/approve',
+                '/my/tournament-claims/' . $objects['session_pending']->getId() . '/approve',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -81,7 +81,7 @@ class ApproveControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/sessions/' . $objects['session_pending']->getId() . '/approve',
+                '/my/tournament-claims/' . $objects['session_pending']->getId() . '/approve',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -96,8 +96,8 @@ class ApproveControllerTest extends WebTestCase
             'loginAs' => 'user_organizer',
             'action' => static function (KernelBrowser $client, array $objects) {
                 $id = $objects['session_pending']->getId();
-                $client->request('POST', "/tournament/sessions/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
-                $client->request('POST', "/tournament/sessions/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
+                $client->request('POST', "/my/tournament-claims/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
+                $client->request('POST', "/my/tournament-claims/$id/approve", [], [], ['CONTENT_TYPE' => 'application/json']);
             },
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
@@ -111,7 +111,7 @@ class ApproveControllerTest extends WebTestCase
             'loginAs' => 'user_organizer',
             'action' => static fn(KernelBrowser $client) => $client->request(
                 'POST',
-                '/tournament/sessions/999999/approve',
+                '/my/tournament-claims/999999/approve',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -126,7 +126,7 @@ class ApproveControllerTest extends WebTestCase
             'loginAs' => 'user_organizer',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/sessions/' . $objects['session_pending']->getId() . '/approve',
+                '/my/tournament-claims/' . $objects['session_pending']->getId() . '/approve',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],

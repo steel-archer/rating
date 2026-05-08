@@ -4,70 +4,35 @@ declare(strict_types=1);
 
 namespace App\Controller\Tournament;
 
-use App\DTO\Response\Tournament\SessionClaimDTO;
 use App\DTO\Response\Tournament\TournamentContextDTO;
-use App\DTO\Response\Tournament\VenueOptionDTO;
-use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
 use App\Entity\User;
 use App\Mapping\Mapper;
-use App\Repository\SessionClaimRepository;
-use App\Repository\TournamentOfficialRepository;
 use App\Repository\VenueRepresentativeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 #[Route('/tournament/{id}/sessions', name: 'tournament_sessions', requirements: ['id' => '\d+'], methods: ['GET'])]
 class SessionsController extends AbstractController
 {
     public function __invoke(
         Tournament $tournament,
-        SessionClaimRepository $sessionClaimRepository,
-        TournamentOfficialRepository $officialRepository,
         VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
     ): Response {
-        try {
-            /** @var User|null $user */
-            $user = $this->getUser();
-            $player = $user?->getPlayer();
+        /** @var User|null $user */
+        $user = $this->getUser();
+        $player = $user?->getPlayer();
 
-            $isOrganizer = false;
-            $venues = [];
-            $claims = [];
-
-            if ($player !== null) {
-                $isOrganizer = $officialRepository->isOrganizer($player, $tournament);
-                $venues = $mapper->mapMultiple(
-                    $representativeRepository->findVenuesByPlayer($player),
-                    VenueOptionDTO::class,
-                );
-            }
-
-            if ($isOrganizer) {
-                $claims = $mapper->mapMultiple(
-                    $sessionClaimRepository->findByTournamentAndStatus($tournament->getId(), SessionClaimStatus::Pending),
-                    SessionClaimDTO::class,
-                );
-            } elseif ($player !== null) {
-                $claims = $mapper->mapMultiple(
-                    $sessionClaimRepository->findByTournamentAndPlayer($tournament->getId(), $player),
-                    SessionClaimDTO::class,
-                );
-            }
-
-            return $this->render('tournament/sessions.html.twig', [
-                'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
-                'isOrganizer' => $isOrganizer,
-                'venues' => $venues,
-                'claims' => $claims,
-                'canSubmitClaim' => $venues !== [],
-            ]);
-        } catch (Throwable $ex) {
-            throw new ServiceUnavailableHttpException(message: $ex->getMessage(), previous: $ex);
+        $canSubmitClaim = false;
+        if ($player !== null) {
+            $canSubmitClaim = $representativeRepository->findVenuesByPlayer($player) !== [];
         }
+
+        return $this->render('tournament/sessions.html.twig', [
+            'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
+            'canSubmitClaim' => $canSubmitClaim,
+        ]);
     }
 }

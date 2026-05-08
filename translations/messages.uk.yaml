@@ -116,6 +116,7 @@ session_claim:
   no_pending: 'Немає заявок на розгляд'
   reject_reason: 'Причина відмови'
   resubmit: 'Подати повторно'
+  tournament_claims_title: 'Заявки на мої турніри'
   status:
     approved: 'Схвалено'
     pending: 'На розгляді'

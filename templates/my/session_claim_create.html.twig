@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'session_claim.submit_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a></span><span>{{ 'session_claim.submit_title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'session_claim.submit_title'|trans }}</h1>
+
+    <div class="card">
+        <dl>
+            <dt>{{ 'common.tournament'|trans }}</dt>
+            <dd><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <form id="session-claim-form" class="tournament-form" data-url="{{ path('my_session_claim_submit', {tournamentId: tournament.id}) }}" data-redirect="{{ path('my_session_claims') }}">
+            <div id="session-claim-status" class="form-error" hidden></div>
+            <div class="form-group">
+                <label for="claim-venue">{{ 'venue.venue'|trans }}</label>
+                <select id="claim-venue" name="venueId" required>
+                    <option value="">—</option>
+                    {% for venue in venues %}
+                        <option value="{{ venue.id }}">{{ venue.name }} ({{ venue.townName }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="claim-date">{{ 'session_claim.estimated_date'|trans }}</label>
+                <input type="date" id="claim-date" name="playedAt">
+            </div>
+            <div class="form-group">
+                <label for="claim-teams">{{ 'session_claim.estimated_teams'|trans }}</label>
+                <input type="number" id="claim-teams" name="estimatedTeams" min="1">
+            </div>
+            <div class="form-group">
+                <label>{{ 'venue.host'|trans }}</label>
+                <div class="officials-group" data-role="claim-host" data-single>
+                </div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                    <input type="text" data-suggest-input placeholder="{{ 'session_claim.add_host'|trans }}">
+                    <div data-suggest-dropdown hidden></div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{{ 'session_claim.submit'|trans }}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -65,45 +65,25 @@ class SessionsControllerTest extends WebTestCase
             },
         ];
 
-        yield 'shows claim form for representative' => [
+        yield 'shows submit link for representative' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/session_claims.yaml'],
             'loginAs' => 'user_representative',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler) {
-                static::assertCount(1, $crawler->filter('#session-claim-form-card'));
+                $link = $crawler->filter('a[href*="/my/session-claims/create/"]');
+                static::assertCount(1, $link);
             },
         ];
 
-        yield 'organizer sees pending claims' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims.yaml'],
-            'loginAs' => 'user_organizer',
-            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
-            'expectedStatus' => 200,
-            'afterCallback' => static function (Crawler $crawler) {
-                static::assertCount(1, $crawler->filter('#session-claims-list'));
-                $rows = $crawler->filter('#session-claims-list table tbody tr');
-                static::assertGreaterThanOrEqual(1, $rows->count());
-            },
-        ];
-
-        yield 'representative sees own claims' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims.yaml'],
-            'loginAs' => 'user_representative',
-            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
-            'expectedStatus' => 200,
-            'afterCallback' => static function (Crawler $crawler) {
-                static::assertCount(1, $crawler->filter('#session-claims-list'));
-            },
-        ];
-
-        yield 'no claim form for non-representative' => [
+        yield 'no submit link for non-representative' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/session_claims.yaml'],
             'loginAs' => 'user_other',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler) {
-                static::assertCount(0, $crawler->filter('#session-claim-form-card'));
+                $link = $crawler->filter('a[href*="/my/session-claims/create/"]');
+                static::assertCount(0, $link);
             },
         ];
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\My\SessionClaim;
 
+use App\Entity\TournamentSession;
 use App\Entity\User;
-use App\Repository\TournamentSessionRepository;
 use App\Service\SessionClaimService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,15 +19,9 @@ use Throwable;
 class ResubmitController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        TournamentSessionRepository $sessionRepository,
+        TournamentSession $session,
         SessionClaimService $service,
     ): JsonResponse {
-        $session = $sessionRepository->find($id);
-        if ($session === null) {
-            return $this->json(['error' => 'common.not_found'], 404);
-        }
-
         /** @var User $user */
         $user = $this->getUser();
 

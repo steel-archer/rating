@@ -2,40 +2,31 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Tournament\SessionClaim;
+namespace App\Controller\My\TournamentSessionClaim;
 
-use App\DTO\Request\Session\RejectRequestDTO;
+use App\Entity\TournamentSession;
 use App\Entity\User;
-use App\Repository\TournamentSessionRepository;
 use App\Service\SessionClaimService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Throwable;
 
-#[Route('/tournament/sessions/{id}/reject', name: 'tournament_session_claim_reject', requirements: ['id' => '\d+'], methods: ['POST'])]
+#[Route('/my/tournament-claims/{id}/approve', name: 'my_tournament_claim_approve', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
-class RejectController extends AbstractController
+class ApproveController extends AbstractController
 {
     public function __invoke(
-        int $id,
-        #[MapRequestPayload] RejectRequestDTO $dto,
-        TournamentSessionRepository $sessionRepository,
+        TournamentSession $session,
         SessionClaimService $service,
     ): JsonResponse {
-        $session = $sessionRepository->find($id);
-        if ($session === null) {
-            return $this->json(['error' => 'common.not_found'], 404);
-        }
-
         /** @var User $user */
         $user = $this->getUser();
 
         try {
-            $service->reject($session, $user, $dto);
+            $service->approve($session, $user);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         } catch (Throwable) {

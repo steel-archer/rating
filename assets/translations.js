@@ -98,6 +98,7 @@ export default {
     "session_claim.submit": "Подати заявку",
     "session_claim.submit_title": "Подати заявку на відіграш",
     "session_claim.submitted_by": "Представник",
+    "session_claim.tournament_claims_title": "Заявки на мої турніри",
     "site.description": "Рейтингова система інтелектуальних ігор: турніри, команди, гравці, майданчики",
     "site.title": "Рейтинг ЩДК",
     "site.title_full": "Рейтинг українського «Що? Де? Коли?»",

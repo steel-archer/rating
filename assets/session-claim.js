@@ -1,6 +1,6 @@
 // @ts-check
 import { trans } from './trans.js';
-import { apiPost, showError } from './api.js';
+import { apiPost } from './api.js';
 import { buttonAction } from './button-action.js';
 
 function initSessionClaimForm() {
@@ -13,6 +13,7 @@ function initSessionClaimForm() {
         event.preventDefault();
 
         const url = /** @type {string} */ (form.dataset.url);
+        const redirect = form.dataset.redirect || null;
         const status = /** @type {HTMLElement} */ (document.getElementById('session-claim-status'));
         const hostInput = /** @type {HTMLInputElement|null} */ (form.querySelector('.officials-group[data-role="claim-host"] input[type="hidden"]'));
 
@@ -28,7 +29,11 @@ function initSessionClaimForm() {
         apiPost(url, data)
             .then(({ok, body}) => {
                 if (ok) {
-                    window.location.reload();
+                    if (redirect) {
+                        window.location.href = redirect;
+                    } else {
+                        window.location.reload();
+                    }
                 } else {
                     status.textContent = body.error ? trans(body.error) : trans('common.error');
                     status.hidden = false;
@@ -84,9 +89,9 @@ function initSessionClaimActions() {
         if (approveBtn) {
             const id = /** @type {HTMLElement} */ (approveBtn).dataset.sessionApprove || '';
             buttonAction(
-                `/tournament/sessions/${id}/approve`,
+                `/my/tournament-claims/${id}/approve`,
                 /** @type {HTMLButtonElement} */ (approveBtn),
-                { onSuccess: () => { removeSessionClaimCard(approveBtn); refreshSessionsList(); } },
+                { onSuccess: () => { removeSessionClaimCard(approveBtn); } },
             );
             return;
         }
@@ -97,7 +102,7 @@ function initSessionClaimActions() {
             const commentInput = /** @type {HTMLInputElement|null} */ (document.querySelector(`[data-session-reject-comment="${id}"]`));
             const comment = commentInput ? commentInput.value : null;
             buttonAction(
-                `/tournament/sessions/${id}/reject`,
+                `/my/tournament-claims/${id}/reject`,
                 /** @type {HTMLButtonElement} */ (rejectBtn),
                 { data: {comment}, onSuccess: () => removeSessionClaimCard(rejectBtn) },
             );
@@ -132,17 +137,13 @@ function initSessionClaimActions() {
  */
 function removeSessionClaimCard(btn) {
     const row = btn.closest('[data-session-claim-id]');
-    row?.remove();
-    const container = document.getElementById('session-claims-list');
+    if (!row) {
+        return;
+    }
+    const container = row.closest('.card');
+    row.remove();
     if (container && container.querySelectorAll('[data-session-claim-id]').length === 0) {
         container.remove();
-    }
-}
-
-function refreshSessionsList() {
-    const frame = /** @type {HTMLElement|null} */ (document.getElementById('tournament-sessions'));
-    if (frame && 'reload' in frame) {
-        /** @type {any} */ (frame).reload();
     }
 }
 

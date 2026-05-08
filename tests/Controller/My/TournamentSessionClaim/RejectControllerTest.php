@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Tournament\SessionClaim;
+namespace App\Tests\Controller\My\TournamentSessionClaim;
 
 use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
@@ -61,7 +61,7 @@ class RejectControllerTest extends WebTestCase
             'loginAs' => 'user_organizer',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/sessions/' . $objects['session_pending']->getId() . '/reject',
+                '/my/tournament-claims/' . $objects['session_pending']->getId() . '/reject',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -83,7 +83,7 @@ class RejectControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/sessions/' . $objects['session_pending']->getId() . '/reject',
+                '/my/tournament-claims/' . $objects['session_pending']->getId() . '/reject',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -99,7 +99,7 @@ class RejectControllerTest extends WebTestCase
             'loginAs' => 'user_organizer',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/sessions/' . $objects['session_rejected']->getId() . '/reject',
+                '/my/tournament-claims/' . $objects['session_rejected']->getId() . '/reject',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
@@ -117,7 +117,7 @@ class RejectControllerTest extends WebTestCase
             'loginAs' => 'user_organizer',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
-                '/tournament/sessions/' . $objects['session_pending']->getId() . '/reject',
+                '/my/tournament-claims/' . $objects['session_pending']->getId() . '/reject',
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
