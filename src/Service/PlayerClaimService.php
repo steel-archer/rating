@@ -99,9 +99,9 @@ class PlayerClaimService
 
         $claim = new PlayerClaim();
         $claim->setUser($user);
-        $claim->setLastName(trim($dto->lastName));
-        $claim->setFirstName(trim($dto->firstName));
-        $claim->setPatronymic($dto->patronymic !== null ? trim($dto->patronymic) : null);
+        $claim->setLastName($dto->lastName);
+        $claim->setFirstName($dto->firstName);
+        $claim->setPatronymic($dto->patronymic);
 
         if ($dto->townId !== null) {
             $town = $this->townRepository->find($dto->townId);
@@ -109,8 +109,8 @@ class PlayerClaimService
                 throw new PlayerClaimException('venue.error.town_not_found');
             }
             $claim->setTown($town);
-        } elseif ($dto->townName !== null && trim($dto->townName) !== '') {
-            $claim->setTownName(trim($dto->townName));
+        } elseif ($dto->townName !== null && $dto->townName !== '') {
+            $claim->setTownName($dto->townName);
         }
 
         $this->em->persist($claim);
@@ -130,11 +130,9 @@ class PlayerClaimService
 
     private function resolveTown(?string $townName): ?Town
     {
-        if ($townName === null || trim($townName) === '') {
+        if ($townName === null || $townName === '') {
             return null;
         }
-
-        $townName = trim($townName);
 
         $existing = $this->townRepository->findOneBy(['name' => $townName]);
         if ($existing !== null) {
