@@ -73,25 +73,38 @@ jobs:
           php bin/console doctrine:migrations:migrate --no-interaction
           php bin/phpunit --coverage-clover coverage.xml --coverage-text | tee coverage-output.txt
 
-      - name: Generate coverage badge
+      - name: Generate badges
         if: always()
         run: |
+          mkdir -p .github/badges
+
           COVERAGE=$(grep -m1 'Lines:' coverage-output.txt | grep -oE '[0-9]+\.[0-9]+' | head -1 || echo "0")
           if (( $(echo "$COVERAGE >= 90" | bc -l) )); then COLOR="brightgreen";
           elif (( $(echo "$COVERAGE >= 75" | bc -l) )); then COLOR="yellow";
           elif (( $(echo "$COVERAGE >= 50" | bc -l) )); then COLOR="orange";
           else COLOR="red"; fi
-          mkdir -p .github/badges
           curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > .github/badges/coverage.svg
 
-      - name: Push coverage badge
+          if [[ "${{ steps.phpcs.outcome }}" == "success" ]]; then
+            curl -s "https://img.shields.io/badge/PHPCS-PSR--12-brightgreen" > .github/badges/phpcs.svg
+          else
+            curl -s "https://img.shields.io/badge/PHPCS-PSR--12-red" > .github/badges/phpcs.svg
+          fi
+
+          if [[ "${{ steps.phpstan.outcome }}" == "success" ]]; then
+            curl -s "https://img.shields.io/badge/PHPStan-level%206-brightgreen" > .github/badges/phpstan.svg
+          else
+            curl -s "https://img.shields.io/badge/PHPStan-level%206-red" > .github/badges/phpstan.svg
+          fi
+
+      - name: Push badges
         if: always() && github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add .github/badges/coverage.svg
+          git add .github/badges/coverage.svg .github/badges/phpcs.svg .github/badges/phpstan.svg
           git diff --cached --quiet && exit 0
-          git commit -m "Update coverage badge [skip ci]"
+          git commit -m "Update badges [skip ci]"
           git push
 
       - name: Composer audit
