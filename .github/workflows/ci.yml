@@ -13,7 +13,7 @@ jobs:
 
     services:
       db:
-        image: mysql:8.4
+        image: mysql:9.3
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: rating
@@ -64,7 +64,7 @@ jobs:
         id: phpunit
         continue-on-error: true
         env:
-          DATABASE_URL: mysql://rating_user:rating_pass@127.0.0.1:3306/rating?serverVersion=8.4&charset=utf8mb4
+          DATABASE_URL: mysql://rating_user:rating_pass@127.0.0.1:3306/rating?serverVersion=9.3&charset=utf8mb4
           APP_ENV: test
           APP_SECRET: ci_secret
           MYSQL_USER: rating_user

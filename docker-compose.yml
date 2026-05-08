@@ -25,7 +25,7 @@ services:
 
   db:
     env_file: .env.local
-    image: mysql:8.4
+    image: mysql:9.3
     ports:
       - "3306:3306"
     environment:

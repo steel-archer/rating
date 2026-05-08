@@ -5,7 +5,7 @@ RUN apt-get update \
     && pecl install pcov && docker-php-ext-enable pcov
 RUN echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short-open-tag.ini
 RUN echo 'date.timezone = Europe/Kyiv' > /usr/local/etc/php/conf.d/timezone.ini
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.9 /usr/bin/composer /usr/bin/composer
 RUN git config --global user.email "dev@rating.local" && git config --global user.name "Rating Dev"
 RUN a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public

@@ -52,7 +52,7 @@ MYSQL_PASSWORD=ваш_пароль_користувача
 Також оновіть рядок `DATABASE_URL`, підставивши ваші значення:
 
 ```
-DATABASE_URL="mysql://rating_user:ваш_пароль_користувача@db:3306/rating?serverVersion=8.4&charset=utf8mb4"
+DATABASE_URL="mysql://rating_user:ваш_пароль_користувача@db:3306/rating?serverVersion=9.3&charset=utf8mb4"
 ```
 
 Після цього створіть символічне посилання (потрібно для Docker Compose):
