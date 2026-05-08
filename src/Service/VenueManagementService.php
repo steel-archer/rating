@@ -6,7 +6,7 @@ namespace App\Service;
 
 use App\DTO\Request\Venue\CreateRequestDTO;
 use App\DTO\Request\Venue\UpdateRequestDTO;
-use App\Entity\User;
+use App\Entity\Player;
 use App\Entity\Venue;
 use App\Entity\VenueRepresentative;
 use App\Repository\PlayerRepository;
@@ -27,11 +27,8 @@ class VenueManagementService
     ) {
     }
 
-    public function create(CreateRequestDTO $dto, User $user): Venue
+    public function create(CreateRequestDTO $dto, Player $player): Venue
     {
-        $player = $user->getPlayer()
-            ?? throw new LogicException('venue.error.no_player');
-
         $town = $this->townRepository->find($dto->townId)
             ?? throw new LogicException('venue.error.town_not_found');
 
@@ -42,7 +39,7 @@ class VenueManagementService
         $venue = new Venue();
         $venue->setName($dto->name);
         $venue->setTown($town);
-        $venue->setCreatedBy($user);
+        $venue->setCreatedBy($player);
 
         $this->em->persist($venue);
 
@@ -95,7 +92,7 @@ class VenueManagementService
      */
     private function syncRepresentatives(Venue $venue, array $playerIds): void
     {
-        $creatorPlayerId = $venue->getCreatedBy()?->getPlayer()?->getId();
+        $creatorPlayerId = $venue->getCreatedBy()?->getId();
 
         // Ensure creator is always among representatives
         if ($creatorPlayerId !== null && !in_array($creatorPlayerId, $playerIds, true)) {

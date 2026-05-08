@@ -294,6 +294,21 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
+        yield 'submit already approved tournament returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_approved']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
         yield 'submit published tournament fails' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
@@ -340,6 +355,21 @@ class TournamentControllerTest extends WebTestCase
                     ->getRepository(Tournament::class)
                     ->find($objects['tournament_approved']->getId());
                 static::assertSame(TournamentStatus::Published, $tournament->getStatus());
+            },
+        ];
+
+        yield 'publish already published tournament returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_published']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
             },
         ];
 
@@ -407,6 +437,25 @@ class TournamentControllerTest extends WebTestCase
                 $tournament = static::getContainer()->get('doctrine')
                     ->getRepository(Tournament::class)
                     ->findOneBy(['name' => 'Мій чернетковий турнір']);
+                static::assertNull($tournament);
+            },
+        ];
+
+        yield 'delete draft tournament with claim' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_approved']->getId() . '/delete',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function () {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->findOneBy(['name' => 'Схвалений турнір']);
                 static::assertNull($tournament);
             },
         ];
@@ -504,6 +553,60 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode(['name' => 'Мій чернетковий турнір', 'startedAt' => '2020-01-01T10:00', 'endedAt' => '2020-01-02T10:00', 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'update with end before start returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => (new DateTime('+60 days'))->format('Y-m-d\TH:i'),
+                    'endedAt' => (new DateTime('+30 days'))->format('Y-m-d\TH:i'),
+                    'toursCount' => null,
+                    'questionsPerTour' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'update with dates spanning multiple seasons returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => '2026-09-29T10:00',
+                    'endedAt' => '2026-10-02T10:00',
+                    'toursCount' => null,
+                    'questionsPerTour' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -671,6 +774,37 @@ class TournamentControllerTest extends WebTestCase
                     ->getRepository(TournamentOfficial::class)
                     ->findBy(['tournament' => $objects['tournament_draft']->getId()]);
                 static::assertCount(4, $officials);
+            },
+        ];
+
+        yield 'update with non-existent player id ignores it' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null,
+                    'difficulty' => null,
+                    'organizers' => [$objects['player_franko']->getId(), 999999],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $officials = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentOfficial::class)
+                    ->findBy(['tournament' => $objects['tournament_draft']->getId()]);
+                static::assertCount(1, $officials);
             },
         ];
     }

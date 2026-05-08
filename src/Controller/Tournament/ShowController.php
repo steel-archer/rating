@@ -28,7 +28,7 @@ class ShowController extends AbstractController
         if ($tournament->status !== TournamentStatus::Published->value) {
             /** @var User|null $user */
             $user = $this->getUser();
-            $isOwner = $user !== null && $tournament->createdById === $user->getId();
+            $isOwner = $user !== null && $tournament->createdById === $user->getPlayer()?->getId();
             $isModerator = $this->isGranted('ROLE_MODERATOR');
 
             if (!$isOwner && !$isModerator) {

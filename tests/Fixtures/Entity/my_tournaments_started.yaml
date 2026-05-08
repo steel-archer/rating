@@ -9,7 +9,7 @@ App\Entity\Tournament:
     tournament_started:
         name: 'Турнір що почався'
         status: '<(App\Enum\TournamentStatus::Published)>'
-        createdBy: '@user_creator'
+        createdBy: '@player_franko'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-1 day"))>'
         endedAt: '<(new \DateTimeImmutable("+1 day"))>'

@@ -9,11 +9,11 @@ App\Entity\Tournament:
     tournament_draft:
         name: 'Мій чернетковий турнір'
         status: '<(App\Enum\TournamentStatus::Draft)>'
-        createdBy: '@user_creator'
+        createdBy: '@player_franko'
     tournament_approved:
         name: 'Схвалений турнір'
         status: '<(App\Enum\TournamentStatus::Draft)>'
-        createdBy: '@user_creator'
+        createdBy: '@player_franko'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+30 days"))>'
         endedAt: '<(new \DateTimeImmutable("+31 days"))>'
@@ -23,7 +23,7 @@ App\Entity\Tournament:
     tournament_published:
         name: 'Опублікований турнір'
         status: '<(App\Enum\TournamentStatus::Published)>'
-        createdBy: '@user_creator'
+        createdBy: '@player_franko'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+60 days"))>'
         endedAt: '<(new \DateTimeImmutable("+61 days"))>'

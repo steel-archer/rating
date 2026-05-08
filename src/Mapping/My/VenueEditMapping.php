@@ -22,7 +22,7 @@ final class VenueEditMapping implements MappingInterface
             id: $source->getId(),
             name: $source->getName(),
             townName: $source->getTown()->getName(),
-            createdByPlayerId: $source->getCreatedBy()->getPlayer()->getId(),
+            createdByPlayerId: $source->getCreatedBy()->getId(),
         );
     }
 }

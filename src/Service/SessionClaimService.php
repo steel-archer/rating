@@ -12,7 +12,6 @@ use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
-use App\Entity\User;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionClaimRepository;
 use App\Repository\TournamentOfficialRepository;
@@ -41,11 +40,8 @@ class SessionClaimService
      * @throws DateMalformedStringException
      * @throws LogicException
      */
-    public function submit(Tournament $tournament, User $user, ClaimRequestDTO $dto): void
+    public function submit(Tournament $tournament, Player $player, ClaimRequestDTO $dto): void
     {
-        $player = $user->getPlayer()
-            ?? throw new LogicException('common.error');
-
         $venue = $this->venueRepository->find($dto->venueId)
             ?? throw new LogicException('common.not_found');
 
@@ -79,9 +75,9 @@ class SessionClaimService
      * @throws DateMalformedStringException
      * @throws LogicException
      */
-    public function update(TournamentSession $session, User $user, UpdateRequestDTO $dto): void
+    public function update(TournamentSession $session, Player $player, UpdateRequestDTO $dto): void
     {
-        $this->ensureSessionOwner($user, $session);
+        $this->ensureSessionOwner($player, $session);
 
         $playedAt = $dto->playedAt !== null ? new DateTimeImmutable($dto->playedAt) : null;
         $this->validateDate($session->getTournament(), $playedAt);
@@ -98,9 +94,9 @@ class SessionClaimService
     /**
      * @throws LogicException
      */
-    public function approve(TournamentSession $session, User $user): void
+    public function approve(TournamentSession $session, Player $player): void
     {
-        $this->ensureOrganizer($user, $session->getTournament());
+        $this->ensureOrganizer($player, $session->getTournament());
 
         $claim = $this->claimRepository->findBySession($session)
             ?? throw new LogicException('session_claim.error.no_claim');
@@ -118,9 +114,9 @@ class SessionClaimService
     /**
      * @throws LogicException
      */
-    public function reject(TournamentSession $session, User $user, RejectRequestDTO $dto): void
+    public function reject(TournamentSession $session, Player $player, RejectRequestDTO $dto): void
     {
-        $this->ensureOrganizer($user, $session->getTournament());
+        $this->ensureOrganizer($player, $session->getTournament());
 
         $claim = $this->claimRepository->findBySession($session)
             ?? throw new LogicException('session_claim.error.no_claim');
@@ -139,9 +135,9 @@ class SessionClaimService
     /**
      * @throws LogicException
      */
-    public function resubmit(TournamentSession $session, User $user): void
+    public function resubmit(TournamentSession $session, Player $player): void
     {
-        $this->ensureSessionOwner($user, $session);
+        $this->ensureSessionOwner($player, $session);
         $this->validateDate($session->getTournament(), $session->getPlayedAt());
 
         $claim = $this->claimRepository->findBySession($session)
@@ -162,9 +158,9 @@ class SessionClaimService
     /**
      * @throws LogicException
      */
-    public function delete(TournamentSession $session, User $user): void
+    public function delete(TournamentSession $session, Player $player): void
     {
-        $this->ensureSessionOwner($user, $session);
+        $this->ensureSessionOwner($player, $session);
 
         $teamCounts = $this->sessionTeamRepository->countBySessionIds([$session->getId()]);
         if (($teamCounts[$session->getId()] ?? 0) > 0) {
@@ -184,11 +180,8 @@ class SessionClaimService
     /**
      * @throws LogicException
      */
-    private function ensureOrganizer(User $user, Tournament $tournament): void
+    private function ensureOrganizer(Player $player, Tournament $tournament): void
     {
-        $player = $user->getPlayer()
-            ?? throw new LogicException('common.error');
-
         if (!$this->officialRepository->isOrganizer($player, $tournament)) {
             throw new LogicException('common.error');
         }
@@ -197,11 +190,8 @@ class SessionClaimService
     /**
      * @throws LogicException
      */
-    private function ensureSessionOwner(User $user, TournamentSession $session): void
+    private function ensureSessionOwner(Player $player, TournamentSession $session): void
     {
-        $player = $user->getPlayer()
-            ?? throw new LogicException('common.error');
-
         if ($session->getRepresentative()->getId() !== $player->getId()) {
             throw new LogicException('common.error');
         }

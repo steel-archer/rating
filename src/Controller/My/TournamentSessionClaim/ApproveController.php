@@ -25,7 +25,7 @@ class ApproveController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $service->approve($session, $user);
+            $service->approve($session, $user->getPlayer());
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

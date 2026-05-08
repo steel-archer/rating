@@ -29,7 +29,7 @@ class SubmitController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $service->submit($tournament, $user, $dto);
+            $service->submit($tournament, $user->getPlayer(), $dto);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

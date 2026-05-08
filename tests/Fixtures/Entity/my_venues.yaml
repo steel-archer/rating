@@ -9,13 +9,13 @@ App\Entity\Venue:
     venue_pending:
         name: 'Новий майданчик'
         town: '@town_kyiv'
-        createdBy: '@user_venue_creator'
+        createdBy: '@player_franko'
         isApproved: false
         createdAt: '<(new \DateTimeImmutable())>'
     venue_approved_owned:
         name: 'Мій схвалений майданчик'
         town: '@town_lviv'
-        createdBy: '@user_venue_creator'
+        createdBy: '@player_franko'
         isApproved: true
         createdAt: '<(new \DateTimeImmutable("-1 day"))>'
 

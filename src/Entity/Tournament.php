@@ -28,7 +28,7 @@ class Tournament
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
-    private ?User $createdBy = null;
+    private ?Player $createdBy = null;
 
     #[ORM\ManyToOne]
     private ?Season $season = null;
@@ -182,12 +182,12 @@ class Tournament
         return $this;
     }
 
-    public function getCreatedBy(): ?User
+    public function getCreatedBy(): ?Player
     {
         return $this->createdBy;
     }
 
-    public function setCreatedBy(?User $createdBy): static
+    public function setCreatedBy(?Player $createdBy): static
     {
         $this->createdBy = $createdBy;
 

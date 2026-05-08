@@ -24,7 +24,7 @@ class StoreController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $tournament = $service->create($dto, $user);
+        $tournament = $service->create($dto, $user->getPlayer());
 
         return $this->json(['success' => true, 'id' => $tournament->getId()], 201);
     }

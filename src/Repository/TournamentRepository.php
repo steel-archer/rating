@@ -11,7 +11,7 @@ use App\Entity\TournamentModerationClaim;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Enum\TournamentStatus;
-use App\Entity\User;
+use App\Entity\Player;
 use App\Helper\LikeEscape;
 use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -88,7 +88,7 @@ class TournamentRepository extends ServiceEntityRepository
     /**
      * @return list<Tournament>
      */
-    public function findByCreator(User $user, string $sort = 'DESC', int $page = 1): array
+    public function findByCreator(Player $player, string $sort = 'DESC', int $page = 1): array
     {
         $direction = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
 
@@ -99,8 +99,8 @@ class TournamentRepository extends ServiceEntityRepository
                 'WITH',
                 'c.tournament = t',
             )
-            ->where('t.createdBy = :user')
-            ->setParameter('user', $user)
+            ->where('t.createdBy = :player')
+            ->setParameter('player', $player)
             ->orderBy('CASE WHEN c.resolvedAt IS NOT NULL THEN c.resolvedAt WHEN c.createdAt IS NOT NULL THEN c.createdAt ELSE t.startedAt END', $direction)
             ->setFirstResult(($page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)
@@ -108,12 +108,12 @@ class TournamentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function countByCreator(User $user): int
+    public function countByCreator(Player $player): int
     {
         return (int) $this->createQueryBuilder('t')
             ->select('COUNT(t.id)')
-            ->where('t.createdBy = :user')
-            ->setParameter('user', $user)
+            ->where('t.createdBy = :player')
+            ->setParameter('player', $player)
             ->getQuery()
             ->getSingleScalarResult();
     }

@@ -9,7 +9,15 @@ App\Entity\Tournament:
     tournament_pending:
         name: 'Турнір на модерації'
         status: '<(App\Enum\TournamentStatus::Draft)>'
-        createdBy: '@user_creator'
+        createdBy: '@player_franko'
+    tournament_no_claim:
+        name: 'Турнір без заявки'
+        status: '<(App\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
+    tournament_approved_mod:
+        name: 'Схвалений турнір мод'
+        status: '<(App\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
 
 App\Entity\TournamentOfficial:
     official_pending_org:
@@ -22,3 +30,8 @@ App\Entity\TournamentModerationClaim:
         tournament: '@tournament_pending'
         status: '<(App\Enum\TournamentModerationStatus::Pending)>'
         createdAt: '<(new \DateTimeImmutable())>'
+    claim_approved_tournament:
+        tournament: '@tournament_approved_mod'
+        status: '<(App\Enum\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+        resolvedAt: '<(new \DateTimeImmutable())>'

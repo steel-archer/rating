@@ -25,7 +25,7 @@ class ResubmitController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $service->resubmit($session, $user);
+            $service->resubmit($session, $user->getPlayer());
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

@@ -18,8 +18,7 @@ final class VenueClaimMapping implements MappingInterface
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
-        $creator = $source->getCreatedBy();
-        $player = $creator?->getPlayer();
+        $player = $source->getCreatedBy();
 
         return new $destinationClass(
             id: $source->getId(),

@@ -116,6 +116,37 @@ class TournamentModerationControllerTest extends WebTestCase
             },
         ];
 
+        yield 'approve tournament without claim returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_no_claim']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'reject tournament without claim returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_no_claim']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['comment' => 'Тест'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
         yield 'approve non-existent tournament returns 404' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',

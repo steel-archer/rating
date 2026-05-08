@@ -27,7 +27,7 @@ class UpdateController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($venue->getCreatedBy() !== $user) {
+        if ($venue->getCreatedBy() !== $user->getPlayer()) {
             return $this->json(['error' => 'common.not_found'], 404);
         }
 

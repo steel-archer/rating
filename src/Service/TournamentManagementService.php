@@ -6,11 +6,11 @@ namespace App\Service;
 
 use App\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\DTO\Request\Tournament\My\EditRequestDTO;
+use App\Entity\Player;
 use App\Entity\Tournament;
 use App\Entity\TournamentOfficial;
 use App\Enum\TournamentOfficialRole;
 use App\Enum\TournamentStatus;
-use App\Entity\User;
 use App\Repository\PlayerRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\TournamentModerationClaimRepository;
@@ -35,17 +35,17 @@ class TournamentManagementService
     ) {
     }
 
-    public function create(CreateRequestDTO $dto, User $user): Tournament
+    public function create(CreateRequestDTO $dto, Player $player): Tournament
     {
         $tournament = new Tournament();
         $tournament->setName($dto->name);
-        $tournament->setCreatedBy($user);
+        $tournament->setCreatedBy($player);
 
         $this->em->persist($tournament);
 
         $official = new TournamentOfficial();
         $official->setTournament($tournament);
-        $official->setPlayer($user->getPlayer());
+        $official->setPlayer($player);
         $official->setRole(TournamentOfficialRole::Organizer);
 
         $this->em->persist($official);
@@ -141,7 +141,7 @@ class TournamentManagementService
             TournamentOfficialRole::AppealJury->value => $dto->appealJury,
         ];
 
-        $creatorPlayerId = $tournament->getCreatedBy()?->getPlayer()?->getId();
+        $creatorPlayerId = $tournament->getCreatedBy()?->getId();
         foreach ($existing as $official) {
             $roleValue = $official->getRole()->value;
             $playerIds = $roleMap[$roleValue];

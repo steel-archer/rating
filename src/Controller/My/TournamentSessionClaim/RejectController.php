@@ -28,7 +28,7 @@ class RejectController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $service->reject($session, $user, $dto);
+            $service->reject($session, $user->getPlayer(), $dto);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

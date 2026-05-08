@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use App\DTO\Request\VenueListRequestDTO;
 use App\DTO\Response\Venue\VenueListItemDTO;
-use App\Entity\User;
+use App\Entity\Player;
 use App\Entity\Venue;
 use App\Helper\LikeEscape;
 use App\Mapping\Mapper;
@@ -75,13 +75,13 @@ class VenueRepository extends ServiceEntityRepository
     /**
      * @return list<Venue>
      */
-    public function findByCreator(User $user): array
+    public function findByCreator(Player $player): array
     {
         return $this->createQueryBuilder('v')
             ->join('v.town', 'town')
             ->addSelect('town')
-            ->where('v.createdBy = :user')
-            ->setParameter('user', $user)
+            ->where('v.createdBy = :player')
+            ->setParameter('player', $player)
             ->orderBy('v.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
@@ -95,8 +95,7 @@ class VenueRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('v')
             ->join('v.town', 'town')
             ->leftJoin('v.createdBy', 'creator')
-            ->leftJoin('creator.player', 'player')
-            ->addSelect('town', 'creator', 'player')
+            ->addSelect('town', 'creator')
             ->where('v.isApproved = false')
             ->orderBy('v.createdAt', 'ASC')
             ->getQuery()

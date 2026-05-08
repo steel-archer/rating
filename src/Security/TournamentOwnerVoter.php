@@ -24,6 +24,12 @@ final class TournamentOwnerVoter extends Voter
     {
         $user = $token->getUser();
 
-        return $user instanceof User && $subject->getCreatedBy() === $user;
+        if (!$user instanceof User) {
+            return false;
+        }
+
+        $player = $user->getPlayer();
+
+        return $player !== null && $subject->getCreatedBy() === $player;
     }
 }

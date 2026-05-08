@@ -6,6 +6,7 @@ namespace App\Tests\Controller\PlayerClaim;
 
 use App\Entity\PlayerClaim;
 use App\Enum\PlayerClaimStatus;
+use App\Exception\PlayerClaimException;
 use App\Service\PlayerClaimService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -168,6 +169,32 @@ class ClaimNewControllerTest extends WebTestCase
             ),
             'expectedStatus' => 302,
             'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'PlayerClaimException returns 422 with message' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'lastName' => 'Тестовий',
+                    'firstName' => 'Гравець',
+                    'townName' => 'Київ',
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+            'mockSetup' => static function (self $test, KernelBrowser $client) {
+                $client->disableReboot();
+                $stub = $test->createStub(PlayerClaimService::class);
+                $stub->method('claimNew')->willThrowException(new PlayerClaimException('Заявку вже подано'));
+                static::getContainer()->set(PlayerClaimService::class, $stub);
             },
         ];
 

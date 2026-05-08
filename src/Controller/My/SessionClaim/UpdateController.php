@@ -28,7 +28,7 @@ class UpdateController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $service->update($session, $user, $dto);
+            $service->update($session, $user->getPlayer(), $dto);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

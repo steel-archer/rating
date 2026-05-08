@@ -26,7 +26,7 @@ class StoreController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $venue = $service->create($dto, $user);
+            $venue = $service->create($dto, $user->getPlayer());
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

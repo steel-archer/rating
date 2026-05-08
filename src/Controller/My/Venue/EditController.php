@@ -27,7 +27,7 @@ class EditController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($venue->getCreatedBy() !== $user) {
+        if ($venue->getCreatedBy() !== $user->getPlayer()) {
             throw $this->createNotFoundException();
         }
 

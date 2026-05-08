@@ -25,7 +25,7 @@ class DeleteController extends AbstractController
         $user = $this->getUser();
 
         try {
-            $service->delete($session, $user);
+            $service->delete($session, $user->getPlayer());
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }
