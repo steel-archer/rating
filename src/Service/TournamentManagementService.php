@@ -29,6 +29,7 @@ class TournamentManagementService
     public function __construct(
         private EntityManagerInterface $em,
         private TournamentModerationService $moderationService,
+        private TournamentDocumentService $documentService,
         private TournamentModerationClaimRepository $claimRepository,
         private TournamentOfficialRepository $officialRepository,
         private PlayerRepository $playerRepository,
@@ -134,6 +135,8 @@ class TournamentManagementService
         }
 
         $tournamentId = $tournament->getId();
+
+        $this->documentService->deleteAllByTournament($tournament);
 
         $claim = $this->claimRepository->findByTournament($tournament);
         if ($claim !== null) {

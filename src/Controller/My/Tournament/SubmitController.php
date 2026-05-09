@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\My\Tournament;
 
 use App\Entity\Tournament;
-use App\Security\TournamentOwnerVoter;
+use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentModerationService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +21,7 @@ class SubmitController extends AbstractController
         Tournament $tournament,
         TournamentModerationService $service,
     ): JsonResponse {
-        if (!$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
+        if (!$this->isGranted(TournamentOrganizerVoter::EDIT, $tournament)) {
             return $this->json(['error' => 'common.not_found'], 404);
         }
 

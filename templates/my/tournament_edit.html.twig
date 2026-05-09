@@ -131,6 +131,32 @@
         </form>
     </div>
 
+    {# --- Документи --- #}
+    <div class="card">
+        <h2>{{ 'tournament.document.title'|trans }}</h2>
+        <p class="hint">{{ 'tournament.document.hint'|trans }}</p>
+
+        <div id="documents-list" data-tournament-id="{{ tournament.id }}">
+            {% for doc in documents %}
+                <div class="document-entry" data-document-id="{{ doc.id }}">
+                    <a href="{{ path('my_tournament_document_download', {id: doc.id}) }}" class="document-link">{{ doc.originalName }}</a>
+                    <span class="document-size">({{ (doc.size / 1024)|round(0) }} KB)</span>
+                    {% if not readonly %}
+                        <button type="button" class="btn-remove" data-document-delete="{{ doc.id }}">×</button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if not readonly %}
+            <div class="form-group" id="document-upload-group" {% if documents|length >= 3 %}hidden{% endif %}>
+                <input type="file" id="document-file" accept=".pdf,.doc,.docx,.odt">
+                <button type="button" class="btn" id="document-upload-btn">{{ 'tournament.document.upload'|trans }}</button>
+                <span id="document-upload-status" class="save-status" hidden></span>
+            </div>
+        {% endif %}
+    </div>
+
     {# --- Вимоги для публікації --- #}
     {% if publishErrors is not empty %}
         <div class="card publish-errors">

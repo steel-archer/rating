@@ -6,7 +6,7 @@ namespace App\Controller\My\Tournament;
 
 use App\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Entity\Tournament;
-use App\Security\TournamentOwnerVoter;
+use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentManagementService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +24,7 @@ class UpdateController extends AbstractController
         #[MapRequestPayload] EditRequestDTO $dto,
         TournamentManagementService $service,
     ): JsonResponse {
-        if (!$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
+        if (!$this->isGranted(TournamentOrganizerVoter::EDIT, $tournament)) {
             return $this->json(['error' => 'common.not_found'], 404);
         }
 

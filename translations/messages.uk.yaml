@@ -144,6 +144,16 @@ team:
 tournament:
   deleted: 'Турнір видалено'
   difficulty: 'Складність'
+  document:
+    error:
+      invalid_type: 'Дозволені формати: PDF, DOC, DOCX, ODT'
+      max_files: 'Максимум 3 документи на турнір'
+      no_file: 'Файл не обрано'
+      started: 'Не можна змінювати документи турніру, який вже почався'
+      too_large: 'Максимальний розмір файлу — 10 МБ'
+    hint: 'До 3 файлів (PDF, DOC, DOCX, ODT), максимум 10 МБ кожен'
+    title: 'Документи'
+    upload: 'Завантажити'
   error:
     cannot_delete_published: 'Не можна видалити опублікований турнір'
     cannot_edit_started: 'Не можна редагувати турнір, який вже почався'

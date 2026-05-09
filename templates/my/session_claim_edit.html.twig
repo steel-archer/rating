@@ -27,6 +27,18 @@
         {% endif %}
     </div>
 
+    {% if claim.status == 'approved' and documents is defined and documents is not empty %}
+        <div class="card">
+            <h2>{{ 'tournament.document.title'|trans }}</h2>
+            {% for doc in documents %}
+                <div class="document-entry">
+                    <a href="{{ path('my_tournament_document_download', {id: doc.id}) }}" class="document-link">{{ doc.originalName }}</a>
+                    <span class="document-size">({{ (doc.size / 1024)|round(0) }} KB)</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="card">
         <form id="session-claim-edit-form" class="tournament-form" data-url="{{ path('my_session_claim_update', {id: claim.sessionId}) }}">
             <div id="save-status" class="form-error" hidden></div>

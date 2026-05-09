@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\My\SessionClaim;
 
 use App\DTO\Response\My\SessionClaimEditDTO;
+use App\DTO\Response\My\TournamentDocumentDTO;
 use App\Entity\TournamentSession;
 use App\Entity\User;
+use App\Enum\SessionClaimStatus;
 use App\Mapping\Mapper;
 use App\Repository\SessionClaimRepository;
+use App\Repository\TournamentDocumentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,6 +24,7 @@ class EditController extends AbstractController
     public function __invoke(
         TournamentSession $session,
         SessionClaimRepository $claimRepository,
+        TournamentDocumentRepository $documentRepository,
         Mapper $mapper,
     ): Response {
         /** @var User $user */
@@ -35,8 +39,17 @@ class EditController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        $documents = [];
+        if ($claim->getStatus() === SessionClaimStatus::Approved) {
+            $documents = $mapper->mapMultiple(
+                $documentRepository->findByTournament($session->getTournament()),
+                TournamentDocumentDTO::class,
+            );
+        }
+
         return $this->render('my/session_claim_edit.html.twig', [
             'claim' => $mapper->map($claim, SessionClaimEditDTO::class),
+            'documents' => $documents,
         ]);
     }
 }

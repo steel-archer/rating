@@ -6,14 +6,20 @@ namespace App\Security;
 
 use App\Entity\Tournament;
 use App\Entity\User;
+use App\Repository\TournamentOfficialRepository;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /** @extends Voter<string, Tournament> */
-final class TournamentOwnerVoter extends Voter
+final class TournamentOrganizerVoter extends Voter
 {
     public const string EDIT = 'TOURNAMENT_EDIT';
+
+    public function __construct(
+        private TournamentOfficialRepository $officialRepository,
+    ) {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -29,7 +35,10 @@ final class TournamentOwnerVoter extends Voter
         }
 
         $player = $user->getPlayer();
+        if ($player === null) {
+            return false;
+        }
 
-        return $player !== null && $subject->getCreatedBy()?->getId() === $player->getId();
+        return $this->officialRepository->isOrganizer($player, $subject);
     }
 }

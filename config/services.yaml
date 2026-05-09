@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 parameters:
+    app.upload_dir: '%kernel.project_dir%/var/uploads/tournament_documents'
 
 services:
     _defaults:
@@ -16,6 +17,10 @@ services:
     App\Mapping\Mapper:
         arguments:
             $mappings: !tagged_iterator app.mapping
+
+    App\Service\TournamentDocumentService:
+        arguments:
+            $uploadDir: '%app.upload_dir%'
 
 when@dev: &dev_fixtures
     services:

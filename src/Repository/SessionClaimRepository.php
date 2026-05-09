@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Player;
 use App\Entity\SessionClaim;
+use App\Entity\Tournament;
 use App\Enum\SessionClaimStatus;
 use App\Enum\TournamentOfficialRole;
 use App\Entity\TournamentSession;
@@ -71,6 +72,22 @@ class SessionClaimRepository extends ServiceEntityRepository
         }
 
         return array_values($grouped);
+    }
+
+    public function hasApprovedByPlayerAndTournament(Player $player, Tournament $tournament): bool
+    {
+        return (bool) $this->createQueryBuilder('sc')
+            ->select('1')
+            ->join('sc.session', 's')
+            ->where('s.representative = :player')
+            ->andWhere('s.tournament = :tournament')
+            ->andWhere('sc.status = :status')
+            ->setParameter('player', $player)
+            ->setParameter('tournament', $tournament)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

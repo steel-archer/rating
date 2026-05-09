@@ -169,4 +169,96 @@ initTournamentActions();
 document.addEventListener('turbo:load', () => {
     initTournamentCreateForm();
     initTournamentEditForm();
+    initDocumentActions();
 });
+
+function initDocumentActions() {
+    const uploadBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById('document-upload-btn'));
+    const fileInput = /** @type {HTMLInputElement|null} */ (document.getElementById('document-file'));
+    const list = /** @type {HTMLElement|null} */ (document.getElementById('documents-list'));
+    const uploadGroup = /** @type {HTMLElement|null} */ (document.getElementById('document-upload-group'));
+    const status = /** @type {HTMLElement|null} */ (document.getElementById('document-upload-status'));
+
+    if (!uploadBtn || !fileInput || !list) {
+        return;
+    }
+
+    const tournamentId = list.dataset.tournamentId;
+
+    uploadBtn.addEventListener('click', () => {
+        const file = fileInput.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        uploadBtn.disabled = true;
+
+        fetch(`/my/tournaments/${tournamentId}/documents`, {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json().then(body => ({ok: response.ok, body})))
+            .then(({ok, body}) => {
+                uploadBtn.disabled = false;
+                if (ok) {
+                    const entry = document.createElement('div');
+                    entry.className = 'document-entry';
+                    entry.dataset.documentId = String(body.document.id);
+                    entry.innerHTML = `<a href="/my/tournaments/documents/${body.document.id}/download" class="document-link">${escapeHtml(body.document.originalName)}</a>`
+                        + ` <span class="document-size">(${Math.round(body.document.size / 1024)} KB)</span>`
+                        + ` <button type="button" class="btn-remove" data-document-delete="${body.document.id}">\u00d7</button>`;
+                    list.appendChild(entry);
+                    fileInput.value = '';
+                    if (status) {
+                        status.hidden = true;
+                    }
+                    if (uploadGroup && list.querySelectorAll('.document-entry').length >= 3) {
+                        uploadGroup.hidden = true;
+                    }
+                } else {
+                    if (status) {
+                        showError(status, body.error);
+                    }
+                }
+            })
+            .catch(() => {
+                uploadBtn.disabled = false;
+                if (status) {
+                    showError(status, null);
+                }
+            });
+    });
+
+    list.addEventListener('click', (event) => {
+        const deleteBtn = /** @type {HTMLElement} */ (event.target).closest('[data-document-delete]');
+        if (!deleteBtn) {
+            return;
+        }
+
+        const documentId = /** @type {HTMLElement} */ (deleteBtn).dataset.documentDelete;
+
+        fetch(`/my/tournaments/documents/${documentId}`, {method: 'DELETE'})
+            .then(response => {
+                if (response.ok) {
+                    const entry = deleteBtn.closest('.document-entry');
+                    entry?.remove();
+                    if (uploadGroup) {
+                        uploadGroup.hidden = false;
+                    }
+                }
+            });
+    });
+}
+
+/**
+ * @param {string} text
+ * @returns {string}
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}

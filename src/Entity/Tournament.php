@@ -203,4 +203,11 @@ class Tournament
     {
         return $this->updatedAt;
     }
+
+    public function isStarted(): bool
+    {
+        return $this->status === TournamentStatus::Published
+            && $this->startedAt !== null
+            && $this->startedAt <= new DateTimeImmutable();
+    }
 }

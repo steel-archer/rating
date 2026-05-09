@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Controller\My\Tournament;
 
 use App\DTO\Response\My\ModerationClaimDTO;
+use App\DTO\Response\My\TournamentDocumentDTO;
 use App\DTO\Response\My\TournamentEditDTO;
 use App\DTO\Response\My\TournamentOfficialDTO;
 use App\Entity\Tournament;
-use App\Enum\TournamentStatus;
 use App\Mapping\Mapper;
+use App\Repository\TournamentDocumentRepository;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
-use App\Security\TournamentOwnerVoter;
+use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentValidator;
-use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,16 +28,15 @@ class EditController extends AbstractController
         Tournament $tournament,
         TournamentModerationClaimRepository $claimRepository,
         TournamentOfficialRepository $officialRepository,
+        TournamentDocumentRepository $documentRepository,
         TournamentValidator $validator,
         Mapper $mapper,
     ): Response {
-        if (!$this->isGranted(TournamentOwnerVoter::EDIT, $tournament)) {
+        if (!$this->isGranted(TournamentOrganizerVoter::EDIT, $tournament)) {
             throw $this->createNotFoundException();
         }
 
-        $readonly = $tournament->getStatus() === TournamentStatus::Published
-            && $tournament->getStartedAt() !== null
-            && $tournament->getStartedAt() <= new DateTimeImmutable();
+        $readonly = $tournament->isStarted();
 
         $moderationClaim = $claimRepository->findByTournament($tournament);
         $claimDto = $moderationClaim !== null
@@ -53,6 +52,10 @@ class EditController extends AbstractController
             'tournament' => $mapper->map($tournament, TournamentEditDTO::class),
             'claim' => $claimDto,
             'officials' => $officials,
+            'documents' => $mapper->mapMultiple(
+                $documentRepository->findByTournament($tournament),
+                TournamentDocumentDTO::class,
+            ),
             'publishErrors' => $validator->validatePublish($tournament),
             'readonly' => $readonly,
         ]);
