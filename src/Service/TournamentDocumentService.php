@@ -9,6 +9,7 @@ use App\Entity\TournamentDocument;
 use App\Repository\TournamentDocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Random\RandomException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -38,6 +39,7 @@ class TournamentDocumentService
 
     /**
      * @throws LogicException
+     * @throws RandomException
      */
     public function upload(Tournament $tournament, UploadedFile $file): TournamentDocument
     {
@@ -63,7 +65,7 @@ class TournamentDocumentService
         if (!in_array(strtolower($extension), self::ALLOWED_EXTENSIONS, true)) {
             throw new LogicException('tournament.document.error.invalid_type');
         }
-        $storedName = $safeFilename . '-' . uniqid() . '.' . $extension;
+        $storedName = $safeFilename . '-' . bin2hex(random_bytes(8)) . '.' . $extension;
         $fileSize = $file->getSize();
 
         if ($fileSize === false || $fileSize === 0) {

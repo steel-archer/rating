@@ -119,7 +119,7 @@ class PlayerClaimService
 
     private function findPendingClaim(int $id): PlayerClaim
     {
-        $claim = $this->em->getRepository(PlayerClaim::class)->find($id);
+        $claim = $this->claimRepository->find($id);
 
         if ($claim === null || $claim->getStatus() !== PlayerClaimStatus::Pending) {
             throw new PlayerClaimException('Claim not found or already processed.');
