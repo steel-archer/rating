@@ -32,7 +32,7 @@ class SessionClaimContactsController extends AbstractController
         $currentUser = $this->getUser();
         $currentPlayer = $currentUser->getPlayer();
 
-        $session = $sessionRepository->find($sessionId);
+        $session = $sessionRepository->findWithRepresentativeUser($sessionId);
         if ($session === null) {
             return $this->json(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
         }

@@ -57,6 +57,21 @@ class ListControllerTest extends WebTestCase
             },
         ];
 
+        yield 'organizer sees approved claims for active tournament' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_active.yaml'],
+            'loginAs' => 'user_organizer_active',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                static::assertStringContainsString(
+                    'Схвалені заявки',
+                    $crawler->text(),
+                );
+                $tables = $crawler->filter('#tournament-approved- table, [id^="tournament-approved-"] table');
+                static::assertGreaterThanOrEqual(1, $tables->count());
+            },
+        ];
+
         yield 'empty for non-organizer' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_other',

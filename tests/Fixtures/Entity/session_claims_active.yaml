@@ -1,0 +1,42 @@
+App\Entity\User:
+    user_organizer_active:
+        email: 'organizer_active@example.com'
+        googleId: 'google_org_active_123'
+        roles: []
+        player: '@player_franko'
+    user_rep_active:
+        email: 'rep_active@example.com'
+        googleId: 'google_rep_active_123'
+        roles: []
+        player: '@player_shevchenko'
+
+App\Entity\Tournament:
+    tournament_active:
+        name: 'Активний турнір'
+        status: '<(App\Enum\TournamentStatus::Published)>'
+        startedAt: '<(new \DateTimeImmutable("+1 month"))>'
+        endedAt: '<(new \DateTimeImmutable("+2 months"))>'
+        toursCount: 3
+        questionsPerTour: 12
+
+App\Entity\TournamentOfficial:
+    official_org_active:
+        tournament: '@tournament_active'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Entity\TournamentSession:
+    session_active_approved:
+        tournament: '@tournament_active'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("+1 month +5 days"))>'
+        estimatedTeams: 10
+
+App\Entity\SessionClaim:
+    claim_active_approved:
+        session: '@session_active_approved'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-1 week"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-1 day"))>'

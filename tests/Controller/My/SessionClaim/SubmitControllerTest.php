@@ -75,7 +75,7 @@ class SubmitControllerTest extends WebTestCase
                 $sessions = static::getContainer()->get('doctrine')
                     ->getRepository(TournamentSession::class)
                     ->findBy(['tournament' => $objects['tournament_session_test']->getId()]);
-                static::assertCount(4, $sessions);
+                static::assertCount(5, $sessions);
             },
         ];
 

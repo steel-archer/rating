@@ -14,6 +14,21 @@ App\Entity\User:
         googleId: 'google_other_123'
         roles: []
         player: '@player_lesya'
+    user_moderator_sc:
+        email: 'moderator_sc@example.com'
+        googleId: 'google_mod_sc_123'
+        roles: ['ROLE_MODERATOR']
+        player: '@player_moderator_sc'
+
+App\Entity\Player:
+    player_moderator_sc:
+        lastName: 'Модераторенко'
+        firstName: 'Модератор'
+        town: '@town_kyiv'
+    player_no_user:
+        lastName: 'Безюзеренко'
+        firstName: 'Безюзер'
+        town: '@town_kyiv'
 
 App\Entity\Tournament:
     tournament_session_test:
@@ -49,6 +64,12 @@ App\Entity\TournamentSession:
         representative: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-20 19:00"))>'
         estimatedTeams: 10
+    session_no_user:
+        tournament: '@tournament_session_test'
+        venue: '@venue_lviv'
+        representative: '@player_no_user'
+        playedAt: '<(new \DateTimeImmutable("2025-06-25 19:00"))>'
+        estimatedTeams: 6
 
 App\Entity\SessionClaim:
     claim_pending:
@@ -69,3 +90,8 @@ App\Entity\SessionClaim:
         status: '<(App\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
+    claim_no_user:
+        session: '@session_no_user'
+        player: '@player_no_user'
+        status: '<(App\Enum\SessionClaimStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable("2025-05-22"))>'

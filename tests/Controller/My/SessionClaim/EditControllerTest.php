@@ -86,5 +86,16 @@ class EditControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'approved claim shows documents section' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_approved']->getId() . '/edit',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                static::assertCount(1, $crawler->filter('#session-claim-edit-form'));
+            },
+        ];
     }
 }

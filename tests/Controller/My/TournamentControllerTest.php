@@ -12,6 +12,7 @@ use App\Enum\TournamentOfficialRole;
 use App\Enum\TournamentStatus;
 use App\Service\TournamentManagementService;
 use App\Service\TournamentModerationService;
+use App\Tests\Controller\My\Tournament\DocumentTestTrait;
 use App\Tests\FixturesTrait;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -21,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TournamentControllerTest extends WebTestCase
 {
+    use DocumentTestTrait;
     use FixturesTrait;
 
     /**
@@ -444,6 +446,35 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
             ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function () {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->findOneBy(['name' => 'Мій чернетковий турнір']);
+                static::assertNull($tournament);
+            },
+        ];
+
+        yield 'delete draft tournament with documents' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static function (KernelBrowser $client, array $objects) {
+                // Upload a document first
+                $client->request(
+                    'POST',
+                    '/my/tournaments/' . $objects['tournament_draft']->getId() . '/documents',
+                    [],
+                    ['file' => self::createTestPdf()],
+                );
+                // Then delete the tournament
+                $client->request(
+                    'POST',
+                    '/my/tournaments/' . $objects['tournament_draft']->getId() . '/delete',
+                    [],
+                    [],
+                    ['CONTENT_TYPE' => 'application/json'],
+                );
+            },
             'expectedStatus' => 200,
             'afterCallback' => static function () {
                 $tournament = static::getContainer()->get('doctrine')

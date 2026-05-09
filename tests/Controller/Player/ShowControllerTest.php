@@ -31,7 +31,7 @@ class ShowControllerTest extends WebTestCase
         $objects = self::loadFixtures($fixtures);
 
         if ($mockSetup !== null) {
-            $mockSetup($this, $client);
+            $mockSetup($this, $client, $objects);
         }
 
         $resolvedUri = is_callable($uri) ? $uri($objects) : $uri;
@@ -112,6 +112,58 @@ class ShowControllerTest extends WebTestCase
                 $stub = $test->createStub(PlayerService::class);
                 $stub->method('get')->willThrowException(new RuntimeException('DB down'));
                 static::getContainer()->set(PlayerService::class, $stub);
+            },
+        ];
+
+        yield 'owner sees contacts section' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(1, $crawler->filter('#player-contacts'));
+                static::assertCount(1, $crawler->filter('#contacts-form'));
+            },
+            'mockSetup' => static function (self $test, $client, $objects) {
+                $client->loginUser($objects['user_with_player']);
+            },
+        ];
+
+        yield 'moderator sees contacts read-only' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(1, $crawler->filter('#player-contacts'));
+                static::assertCount(0, $crawler->filter('#contacts-form'));
+                static::assertStringContainsString('player@example.com', $crawler->filter('#player-contacts')->text());
+            },
+            'mockSetup' => static function (self $test, $client, $objects) {
+                $client->loginUser($objects['user_moderator']);
+            },
+        ];
+
+        yield 'other user does not see contacts' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(0, $crawler->filter('#player-contacts'));
+            },
+            'mockSetup' => static function (self $test, $client, $objects) {
+                $client->loginUser($objects['user_regular']);
+            },
+        ];
+
+        yield 'anonymous does not see contacts' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(0, $crawler->filter('#player-contacts'));
             },
         ];
     }
