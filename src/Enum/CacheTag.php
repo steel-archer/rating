@@ -9,6 +9,7 @@ enum CacheTag: string
     case Countries = 'countries';
     case Towns = 'towns';
     case TournamentList = 'tournament_list';
+    case Venues = 'venues';
 
     public static function tournament(int $id): string
     {

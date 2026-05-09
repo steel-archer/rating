@@ -9,6 +9,7 @@ use App\DTO\Request\Venue\UpdateRequestDTO;
 use App\Entity\Player;
 use App\Entity\Venue;
 use App\Entity\VenueRepresentative;
+use App\Enum\CacheTag;
 use App\Repository\PlayerRepository;
 use App\Repository\TownRepository;
 use App\Repository\VenueRepository;
@@ -20,8 +21,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class VenueManagementService
 {
-    private const string CACHE_TAG = 'venues';
-
     public function __construct(
         private EntityManagerInterface $em,
         private VenueRepository $venueRepository,
@@ -74,7 +73,7 @@ class VenueManagementService
         $venue->setIsApproved(true);
         $this->em->flush();
 
-        $this->cache->invalidateTags([self::CACHE_TAG]);
+        $this->cache->invalidateTags([CacheTag::Venues->value]);
     }
 
     /**
@@ -107,7 +106,7 @@ class VenueManagementService
 
         $this->syncRepresentatives($venue, $dto->representatives);
 
-        $this->cache->invalidateTags([self::CACHE_TAG]);
+        $this->cache->invalidateTags([CacheTag::Venues->value]);
     }
 
     /**

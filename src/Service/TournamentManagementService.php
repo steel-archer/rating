@@ -9,6 +9,7 @@ use App\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Entity\Player;
 use App\Entity\Tournament;
 use App\Entity\TournamentOfficial;
+use App\Enum\CacheTag;
 use App\Enum\TournamentOfficialRole;
 use App\Enum\TournamentStatus;
 use App\Repository\PlayerRepository;
@@ -123,6 +124,7 @@ class TournamentManagementService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function delete(Tournament $tournament): void
@@ -130,6 +132,8 @@ class TournamentManagementService
         if ($tournament->getStatus() === TournamentStatus::Published) {
             throw new LogicException('tournament.error.cannot_delete_published');
         }
+
+        $tournamentId = $tournament->getId();
 
         $claim = $this->claimRepository->findByTournament($tournament);
         if ($claim !== null) {
@@ -143,6 +147,11 @@ class TournamentManagementService
 
         $this->em->remove($tournament);
         $this->em->flush();
+
+        $this->cacheInvalidator->invalidateTags([
+            CacheTag::tournament($tournamentId),
+            CacheTag::TournamentList->value,
+        ]);
     }
 
     private function syncOfficials(Tournament $tournament, EditRequestDTO $dto): void

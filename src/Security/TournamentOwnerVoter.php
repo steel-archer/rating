@@ -30,6 +30,6 @@ final class TournamentOwnerVoter extends Voter
 
         $player = $user->getPlayer();
 
-        return $player !== null && $subject->getCreatedBy() === $player;
+        return $player !== null && $subject->getCreatedBy()?->getId() === $player->getId();
     }
 }

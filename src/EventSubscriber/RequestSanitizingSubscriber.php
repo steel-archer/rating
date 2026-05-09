@@ -30,8 +30,8 @@ final class RequestSanitizingSubscriber implements EventSubscriberInterface
 
         $request = $event->getRequest();
 
-        $request->query->replace($this->sanitize($request->query->all()));
-        $request->request->replace($this->sanitize($request->request->all()));
+        $request->query->replace(self::sanitize($request->query->all()));
+        $request->request->replace(self::sanitize($request->request->all()));
 
         if ($request->getContentTypeFormat() === 'json') {
             $content = $request->getContent();
@@ -40,7 +40,7 @@ final class RequestSanitizingSubscriber implements EventSubscriberInterface
                 $decoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
                 if (is_array($decoded)) {
-                    $request->request->replace($this->sanitize($decoded));
+                    $request->request->replace(self::sanitize($decoded));
                 }
             }
         }
@@ -51,15 +51,15 @@ final class RequestSanitizingSubscriber implements EventSubscriberInterface
      *
      * @return array<string, mixed>
      */
-    private function sanitize(array $data): array
+    private static function sanitize(array $data): array
     {
-        return array_map(function (mixed $value): mixed {
+        return array_map(static function (mixed $value): mixed {
             if (is_string($value)) {
                 return trim(strip_tags($value));
             }
 
             if (is_array($value)) {
-                return $this->sanitize($value);
+                return self::sanitize($value);
             }
 
             return $value;

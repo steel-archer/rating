@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\DTO\Response\VenueDTO;
+use App\Enum\CacheTag;
 use App\Exception\EntityNotFoundException;
 use App\Mapping\Mapper;
 use App\Repository\TournamentSessionRepository;
@@ -16,8 +17,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class VenueService
 {
-    private const string CACHE_TAG = 'venues';
-
     public function __construct(
         private VenueRepository $venueRepository,
         private VenueRepresentativeRepository $representativeRepository,
@@ -36,7 +35,7 @@ class VenueService
         $cacheKey = "venue_show_{$id}";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
-            $item->tag([self::CACHE_TAG]);
+            $item->tag([CacheTag::Venues->value]);
             $item->expiresAfter(3600);
 
             return $this->buildVenueDto($id);
