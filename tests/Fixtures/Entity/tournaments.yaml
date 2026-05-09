@@ -85,6 +85,40 @@ App\Entity\TournamentSessionTeam:
         team: '@team_alpha'
         score: 40
 
+App\Entity\TournamentSessionTeamAnswer:
+    answer_spring_alpha_{1..25}:
+        tournamentSessionTeam: '@session_team_spring_alpha'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_spring_alpha_no_{1..11}:
+        tournamentSessionTeam: '@session_team_spring_alpha'
+        questionNumber: '<($current + 25)>'
+        isCorrect: false
+    answer_spring_beta_{1..30}:
+        tournamentSessionTeam: '@session_team_spring_beta'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_spring_beta_no_{1..6}:
+        tournamentSessionTeam: '@session_team_spring_beta'
+        questionNumber: '<($current + 30)>'
+        isCorrect: false
+    answer_spring_gamma_{1..20}:
+        tournamentSessionTeam: '@session_team_spring_gamma'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_spring_gamma_no_{1..16}:
+        tournamentSessionTeam: '@session_team_spring_gamma'
+        questionNumber: '<($current + 20)>'
+        isCorrect: false
+    answer_autumn_alpha_{1..40}:
+        tournamentSessionTeam: '@session_team_autumn_alpha'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_autumn_alpha_no_{1..20}:
+        tournamentSessionTeam: '@session_team_autumn_alpha'
+        questionNumber: '<($current + 40)>'
+        isCorrect: false
+
 App\Entity\TournamentSessionTeamPlayer:
     stp_spring_alpha_shevchenko:
         tournamentSessionTeam: '@session_team_spring_alpha'

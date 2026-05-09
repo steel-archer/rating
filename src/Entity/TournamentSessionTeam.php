@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\TournamentSessionTeamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentSessionTeamRepository::class)]
@@ -26,8 +28,17 @@ class TournamentSessionTeam
     #[ORM\JoinColumn(nullable: false)]
     private Team $team;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $score = null;
+    #[ORM\Column]
+    private int $score = 0;
+
+    /** @var Collection<int, TournamentSessionTeamAnswer> */
+    #[ORM\OneToMany(targetEntity: TournamentSessionTeamAnswer::class, mappedBy: 'tournamentSessionTeam')]
+    private Collection $answers;
+
+    public function __construct()
+    {
+        $this->answers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -58,14 +69,29 @@ class TournamentSessionTeam
         return $this;
     }
 
-    public function getScore(): ?int
+    public function getScore(): int
     {
         return $this->score;
     }
 
-    public function setScore(?int $score): static
+    public function setScore(int $score): static
     {
         $this->score = $score;
+
+        return $this;
+    }
+
+    /** @return Collection<int, TournamentSessionTeamAnswer> */
+    public function getAnswers(): Collection
+    {
+        return $this->answers;
+    }
+
+    public function recalculateScore(): static
+    {
+        $this->score = $this->answers->filter(
+            static fn(TournamentSessionTeamAnswer $answer) => $answer->isCorrect(),
+        )->count();
 
         return $this;
     }

@@ -14,6 +14,7 @@ use App\Entity\TournamentOfficial;
 use App\Enum\TournamentOfficialRole;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
+use App\Entity\TournamentSessionTeamAnswer;
 use App\Entity\TournamentSessionTeamPlayer;
 use App\Enum\TournamentStatus;
 use App\Entity\Venue;
@@ -140,8 +141,18 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                     $sessionTeam = new TournamentSessionTeam();
                     $sessionTeam->setTournamentSession($session);
                     $sessionTeam->setTeam($this->getReference("team_$teamIndex", Team::class));
-                    $sessionTeam->setScore($faker->numberBetween((int)($totalQuestions * 0.2), (int)($totalQuestions * 0.85)));
                     $manager->persist($sessionTeam);
+
+                    $correctProbability = $faker->numberBetween(20, 85);
+                    for ($q = 1; $q <= $totalQuestions; $q++) {
+                        $answer = new TournamentSessionTeamAnswer();
+                        $answer->setTournamentSessionTeam($sessionTeam);
+                        $answer->setQuestionNumber($q);
+                        $answer->setIsCorrect($faker->boolean($correctProbability));
+                        $manager->persist($answer);
+                    }
+
+                    $sessionTeam->recalculateScore();
 
                     // Base squad + legionaries if needed
                     $baseSquad = TeamFixture::$teamSquads[$teamIndex] ?? [];
