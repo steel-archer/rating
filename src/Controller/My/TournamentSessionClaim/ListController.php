@@ -21,12 +21,23 @@ class ListController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+        $player = $user->getPlayer();
 
-        $claimsByTournament = $claimRepository->findPendingByOrganizer($user->getPlayer());
+        $pendingByTournament = $claimRepository->findPendingByOrganizer($player);
+        $activeByTournament = $claimRepository->findActiveByOrganizer($player);
 
         $grouped = [];
-        foreach ($claimsByTournament as $group) {
+        foreach ($pendingByTournament as $group) {
             $grouped[] = [
+                'tournamentId' => $group['tournamentId'],
+                'tournamentName' => $group['tournamentName'],
+                'claims' => $mapper->mapMultiple($group['claims'], SessionClaimDTO::class),
+            ];
+        }
+
+        $active = [];
+        foreach ($activeByTournament as $group) {
+            $active[] = [
                 'tournamentId' => $group['tournamentId'],
                 'tournamentName' => $group['tournamentName'],
                 'claims' => $mapper->mapMultiple($group['claims'], SessionClaimDTO::class),
@@ -35,6 +46,7 @@ class ListController extends AbstractController
 
         return $this->render('my/tournament_session_claims.html.twig', [
             'grouped' => $grouped,
+            'active' => $active,
         ]);
     }
 }

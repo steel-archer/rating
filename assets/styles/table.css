@@ -10,7 +10,6 @@ th {
     font-weight: 500;
     padding: 10px 12px;
     border-bottom: 1px solid var(--border);
-    white-space: nowrap;
 }
 
 .sort-header {

@@ -33,6 +33,7 @@ final class SessionClaimMapping implements MappingInterface
             playerId: $player->getId(),
             playerName: $player->getFullName(),
             playerHasUser: $player->hasUser(),
+            playerEmail: $player->getUser()?->getEmail(),
             hostId: $host?->getId(),
             hostName: $host?->getFullName(),
             hostHasUser: $host?->hasUser() ?? false,

@@ -18,6 +18,7 @@ final readonly class SessionClaimDTO
         public int $playerId,
         public string $playerName,
         public bool $playerHasUser,
+        public ?string $playerEmail,
         public ?int $hostId,
         public ?string $hostName,
         public bool $hostHasUser,

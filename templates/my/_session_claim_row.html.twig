@@ -1,0 +1,26 @@
+                            <tr class="{{ rowIndex is odd ? 'row-light' : 'row-dark' }}"{{ sessionClaimId is defined ? ' data-session-claim-id="' ~ sessionClaimId ~ '"' }}>
+                                <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
+                                <td>{{ claim.townName }}</td>
+                                <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
+                                <td>{{ claim.estimatedTeams ?? '—' }}</td>
+                                <td>{{ include('_player_link.html.twig', {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser}, with_context: false) }}</td>
+                                <td>{{ claim.playerEmail ?? '—' }}</td>
+                                <td>
+                                    {% if claim.hostId %}
+                                        {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                {% if showActions is defined and showActions %}
+                                    <td>
+                                        <div class="moderation-actions">
+                                            <button type="button" class="btn btn-approve" data-session-approve="{{ claim.sessionId }}">{{ 'moderator.approve'|trans }}</button>
+                                            <div class="reject-form">
+                                                <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-session-reject-comment="{{ claim.sessionId }}">
+                                                <button type="button" class="btn btn-reject" data-session-reject="{{ claim.sessionId }}">{{ 'moderator.reject'|trans }}</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>

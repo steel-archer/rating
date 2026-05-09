@@ -7,6 +7,7 @@ common:
   country: 'Країна'
   date: 'Дата'
   dates: 'Дати'
+  email: 'Email'
   error: 'Помилка'
   loading: 'Завантаження…'
   loading_results: 'Завантаження результатів…'
@@ -87,6 +88,7 @@ player:
   patronymic: 'По батькові'
 
 player_claim:
+  email_visibility_warning: 'Цей email бачитимуть: ви, модератори сайту та організатори турнірів, на які ви подаватимете заявки на відіграш.'
   existing_description: 'Знайдіть себе серед гравців рейтингу'
   existing_title: 'Я вже є в рейтингу'
   new_description: 'Заповніть дані для створення нового гравця'
@@ -97,6 +99,7 @@ player_claim:
   submitted_title: 'Заявку подано'
   title: 'Привʼязка гравця'
   town_required: 'Вкажіть місто'
+  your_email: 'Ваш email'
 
 session_claim:
   add_host: 'Вкажіть ведучого'
@@ -115,7 +118,10 @@ session_claim:
   estimated_teams: 'Орієнтовна кількість команд'
   my_empty: 'У вас немає заявок на відіграші'
   my_title: 'Мої заявки на відіграші'
+  no_approved: 'Немає схвалених заявок'
   no_pending: 'Немає заявок на розгляд'
+  pending_section_title: 'Заявки на розгляд'
+  approved_section_title: 'Схвалені заявки'
   reject_reason: 'Причина відмови'
   resubmit: 'Подати повторно'
   tournament_claims_title: 'Заявки на мої турніри'

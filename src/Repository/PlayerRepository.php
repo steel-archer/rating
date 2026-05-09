@@ -155,6 +155,22 @@ class PlayerRepository extends ServiceEntityRepository
         return $this->mapper->mapMultiple($rows, SuggestItemDTO::class);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findEmailByPlayerId(int $playerId): ?string
+    {
+        $result = $this->createQueryBuilder('p')
+            ->select('u.email')
+            ->join('p.user', 'u')
+            ->where('p.id = :id')
+            ->setParameter('id', $playerId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result['email'] ?? null;
+    }
+
     private function buildFilteredQuery(PlayerListRequestDTO $requestDto): QueryBuilder
     {
         $qb = $this->createQueryBuilder('p')

@@ -52,7 +52,8 @@ h2 {
 
 .meta {
     color: var(--text-secondary);
-    font-size: 15px;
+    font-size: 17px;
+    margin-bottom: 16px;
 }
 
 .meta span + span::before {

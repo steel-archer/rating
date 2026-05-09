@@ -8,8 +8,12 @@
 
 {% block body %}
     <h1>{{ player.fullName }}</h1>
-    {% if player.townName %}
-        <div class="meta"><span>{{ player.townName }}</span></div>
+
+    {% if player.townName or playerEmail %}
+        <div class="meta">
+            {% if player.townName %}<span>{{ player.townName }}</span>{% endif %}
+            {% if playerEmail %}<span>{{ 'common.email'|trans }}: {{ playerEmail }}</span>{% endif %}
+        </div>
     {% endif %}
 
     {% if player.squads is not empty %}
