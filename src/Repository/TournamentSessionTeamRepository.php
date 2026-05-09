@@ -116,6 +116,22 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<int>
+     */
+    public function findTeamIdsByTournament(Tournament $tournament): array
+    {
+        $rows = $this->createQueryBuilder('st')
+            ->select('DISTINCT IDENTITY(st.team) AS teamId')
+            ->join('st.tournamentSession', 'ts')
+            ->where('ts.tournament = :t')
+            ->setParameter('t', $tournament)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn(array $row) => (int) $row['teamId'], $rows);
+    }
+
+    /**
      * Fractional ranking: teams with the same score share the average of their positions.
      *
      * @param list<int> $sessionTeamIds

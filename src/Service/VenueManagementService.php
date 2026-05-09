@@ -15,18 +15,26 @@ use App\Repository\VenueRepository;
 use App\Repository\VenueRepresentativeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class VenueManagementService
 {
+    private const string CACHE_TAG = 'venues';
+
     public function __construct(
         private EntityManagerInterface $em,
         private VenueRepository $venueRepository,
         private VenueRepresentativeRepository $representativeRepository,
         private TownRepository $townRepository,
         private PlayerRepository $playerRepository,
+        private TagAwareCacheInterface $cache,
     ) {
     }
 
+    /**
+     * @throws LogicException
+     */
     public function create(CreateRequestDTO $dto, Player $player): Venue
     {
         $town = $this->townRepository->find($dto->townId)
@@ -53,6 +61,10 @@ class VenueManagementService
         return $venue;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     */
     public function approve(Venue $venue): void
     {
         if ($venue->isApproved()) {
@@ -61,8 +73,13 @@ class VenueManagementService
 
         $venue->setIsApproved(true);
         $this->em->flush();
+
+        $this->cache->invalidateTags([self::CACHE_TAG]);
     }
 
+    /**
+     * @throws LogicException
+     */
     public function reject(Venue $venue): void
     {
         if ($venue->isApproved()) {
@@ -78,6 +95,10 @@ class VenueManagementService
         $this->em->flush();
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     */
     public function updateRepresentatives(Venue $venue, UpdateRequestDTO $dto): void
     {
         if (!$venue->isApproved()) {
@@ -85,6 +106,8 @@ class VenueManagementService
         }
 
         $this->syncRepresentatives($venue, $dto->representatives);
+
+        $this->cache->invalidateTags([self::CACHE_TAG]);
     }
 
     /**

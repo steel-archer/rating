@@ -7,10 +7,16 @@ namespace App\Service;
 use App\DTO\Response\Player\TournamentAppearanceDTO;
 use App\Entity\Player;
 use App\Entity\TournamentSessionTeamPlayer;
+use App\Enum\CacheTag;
 use App\Mapping\Mapper;
 use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Doctrine\DBAL\Exception as DbalException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class PlayerTournamentService
 {
@@ -20,14 +26,52 @@ class PlayerTournamentService
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private Mapper $mapper,
+        private TagAwareCacheInterface $cache,
     ) {
     }
 
     /**
      * @throws DbalException
+     * @throws InvalidArgumentException
      * @return list<TournamentAppearanceDTO>
      */
     public function getTournaments(Player $player, int $page): array
+    {
+        $playerId = $player->getId();
+        $cacheKey = "player_tournaments_{$playerId}_page_{$page}";
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($player, $page, $playerId) {
+            $item->tag([CacheTag::player($playerId)]);
+            $item->expiresAfter(3600);
+
+            return $this->buildTournaments($player, $page);
+        });
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function getLastPageNumber(Player $player): int
+    {
+        $playerId = $player->getId();
+        $cacheKey = "player_tournaments_last_page_{$playerId}";
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($player, $playerId) {
+            $item->tag([CacheTag::player($playerId)]);
+            $item->expiresAfter(3600);
+
+            $total = $this->sessionTeamPlayerRepository->countByPlayer($player);
+
+            return max(1, (int) ceil($total / self::PER_PAGE));
+        });
+    }
+
+    /**
+     * @return list<TournamentAppearanceDTO>
+     */
+    private function buildTournaments(Player $player, int $page): array
     {
         $appearances = $this->sessionTeamPlayerRepository->findByPlayerPaginated($player, $page, self::PER_PAGE);
         if ($appearances === []) {
@@ -44,12 +88,5 @@ class PlayerTournamentService
             fn(TournamentSessionTeamPlayer $a) => $this->mapper->map($a, TournamentAppearanceDTO::class, ['places' => $places]),
             $appearances,
         );
-    }
-
-    public function getLastPageNumber(Player $player): int
-    {
-        $total = $this->sessionTeamPlayerRepository->countByPlayer($player);
-
-        return max(1, (int) ceil($total / self::PER_PAGE));
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Player;
+use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
@@ -52,6 +53,23 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->setParameter('player', $player)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function findPlayerIdsByTournament(Tournament $tournament): array
+    {
+        $rows = $this->createQueryBuilder('stp')
+            ->select('DISTINCT IDENTITY(stp.player) AS playerId')
+            ->join('stp.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 'ts')
+            ->where('ts.tournament = :t')
+            ->setParameter('t', $tournament)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn(array $row) => (int) $row['playerId'], $rows);
     }
 
     /** @return list<TournamentSessionTeamPlayer> */

@@ -7,12 +7,18 @@ namespace App\Service;
 use App\DTO\Response\Team\TournamentEntryDTO;
 use App\Entity\Team;
 use App\Entity\TournamentSessionTeam;
+use App\Enum\CacheTag;
 use App\Helper\SessionTeamPlayerGrouper;
 use App\Mapping\Mapper;
 use App\Repository\TeamPlayerRepository;
 use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Doctrine\DBAL\Exception as DbalException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class TeamTournamentService
 {
@@ -23,14 +29,52 @@ class TeamTournamentService
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private TeamPlayerRepository $teamPlayerRepository,
         private Mapper $mapper,
+        private TagAwareCacheInterface $cache,
     ) {
     }
 
     /**
      * @throws DbalException
+     * @throws InvalidArgumentException
      * @return list<TournamentEntryDTO>
      */
     public function getTournaments(Team $team, int $page): array
+    {
+        $teamId = $team->getId();
+        $cacheKey = "team_tournaments_{$teamId}_page_{$page}";
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($team, $page, $teamId) {
+            $item->tag([CacheTag::team($teamId)]);
+            $item->expiresAfter(3600);
+
+            return $this->buildTournaments($team, $page);
+        });
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function getLastPageNumber(Team $team): int
+    {
+        $teamId = $team->getId();
+        $cacheKey = "team_tournaments_last_page_{$teamId}";
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($team, $teamId) {
+            $item->tag([CacheTag::team($teamId)]);
+            $item->expiresAfter(3600);
+
+            $total = $this->sessionTeamRepository->countByTeam($team);
+
+            return max(1, (int) ceil($total / self::PER_PAGE));
+        });
+    }
+
+    /**
+     * @return list<TournamentEntryDTO>
+     */
+    private function buildTournaments(Team $team, int $page): array
     {
         $sessionTeams = $this->sessionTeamRepository->findByTeamPaginated($team, $page, self::PER_PAGE);
         if ($sessionTeams === []) {
@@ -56,13 +100,6 @@ class TeamTournamentService
             },
             $sessionTeams,
         );
-    }
-
-    public function getLastPageNumber(Team $team): int
-    {
-        $total = $this->sessionTeamRepository->countByTeam($team);
-
-        return max(1, (int) ceil($total / self::PER_PAGE));
     }
 
     /**

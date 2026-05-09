@@ -9,6 +9,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       mailer:
         condition: service_started
     healthcheck:
@@ -43,6 +45,18 @@ services:
       - db_data:/var/lib/mysql
       - ./docker/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis_data:/data
+
   mailer:
     image: axllent/mailpit
     ports:
@@ -54,3 +68,4 @@ services:
 
 volumes:
   db_data:
+  redis_data:

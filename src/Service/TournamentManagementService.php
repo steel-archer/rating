@@ -15,10 +15,12 @@ use App\Repository\PlayerRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Repository\TournamentOfficialRepository;
+use App\Service\Cache\CacheInvalidator;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Clock\ClockInterface;
 
 class TournamentManagementService
@@ -32,6 +34,7 @@ class TournamentManagementService
         private SeasonRepository $seasonRepository,
         private TournamentValidator $validator,
         private ClockInterface $clock,
+        private CacheInvalidator $cacheInvalidator,
     ) {
     }
 
@@ -56,6 +59,7 @@ class TournamentManagementService
 
     /**
      * @throws DateMalformedStringException
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function update(Tournament $tournament, EditRequestDTO $dto): void
@@ -93,8 +97,14 @@ class TournamentManagementService
         }
 
         $this->em->flush();
+
+        $this->cacheInvalidator->invalidateTournament($tournament);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     */
     public function publish(Tournament $tournament): void
     {
         if ($tournament->getStatus() === TournamentStatus::Published) {
@@ -108,8 +118,13 @@ class TournamentManagementService
 
         $tournament->setStatus(TournamentStatus::Published);
         $this->em->flush();
+
+        $this->cacheInvalidator->invalidateTournamentWithParticipants($tournament);
     }
 
+    /**
+     * @throws LogicException
+     */
     public function delete(Tournament $tournament): void
     {
         if ($tournament->getStatus() === TournamentStatus::Published) {
