@@ -83,6 +83,21 @@ jobs:
           php bin/console doctrine:migrations:migrate --no-interaction
           php bin/phpunit --coverage-clover coverage.xml --coverage-text | tee coverage-output.txt
 
+      - name: ESLint
+        id: eslint
+        continue-on-error: true
+        run: npx eslint assets/
+
+      - name: Stylelint
+        id: stylelint
+        continue-on-error: true
+        run: npx stylelint 'assets/styles/**/*.css'
+
+      - name: TwigCS
+        id: twigcs
+        continue-on-error: true
+        run: vendor/bin/twig-cs-fixer lint
+
       - name: Generate badges
         if: always()
         run: |
@@ -107,30 +122,33 @@ jobs:
             curl -s "https://img.shields.io/badge/PHPStan-level%206-red" > .github/badges/phpstan.svg
           fi
 
+          if [[ "${{ steps.eslint.outcome }}" == "success" ]]; then
+            curl -s "https://img.shields.io/badge/ESLint-passing-brightgreen" > .github/badges/eslint.svg
+          else
+            curl -s "https://img.shields.io/badge/ESLint-failing-red" > .github/badges/eslint.svg
+          fi
+
+          if [[ "${{ steps.stylelint.outcome }}" == "success" ]]; then
+            curl -s "https://img.shields.io/badge/Stylelint-passing-brightgreen" > .github/badges/stylelint.svg
+          else
+            curl -s "https://img.shields.io/badge/Stylelint-failing-red" > .github/badges/stylelint.svg
+          fi
+
+          if [[ "${{ steps.twigcs.outcome }}" == "success" ]]; then
+            curl -s "https://img.shields.io/badge/TwigCS-passing-brightgreen" > .github/badges/twigcs.svg
+          else
+            curl -s "https://img.shields.io/badge/TwigCS-failing-red" > .github/badges/twigcs.svg
+          fi
+
       - name: Push badges
         if: always() && github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add .github/badges/coverage.svg .github/badges/phpcs.svg .github/badges/phpstan.svg
+          git add .github/badges/coverage.svg .github/badges/phpcs.svg .github/badges/phpstan.svg .github/badges/eslint.svg .github/badges/stylelint.svg .github/badges/twigcs.svg
           git diff --cached --quiet && exit 0
           git commit -m "Update badges [skip ci]"
           git push
-
-      - name: ESLint
-        id: eslint
-        continue-on-error: true
-        run: npx eslint assets/
-
-      - name: Stylelint
-        id: stylelint
-        continue-on-error: true
-        run: npx stylelint 'assets/styles/**/*.css'
-
-      - name: TwigCS
-        id: twigcs
-        continue-on-error: true
-        run: vendor/bin/twig-cs-fixer lint
 
       - name: Composer audit
         id: composer_audit
