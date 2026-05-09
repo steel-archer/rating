@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Request;
 
+use App\Validator\UkrainianName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class VenueListRequestDTO
@@ -22,6 +23,7 @@ final readonly class VenueListRequestDTO
         public ?int $countryId = null,
 
         #[Assert\Length(max: 255)]
+        #[UkrainianName]
         public ?string $representative = null,
     ) {
     }

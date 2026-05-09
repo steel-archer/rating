@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Request;
 
+use App\Validator\UkrainianName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class PlayerListRequestDTO
@@ -13,12 +14,15 @@ final readonly class PlayerListRequestDTO
         public int $page = 1,
 
         #[Assert\Length(max: 255)]
+        #[UkrainianName]
         public ?string $lastName = null,
 
         #[Assert\Length(max: 255)]
+        #[UkrainianName]
         public ?string $firstName = null,
 
         #[Assert\Length(max: 255)]
+        #[UkrainianName]
         public ?string $patronymic = null,
 
         #[Assert\Positive]

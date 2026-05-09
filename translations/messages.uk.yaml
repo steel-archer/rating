@@ -81,6 +81,9 @@ moderator:
   tournaments: 'Турніри'
   venues: 'Майданчики'
 
+name:
+  invalid_characters: 'Дозволені лише українські літери, пробіл, апостроф та дефіс'
+
 nav:
   home: 'Головна'
   moderation: 'Модерація'
@@ -163,6 +166,9 @@ squad:
 
 team:
   base_squads: 'Базові склади'
+
+town:
+  invalid_characters: 'Дозволені лише українські літери, пробіл, апостроф, дефіс, дужки, крапка та кома'
 
 tournament:
   deleted: 'Турнір видалено'

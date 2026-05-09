@@ -73,7 +73,7 @@ class SearchControllerTest extends WebTestCase
         ];
 
         yield 'search with no results' => [
-            'uri' => '/player-claim/search?lastName=Nonexistent',
+            'uri' => '/player-claim/search?lastName=%D0%9D%D0%B5%D1%96%D1%81%D0%BD%D1%83%D1%94',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,
