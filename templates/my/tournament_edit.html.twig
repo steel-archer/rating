@@ -108,7 +108,7 @@
                         {% for official in roleOfficials %}
                             <div class="official-entry">
                                 <input type="hidden" name="{{ cfg.key }}[]" value="{{ official.playerId }}">
-                                {% include '_player_link.html.twig' with {playerId: official.playerId, playerName: official.playerName, hasUser: official.hasUser} only %}
+                                {{ include('_player_link.html.twig', {playerId: official.playerId, playerName: official.playerName, hasUser: official.hasUser}, with_context: false) }}
                                 {% if not readonly and not (cfg.role == 'organizer' and official.playerId == tournament.createdByPlayerId) %}
                                     <button type="button" class="btn-remove">×</button>
                                 {% endif %}

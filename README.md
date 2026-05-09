@@ -79,13 +79,19 @@ docker compose up -d --build
 docker compose exec app composer install
 ```
 
-### 5. Створіть таблиці в базі даних
+### 5. Встановіть залежності Node.js (для лінтерів)
+
+```bash
+docker compose exec app npm install
+```
+
+### 6. Створіть таблиці в базі даних
 
 ```bash
 docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-### 6. (Опціонально) Завантажте тестові дані
+### 7. (Опціонально) Завантажте тестові дані
 
 Якщо хочете наповнити базу тестовими турнірами, командами та гравцями:
 
@@ -93,7 +99,7 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 docker compose exec app php bin/console doctrine:fixtures:load --append --no-interaction
 ```
 
-### 7. Налаштуйте адміністратора
+### 8. Налаштуйте адміністратора
 
 Адміністратори та модератори — це гравці з додатковими правами. Щоб створити першого адміна:
 
@@ -156,6 +162,24 @@ docker compose exec app vendor/bin/phpcbf
 
 ```bash
 docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M
+```
+
+Лінтинг JavaScript (ESLint):
+
+```bash
+docker compose exec app npx eslint assets/
+```
+
+Лінтинг CSS (Stylelint):
+
+```bash
+docker compose exec app npx stylelint 'assets/styles/**/*.css'
+```
+
+Лінтинг Twig-шаблонів (TwigCS Fixer):
+
+```bash
+docker compose exec app vendor/bin/twig-cs-fixer lint
 ```
 
 Тести з покриттям коду:

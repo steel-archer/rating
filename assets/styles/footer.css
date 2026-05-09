@@ -23,15 +23,15 @@ footer a:hover {
     color: var(--text);
 }
 
-@media (min-width: 1400px) {
+@media (width >= 1400px) {
     footer .footer-inner { max-width: 1320px; }
 }
 
-@media (min-width: 1800px) {
+@media (width >= 1800px) {
     footer .footer-inner { max-width: 1600px; }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     footer .footer-inner {
         flex-direction: column;
         gap: 8px;

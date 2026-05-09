@@ -122,6 +122,7 @@
         "symfony/maker-bundle": "^1.67",
         "symfony/stopwatch": "8.0.*",
         "symfony/web-profiler-bundle": "8.0.*",
-        "theofidry/alice-data-fixtures": "^1.11"
+        "theofidry/alice-data-fixtures": "^1.11",
+        "vincentlanglet/twig-cs-fixer": "^3.14"
     }
 }

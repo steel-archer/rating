@@ -15,7 +15,7 @@
             <h2>{{ 'venue.representatives'|trans }}</h2>
             <ul class="representatives-list">
                 {% for rep in venue.representatives %}
-                    <li>{% include '_player_link.html.twig' with {playerId: rep.playerId, playerName: rep.playerName, hasUser: rep.hasUser} only %}</li>
+                    <li>{{ include('_player_link.html.twig', {playerId: rep.playerId, playerName: rep.playerName, hasUser: rep.hasUser}, with_context: false) }}</li>
                 {% endfor %}
             </ul>
         </div>

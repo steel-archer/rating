@@ -34,7 +34,7 @@
                             <td>{{ venue.townName }}</td>
                             <td>
                                 {% if venue.createdByPlayerId %}
-                                    {% include '_player_link.html.twig' with {playerId: venue.createdByPlayerId, playerName: venue.createdByPlayerName, hasUser: true} only %}
+                                    {{ include('_player_link.html.twig', {playerId: venue.createdByPlayerId, playerName: venue.createdByPlayerName, hasUser: true}, with_context: false) }}
                                 {% else %}
                                     —
                                 {% endif %}

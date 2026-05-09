@@ -1,6 +1,6 @@
 header {
     backdrop-filter: saturate(180%) blur(20px);
-    background: rgba(251, 251, 253, 0.8);
+    background: rgb(251 251 253 / 80%);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
@@ -97,7 +97,7 @@ header nav a:hover {
     border-radius: var(--radius);
     padding: 4px 0;
     min-width: 160px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
 }
 
 .dropdown:hover .dropdown-menu {

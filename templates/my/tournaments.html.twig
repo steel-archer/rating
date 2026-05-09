@@ -64,11 +64,11 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {
+        {{ include('_pagination.html.twig', {
             paginationRoute: 'my_tournaments',
             paginationParams: {sort: sort},
             page: page,
             lastPage: lastPage,
-        } %}
+        }) }}
     {% endif %}
 {% endblock %}

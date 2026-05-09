@@ -41,6 +41,6 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'venue_list', paginationParams: filters} %}
+        {{ include('_pagination.html.twig', {paginationRoute: 'venue_list', paginationParams: filters}) }}
     </div>
 </turbo-frame>

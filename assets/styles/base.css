@@ -1,4 +1,10 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 :root {
     --text: #1d1d1f;
@@ -8,7 +14,7 @@
     --border: #d2d2d7;
     --accent: #0071e3;
     --radius: 12px;
-    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    --font: -apple-system, blinkmacsystemfont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
     --content-padding: 24px;
 }
 

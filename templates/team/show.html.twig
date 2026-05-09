@@ -17,7 +17,7 @@
                     <dt>{{ squad.seasonName }}</dt>
                     <dd>
                         {% for player in squad.players %}
-                            {% include '_player_link.html.twig' with {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser} only %}{% if player.isCaptain %} <span class="captain">(к)</span>{% endif %}<br>
+                            {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}{% if player.isCaptain %} <span class="captain">(к)</span>{% endif %}<br>
                         {% endfor %}
                     </dd>
                 {% endfor %}

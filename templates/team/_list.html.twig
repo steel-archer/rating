@@ -48,6 +48,6 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'team_list', paginationParams: filters} %}
+        {{ include('_pagination.html.twig', {paginationRoute: 'team_list', paginationParams: filters}) }}
     </div>
 </turbo-frame>

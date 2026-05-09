@@ -37,7 +37,7 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'player_claim_search', paginationParams: filters} %}
+        {{ include('_pagination.html.twig', {paginationRoute: 'player_claim_search', paginationParams: filters}) }}
     {% elseif filters is not empty %}
         <p>{{ 'common.not_found'|trans }}</p>
     {% endif %}

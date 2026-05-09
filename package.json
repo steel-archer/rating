@@ -1,0 +1,15 @@
+{
+    "private": true,
+    "type": "module",
+    "devDependencies": {
+        "@eslint/js": "^9.28.0",
+        "eslint": "^9.28.0",
+        "globals": "^16.1.0",
+        "stylelint": "^16.19.1",
+        "stylelint-config-standard": "^38.0.0"
+    },
+    "scripts": {
+        "eslint": "eslint assets/",
+        "stylelint": "stylelint 'assets/styles/**/*.css'"
+    }
+}

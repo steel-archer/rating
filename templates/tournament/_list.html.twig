@@ -34,6 +34,6 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'tournament_list', paginationParams: filters} %}
+        {{ include('_pagination.html.twig', {paginationRoute: 'tournament_list', paginationParams: filters}) }}
     </div>
 </turbo-frame>

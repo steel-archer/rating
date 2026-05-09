@@ -12,7 +12,7 @@
 .tournament-form select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    box-shadow: 0 0 0 3px rgb(0 113 227 / 10%);
 }
 
 .tournament-form input[type="date"] {
@@ -67,7 +67,7 @@
 .tournament-form input:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    box-shadow: 0 0 0 3px rgb(0 113 227 / 10%);
 }
 
 .tournament-form .form-group {

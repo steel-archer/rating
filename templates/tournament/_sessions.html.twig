@@ -21,10 +21,10 @@
                             <td><a href="{{ path('venue_show', {id: s.venueId}) }}" data-turbo-frame="_top" data-turbo="false">{{ s.venueName }}</a></td>
                             <td>{{ s.townName }}</td>
                             <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td>{% include '_player_link.html.twig' with {playerId: s.representativeId, playerName: s.representativeName, hasUser: s.representativeHasUser, turboFrame: true} only %}</td>
+                            <td>{{ include('_player_link.html.twig', {playerId: s.representativeId, playerName: s.representativeName, hasUser: s.representativeHasUser, turboFrame: true}, with_context: false) }}</td>
                             <td>
                                 {% if s.hostId %}
-                                    {% include '_player_link.html.twig' with {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true} only %}
+                                    {{ include('_player_link.html.twig', {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true}, with_context: false) }}
                                 {% else %}
                                     —
                                 {% endif %}
@@ -36,7 +36,7 @@
                 </tbody>
             </table>
 
-            {% include '_pagination.html.twig' with {paginationRoute: 'tournament_sessions_list', paginationParams: {id: tournament.id}} %}
+            {{ include('_pagination.html.twig', {paginationRoute: 'tournament_sessions_list', paginationParams: {id: tournament.id}}) }}
         {% endif %}
     </div>
 </turbo-frame>

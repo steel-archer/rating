@@ -41,6 +41,7 @@ tr.row-dark { background: #e8e8ed; }
 
 .player-base { font-weight: 600; }
 .player-guest { font-weight: 400; }
+
 .squad-weak .player-base,
 .squad-weak .player-guest { font-style: italic; }
 

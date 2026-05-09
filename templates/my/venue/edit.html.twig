@@ -37,7 +37,7 @@
                     {% for rep in representatives %}
                         <div class="official-entry">
                             <input type="hidden" name="representatives[]" value="{{ rep.playerId }}">
-                            {% include '_player_link.html.twig' with {playerId: rep.playerId, playerName: rep.playerName, hasUser: rep.hasUser} only %}
+                            {{ include('_player_link.html.twig', {playerId: rep.playerId, playerName: rep.playerName, hasUser: rep.hasUser}, with_context: false) }}
                             {% if rep.playerId != venue.createdByPlayerId %}
                                 <button type="button" class="btn-remove">×</button>
                             {% endif %}

@@ -84,7 +84,7 @@
 
 [data-town-is-new] {
     border-color: var(--warning, #e6a700);
-    background-color: rgba(230, 167, 0, 0.05);
+    background-color: rgb(230 167 0 / 5%);
 }
 
 .search-input-sm {

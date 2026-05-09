@@ -48,6 +48,15 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci
+
       - name: Create test database
         run: mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS rating_test; GRANT ALL ON rating_test.* TO 'rating_user'@'%';"
 
@@ -108,6 +117,21 @@ jobs:
           git commit -m "Update badges [skip ci]"
           git push
 
+      - name: ESLint
+        id: eslint
+        continue-on-error: true
+        run: npx eslint assets/
+
+      - name: Stylelint
+        id: stylelint
+        continue-on-error: true
+        run: npx stylelint 'assets/styles/**/*.css'
+
+      - name: TwigCS
+        id: twigcs
+        continue-on-error: true
+        run: vendor/bin/twig-cs-fixer lint
+
       - name: Composer audit
         id: composer_audit
         continue-on-error: true
@@ -135,12 +159,18 @@ jobs:
           echo "PHPCS: ${{ steps.phpcs.outcome }}"
           echo "PHPStan: ${{ steps.phpstan.outcome }}"
           echo "PHPUnit: ${{ steps.phpunit.outcome }}"
+          echo "ESLint: ${{ steps.eslint.outcome }}"
+          echo "Stylelint: ${{ steps.stylelint.outcome }}"
+          echo "TwigCS: ${{ steps.twigcs.outcome }}"
           echo "Composer audit: ${{ steps.composer_audit.outcome }}"
           echo "Security check: ${{ steps.security_check.outcome }}"
           echo "Gitleaks: ${{ steps.gitleaks.outcome }}"
           if [[ "${{ steps.phpcs.outcome }}" == "failure" || \
                 "${{ steps.phpstan.outcome }}" == "failure" || \
                 "${{ steps.phpunit.outcome }}" == "failure" || \
+                "${{ steps.eslint.outcome }}" == "failure" || \
+                "${{ steps.stylelint.outcome }}" == "failure" || \
+                "${{ steps.twigcs.outcome }}" == "failure" || \
                 "${{ steps.composer_audit.outcome }}" == "failure" || \
                 "${{ steps.security_check.outcome }}" == "failure" || \
                 "${{ steps.gitleaks.outcome }}" == "failure" ]]; then

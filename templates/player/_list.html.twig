@@ -32,7 +32,7 @@
             <tbody>
                 {% for p in players %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                        <td>{% include '_player_link.html.twig' with {playerId: p.id, playerName: p.fullName, hasUser: p.hasUser, turboFrame: true} only %}</td>
+                        <td>{{ include('_player_link.html.twig', {playerId: p.id, playerName: p.fullName, hasUser: p.hasUser, turboFrame: true}, with_context: false) }}</td>
                         <td>{{ p.townName ?? '' }}</td>
                         <td>
                             {% if p.teamId %}
@@ -46,6 +46,6 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'player_list', paginationParams: filters} %}
+        {{ include('_pagination.html.twig', {paginationRoute: 'player_list', paginationParams: filters}) }}
     </div>
 </turbo-frame>

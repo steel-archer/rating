@@ -26,6 +26,6 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'player_tournaments', paginationParams: {id: playerId}} %}
+        {{ include('_pagination.html.twig', {paginationRoute: 'player_tournaments', paginationParams: {id: playerId}}) }}
     </div>
 </turbo-frame>

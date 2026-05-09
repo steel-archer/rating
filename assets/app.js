@@ -1,13 +1,13 @@
 // @ts-check
 import './stimulus_bootstrap.js';
 import './styles/app.css';
-import './suggest.js';
 import './officials-suggest.js';
-import './tournament-edit.js';
-import './venue-edit.js';
 import './player-claim.js';
 import './session-claim.js';
+import './suggest.js';
 import './sync-url.js';
+import './tournament-edit.js';
+import './venue-edit.js';
 import { trans } from './trans.js';
 
 let allExpanded = false;

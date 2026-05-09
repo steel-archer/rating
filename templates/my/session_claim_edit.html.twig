@@ -44,7 +44,7 @@
                     {% if claim.hostId %}
                         <div class="official-entry">
                             <input type="hidden" name="hostId" value="{{ claim.hostId }}">
-                            {% include '_player_link.html.twig' with {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser} only %}
+                            {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
                             <button type="button" class="btn-remove">×</button>
                         </div>
                     {% endif %}

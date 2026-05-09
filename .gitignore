@@ -9,7 +9,9 @@
 /assets/vendor/
 /var/
 /vendor/
+/node_modules/
 /phpunit.xml
 /.phpunit.cache/
+/.twig-cs-fixer.cache
 /coverage/
 .idea/

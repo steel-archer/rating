@@ -14,7 +14,7 @@ export function apiPost(url, data) {
     }).then(response =>
         response.json()
             .then(body => ({ok: response.ok, body}))
-            .catch(() => ({ok: false, body: /** @type {Record<string, any>} */ ({error: response.status === 404 ? 'common.not_found' : 'common.error'})}))
+            .catch(() => ({ok: false, body: /** @type {Record<string, any>} */ ({error: response.status === 404 ? 'common.not_found' : 'common.error'})})),
     );
 }
 

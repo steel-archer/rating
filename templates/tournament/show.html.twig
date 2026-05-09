@@ -56,7 +56,7 @@
                             <dd>
                                 {% for p in tournament.officials[role] %}
                                     {% if not loop.first %}, {% endif %}
-                                    {% include '_player_link.html.twig' with {playerId: p.playerId, playerName: p.playerName, hasUser: p.hasUser} only %}
+                                    {{ include('_player_link.html.twig', {playerId: p.playerId, playerName: p.playerName, hasUser: p.hasUser}, with_context: false) }}
                                 {% endfor %}
                             </dd>
                         {% endif %}

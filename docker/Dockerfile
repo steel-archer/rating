@@ -1,6 +1,6 @@
 FROM php:8.5-apache
 RUN apt-get update \
-    && apt-get install -y libicu-dev git unzip curl \
+    && apt-get install -y libicu-dev git unzip curl nodejs npm \
     && docker-php-ext-install mysqli pdo pdo_mysql intl \
     && pecl install redis pcov && docker-php-ext-enable redis pcov
 RUN echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short-open-tag.ini

@@ -26,7 +26,7 @@
                             <div class="squad-list" hidden>
                                 {% for player in team.players %}
                                     <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
-                                        {% include '_player_link.html.twig' with {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser, turboFrame: true} only %}
+                                        {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser, turboFrame: true}, with_context: false) }}
                                         {%- if player.isCaptain %} (к){% endif -%}
                                     </div>
                                 {% endfor %}
@@ -37,6 +37,6 @@
             </tbody>
         </table>
 
-        {% include '_pagination.html.twig' with {paginationRoute: 'tournament_results', paginationParams: {id: tournament.id}} %}
+        {{ include('_pagination.html.twig', {paginationRoute: 'tournament_results', paginationParams: {id: tournament.id}}) }}
     </div>
 </turbo-frame>

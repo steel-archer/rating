@@ -41,7 +41,7 @@
                             {% if claim.isNew %}
                                 {{ claim.lastName }} {{ claim.firstName ?? '' }} {{ claim.patronymic ?? '' }}
                             {% else %}
-                                {% include '_player_link.html.twig' with {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser} only %}
+                                {{ include('_player_link.html.twig', {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser}, with_context: false) }}
                             {% endif %}
                         </td>
                         <td>

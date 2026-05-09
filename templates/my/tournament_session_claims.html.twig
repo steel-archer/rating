@@ -35,10 +35,10 @@
                                 <td>{{ claim.townName }}</td>
                                 <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
                                 <td>{{ claim.estimatedTeams ?? '—' }}</td>
-                                <td>{% include '_player_link.html.twig' with {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser} only %}</td>
+                                <td>{{ include('_player_link.html.twig', {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser}, with_context: false) }}</td>
                                 <td>
                                     {% if claim.hostId %}
-                                        {% include '_player_link.html.twig' with {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser} only %}
+                                        {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
                                     {% else %}
                                         —
                                     {% endif %}
