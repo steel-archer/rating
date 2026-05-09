@@ -214,7 +214,11 @@ class TournamentControllerTest extends WebTestCase
                 json_encode(['name' => 'Hack', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_draft']->getId());
+                static::assertSame('Мій чернетковий турнір', $tournament->getName());
             },
         ];
 
@@ -290,7 +294,11 @@ class TournamentControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
             ),
             'expectedStatus' => 404,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentModerationClaim::class)
+                    ->findOneBy(['tournament' => $objects['tournament_draft']->getId()]);
+                static::assertNull($claim);
             },
         ];
 
@@ -418,7 +426,11 @@ class TournamentControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
             ),
             'expectedStatus' => 404,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_approved']->getId());
+                static::assertSame(TournamentStatus::Draft, $tournament->getStatus());
             },
         ];
 

@@ -290,7 +290,11 @@ class VenueControllerTest extends WebTestCase
                 json_encode(['representatives' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $reps = static::getContainer()->get('doctrine')
+                    ->getRepository(VenueRepresentative::class)
+                    ->findBy(['venue' => $objects['venue_approved_owned']->getId()]);
+                static::assertCount(1, $reps);
             },
         ];
 
