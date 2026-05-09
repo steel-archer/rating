@@ -9,10 +9,58 @@
 {% block body %}
     <h1>{{ player.fullName }}</h1>
 
-    {% if player.townName or playerEmail %}
+    {% if player.townName %}
         <div class="meta">
-            {% if player.townName %}<span>{{ player.townName }}</span>{% endif %}
-            {% if playerEmail %}<span>{{ 'common.email'|trans }}: {{ playerEmail }}</span>{% endif %}
+            <span>{{ player.townName }}</span>
+        </div>
+    {% endif %}
+
+    {% if contacts %}
+        <div class="card" id="player-contacts">
+            <h2>{{ 'contact.title'|trans }}</h2>
+            <div id="contacts-flash" hidden></div>
+
+            {% if canEditContacts %}
+                <form id="contacts-form" data-url="{{ path('my_contacts_update') }}">
+                    <div class="contacts-row">
+                        <div class="form-group">
+                            <label for="contact-email">✉️ {{ 'common.email'|trans }}</label>
+                            <span class="contact-value" id="contact-email">{{ contacts.email }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-telegram">💬 {{ 'contact.telegram'|trans }} <span class="hint-inline">({{ 'contact.optional'|trans }})</span></label>
+                            <input type="text" id="contact-telegram" name="telegram" value="{{ contacts.telegram }}" placeholder="{{ 'contact.telegram.placeholder'|trans }}" class="search-input" maxlength="32">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-facebook">👤 {{ 'contact.facebook'|trans }} <span class="hint-inline">({{ 'contact.optional'|trans }})</span></label>
+                            <input type="text" id="contact-facebook" name="facebook" value="{{ contacts.facebook }}" placeholder="{{ 'contact.facebook.placeholder'|trans }}" class="search-input" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-phone">📞 {{ 'contact.phone'|trans }} <span class="hint-inline">({{ 'contact.optional'|trans }})</span></label>
+                            <input type="tel" id="contact-phone" name="phone" value="{{ contacts.phone }}" placeholder="{{ 'contact.phone.placeholder'|trans }}" class="search-input" maxlength="20">
+                        </div>
+                    </div>
+                    <button type="submit" class="search-btn">{{ 'contact.save'|trans }}</button>
+                </form>
+                <p class="contacts-info">🔒 {{ 'contact.visibility_warning'|trans }}</p>
+            {% else %}
+                <dl>
+                    <dt>✉️ {{ 'common.email'|trans }}</dt>
+                    <dd>{{ contacts.email }}</dd>
+                    {% if contacts.telegram %}
+                        <dt>💬 {{ 'contact.telegram'|trans }}</dt>
+                        <dd><a href="https://t.me/{{ contacts.telegram }}" target="_blank" rel="noopener">@{{ contacts.telegram }}</a></dd>
+                    {% endif %}
+                    {% if contacts.facebook %}
+                        <dt>👤 {{ 'contact.facebook'|trans }}</dt>
+                        <dd><a href="https://facebook.com/{{ contacts.facebook }}" target="_blank" rel="noopener">{{ contacts.facebook }}</a></dd>
+                    {% endif %}
+                    {% if contacts.phone %}
+                        <dt>📞 {{ 'contact.phone'|trans }}</dt>
+                        <dd>{{ contacts.phone }}</dd>
+                    {% endif %}
+                </dl>
+            {% endif %}
         </div>
     {% endif %}
 

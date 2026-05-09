@@ -21,6 +21,9 @@ function initPlayerClaimNewForm() {
             patronymic: /** @type {HTMLInputElement} */ (form.querySelector('[name="patronymic"]')).value || null,
             townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
             townName: null,
+            telegram: getContactValue('telegram'),
+            facebook: getContactValue('facebook'),
+            phone: getContactValue('phone'),
         };
 
         if (!data.townId) {
@@ -51,7 +54,12 @@ function initPlayerClaimActions() {
                 '/player-claim/existing',
                 /** @type {HTMLButtonElement} */ (existingBtn),
                 {
-                    data: {playerId},
+                    data: {
+                        playerId,
+                        telegram: getContactValue('telegram'),
+                        facebook: getContactValue('facebook'),
+                        phone: getContactValue('phone'),
+                    },
                     onSuccess: () => { window.location.href = '/player-claim/submitted'; },
                 },
             );
@@ -104,6 +112,15 @@ function removeClaimRow(btn) {
 }
 
 initPlayerClaimActions();
+
+/**
+ * @param {string} name
+ * @returns {string|null}
+ */
+function getContactValue(name) {
+    const input = /** @type {HTMLInputElement|null} */ (document.querySelector(`[name="${name}"]`));
+    return input ? input.value.trim() || null : null;
+}
 
 document.addEventListener('turbo:load', () => {
     initPlayerClaimNewForm();

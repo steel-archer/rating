@@ -3,7 +3,9 @@
                                 <td>{{ claim.townName }}</td>
                                 <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
                                 <td>{{ claim.estimatedTeams ?? '—' }}</td>
-                                <td>{{ include('_player_link.html.twig', {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser}, with_context: false) }}</td>
+                                <td>
+                                    {{ include('_player_link.html.twig', {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser, contactsTrigger: claim.sessionId}, with_context: false) }}
+                                </td>
                                 <td>{{ claim.playerEmail ?? '—' }}</td>
                                 <td>
                                     {% if claim.hostId %}

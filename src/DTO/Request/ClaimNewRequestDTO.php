@@ -10,8 +10,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     expression: 'this.townId !== null or (this.townName !== null and this.townName !== "")',
     message: 'player_claim.town_required',
 )]
-final readonly class ClaimNewRequestDTO
+final readonly class ClaimNewRequestDTO implements HasContactFields
 {
+    use ContactFieldsTrait;
+
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Length(max: 255)]
@@ -29,6 +31,13 @@ final readonly class ClaimNewRequestDTO
 
         #[Assert\Length(max: 255)]
         public ?string $townName = null,
+
+        ?string $telegram = null,
+        ?string $facebook = null,
+        ?string $phone = null,
     ) {
+        $this->telegram = $telegram;
+        $this->facebook = $facebook;
+        $this->phone = $phone;
     }
 }

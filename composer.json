@@ -12,6 +12,7 @@
         "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6.4",
+        "giggsey/libphonenumber-for-php": "^9.0",
         "knpuniversity/oauth2-client-bundle": "^2.20.2",
         "league/oauth2-google": "^5.0",
         "phpdocumentor/reflection-docblock": "^6.0.3",

@@ -7,6 +7,8 @@ import './session-claim.js';
 import './suggest.js';
 import './sync-url.js';
 import './tournament-edit.js';
+import './contacts.js';
+import './contacts-popover.js';
 import './venue-edit.js';
 import { trans } from './trans.js';
 

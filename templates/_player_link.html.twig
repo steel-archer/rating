@@ -1,6 +1,6 @@
+{%- set nameParts = playerName|split(' ')|filter(p => p != '') -%}
 {%- if hasUser ?? false -%}
-    <svg class="player-icon player-icon--active" viewBox="0 0 16 16" aria-hidden="true"><title>{{ 'player.has_user'|trans }}</title><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+<a href="{{ path('player_show', {id: playerId}) }}" data-turbo-frame="_top" data-turbo="false"><span class="nowrap"><svg class="player-icon player-icon--active{% if contactsTrigger is defined %} btn-contacts{% endif %}" viewBox="0 0 16 16" aria-label="{{ 'player.has_user'|trans }}"{% if contactsTrigger is defined %} data-contacts-trigger="{{ contactsTrigger }}" role="button" tabindex="0"{% endif %}><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>{{ nameParts|first }}</span>{% if nameParts|length > 1 %} {{ nameParts|slice(1)|join(' ') }}{% endif %}</a>
 {%- else -%}
-    <svg class="player-icon player-icon--inactive" viewBox="0 0 16 16" aria-hidden="true"><title>{{ 'player.no_user'|trans }}</title><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+<a href="{{ path('player_show', {id: playerId}) }}" data-turbo-frame="_top" data-turbo="false"><span class="nowrap"><svg class="player-icon player-icon--inactive" viewBox="0 0 16 16" aria-label="{{ 'player.no_user'|trans }}"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>{{ nameParts|first }}</span>{% if nameParts|length > 1 %} {{ nameParts|slice(1)|join(' ') }}{% endif %}</a>
 {%- endif -%}
-<a href="{{ path('player_show', {id: playerId}) }}" data-turbo-frame="_top" data-turbo="false">{{ playerName }}</a>

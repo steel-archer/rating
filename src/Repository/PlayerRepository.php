@@ -171,6 +171,22 @@ class PlayerRepository extends ServiceEntityRepository
         return $result['email'] ?? null;
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findUserByPlayerId(int $playerId): ?User
+    {
+        $player = $this->createQueryBuilder('p')
+            ->join('p.user', 'u')
+            ->addSelect('u')
+            ->where('p.id = :id')
+            ->setParameter('id', $playerId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $player?->getUser();
+    }
+
     private function buildFilteredQuery(PlayerListRequestDTO $requestDto): QueryBuilder
     {
         $qb = $this->createQueryBuilder('p')

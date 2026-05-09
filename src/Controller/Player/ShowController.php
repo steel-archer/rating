@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Player;
 
+use App\DTO\Response\UserContactsDTO;
 use App\Entity\User;
 use App\Repository\PlayerRepository;
 use App\Service\PlayerService;
@@ -21,7 +22,7 @@ class ShowController extends AbstractController
     ): Response {
         $player = $playerService->get($id);
 
-        $playerEmail = null;
+        $contacts = null;
         /** @var User|null $currentUser */
         $currentUser = $this->getUser();
 
@@ -30,13 +31,23 @@ class ShowController extends AbstractController
             $isModerator = $this->isGranted('ROLE_MODERATOR');
 
             if ($isOwnProfile || $isModerator) {
-                $playerEmail = $playerRepository->findEmailByPlayerId($id);
+                $playerUser = $playerRepository->findUserByPlayerId($id);
+
+                if ($playerUser !== null) {
+                    $contacts = new UserContactsDTO(
+                        email: $playerUser->getEmail(),
+                        telegram: $playerUser->getTelegram(),
+                        facebook: $playerUser->getFacebook(),
+                        phone: $playerUser->getPhone(),
+                    );
+                }
             }
         }
 
         return $this->render('player/show.html.twig', [
             'player' => $player,
-            'playerEmail' => $playerEmail,
+            'contacts' => $contacts,
+            'canEditContacts' => $currentUser?->getPlayer()?->getId() === $id,
         ]);
     }
 }

@@ -9,7 +9,10 @@ import { trans } from './trans.js';
 export function apiPost(url, data) {
     return fetch(url, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
         body: data !== undefined ? JSON.stringify(data) : undefined,
     }).then(response =>
         response.json()

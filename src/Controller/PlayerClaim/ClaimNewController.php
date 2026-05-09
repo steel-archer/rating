@@ -8,6 +8,7 @@ use App\DTO\Request\ClaimNewRequestDTO;
 use App\Entity\User;
 use App\Exception\PlayerClaimException;
 use App\Service\PlayerClaimService;
+use App\Service\UserContactsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -21,9 +22,12 @@ class ClaimNewController extends AbstractController
     public function __invoke(
         #[MapRequestPayload] ClaimNewRequestDTO $dto,
         PlayerClaimService $service,
+        UserContactsService $contactsService,
     ): JsonResponse {
         /** @var User $user */
         $user = $this->getUser();
+
+        $contactsService->updateFromDto($user, $dto);
 
         try {
             $service->claimNew($dto, $user);

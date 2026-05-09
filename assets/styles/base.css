@@ -104,6 +104,16 @@ a:hover {
     font-size: 14px;
 }
 
+.flash-success {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    color: #166534;
+    font-size: 14px;
+}
+
 .claim-actions {
     display: flex;
     gap: 8px;
@@ -154,4 +164,8 @@ a:hover {
 
 .btn-link:hover {
     text-decoration: underline;
+}
+
+.nowrap {
+    white-space: nowrap;
 }

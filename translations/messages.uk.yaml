@@ -23,6 +23,23 @@ common:
   tournament: 'Турнір'
   town: 'Місто'
 
+contact:
+  facebook: 'Facebook'
+  facebook.invalid: 'Невірний формат Facebook (лише літери, цифри та крапка)'
+  facebook.placeholder: 'username або ID'
+  optional: 'опціонально'
+  phone: 'Телефон'
+  phone.blocked_country: 'Номери з цієї країни заборонені'
+  phone.invalid: 'Невірний формат телефону (вкажіть з кодом країни, наприклад +380...)'
+  phone.placeholder: '+380XXXXXXXXX'
+  save: 'Зберегти'
+  saved: 'Контакти збережено'
+  telegram: 'Telegram'
+  telegram.invalid: 'Невірний формат Telegram (5-32 символи: літери, цифри, підкреслення)'
+  telegram.placeholder: 'username (без @)'
+  title: 'Контакти'
+  visibility_warning: 'Ці контакти бачитимуть: ви, модератори сайту та організатори турнірів, на які ви подаватимете заявки на відіграш.'
+
 error:
   '403':
     hint: 'У вас немає прав для перегляду цієї сторінки.'

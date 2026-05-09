@@ -15,3 +15,7 @@
 .player-icon--inactive {
     stroke: #999;
 }
+
+.player-icon.btn-contacts {
+    cursor: pointer;
+}

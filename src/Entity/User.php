@@ -42,6 +42,15 @@ class User implements UserInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?Player $player = null;
 
+    #[ORM\Column(length: 32, nullable: true)]
+    private ?string $telegram = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $facebook = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $phone = null;
+
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
@@ -164,5 +173,41 @@ class User implements UserInterface
     public function isAdmin(): bool
     {
         return in_array('ROLE_ADMIN', $this->getRoles(), true);
+    }
+
+    public function getTelegram(): ?string
+    {
+        return $this->telegram;
+    }
+
+    public function setTelegram(?string $telegram): static
+    {
+        $this->telegram = $telegram;
+
+        return $this;
+    }
+
+    public function getFacebook(): ?string
+    {
+        return $this->facebook;
+    }
+
+    public function setFacebook(?string $facebook): static
+    {
+        $this->facebook = $facebook;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
     }
 }

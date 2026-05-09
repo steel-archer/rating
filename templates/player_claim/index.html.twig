@@ -14,7 +14,19 @@
             <label>{{ 'player_claim.your_email'|trans }}</label>
             <input type="email" value="{{ app.user.email }}" readonly class="search-input">
         </div>
-        <p class="hint">{{ 'player_claim.email_visibility_warning'|trans }}</p>
+        <div class="form-group">
+            <label for="claim-telegram">{{ 'contact.telegram'|trans }} <span class="hint-inline">({{ 'contact.optional'|trans }})</span></label>
+            <input type="text" id="claim-telegram" name="telegram" value="{{ app.user.telegram }}" placeholder="{{ 'contact.telegram.placeholder'|trans }}" class="search-input" maxlength="32">
+        </div>
+        <div class="form-group">
+            <label for="claim-facebook">{{ 'contact.facebook'|trans }} <span class="hint-inline">({{ 'contact.optional'|trans }})</span></label>
+            <input type="text" id="claim-facebook" name="facebook" value="{{ app.user.facebook }}" placeholder="{{ 'contact.facebook.placeholder'|trans }}" class="search-input" maxlength="50">
+        </div>
+        <div class="form-group">
+            <label for="claim-phone">{{ 'contact.phone'|trans }} <span class="hint-inline">({{ 'contact.optional'|trans }})</span></label>
+            <input type="tel" id="claim-phone" name="phone" value="{{ app.user.phone }}" placeholder="{{ 'contact.phone.placeholder'|trans }}" class="search-input" maxlength="20">
+        </div>
+        <p class="hint">{{ 'contact.visibility_warning'|trans }}</p>
     </div>
 
     <div class="cards-row">

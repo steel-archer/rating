@@ -8,6 +8,7 @@ use App\DTO\Request\ClaimExistingRequestDTO;
 use App\Entity\User;
 use App\Exception\PlayerClaimException;
 use App\Service\PlayerClaimService;
+use App\Service\UserContactsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -21,9 +22,12 @@ class ClaimExistingController extends AbstractController
     public function __invoke(
         #[MapRequestPayload] ClaimExistingRequestDTO $dto,
         PlayerClaimService $service,
+        UserContactsService $contactsService,
     ): JsonResponse {
         /** @var User $user */
         $user = $this->getUser();
+
+        $contactsService->updateFromDto($user, $dto);
 
         try {
             $service->claimExisting($dto, $user);
