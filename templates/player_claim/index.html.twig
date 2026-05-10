@@ -34,8 +34,22 @@
             <h2>{{ 'player_claim.existing_title'|trans }}</h2>
             <p>{{ 'player_claim.existing_description'|trans }}</p>
 
-            <turbo-frame id="claim-search" src="{{ path('player_claim_search', {lastName: app.user.lastName, firstName: app.user.firstName}) }}">
-                <p>{{ 'common.loading'|trans }}</p>
+            <turbo-frame id="claim-search">
+                <div class="search-form">
+                    <form action="{{ path('player_claim_search') }}" method="get">
+                        <div class="search-row">
+                            <input type="text" name="lastName" value="" placeholder="{{ 'player.last_name'|trans }}" class="search-input">
+                            <input type="text" name="firstName" value="" placeholder="{{ 'player.first_name'|trans }}" class="search-input">
+                            <input type="text" name="patronymic" value="" placeholder="{{ 'player.patronymic'|trans }}" class="search-input">
+                            <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                                <input type="text" data-suggest-input value="" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
+                                <input type="hidden" name="townId" data-suggest-hidden value="">
+                                <div class="suggest-dropdown" data-suggest-dropdown></div>
+                            </div>
+                            <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
+                        </div>
+                    </form>
+                </div>
             </turbo-frame>
         </div>
 

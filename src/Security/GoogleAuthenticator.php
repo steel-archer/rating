@@ -6,6 +6,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Validator\UkrainianNameValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
@@ -61,14 +62,23 @@ final class GoogleAuthenticator extends OAuth2Authenticator implements Authentic
                     $this->em->persist($user);
                 }
 
-                $user->setFirstName($googleUser->getFirstName());
-                $user->setLastName($googleUser->getLastName());
+                $user->setFirstName(self::filterName($googleUser->getFirstName()));
+                $user->setLastName(self::filterName($googleUser->getLastName()));
                 $this->em->flush();
 
                 return $user;
             }),
             [new RememberMeBadge()],
         );
+    }
+
+    private static function filterName(?string $name): ?string
+    {
+        if ($name === null || !preg_match(UkrainianNameValidator::PATTERN, $name)) {
+            return null;
+        }
+
+        return $name;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response

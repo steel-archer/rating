@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 final class UkrainianNameValidator extends ConstraintValidator
 {
-    private const string PATTERN = "/^[А-ЩЬЮЯЄІЇҐа-щьюяєіїґ' -]+$/u";
+    public const string PATTERN = "/^[А-ЩЬЮЯЄІЇҐа-щьюяєіїґ' -]+$/u";
 
     public function validate(mixed $value, Constraint $constraint): void
     {
