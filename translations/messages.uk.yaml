@@ -165,6 +165,7 @@ squad:
   show_all: 'показати всі'
 
 team:
+  base_name: 'Базова назва: %name%'
   base_squads: 'Базові склади'
 
 town:

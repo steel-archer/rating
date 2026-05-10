@@ -61,3 +61,40 @@ tr.row-dark { background: #e8e8ed; }
 .squad-list {
     margin-top: 6px;
 }
+
+.one-time-name-hint {
+    font-style: italic;
+    cursor: pointer;
+    color: var(--accent);
+    position: relative;
+    text-align: right;
+    padding-right: 0;
+    padding-left: 0;
+    width: 1%;
+    white-space: nowrap;
+}
+
+.one-time-name-hint [data-tooltip] {
+    cursor: pointer;
+}
+
+.one-time-name-hint [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    background: var(--text);
+    color: var(--surface);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-style: normal;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s;
+}
+
+.one-time-name-hint [data-tooltip]:hover::after {
+    opacity: 1;
+}

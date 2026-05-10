@@ -43,6 +43,7 @@ final class TournamentEntryMapping implements MappingInterface
             score: $source->getScore(),
             place: $context['place'] ?? null,
             players: $players,
+            oneTimeName: $source->getOneTimeName(),
         );
     }
 }

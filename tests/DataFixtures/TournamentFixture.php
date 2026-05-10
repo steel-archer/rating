@@ -44,6 +44,23 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
         'Чемпіонат України',
     ];
 
+    private const array ONE_TIME_NAMES = [
+        'Зоряні Леви',
+        'Нічні Вовки',
+        'Крижані Дракони',
+        'Вогняні Фенікси',
+        'Срібні Соколи',
+        'Тіньові Рисі',
+        'Палкі Орли',
+        'Шалені Коти',
+        'Хоробрі Грифони',
+        'Магічні Сови',
+        'Дикі Бізони',
+        'Стрімкі Гепарди',
+        'Яскраві Химери',
+        'Безстрашні Козаки',
+    ];
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('uk_UA');
@@ -99,6 +116,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             // Track uniqueness per tournament
             $usedTeams = [];
             $usedPlayers = [];
+            $oneTimeNameAssigned = false;
 
             // Sessions — random subset of towns
             $sessionTownCount = $faker->numberBetween(5, min(13, $townCount));
@@ -149,6 +167,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                         $answer->setTournamentSessionTeam($sessionTeam);
                         $answer->setQuestionNumber($q);
                         $answer->setIsCorrect($faker->boolean($correctProbability));
+                        $sessionTeam->getAnswers()->add($answer);
                         $manager->persist($answer);
                     }
 
@@ -156,6 +175,13 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
 
                     // Base squad + legionaries if needed
                     $baseSquad = TeamFixture::$teamSquads[$teamIndex] ?? [];
+
+                    // Assign one-time name to first team with base squad per tournament
+                    if (!$oneTimeNameAssigned && $baseSquad !== []) {
+                        $sessionTeam->setOneTimeName(self::ONE_TIME_NAMES[$i]);
+                        $oneTimeNameAssigned = true;
+                    }
+
                     $squad = [];
                     $squadPlayerIds = [];
 

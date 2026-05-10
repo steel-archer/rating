@@ -16,6 +16,7 @@ final readonly class SessionTeamDTO
         public ?float $place,
         /** @var list<SessionTeamPlayerDTO> */
         public array $players,
+        public ?string $oneTimeName = null,
     ) {
         $this->baseSquadCount = count(array_filter($players, static fn(SessionTeamPlayerDTO $player) => $player->isBaseSquad));
     }

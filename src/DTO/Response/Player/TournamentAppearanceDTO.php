@@ -18,6 +18,7 @@ final readonly class TournamentAppearanceDTO
         public ?int $score,
         public ?float $place,
         public bool $isLegionary,
+        public ?string $oneTimeName = null,
     ) {
     }
 }

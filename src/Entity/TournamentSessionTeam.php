@@ -31,6 +31,9 @@ class TournamentSessionTeam
     #[ORM\Column]
     private int $score = 0;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $oneTimeName = null;
+
     /** @var Collection<int, TournamentSessionTeamAnswer> */
     #[ORM\OneToMany(targetEntity: TournamentSessionTeamAnswer::class, mappedBy: 'tournamentSessionTeam')]
     private Collection $answers;
@@ -85,6 +88,18 @@ class TournamentSessionTeam
     public function getAnswers(): Collection
     {
         return $this->answers;
+    }
+
+    public function getOneTimeName(): ?string
+    {
+        return $this->oneTimeName;
+    }
+
+    public function setOneTimeName(?string $oneTimeName): static
+    {
+        $this->oneTimeName = $oneTimeName;
+
+        return $this;
     }
 
     public function recalculateScore(): static

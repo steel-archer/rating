@@ -56,33 +56,40 @@ class ResultsControllerTest extends WebTestCase
                 // 3 teams: beta(30), alpha(25), gamma(20)
                 static::assertCount(3, $rows);
 
-                // 1st place: Beta, score 30
+                // 1st place: Beta with one-time name, score 30
                 $first = $rows->eq(0);
                 $first->filter('td')->eq(0)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('1', $x));
-                static::assertStringContainsString('Бета', $first->filter('td')->eq(1)->text());
-                static::assertStringContainsString('30', $first->filter('td')->eq(3)->text());
+                $hintCell = $first->filter('td')->eq(1);
+                static::assertStringContainsString('^', $hintCell->text());
+                static::assertStringContainsString('Бета', $hintCell->filter('span')->attr('data-tooltip'));
+                $teamCell = $first->filter('td')->eq(2);
+                static::assertStringContainsString('Зоряні Леви', $teamCell->text());
+                static::assertCount(1, $teamCell->filter('em'));
+                static::assertStringContainsString('30', $first->filter('td')->eq(4)->text());
 
-                // 2nd place: Alpha, score 25
+                // 2nd place: Alpha, score 25 (no one-time name)
                 $second = $rows->eq(1);
                 $second->filter('td')->eq(0)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('2', $x));
-                static::assertStringContainsString('Альфа', $second->filter('td')->eq(1)->text());
-                static::assertStringContainsString('25', $second->filter('td')->eq(3)->text());
+                static::assertSame('', trim($second->filter('td')->eq(1)->text()));
+                static::assertStringContainsString('Альфа', $second->filter('td')->eq(2)->text());
+                static::assertCount(0, $second->filter('td')->eq(2)->filter('em'));
+                static::assertStringContainsString('25', $second->filter('td')->eq(4)->text());
 
                 // 3rd place: Gamma, score 20
                 $third = $rows->eq(2);
                 $third->filter('td')->eq(0)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('3', $x));
-                static::assertStringContainsString('Гамма', $third->filter('td')->eq(1)->text());
-                static::assertStringContainsString('20', $third->filter('td')->eq(3)->text());
+                static::assertStringContainsString('Гамма', $third->filter('td')->eq(2)->text());
+                static::assertStringContainsString('20', $third->filter('td')->eq(4)->text());
 
                 // town displayed
-                static::assertStringContainsString('Львів', $first->filter('td')->eq(2)->text());
-                static::assertStringContainsString('Київ', $second->filter('td')->eq(2)->text());
+                static::assertStringContainsString('Львів', $first->filter('td')->eq(3)->text());
+                static::assertStringContainsString('Київ', $second->filter('td')->eq(3)->text());
             },
         ];
 
@@ -97,8 +104,8 @@ class ResultsControllerTest extends WebTestCase
                 $rows->eq(0)->filter('td')->eq(0)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('1', $x));
-                static::assertStringContainsString('Альфа', $rows->eq(0)->filter('td')->eq(1)->text());
-                static::assertStringContainsString('40', $rows->eq(0)->filter('td')->eq(3)->text());
+                static::assertStringContainsString('Альфа', $rows->eq(0)->filter('td')->eq(2)->text());
+                static::assertStringContainsString('40', $rows->eq(0)->filter('td')->eq(4)->text());
             },
         ];
 

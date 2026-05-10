@@ -53,8 +53,7 @@ class TournamentsControllerTest extends WebTestCase
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
-                // Shevchenko plays in: spring(Alpha), spring(Gamma as legionary), autumn(... not in stp fixtures)
-                // From fixtures: stp_spring_alpha_shevchenko + stp_spring_gamma_shevchenko = 2 appearances
+                // Shevchenko plays in: spring(Alpha), spring(Gamma as legionary), autumn(Alpha)
                 static::assertGreaterThanOrEqual(2, $rows->count());
 
                 // check tournament names present
@@ -68,6 +67,28 @@ class TournamentsControllerTest extends WebTestCase
                 // scores present
                 static::assertStringContainsString('25', $allText);
                 static::assertStringContainsString('20', $allText);
+
+                // Alpha has no one-time name — displayed normally
+                static::assertStringContainsString('Альфа', $allText);
+            },
+        ];
+
+        yield 'player tournaments shows one-time name with tooltip' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_franko']->getId() . '/tournaments',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertGreaterThanOrEqual(1, $rows->count());
+
+                // Franko plays in Beta which has one-time name
+                $hintCell = $rows->eq(0)->filter('td')->eq(2);
+                static::assertStringContainsString('^', $hintCell->text());
+                static::assertStringContainsString('Бета', $hintCell->filter('span')->attr('data-tooltip'));
+                $teamCell = $rows->eq(0)->filter('td')->eq(3);
+                static::assertStringContainsString('Зоряні Леви', $teamCell->text());
+                static::assertCount(1, $teamCell->filter('em'));
             },
         ];
 

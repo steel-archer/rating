@@ -34,6 +34,7 @@ final class TournamentAppearanceMapping implements MappingInterface
             score: $sessionTeam->getScore(),
             place: $context['places'][$sessionTeam->getId()] ?? null,
             isLegionary: $source->isLegionary(),
+            oneTimeName: $sessionTeam->getOneTimeName(),
         );
     }
 }

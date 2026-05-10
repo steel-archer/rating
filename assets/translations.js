@@ -130,6 +130,7 @@ export default {
     "squad.hide_all": "сховати всі",
     "squad.show": "показати",
     "squad.show_all": "показати всі",
+    "team.base_name": "Базова назва: %name%",
     "team.base_squads": "Базові склади",
     "town.invalid_characters": "Дозволені лише українські літери, пробіл, апостроф, дефіс, дужки, крапка та кома",
     "tournament.deleted": "Турнір видалено",

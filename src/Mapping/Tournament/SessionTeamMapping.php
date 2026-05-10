@@ -42,6 +42,7 @@ final class SessionTeamMapping implements MappingInterface
             score: $source->getScore(),
             place: $context['place'] ?? null,
             players: $playerDTOs,
+            oneTimeName: $source->getOneTimeName(),
         );
     }
 }

@@ -1,0 +1,6 @@
+{# Variables: teamId, teamName, oneTimeName (optional), turboFrame (optional) #}
+{% if oneTimeName is defined and oneTimeName %}
+    <em><a href="{{ path('team_show', {id: teamId}) }}"{% if turboFrame is defined and turboFrame %} data-turbo-frame="_top" data-turbo="false"{% endif %}>{{ oneTimeName }}</a></em>
+{% else %}
+    <a href="{{ path('team_show', {id: teamId}) }}"{% if turboFrame is defined and turboFrame %} data-turbo-frame="_top" data-turbo="false"{% endif %}>{{ teamName }}</a>
+{% endif %}

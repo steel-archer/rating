@@ -76,6 +76,7 @@ App\Entity\TournamentSessionTeam:
         tournamentSession: '@session_spring_lviv'
         team: '@team_beta'
         score: 30
+        oneTimeName: 'Зоряні Леви'
     session_team_spring_gamma:
         tournamentSession: '@session_spring_kyiv'
         team: '@team_gamma'

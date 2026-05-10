@@ -18,6 +18,7 @@ final readonly class TournamentEntryDTO
         public ?float $place,
         /** @var list<TournamentPlayerDTO> */
         public array $players = [],
+        public ?string $oneTimeName = null,
     ) {
         $this->baseSquadCount = count(array_filter($players, static fn(TournamentPlayerDTO $p) => $p->isBaseSquad));
     }
