@@ -5,6 +5,7 @@ RUN apt-get update \
     && pecl install redis pcov && docker-php-ext-enable redis pcov
 RUN echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short-open-tag.ini
 RUN echo 'date.timezone = Europe/Kyiv' > /usr/local/etc/php/conf.d/timezone.ini
+RUN echo 'memory_limit = 256M' > /usr/local/etc/php/conf.d/memory-limit.ini
 COPY --from=composer:2.9 /usr/bin/composer /usr/bin/composer
 RUN git config --global user.email "dev@rating.local" && git config --global user.name "Rating Dev"
 RUN a2enmod rewrite
