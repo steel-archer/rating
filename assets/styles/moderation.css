@@ -7,7 +7,7 @@
 }
 
 .tab {
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 500;
     padding: 8px 16px;
     border-radius: 8px 8px 0 0;
@@ -29,7 +29,7 @@
 
 .empty-state {
     color: var(--text-secondary);
-    font-size: 15px;
+    font-size: 0.9375rem;
     padding: 32px 0;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .moderation-comment {
-    font-size: 15px;
+    font-size: 0.9375rem;
     color: var(--text-secondary);
     font-style: italic;
     margin-bottom: 12px;
@@ -70,7 +70,7 @@
 
 .reject-input {
     font-family: var(--font), sans-serif;
-    font-size: 14px;
+    font-size: 0.875rem;
     padding: 6px 12px;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -89,5 +89,5 @@
 
 .search-input-sm {
     padding: 4px 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
 }

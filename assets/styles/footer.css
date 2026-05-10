@@ -3,7 +3,7 @@ footer {
     margin-top: 48px;
     padding: 24px 0;
     color: var(--text-secondary);
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 
 footer .footer-inner {

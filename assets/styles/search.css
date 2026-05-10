@@ -11,7 +11,7 @@
 
 .search-input {
     font-family: var(--font), sans-serif;
-    font-size: 15px;
+    font-size: 0.9375rem;
     padding: 8px 12px;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -25,7 +25,7 @@
 
 .search-btn {
     font-family: var(--font), sans-serif;
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 500;
     padding: 8px 20px;
     background: var(--accent);
@@ -64,7 +64,7 @@
 .suggest-item {
     padding: 8px 12px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .suggest-item:hover {

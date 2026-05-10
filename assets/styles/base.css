@@ -6,6 +6,10 @@
     padding: 0;
 }
 
+html {
+    font-size: 18px;
+}
+
 :root {
     --text: #1d1d1f;
     --text-secondary: #6e6e73;
@@ -37,14 +41,14 @@ main {
 }
 
 h1 {
-    font-size: 32px;
+    font-size: 2rem;
     font-weight: 700;
     letter-spacing: -0.025em;
     margin-bottom: 8px;
 }
 
 h2 {
-    font-size: 21px;
+    font-size: 1.3125rem;
     font-weight: 600;
     letter-spacing: -0.02em;
     margin-bottom: 16px;
@@ -52,7 +56,7 @@ h2 {
 
 .meta {
     color: var(--text-secondary);
-    font-size: 17px;
+    font-size: 1.0625rem;
     margin-bottom: 16px;
 }
 
@@ -69,16 +73,16 @@ dl {
 
 dt {
     color: var(--text-secondary);
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 
 dd {
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 
 .representatives-list {
     list-style: none;
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 
 .representatives-list li + li {
@@ -101,7 +105,7 @@ a:hover {
     border: 1px solid #fecaca;
     border-radius: 8px;
     color: #991b1b;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .flash-success {
@@ -111,7 +115,7 @@ a:hover {
     border: 1px solid #bbf7d0;
     border-radius: 8px;
     color: #166534;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .claim-actions {
@@ -121,7 +125,7 @@ a:hover {
 
 .btn {
     font-family: var(--font), sans-serif;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 500;
     padding: 6px 14px;
     border: none;
@@ -153,7 +157,7 @@ a:hover {
 
 .btn-link {
     font-family: var(--font), sans-serif;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 500;
     color: var(--accent);
     background: none;

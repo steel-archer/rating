@@ -1,6 +1,6 @@
 .tournament-form select {
     font-family: var(--font), sans-serif;
-    font-size: 17px;
+    font-size: 1.0625rem;
     padding: 10px 14px;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -17,7 +17,7 @@
 
 .tournament-form input[type="date"] {
     font-family: var(--font), sans-serif;
-    font-size: 17px;
+    font-size: 1.0625rem;
     padding: 10px 14px;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -46,7 +46,7 @@
 
 .tournament-form label {
     display: block;
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 500;
     color: var(--text-secondary);
     margin-bottom: 6px;
@@ -56,7 +56,7 @@
 .tournament-form input[type="number"],
 .tournament-form input[type="datetime-local"] {
     font-family: var(--font), sans-serif;
-    font-size: 17px;
+    font-size: 1.0625rem;
     padding: 10px 14px;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -75,7 +75,7 @@
 }
 
 .tournament-form .btn {
-    font-size: 16px;
+    font-size: 1rem;
     padding: 10px 24px;
     background: var(--accent);
     color: #fff;
@@ -88,7 +88,7 @@
 }
 
 .save-status {
-    font-size: 15px;
+    font-size: 0.9375rem;
     margin-left: 12px;
 }
 
@@ -107,7 +107,7 @@
     border: 1px solid #fecaca;
     border-radius: 8px;
     color: #dc2626;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .rejection-notice {
@@ -117,12 +117,12 @@
     border: 1px solid #fecaca;
     border-radius: 8px;
     color: #991b1b;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .tournament-form .suggest-wrapper input[type="text"] {
     max-width: 320px;
-    font-size: 15px;
+    font-size: 0.9375rem;
     padding: 8px 12px;
 }
 
@@ -135,12 +135,12 @@
     border-radius: 6px;
     padding: 4px 10px;
     margin: 4px 4px 4px 0;
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 
 .btn-remove {
     font-family: var(--font), sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     background: none;
     border: none;
     color: var(--text-secondary);
@@ -165,7 +165,7 @@
 }
 
 .actions-card .btn {
-    font-size: 15px;
+    font-size: 0.9375rem;
     padding: 8px 18px;
     border-radius: 8px;
 }
@@ -195,7 +195,7 @@
     border: 1px solid #bbf7d0;
     border-radius: 8px;
     color: #166534;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .flash-info {
@@ -205,7 +205,7 @@
     border: 1px solid #bfdbfe;
     border-radius: 8px;
     color: #1e40af;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .publish-errors {
@@ -218,7 +218,7 @@
 }
 
 .publish-errors li {
-    font-size: 15px;
+    font-size: 0.9375rem;
     padding: 4px 0;
     color: var(--text-secondary);
 }
@@ -271,7 +271,7 @@
 }
 
 .badge {
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 500;
     padding: 3px 10px;
     border-radius: 12px;

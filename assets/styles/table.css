@@ -1,7 +1,7 @@
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 
 th {
@@ -49,7 +49,7 @@ tr.row-dark { background: #e8e8ed; }
     border: none;
     color: var(--accent);
     cursor: pointer;
-    font-size: 13px;
+    font-size: 0.8125rem;
     padding: 0;
     margin-left: 8px;
 }
@@ -87,9 +87,11 @@ tr.row-dark { background: #e8e8ed; }
     color: var(--surface);
     padding: 4px 8px;
     border-radius: 4px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-style: normal;
-    white-space: nowrap;
+    white-space: normal;
+    width: max-content;
+    max-width: 12rem;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.1s;

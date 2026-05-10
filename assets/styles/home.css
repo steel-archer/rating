@@ -4,13 +4,13 @@
 }
 
 .home-hero h1 {
-    font-size: 48px;
+    font-size: 3rem;
     letter-spacing: -0.04em;
 }
 
 .home-subtitle {
     color: var(--text-secondary);
-    font-size: 18px;
+    font-size: 1.125rem;
     margin-top: 8px;
 }
 
@@ -39,16 +39,16 @@
 }
 
 .home-card-icon {
-    font-size: 32px;
+    font-size: 2rem;
     margin-bottom: 12px;
 }
 
 .home-card h2 {
-    font-size: 18px;
+    font-size: 1.125rem;
     margin-bottom: 6px;
 }
 
 .home-card p {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 0.875rem;
 }

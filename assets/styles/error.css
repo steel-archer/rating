@@ -4,7 +4,7 @@
 }
 
 .error-code {
-    font-size: 96px;
+    font-size: 6rem;
     font-weight: 700;
     letter-spacing: -0.04em;
     color: var(--border);
@@ -12,14 +12,14 @@
 }
 
 .error-message {
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: 600;
     margin-top: 12px;
 }
 
 .error-hint {
     color: var(--text-secondary);
-    font-size: 16px;
+    font-size: 1rem;
     margin-top: 8px;
 }
 
@@ -30,7 +30,7 @@
     background: var(--accent);
     color: #fff;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 500;
 }
 

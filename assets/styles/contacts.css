@@ -48,7 +48,7 @@
 }
 
 .contact-value {
-    font-size: 15px;
+    font-size: 0.9375rem;
     padding: 8px 12px;
     color: var(--text);
 }
@@ -56,7 +56,7 @@
 .hint-inline {
     color: var(--text-secondary);
     font-weight: 400;
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 
 .contacts-info {
@@ -66,5 +66,5 @@
     border: 1px solid #bfdbfe;
     border-radius: 8px;
     color: #1e40af;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
