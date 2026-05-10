@@ -2,8 +2,8 @@ App\Entity\Tournament:
     tournament_spring:
         name: 'Весняний кубок'
         season: '@season_current'
-        startedAt: '<(new \DateTimeImmutable("2025-03-01"))>'
-        endedAt: '<(new \DateTimeImmutable("2025-03-15"))>'
+        startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.5
@@ -12,8 +12,8 @@ App\Entity\Tournament:
     tournament_autumn:
         name: 'Осінній бриз'
         season: '@season_current'
-        startedAt: '<(new \DateTimeImmutable("2024-10-10"))>'
-        endedAt: '<(new \DateTimeImmutable("2024-10-20"))>'
+        startedAt: '<(new \DateTimeImmutable("2024-10-10 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2024-10-20 23:59:59"))>'
         toursCount: 4
         questionsPerTour: 15
         difficulty: 4.2

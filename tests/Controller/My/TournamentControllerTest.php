@@ -562,8 +562,8 @@ class TournamentControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode([
                     'name' => 'Змінена назва',
-                    'startedAt' => (new DateTime('+30 days'))->format('Y-m-d\TH:i'),
-                    'endedAt' => (new DateTime('+31 days'))->format('Y-m-d\TH:i'),
+                    'startedAt' => (new DateTime('+30 days'))->format('Y-m-d'),
+                    'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
                     'toursCount' => 3,
                     'questionsPerTour' => 12,
                     'difficulty' => 3.5,
@@ -595,7 +595,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['name' => 'Мій чернетковий турнір', 'startedAt' => '2020-01-01T10:00', 'endedAt' => '2020-01-02T10:00', 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Мій чернетковий турнір', 'startedAt' => '2020-01-01', 'endedAt' => '2020-01-02', 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -613,8 +613,8 @@ class TournamentControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode([
                     'name' => 'Мій чернетковий турнір',
-                    'startedAt' => (new DateTime('+60 days'))->format('Y-m-d\TH:i'),
-                    'endedAt' => (new DateTime('+30 days'))->format('Y-m-d\TH:i'),
+                    'startedAt' => (new DateTime('+60 days'))->format('Y-m-d'),
+                    'endedAt' => (new DateTime('+30 days'))->format('Y-m-d'),
                     'toursCount' => null,
                     'questionsPerTour' => null,
                     'difficulty' => null,
@@ -640,8 +640,8 @@ class TournamentControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode([
                     'name' => 'Мій чернетковий турнір',
-                    'startedAt' => '2026-09-29T10:00',
-                    'endedAt' => '2026-10-02T10:00',
+                    'startedAt' => '2026-09-29',
+                    'endedAt' => '2026-10-02',
                     'toursCount' => null,
                     'questionsPerTour' => null,
                     'difficulty' => null,

@@ -81,11 +81,17 @@ class TournamentManagementService
 
         $nameChanged = $tournament->getName() !== $dto->name;
 
-        $startedAt = $dto->startedAt ? new DateTimeImmutable($dto->startedAt) : null;
+        $startedAt = $dto->startedAt
+            ? (new DateTimeImmutable($dto->startedAt))->setTime(0, 0, 0)
+            : null;
 
         $tournament->setName($dto->name);
         $tournament->setStartedAt($startedAt);
-        $tournament->setEndedAt($dto->endedAt ? new DateTimeImmutable($dto->endedAt) : null);
+        $tournament->setEndedAt(
+            $dto->endedAt
+                ? (new DateTimeImmutable($dto->endedAt))->setTime(23, 59, 59)
+                : null,
+        );
         $tournament->setToursCount($dto->toursCount);
         $tournament->setQuestionsPerTour($dto->questionsPerTour);
         $tournament->setDifficulty($dto->difficulty);

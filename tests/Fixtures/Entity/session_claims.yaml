@@ -34,8 +34,8 @@ App\Entity\Tournament:
     tournament_session_test:
         name: 'Тестовий турнір'
         status: '<(App\Enum\TournamentStatus::Published)>'
-        startedAt: '<(new \DateTimeImmutable("2025-06-01"))>'
-        endedAt: '<(new \DateTimeImmutable("2025-06-30"))>'
+        startedAt: '<(new \DateTimeImmutable("2025-06-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-06-30 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
 

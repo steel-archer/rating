@@ -83,8 +83,8 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $tournament->setSeason($season);
             $month = str_pad((string)(($i % 3) + 10), 2, '0', STR_PAD_LEFT);
             $day = str_pad((string)($faker->numberBetween(1, 28)), 2, '0', STR_PAD_LEFT);
-            $startDate = new DateTimeImmutable("2024-$month-$day");
-            $endDate = $startDate->modify('+' . $faker->numberBetween(7, 14) . ' days');
+            $startDate = (new DateTimeImmutable("2024-$month-$day"))->setTime(0, 0, 0);
+            $endDate = $startDate->modify('+' . $faker->numberBetween(7, 14) . ' days')->setTime(23, 59, 59);
             $tournament->setStartedAt($startDate);
             $tournament->setEndedAt($endDate);
             $tournament->setStatus(TournamentStatus::Published);

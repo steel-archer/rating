@@ -14,8 +14,8 @@ App\Entity\Tournament:
     tournament_active:
         name: 'Активний турнір'
         status: '<(App\Enum\TournamentStatus::Published)>'
-        startedAt: '<(new \DateTimeImmutable("+1 month"))>'
-        endedAt: '<(new \DateTimeImmutable("+2 months"))>'
+        startedAt: '<(new \DateTimeImmutable("+1 month midnight"))>'
+        endedAt: '<(new \DateTimeImmutable("+2 months 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
 
