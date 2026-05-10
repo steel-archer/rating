@@ -18,6 +18,9 @@ security:
             entry_point: App\Security\GoogleAuthenticator
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
+            login_throttling:
+                max_attempts: 5
+                interval: '1 minute'
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 31536000

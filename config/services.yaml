@@ -22,6 +22,15 @@ services:
         arguments:
             $uploadDir: '%app.upload_dir%'
 
+    App\EventSubscriber\RateLimitSubscriber:
+        arguments:
+            $rateLimiters: !service_locator
+                claim: '@limiter.claim'
+                api_suggest: '@limiter.api_suggest'
+                mutation: '@limiter.mutation'
+                upload: '@limiter.upload'
+                moderator: '@limiter.moderator'
+
 when@dev: &dev_fixtures
     services:
         _defaults:

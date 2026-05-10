@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\EventSubscriber;
 
 use App\EventSubscriber\RequestSanitizingSubscriber;
+use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,7 @@ class RequestSanitizingSubscriberTest extends TestCase
     /**
      * @param array<string, mixed> $input
      * @param array<string, mixed> $expected
+     * @throws JsonException
      */
     #[DataProvider('queryDataProvider')]
     public function testSanitizesQueryParameters(array $input, array $expected): void
@@ -67,6 +69,9 @@ class RequestSanitizingSubscriberTest extends TestCase
         ];
     }
 
+    /**
+     * @throws JsonException
+     */
     public function testSanitizesRequestBody(): void
     {
         $request = new Request(request: ['comment' => '  <script>xss</script>safe  ']);
@@ -77,6 +82,9 @@ class RequestSanitizingSubscriberTest extends TestCase
         static::assertSame('xsssafe', $request->request->get('comment'));
     }
 
+    /**
+     * @throws JsonException
+     */
     public function testSanitizesJsonBody(): void
     {
         $json = json_encode(['title' => '  <b>Hello</b>  '], JSON_THROW_ON_ERROR);
@@ -90,6 +98,9 @@ class RequestSanitizingSubscriberTest extends TestCase
         static::assertSame('Hello', $request->request->get('title'));
     }
 
+    /**
+     * @throws JsonException
+     */
     public function testIgnoresSubRequests(): void
     {
         $request = new Request(query: ['name' => '  untrimmed  ']);
@@ -100,6 +111,9 @@ class RequestSanitizingSubscriberTest extends TestCase
         static::assertSame('  untrimmed  ', $request->query->get('name'));
     }
 
+    /**
+     * @throws JsonException
+     */
     public function testHandlesEmptyJsonBody(): void
     {
         $request = new Request(content: '');

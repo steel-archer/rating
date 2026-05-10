@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Venue;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Venue\UpdateRequestDTO;
 use App\Entity\User;
 use App\Entity\Venue;
@@ -17,6 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/venues/{id}', name: 'my_venue_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class UpdateController extends AbstractController
 {
     public function __invoke(

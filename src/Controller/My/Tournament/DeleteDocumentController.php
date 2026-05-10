@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Tournament;
 
+use App\Attribute\RateLimited;
 use App\Entity\TournamentDocument;
 use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentDocumentService;
@@ -14,6 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/documents/{id}', name: 'my_tournament_document_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class DeleteDocumentController extends AbstractController
 {
     public function __invoke(

@@ -5,6 +5,7 @@ auth:
 common:
   back_home: 'На головну'
   country: 'Країна'
+  rate_limit_exceeded: 'Забагато запитів. Спробуйте пізніше.'
   date: 'Дата'
   dates: 'Дати'
   email: 'Email'

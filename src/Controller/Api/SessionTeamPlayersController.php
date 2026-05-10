@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Attribute\RateLimited;
 use App\Entity\Team;
 use App\Entity\TournamentSession;
 use App\Repository\TeamPlayerRepository;
@@ -22,6 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     methods: ['GET'],
 )]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('api_suggest')]
 class SessionTeamPlayersController extends AbstractController
 {
     public function __invoke(

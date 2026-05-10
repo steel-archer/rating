@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\TournamentSessionClaim;
 
+use App\Attribute\RateLimited;
 use App\Entity\TournamentSession;
 use App\Entity\User;
 use App\Service\SessionClaimService;
@@ -15,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournament-claims/{id}/approve', name: 'my_tournament_claim_approve', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class ApproveController extends AbstractController
 {
     public function __invoke(

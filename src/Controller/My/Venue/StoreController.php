@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Venue;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Venue\CreateRequestDTO;
 use App\Entity\User;
 use App\Service\VenueManagementService;
@@ -16,6 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/venues', name: 'my_venue_store', methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class StoreController extends AbstractController
 {
     public function __invoke(

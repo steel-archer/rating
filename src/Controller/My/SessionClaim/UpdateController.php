@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\SessionClaim;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Session\UpdateRequestDTO;
 use App\Entity\TournamentSession;
 use App\Entity\User;
@@ -17,6 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/session-claims/{id}/update', name: 'my_session_claim_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class UpdateController extends AbstractController
 {
     public function __invoke(

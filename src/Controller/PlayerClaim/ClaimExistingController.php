@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\PlayerClaim;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\ClaimExistingRequestDTO;
 use App\Entity\User;
 use App\Exception\PlayerClaimException;
@@ -17,6 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/player-claim/existing', name: 'player_claim_existing', methods: ['POST'])]
 #[IsGranted('ROLE_USER')]
+#[RateLimited('claim')]
 class ClaimExistingController extends AbstractController
 {
     public function __invoke(

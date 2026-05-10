@@ -1,0 +1,41 @@
+framework:
+    rate_limiter:
+        claim:
+            policy: sliding_window
+            limit: 3
+            interval: '10 minutes'
+            cache_pool: cache.rate_limiter
+        api_suggest:
+            policy: sliding_window
+            limit: 60
+            interval: '1 minute'
+            cache_pool: cache.rate_limiter
+        mutation:
+            policy: sliding_window
+            limit: 30
+            interval: '1 minute'
+            cache_pool: cache.rate_limiter
+        upload:
+            policy: sliding_window
+            limit: 10
+            interval: '1 minute'
+            cache_pool: cache.rate_limiter
+        moderator:
+            policy: sliding_window
+            limit: 60
+            interval: '1 minute'
+            cache_pool: cache.rate_limiter
+
+when@test:
+    framework:
+        rate_limiter:
+            claim:
+                policy: no_limit
+            api_suggest:
+                policy: no_limit
+            mutation:
+                policy: no_limit
+            upload:
+                policy: no_limit
+            moderator:
+                policy: no_limit

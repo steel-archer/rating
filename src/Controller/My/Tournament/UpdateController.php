@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Tournament;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Entity\Tournament;
 use App\Security\TournamentOrganizerVoter;
@@ -17,6 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/{id}', name: 'my_tournament_update', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class UpdateController extends AbstractController
 {
     public function __invoke(

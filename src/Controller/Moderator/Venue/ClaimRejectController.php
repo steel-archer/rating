@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Moderator\Venue;
 
+use App\Attribute\RateLimited;
 use App\Entity\Venue;
 use App\Service\VenueManagementService;
 use LogicException;
@@ -14,6 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/moderator/venues/{id}/reject', name: 'moderator_venue_reject', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_MODERATOR')]
+#[RateLimited('moderator')]
 class ClaimRejectController extends AbstractController
 {
     public function __invoke(

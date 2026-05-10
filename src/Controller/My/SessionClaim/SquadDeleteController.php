@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\SessionClaim;
 
+use App\Attribute\RateLimited;
 use App\Entity\TournamentSessionTeam;
 use App\Entity\User;
 use App\Service\SessionSquadService;
@@ -15,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/session-teams/{id}/delete', name: 'my_session_team_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class SquadDeleteController extends AbstractController
 {
     public function __invoke(

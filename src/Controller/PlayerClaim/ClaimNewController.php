@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\PlayerClaim;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\ClaimNewRequestDTO;
 use App\Entity\User;
 use App\Exception\PlayerClaimException;
@@ -17,6 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/player-claim/new', name: 'player_claim_new', methods: ['POST'])]
 #[IsGranted('ROLE_USER')]
+#[RateLimited('claim')]
 class ClaimNewController extends AbstractController
 {
     public function __invoke(

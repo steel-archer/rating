@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Tournament;
 
+use App\Attribute\RateLimited;
 use App\Entity\Tournament;
 use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentDocumentService;
@@ -16,6 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/{id}/documents', name: 'my_tournament_document_upload', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('upload')]
 class UploadDocumentController extends AbstractController
 {
     public function __invoke(

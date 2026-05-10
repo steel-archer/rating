@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Tournament;
 
+use App\Attribute\RateLimited;
 use App\Entity\Tournament;
 use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentModerationService;
@@ -15,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/{id}/submit', name: 'my_tournament_submit', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class SubmitController extends AbstractController
 {
     public function __invoke(

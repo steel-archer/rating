@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\TournamentSessionClaim;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Session\RejectRequestDTO;
 use App\Entity\TournamentSession;
 use App\Entity\User;
@@ -17,6 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournament-claims/{id}/reject', name: 'my_tournament_claim_reject', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class RejectController extends AbstractController
 {
     public function __invoke(

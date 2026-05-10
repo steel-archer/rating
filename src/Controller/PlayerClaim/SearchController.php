@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\PlayerClaim;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\PlayerListRequestDTO;
 use App\Repository\PlayerRepository;
 use App\Repository\TownRepository;
@@ -15,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/player-claim/search', name: 'player_claim_search', methods: ['GET'])]
 #[IsGranted('ROLE_USER')]
+#[RateLimited('api_suggest')]
 class SearchController extends AbstractController
 {
     public function __invoke(

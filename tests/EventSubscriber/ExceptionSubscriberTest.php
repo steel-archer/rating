@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\EventSubscriber;
 
 use App\EventSubscriber\ExceptionSubscriber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -13,10 +14,11 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Throwable;
 
 class ExceptionSubscriberTest extends TestCase
 {
-    private LoggerInterface&\PHPUnit\Framework\MockObject\MockObject $logger;
+    private LoggerInterface&MockObject $logger;
     private ExceptionSubscriber $subscriber;
 
     protected function setUp(): void
@@ -33,7 +35,7 @@ class ExceptionSubscriberTest extends TestCase
 
         $event = $this->createEvent($request, $exception);
 
-        $this->logger->expects(static::once())
+        $this->logger->expects($this->once())
             ->method('error')
             ->with('Something broke', static::arrayHasKey('exception'));
 
@@ -53,7 +55,7 @@ class ExceptionSubscriberTest extends TestCase
 
         $event = $this->createEvent($request, $exception);
 
-        $this->logger->expects(static::never())->method('error');
+        $this->logger->expects($this->never())->method('error');
 
         $this->subscriber->onException($event);
 
@@ -68,7 +70,7 @@ class ExceptionSubscriberTest extends TestCase
 
         $event = $this->createEvent($request, $exception);
 
-        $this->logger->expects(static::never())->method('error');
+        $this->logger->expects($this->never())->method('error');
 
         $this->subscriber->onException($event);
 
@@ -83,7 +85,7 @@ class ExceptionSubscriberTest extends TestCase
 
         $event = $this->createEvent($request, $exception, HttpKernelInterface::SUB_REQUEST);
 
-        $this->logger->expects(static::never())->method('error');
+        $this->logger->expects($this->never())->method('error');
 
         $this->subscriber->onException($event);
 
@@ -98,7 +100,7 @@ class ExceptionSubscriberTest extends TestCase
 
         $event = $this->createEvent($request, $exception);
 
-        $this->logger->expects(static::once())
+        $this->logger->expects($this->once())
             ->method('error')
             ->with('Ajax error', static::arrayHasKey('exception'));
 
@@ -111,7 +113,7 @@ class ExceptionSubscriberTest extends TestCase
 
     private function createEvent(
         Request $request,
-        \Throwable $exception,
+        Throwable $exception,
         int $requestType = HttpKernelInterface::MAIN_REQUEST,
     ): ExceptionEvent {
         $kernel = $this->createStub(KernelInterface::class);

@@ -2,8 +2,16 @@ framework:
     cache:
         app: cache.adapter.redis_tag_aware
         default_redis_provider: '%env(REDIS_URL)%'
+        pools:
+            cache.rate_limiter:
+                adapter: cache.adapter.redis
+                provider: '%env(REDIS_RATE_LIMITER_URL)%'
 
 when@test:
     framework:
         cache:
             app: cache.adapter.array
+            pools:
+                cache.rate_limiter:
+                    adapter: cache.adapter.array
+                    provider: ~

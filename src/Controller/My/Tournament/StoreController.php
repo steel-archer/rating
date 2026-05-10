@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\Tournament;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\Entity\User;
 use App\Service\TournamentManagementService;
@@ -15,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments', name: 'my_tournament_store', methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class StoreController extends AbstractController
 {
     public function __invoke(

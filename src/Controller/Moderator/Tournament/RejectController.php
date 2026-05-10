@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Moderator\Tournament;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Tournament\Moderation\RejectRequestDTO;
 use App\Entity\Tournament;
 use App\Service\TournamentModerationService;
@@ -16,6 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/moderator/tournaments/{id}/reject', name: 'moderator_tournament_reject', requirements: ['id' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_MODERATOR')]
+#[RateLimited('moderator')]
 class RejectController extends AbstractController
 {
     public function __invoke(

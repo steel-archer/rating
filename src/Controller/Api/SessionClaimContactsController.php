@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Attribute\RateLimited;
 use App\DTO\Response\UserContactsDTO;
 use App\Entity\User;
 use App\Repository\TournamentOfficialRepository;
@@ -21,6 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     methods: ['GET'],
 )]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('api_suggest')]
 class SessionClaimContactsController extends AbstractController
 {
     public function __invoke(

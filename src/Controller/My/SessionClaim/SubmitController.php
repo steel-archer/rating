@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\My\SessionClaim;
 
+use App\Attribute\RateLimited;
 use App\DTO\Request\Session\ClaimRequestDTO;
 use App\Entity\Tournament;
 use App\Entity\User;
@@ -18,6 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/session-claims/{tournamentId}/submit', name: 'my_session_claim_submit', requirements: ['tournamentId' => '\d+'], methods: ['POST'])]
 #[IsGranted('ROLE_PLAYER')]
+#[RateLimited('mutation')]
 class SubmitController extends AbstractController
 {
     public function __invoke(
