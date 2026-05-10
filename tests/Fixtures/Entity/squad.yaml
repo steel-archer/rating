@@ -1,0 +1,74 @@
+App\Entity\User:
+    user_squad_rep:
+        email: 'squad_rep@example.com'
+        googleId: 'google_squad_rep'
+        roles: []
+        player: '@player_shevchenko'
+    user_squad_other:
+        email: 'squad_other@example.com'
+        googleId: 'google_squad_other'
+        roles: []
+        player: '@player_lesya'
+
+App\Entity\Tournament:
+    tournament_squad:
+        name: 'Турнір для складів'
+        status: '<(App\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days"))>'
+        toursCount: 3
+        questionsPerTour: 12
+
+App\Entity\TournamentSession:
+    session_squad_approved:
+        tournament: '@tournament_squad'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 8
+    session_squad_future:
+        tournament: '@tournament_squad'
+        venue: '@venue_lviv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("+7 days"))>'
+        estimatedTeams: 5
+
+App\Entity\SessionClaim:
+    claim_squad_approved:
+        session: '@session_squad_approved'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
+    claim_squad_future:
+        session: '@session_squad_future'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
+
+App\Entity\TeamPlayer:
+    team_player_shevchenko:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    team_player_franko:
+        team: '@team_alpha'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: false
+
+App\Entity\TournamentSessionTeam:
+    session_team_existing:
+        tournamentSession: '@session_squad_approved'
+        team: '@team_beta'
+        score: 5
+
+App\Entity\TournamentSessionTeamPlayer:
+    session_team_player_lesya:
+        tournamentSessionTeam: '@session_team_existing'
+        player: '@player_lesya'
+        isLegionary: false
+        isCaptain: true

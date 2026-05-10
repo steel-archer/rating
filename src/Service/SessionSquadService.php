@@ -147,7 +147,7 @@ class SessionSquadService
     private function getBaseSquadPlayerIds(TournamentSession $session, Team $team): array
     {
         $season = $session->getTournament()->getSeason();
-        if ($season === null) {
+        if ($season === null || $team->getId() === null) {
             return [];
         }
 
