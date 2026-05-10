@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\Request\TeamListRequestDTO;
+use App\DTO\Response\SuggestItemDTO;
 use App\DTO\Response\Team\TeamListItemDTO;
 use App\Entity\Team;
 use App\Helper\LikeEscape;
@@ -69,6 +70,29 @@ class TeamRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
 
         return max(1, (int) ceil($total / self::PER_PAGE));
+    }
+
+    /**
+     * @return list<SuggestItemDTO>
+     */
+    public function suggest(string $query): array
+    {
+        $rows = $this->createQueryBuilder('t')
+            ->join('t.town', 'town')
+            ->select('t.id', 't.name', 'town.name AS townName')
+            ->where('t.name LIKE :q')
+            ->setParameter('q', LikeEscape::contains($query))
+            ->setMaxResults(10)
+            ->orderBy('t.name')
+            ->getQuery()
+            ->getArrayResult();
+
+        $rows = array_map(static fn(array $row) => [
+            'id' => $row['id'],
+            'name' => $row['name'] . ' (' . $row['townName'] . ')',
+        ], $rows);
+
+        return $this->mapper->mapMultiple($rows, SuggestItemDTO::class);
     }
 
     private function buildFilteredQuery(TeamListRequestDTO $requestDto): QueryBuilder

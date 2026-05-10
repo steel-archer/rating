@@ -7,11 +7,13 @@ namespace App\Controller\My\SessionClaim;
 use App\DTO\Response\My\SessionClaimEditDTO;
 use App\DTO\Response\My\TournamentDocumentDTO;
 use App\Entity\TournamentSession;
-use App\Entity\User;
 use App\Enum\SessionClaimStatus;
 use App\Mapping\Mapper;
 use App\Repository\SessionClaimRepository;
 use App\Repository\TournamentDocumentRepository;
+use App\Security\SessionRepresentativeVoter;
+use App\Service\SessionResultService;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,14 +27,10 @@ class EditController extends AbstractController
         TournamentSession $session,
         SessionClaimRepository $claimRepository,
         TournamentDocumentRepository $documentRepository,
+        SessionResultService $resultService,
         Mapper $mapper,
     ): Response {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        if ($session->getRepresentative()->getId() !== $user->getPlayer()?->getId()) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted(SessionRepresentativeVoter::MANAGE, $session);
 
         $claim = $claimRepository->findBySession($session);
         if ($claim === null) {
@@ -47,9 +45,20 @@ class EditController extends AbstractController
             );
         }
 
+        $canEnterResults = $claim->getStatus() === SessionClaimStatus::Approved
+            && $session->getPlayedAt() !== null
+            && $session->getPlayedAt() <= new DateTimeImmutable('today');
+
+        $teams = [];
+        if ($canEnterResults) {
+            $teams = $resultService->getSessionResults($session);
+        }
+
         return $this->render('my/session_claim_edit.html.twig', [
             'claim' => $mapper->map($claim, SessionClaimEditDTO::class),
             'documents' => $documents,
+            'canEnterResults' => $canEnterResults,
+            'teams' => $teams,
         ]);
     }
 }

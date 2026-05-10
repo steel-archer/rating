@@ -27,7 +27,7 @@ final class SessionTeamPlayerMapping implements MappingInterface
             playerId: $playerId,
             playerName: $player->getFullName(),
             isBaseSquad: in_array($playerId, $squadInfo['playerIds'], true),
-            isCaptain: $playerId === $squadInfo['captainId'],
+            isCaptain: $source->isCaptain(),
             hasUser: $player->hasUser(),
         );
     }

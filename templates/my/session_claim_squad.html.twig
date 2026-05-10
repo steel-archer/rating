@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'squad.entry_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a></span><span><a href="{{ path('my_session_claim_edit', {id: session.id}) }}">{{ session.venueName }}</a></span><span>{{ 'squad.entry_title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'squad.entry_title'|trans }}: {{ session.venueName }}</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-success">{{ message|trans }}</div>
+    {% endfor %}
+
+    <div class="card">
+        <form id="squad-form" class="tournament-form"
+              data-url="{{ editSessionTeam is defined ? path('my_session_team_update', {id: editSessionTeam.id}) : path('my_session_claim_squad_save', {id: session.id}) }}"
+              data-redirect="{{ editSessionTeam is defined ? path('my_session_claim_edit', {id: session.id}) : path('my_session_claim_squad', {id: session.id}) }}"
+              data-team-players-url="/api/session/{{ session.id }}/team/__TEAM_ID__/players"
+              {% if editSessionTeam is defined %}data-edit-mode="1"{% endif %}
+              {% if editPlayers is defined %}data-edit-players="{{ editPlayers|json_encode }}"{% endif %}>
+
+            <h2>{{ 'squad.select_team'|trans }}</h2>
+
+            {% if editSessionTeam is defined %}
+                <div class="form-group">
+                    <p><strong>{{ editSessionTeam.teamName }} ({{ editSessionTeam.teamTownName }})</strong></p>
+                    <input type="hidden" id="team-id" value="{{ editSessionTeam.teamId }}">
+                </div>
+                <div class="form-group">
+                    <label for="one-time-name">{{ 'squad.one_time_name'|trans }}</label>
+                    <input type="text" id="one-time-name" name="oneTimeName" value="{{ editSessionTeam.oneTimeName }}" placeholder="{{ 'squad.one_time_name_hint'|trans }}">
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <div class="squad-team-mode">
+                        <label><input type="radio" name="teamMode" value="existing" checked> {{ 'squad.existing_team'|trans }}</label>
+                        <label><input type="radio" name="teamMode" value="new"> {{ 'squad.new_team'|trans }}</label>
+                    </div>
+                </div>
+
+                <div id="existing-team-section">
+                    <div class="form-group">
+                        <label for="team-search">{{ 'common.team'|trans }}</label>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_teams_suggest') }}">
+                            <input type="text" id="team-search" data-suggest-input placeholder="{{ 'squad.search_team'|trans }}">
+                            <input type="hidden" id="team-id" data-suggest-hidden>
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="one-time-name">{{ 'squad.one_time_name'|trans }}</label>
+                        <input type="text" id="one-time-name" name="oneTimeName" placeholder="{{ 'squad.one_time_name_hint'|trans }}">
+                    </div>
+                </div>
+
+                <div id="new-team-section" hidden>
+                    <div id="new-team-status" class="form-error" hidden></div>
+                    <div class="form-group">
+                        <label for="new-team-name">{{ 'common.name'|trans }}</label>
+                        <input type="text" id="new-team-name" name="newTeamName">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-team-town">{{ 'common.town'|trans }}</label>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                            <input type="text" id="new-team-town" data-suggest-input placeholder="{{ 'common.town'|trans }}">
+                            <input type="hidden" id="new-team-town-id" data-suggest-hidden>
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <h2>{{ 'common.squad'|trans }}</h2>
+
+            <div id="squad-status" class="form-error" hidden></div>
+
+            <div id="selected-players">
+                <h3>{{ 'squad.selected_players'|trans }} (<span id="player-count">0</span>/8)</h3>
+                <table id="players-table" aria-label="{{ 'common.squad'|trans }}" hidden>
+                    <thead>
+                        <tr>
+                            <th>{{ 'player.full_name'|trans }}</th>
+                            <th>{{ 'squad.captain_short'|trans }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="squad-suggestions" hidden>
+                <div id="base-squad-section" hidden>
+                    <h3>{{ 'squad.base_squad'|trans }}</h3>
+                    <table id="base-squad-table" class="squad-suggest-table" aria-label="{{ 'squad.base_squad'|trans }}">
+                        <tbody id="base-squad-players"></tbody>
+                    </table>
+                </div>
+                <div id="season-players-section" hidden>
+                    <h3>{{ 'squad.season_players'|trans }}</h3>
+                    <table id="season-players-table" class="squad-suggest-table" aria-label="{{ 'squad.season_players'|trans }}">
+                        <tbody id="season-players"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>{{ 'squad.search_player'|trans }}</label>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                    <input type="text" id="player-search" data-suggest-input placeholder="{{ 'squad.search_player_hint'|trans }}">
+                    <div data-suggest-dropdown hidden></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="button" id="toggle-new-player" class="btn btn-link">{{ 'squad.add_new_player'|trans }}</button>
+                <div id="new-player-form" hidden>
+                    <div class="new-player-fields">
+                        <input type="text" id="new-player-last-name" placeholder="{{ 'player.last_name'|trans }}">
+                        <input type="text" id="new-player-first-name" placeholder="{{ 'player.first_name'|trans }}">
+                        <input type="text" id="new-player-patronymic" placeholder="{{ 'player.patronymic'|trans }}">
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                            <input type="text" id="new-player-town" data-suggest-input placeholder="{{ 'common.town'|trans }}">
+                            <input type="hidden" id="new-player-town-id" data-suggest-hidden>
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                        <button type="button" id="add-new-player-btn" class="btn btn-primary">{{ 'squad.add_player'|trans }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{{ 'squad.save'|trans }}</button>
+                <a href="{{ path('my_session_claim_edit', {id: session.id}) }}" class="btn">{{ 'squad.back_to_session'|trans }}</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -4,6 +4,7 @@ import './styles/app.css';
 import './officials-suggest.js';
 import './player-claim.js';
 import './session-claim.js';
+import './session-squad.js';
 import './suggest.js';
 import './sync-url.js';
 import './tournament-edit.js';

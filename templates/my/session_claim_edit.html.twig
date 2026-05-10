@@ -79,4 +79,61 @@
             </div>
         </form>
     </div>
+
+    {% if canEnterResults %}
+        <div class="card">
+            <div class="actions-card">
+                <a href="{{ path('my_session_claim_squad', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'squad.enter_squads'|trans }}</a>
+                <a href="#" class="btn btn-primary">{{ 'squad.enter_results'|trans }}</a>
+            </div>
+        </div>
+
+        {% if teams is not empty %}
+            <div class="card card-wide">
+                <h2>{{ 'tournament.results'|trans }}</h2>
+                <table aria-label="{{ 'tournament.results'|trans }}">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th></th>
+                            <th>{{ 'common.team'|trans }}</th>
+                            <th>{{ 'common.town'|trans }}</th>
+                            <th>{{ 'common.result'|trans }}</th>
+                            <th>
+                                {{ 'common.squad'|trans }}
+                                <button type="button" class="btn-toggle-text" data-toggle-all-squads>{{ 'squad.show_all'|trans }}</button>
+                            </th>
+                            <th>{{ 'tournament.my.actions'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams %}
+                            <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
+                                <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
+                                <td class="one-time-name-hint">{% if team.oneTimeName %}<span data-tooltip="{{ 'team.base_name'|trans({'%name%': team.teamName ~ ' (' ~ team.teamTownName ~ ')'}) }}">^</span>{% endif %}</td>
+                                <td>{{ include('_team_name.html.twig', {teamId: team.teamId, teamName: team.teamName, oneTimeName: team.oneTimeName}, with_context: false) }}</td>
+                                <td>{{ team.teamTownName }}</td>
+                                <td>{{ team.score ?? '—' }}</td>
+                                <td>
+                                    <button type="button" class="btn-toggle-text" data-toggle-squad>{{ 'squad.show'|trans }}</button>
+                                    <div class="squad-list" hidden>
+                                        {% for player in team.players %}
+                                            <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
+                                                {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
+                                                {%- if player.isCaptain %} (к){% endif -%}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ path('my_session_team_edit', {id: team.sessionTeamId}) }}" class="btn btn-small">{{ 'squad.edit'|trans }}</a>
+                                    <button type="button" class="btn btn-small btn-reject" data-squad-delete="{{ team.sessionTeamId }}">{{ 'squad.delete'|trans }}</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    {% endif %}
 {% endblock %}

@@ -29,6 +29,9 @@ class TournamentSessionTeamPlayer
     #[ORM\Column(options: ['default' => false])]
     private bool $isLegionary = false;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isCaptain = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -66,6 +69,18 @@ class TournamentSessionTeamPlayer
     public function setIsLegionary(bool $isLegionary): static
     {
         $this->isLegionary = $isLegionary;
+
+        return $this;
+    }
+
+    public function isCaptain(): bool
+    {
+        return $this->isCaptain;
+    }
+
+    public function setIsCaptain(bool $isCaptain): static
+    {
+        $this->isCaptain = $isCaptain;
 
         return $this;
     }

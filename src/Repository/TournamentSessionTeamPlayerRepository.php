@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Player;
+use App\Entity\Season;
+use App\Entity\Team;
 use App\Entity\Tournament;
 use App\Entity\TournamentSessionTeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -70,6 +72,40 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->getArrayResult();
 
         return array_map(static fn(array $row) => (int) $row['playerId'], $rows);
+    }
+
+    /**
+     * @return list<Player>
+     */
+    public function findPlayersByTeamAndSeason(Team $team, Season $season): array
+    {
+        $rows = $this->createQueryBuilder('stp')
+            ->select('DISTINCT IDENTITY(stp.player) AS playerId')
+            ->join('stp.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 'ts')
+            ->join('ts.tournament', 't')
+            ->where('st.team = :team')
+            ->andWhere('t.season = :season')
+            ->setParameter('team', $team)
+            ->setParameter('season', $season)
+            ->getQuery()
+            ->getArrayResult();
+
+        if ($rows === []) {
+            return [];
+        }
+
+        $playerIds = array_map(static fn(array $row) => (int) $row['playerId'], $rows);
+
+        $entityManager = $this->getEntityManager();
+        $players = $entityManager->getRepository(Player::class)->createQueryBuilder('p')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', $playerIds)
+            ->orderBy('p.lastName')
+            ->getQuery()
+            ->getResult();
+
+        return $players;
     }
 
     /** @return list<TournamentSessionTeamPlayer> */

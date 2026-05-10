@@ -36,6 +36,7 @@ final class SessionTeamMapping implements MappingInterface
         );
 
         return new $destinationClass(
+            sessionTeamId: $source->getId(),
             teamId: $team->getId(),
             teamName: $team->getName(),
             teamTownName: $team->getTown()->getName(),

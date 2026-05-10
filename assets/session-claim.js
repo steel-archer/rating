@@ -129,6 +129,16 @@ function initSessionClaimActions() {
                 { onSuccess: () => redirect ? (window.location.href = redirect) : removeSessionClaimCard(deleteBtn) },
             );
         }
+
+        const squadDeleteBtn = /** @type {HTMLElement} */ (event.target).closest('[data-squad-delete]');
+        if (squadDeleteBtn) {
+            const id = /** @type {HTMLElement} */ (squadDeleteBtn).dataset.squadDelete || '';
+            buttonAction(
+                `/my/session-teams/${id}/delete`,
+                /** @type {HTMLButtonElement} */ (squadDeleteBtn),
+                { onSuccess: () => window.location.reload() },
+            );
+        }
     });
 }
 

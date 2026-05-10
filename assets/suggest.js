@@ -24,6 +24,7 @@ function initSuggest(wrapper) {
         input.value = item.name;
         if (hidden) {
             hidden.value = item.id;
+            hidden.dispatchEvent(new Event('change'));
         }
         delete input.dataset.townIsNew;
     });

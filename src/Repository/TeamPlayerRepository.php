@@ -54,6 +54,26 @@ class TeamPlayerRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<Player>
+     */
+    public function findPlayersForTeamAndSeason(Team $team, Season $season): array
+    {
+        return array_map(
+            static fn(TeamPlayer $tp) => $tp->getPlayer(),
+            $this->createQueryBuilder('tp')
+                ->join('tp.player', 'player')
+                ->addSelect('player')
+                ->where('tp.team = :team')
+                ->andWhere('tp.season = :season')
+                ->setParameter('team', $team)
+                ->setParameter('season', $season)
+                ->orderBy('player.lastName')
+                ->getQuery()
+                ->getResult(),
+        );
+    }
+
+    /**
      * @return list<TeamPlayer>
      */
     public function findByTeamWithPlayerAndSeason(Team $team): array

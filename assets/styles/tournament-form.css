@@ -140,17 +140,39 @@
 
 .btn-remove {
     font-family: var(--font), sans-serif;
-    font-size: 1rem;
+    font-size: 1.25rem;
     background: none;
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 0 2px;
+    padding: 0 4px;
     line-height: 1;
 }
 
 .btn-remove:hover {
     color: #dc2626;
+}
+
+.btn-add-player {
+    font-family: var(--font), sans-serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: #16a34a;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.btn-add-player:hover {
+    background: #f0fdf4;
+    border-color: #16a34a;
 }
 
 .status-card dl {
@@ -300,4 +322,125 @@
 .badge-moderation-rejected {
     background: #fee2e2;
     color: #991b1b;
+}
+
+.squad-team-mode {
+    display: flex;
+    gap: 20px;
+}
+
+.squad-team-mode label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.squad-player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.squad-suggest-table {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 16px;
+}
+
+.squad-suggest-table td:first-child,
+.squad-suggest-table th:first-child {
+    width: 32px;
+    text-align: center;
+}
+
+.squad-suggest-table td:last-child,
+.squad-suggest-table th:last-child {
+    width: 32px;
+    text-align: center;
+}
+
+.btn-suggestion {
+    font-family: var(--font), sans-serif;
+    font-size: 0.875rem;
+    padding: 4px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-suggestion:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9375rem;
+    text-decoration: underline;
+}
+
+.new-player-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center;
+}
+
+.new-player-fields input[type="text"] {
+    font-family: var(--font), sans-serif;
+    font-size: 0.9375rem;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 160px;
+}
+
+.new-player-fields .suggest-wrapper {
+    position: relative;
+}
+
+.new-player-fields [data-suggest-dropdown] {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+}
+
+.new-player-fields .btn {
+    padding: 8px 16px;
+    margin-top: 0;
+    font-size: 0.9375rem;
+}
+
+#players-table {
+    width: 100%;
+    max-width: 600px;
+}
+
+#players-table td:nth-child(2),
+#players-table th:nth-child(2) {
+    text-align: center;
+    width: 80px;
+}
+
+#players-table td:nth-child(3),
+#players-table th:nth-child(3) {
+    width: 40px;
+    text-align: center;
+}
+
+.btn-small {
+    font-size: 0.8125rem;
+    padding: 4px 10px;
+    border-radius: 6px;
 }
