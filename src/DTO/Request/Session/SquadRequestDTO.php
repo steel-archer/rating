@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Request\Session;
 
+use App\Validator\NoHtml;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class SquadRequestDTO
@@ -12,10 +13,12 @@ final readonly class SquadRequestDTO
         #[Assert\Positive]
         public ?int $teamId = null,
         #[Assert\Length(max: 255)]
+        #[NoHtml]
         public ?string $teamName = null,
         #[Assert\Positive]
         public ?int $townId = null,
         #[Assert\Length(max: 255)]
+        #[NoHtml]
         public ?string $oneTimeName = null,
         /** @var list<SquadPlayerDTO> */
         #[Assert\Count(min: 1, max: 8)]

@@ -75,7 +75,7 @@ class SessionSquadService
         $sessionTeam = new TournamentSessionTeam();
         $sessionTeam->setTournamentSession($session);
         $sessionTeam->setTeam($team);
-        $sessionTeam->setOneTimeName($dto->oneTimeName);
+        $sessionTeam->setOneTimeName($dto->oneTimeName !== null ? trim($dto->oneTimeName) : null);
 
         $this->em->persist($sessionTeam);
 
@@ -298,7 +298,7 @@ class SessionSquadService
         $players = $this->resolvePlayersForUpdate($session, $sessionTeam, $dto);
         $captainIndex = $this->validateCaptainIndex($dto, $players);
 
-        $sessionTeam->setOneTimeName($dto->oneTimeName);
+        $sessionTeam->setOneTimeName($dto->oneTimeName !== null ? trim($dto->oneTimeName) : null);
 
         $existingEntries = $this->sessionTeamPlayerRepository->findBySessionTeamIds([$sessionTeam->getId()]);
         $existingByPlayerId = [];
