@@ -13,10 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/contacts', name: 'my_contacts_update', methods: ['POST'])]
-#[IsGranted('ROLE_PLAYER')]
 #[RateLimited('mutation')]
 class UpdateController extends AbstractController
 {

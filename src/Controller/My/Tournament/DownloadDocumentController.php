@@ -13,10 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/documents/{id}/download', name: 'my_tournament_document_download', requirements: ['id' => '\d+'], methods: ['GET'])]
-#[IsGranted('ROLE_PLAYER')]
 class DownloadDocumentController extends AbstractController
 {
     public function __invoke(

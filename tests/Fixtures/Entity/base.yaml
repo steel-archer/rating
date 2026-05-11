@@ -32,6 +32,11 @@ App\Entity\Player:
         firstName: 'Леся'
         patronymic: null
         town: '@town_kyiv'
+    player_kotsubynsky:
+        lastName: 'Коцюбинський'
+        firstName: 'Михайло'
+        patronymic: 'Михайлович'
+        town: '@town_kyiv'
 
 App\Entity\Team:
     team_alpha:

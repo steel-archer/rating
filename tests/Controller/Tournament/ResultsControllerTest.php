@@ -23,12 +23,17 @@ class ResultsControllerTest extends WebTestCase
         string $method,
         string|callable $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
         ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         if ($mockSetup !== null) {
             $mockSetup($this, $client);
@@ -46,10 +51,21 @@ class ResultsControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'method' => 'GET',
+            'uri' => '/tournament/1/results',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
         yield 'results sorted by score desc with calculated places' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId() . '/results',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -96,7 +112,8 @@ class ResultsControllerTest extends WebTestCase
         yield 'results for tournament with single team' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_autumn']->getId() . '/results',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -112,7 +129,8 @@ class ResultsControllerTest extends WebTestCase
         yield 'results empty for tournament without teams' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_empty']->getId() . '/results',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_empty.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_empty.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -123,7 +141,8 @@ class ResultsControllerTest extends WebTestCase
         yield 'not found for non-existent tournament' => [
             'method' => 'GET',
             'uri' => '/tournament/999999/results',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 404,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
@@ -132,7 +151,8 @@ class ResultsControllerTest extends WebTestCase
         yield 'service unavailable on throwable' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId() . '/results',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 500,
             'afterCallback' => static function () {
             },

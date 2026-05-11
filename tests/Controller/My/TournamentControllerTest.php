@@ -83,7 +83,7 @@ class TournamentControllerTest extends WebTestCase
             'fixtures' => $fixtures,
             'loginAs' => 'user_regular',
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/tournaments'),
-            'expectedStatus' => 403,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];
@@ -111,7 +111,7 @@ class TournamentControllerTest extends WebTestCase
             'fixtures' => $fixtures,
             'loginAs' => 'user_regular',
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/tournaments/new'),
-            'expectedStatus' => 403,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];
@@ -148,7 +148,7 @@ class TournamentControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode(['name' => 'test'], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 403,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
                 $tournament = static::getContainer()->get('doctrine')
                     ->getRepository(Tournament::class)

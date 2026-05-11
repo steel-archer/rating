@@ -18,6 +18,7 @@ security:
             entry_point: App\Security\GoogleAuthenticator
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
+            access_denied_handler: App\Security\AccessDeniedHandler
             login_throttling:
                 max_attempts: 5
                 interval: '1 minute'
@@ -31,10 +32,19 @@ security:
 
     role_hierarchy:
         ROLE_ADMIN: ROLE_MODERATOR
+        ROLE_MODERATOR: ROLE_PLAYER
+        ROLE_PLAYER: ROLE_USER
 
     access_control:
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+        - { path: ^/logout, roles: PUBLIC_ACCESS }
         - { path: ^/moderator, roles: ROLE_MODERATOR }
         - { path: ^/player-claim, roles: ROLE_USER }
+        - { path: ^/api/players/suggest, roles: ROLE_USER }
+        - { path: ^/api/towns/suggest, roles: ROLE_USER }
+        # Catch-all: all other routes require a linked player
+        - { path: ^/, roles: ROLE_PLAYER }
 
 when@test:
     security:

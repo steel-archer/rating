@@ -23,12 +23,17 @@ class TournamentsControllerTest extends WebTestCase
         string $method,
         string|callable $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
         ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         if ($mockSetup !== null) {
             $mockSetup($this, $client);
@@ -46,10 +51,21 @@ class TournamentsControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'method' => 'GET',
+            'uri' => '/team/1/tournaments',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
         yield 'team tournaments with calculated places and squad' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/team/' . $objects['team_alpha']->getId() . '/tournaments',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -74,7 +90,8 @@ class TournamentsControllerTest extends WebTestCase
         yield 'team with no tournament appearances returns empty table' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/team/' . $objects['team_gamma']->getId() . '/tournaments',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -85,15 +102,18 @@ class TournamentsControllerTest extends WebTestCase
         yield 'not found for non-existent team' => [
             'method' => 'GET',
             'uri' => '/team/999999/tournaments',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 404,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
         yield 'service unavailable on throwable' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/team/' . $objects['team_alpha']->getId() . '/tournaments',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 500,
             'afterCallback' => static function () {
             },

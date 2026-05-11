@@ -11,10 +11,8 @@ use App\Service\TournamentDocumentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/documents/{id}', name: 'my_tournament_document_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
-#[IsGranted('ROLE_PLAYER')]
 #[RateLimited('mutation')]
 class DeleteDocumentController extends AbstractController
 {

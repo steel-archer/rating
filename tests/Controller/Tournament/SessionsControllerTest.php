@@ -43,12 +43,21 @@ class SessionsControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'sessions page renders tournament name' => [
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+        yield 'anonymous gets redirected' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => null,
+            'uri' => '/tournament/1/sessions',
+            'expectedStatus' => 302,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
+        yield 'sessions page renders tournament name' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId() . '/sessions',
             'expectedStatus' => 200,
-            'afterCallback' => static function (Crawler $crawler) {
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertSelectorTextContains('h1', 'Весняний кубок');
                 $frame = $crawler->filter('turbo-frame#tournament-sessions');
                 static::assertCount(1, $frame);
@@ -57,11 +66,11 @@ class SessionsControllerTest extends WebTestCase
         ];
 
         yield 'not found for non-existent tournament' => [
-            'fixtures' => ['Entity/base.yaml'],
-            'loginAs' => null,
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'uri' => '/tournament/999999/sessions',
             'expectedStatus' => 404,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
 
@@ -70,7 +79,7 @@ class SessionsControllerTest extends WebTestCase
             'loginAs' => 'user_representative',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
             'expectedStatus' => 200,
-            'afterCallback' => static function (Crawler $crawler) {
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $link = $crawler->filter('a[href*="/my/session-claims/create/"]');
                 static::assertCount(1, $link);
             },
@@ -81,7 +90,7 @@ class SessionsControllerTest extends WebTestCase
             'loginAs' => 'user_other',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
             'expectedStatus' => 200,
-            'afterCallback' => static function (Crawler $crawler) {
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $link = $crawler->filter('a[href*="/my/session-claims/create/"]');
                 static::assertCount(0, $link);
             },

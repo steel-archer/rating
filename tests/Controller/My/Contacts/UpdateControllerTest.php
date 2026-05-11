@@ -315,7 +315,7 @@ class UpdateControllerTest extends WebTestCase
             },
         ];
 
-        yield 'user without player gets 403' => [
+        yield 'user without player gets 302' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'action' => static fn(KernelBrowser $client) => $client->request(
@@ -326,7 +326,7 @@ class UpdateControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode(['telegram' => 'test_user'], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 403,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];

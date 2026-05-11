@@ -61,7 +61,7 @@ class VenueControllerTest extends WebTestCase
             'fixtures' => $fixtures,
             'loginAs' => 'user_regular',
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/venues'),
-            'expectedStatus' => 403,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];
@@ -99,7 +99,7 @@ class VenueControllerTest extends WebTestCase
             'fixtures' => $fixtures,
             'loginAs' => 'user_regular',
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/venues/new'),
-            'expectedStatus' => 403,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];
@@ -189,7 +189,7 @@ class VenueControllerTest extends WebTestCase
                     'townId' => $objects['town_kyiv']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 403,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];

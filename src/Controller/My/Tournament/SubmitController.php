@@ -12,10 +12,8 @@ use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/{id}/submit', name: 'my_tournament_submit', requirements: ['id' => '\d+'], methods: ['POST'])]
-#[IsGranted('ROLE_PLAYER')]
 #[RateLimited('mutation')]
 class SubmitController extends AbstractController
 {

@@ -23,12 +23,17 @@ class TournamentsControllerTest extends WebTestCase
         string $method,
         string|callable $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
         ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         if ($mockSetup !== null) {
             $mockSetup($this, $client);
@@ -46,10 +51,21 @@ class TournamentsControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'method' => 'GET',
+            'uri' => '/player/1/tournaments',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
         yield 'player tournaments with calculated places and legionary flag' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId() . '/tournaments',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -76,7 +92,8 @@ class TournamentsControllerTest extends WebTestCase
         yield 'player tournaments shows one-time name with tooltip' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/player/' . $objects['player_franko']->getId() . '/tournaments',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -95,7 +112,8 @@ class TournamentsControllerTest extends WebTestCase
         yield 'player with no tournament appearances returns empty table' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/player/' . $objects['player_franko']->getId() . '/tournaments',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -106,15 +124,18 @@ class TournamentsControllerTest extends WebTestCase
         yield 'not found for non-existent player' => [
             'method' => 'GET',
             'uri' => '/player/999999/tournaments',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 404,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
         yield 'service unavailable on throwable' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId() . '/tournaments',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 500,
             'afterCallback' => static function () {
             },

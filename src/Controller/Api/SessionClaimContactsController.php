@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(
     '/api/sessions/{sessionId}/contacts',
@@ -21,7 +20,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     requirements: ['sessionId' => '\d+'],
     methods: ['GET'],
 )]
-#[IsGranted('ROLE_PLAYER')]
 #[RateLimited('api_suggest')]
 class SessionClaimContactsController extends AbstractController
 {

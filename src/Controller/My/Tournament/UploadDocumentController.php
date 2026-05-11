@@ -13,10 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournaments/{id}/documents', name: 'my_tournament_document_upload', requirements: ['id' => '\d+'], methods: ['POST'])]
-#[IsGranted('ROLE_PLAYER')]
 #[RateLimited('upload')]
 class UploadDocumentController extends AbstractController
 {

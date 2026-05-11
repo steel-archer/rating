@@ -23,12 +23,17 @@ class ShowControllerTest extends WebTestCase
         string $method,
         string|callable $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
         ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         if ($mockSetup !== null) {
             $mockSetup($this, $client);
@@ -46,10 +51,21 @@ class ShowControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'method' => 'GET',
+            'uri' => '/venue/1',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
         yield 'show venue with representative and tournaments' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/venue/' . $objects['venue_kyiv']->getId(),
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertSelectorTextContains('h1', 'Квіз-бар Київ');
@@ -70,7 +86,8 @@ class ShowControllerTest extends WebTestCase
         yield 'show venue without tournaments' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/venue/' . $objects['venue_lviv']->getId(),
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertSelectorTextContains('h1', 'Арт-простір Львів');
@@ -87,7 +104,8 @@ class ShowControllerTest extends WebTestCase
         yield 'not found for non-existent venue' => [
             'method' => 'GET',
             'uri' => '/venue/999999',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 404,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
@@ -96,15 +114,18 @@ class ShowControllerTest extends WebTestCase
         yield 'not found for non-numeric id' => [
             'method' => 'GET',
             'uri' => '/venue/abc',
-            'fixtures' => [],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 404,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
         yield 'service unavailable on throwable' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/venue/' . $objects['venue_kyiv']->getId(),
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 500,
             'afterCallback' => static function () {
             },

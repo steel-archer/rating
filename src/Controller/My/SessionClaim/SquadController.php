@@ -12,10 +12,8 @@ use App\Service\SessionSquadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/session-claims/{id}/squad', name: 'my_session_claim_squad', requirements: ['id' => '\d+'], methods: ['GET'])]
-#[IsGranted('ROLE_PLAYER')]
 class SquadController extends AbstractController
 {
     public function __invoke(

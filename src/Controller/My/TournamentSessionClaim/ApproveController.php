@@ -12,10 +12,8 @@ use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournament-claims/{id}/approve', name: 'my_tournament_claim_approve', requirements: ['id' => '\d+'], methods: ['POST'])]
-#[IsGranted('ROLE_PLAYER')]
 #[RateLimited('mutation')]
 class ApproveController extends AbstractController
 {

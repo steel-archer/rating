@@ -13,10 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/moderator/tournaments', name: 'moderator_tournaments', methods: ['GET'])]
-#[IsGranted('ROLE_MODERATOR')]
 class ListController extends AbstractController
 {
     public function __invoke(

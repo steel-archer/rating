@@ -23,12 +23,17 @@ class ListControllerTest extends WebTestCase
         string $method,
         string|callable $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
         ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         if ($mockSetup !== null) {
             $mockSetup($this, $client);
@@ -46,10 +51,21 @@ class ListControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'method' => 'GET',
+            'uri' => '/venues/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
         yield 'list shows venues with towns and countries' => [
             'method' => 'GET',
             'uri' => '/venues/list',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -74,7 +90,8 @@ class ListControllerTest extends WebTestCase
         yield 'list filters by name' => [
             'method' => 'GET',
             'uri' => '/venues/list?name=%D0%90%D1%80%D1%82',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -86,7 +103,8 @@ class ListControllerTest extends WebTestCase
         yield 'list filters by representative name' => [
             'method' => 'GET',
             'uri' => '/venues/list?representative=%D0%A8%D0%B5%D0%B2%D1%87',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -98,7 +116,8 @@ class ListControllerTest extends WebTestCase
         yield 'list filters by townId' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/venues/list?townId=' . $objects['town_kyiv']->getId(),
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -110,17 +129,19 @@ class ListControllerTest extends WebTestCase
         yield 'list filters by countryId' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/venues/list?countryId=' . $objects['country_ukraine']->getId(),
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertCount(2, $crawler->filter('table tbody tr'));
             },
         ];
 
-        yield 'list empty when no venues' => [
+        yield 'list empty when no venues match filter' => [
             'method' => 'GET',
-            'uri' => '/venues/list',
-            'fixtures' => [],
+            'uri' => '/venues/list?name=Неіснуючий',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertCount(0, $crawler->filter('table tbody tr td a'));
@@ -130,15 +151,18 @@ class ListControllerTest extends WebTestCase
         yield 'POST not allowed' => [
             'method' => 'POST',
             'uri' => '/venues/list',
-            'fixtures' => [],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 405,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
         yield 'service unavailable on throwable' => [
             'method' => 'GET',
             'uri' => '/venues/list',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 500,
             'afterCallback' => static function () {
             },

@@ -12,10 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/player-claim/search', name: 'player_claim_search', methods: ['GET'])]
-#[IsGranted('ROLE_USER')]
 #[RateLimited('api_suggest')]
 class SearchController extends AbstractController
 {

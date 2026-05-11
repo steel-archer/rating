@@ -11,10 +11,8 @@ use App\Repository\SessionClaimRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/tournament-claims', name: 'my_tournament_claims', methods: ['GET'])]
-#[IsGranted('ROLE_PLAYER')]
 class ListController extends AbstractController
 {
     public function __invoke(SessionClaimRepository $claimRepository, Mapper $mapper): Response

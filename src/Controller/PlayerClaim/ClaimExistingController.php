@@ -14,10 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/player-claim/existing', name: 'player_claim_existing', methods: ['POST'])]
-#[IsGranted('ROLE_USER')]
 #[RateLimited('claim')]
 class ClaimExistingController extends AbstractController
 {

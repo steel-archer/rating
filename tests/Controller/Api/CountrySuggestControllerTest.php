@@ -19,11 +19,16 @@ class CountrySuggestControllerTest extends WebTestCase
     public function testSuggest(
         string $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         $client->request('GET', $uri);
 
@@ -36,12 +41,22 @@ class CountrySuggestControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'uri' => '/api/countries/suggest?q=test',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function ($client, array $objects) {
+            },
+        ];
+
         yield 'suggest returns matching countries' => [
             'uri' => '/api/countries/suggest?q=%D0%A3%D0%BA%D1%80',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client, array $objects) {
-                $data = json_decode($client->getResponse()->getContent(), true);
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertCount(1, $data);
                 static::assertSame('Україна', $data[0]['name']);
             },
@@ -49,17 +64,19 @@ class CountrySuggestControllerTest extends WebTestCase
 
         yield 'suggest returns empty for no match' => [
             'uri' => '/api/countries/suggest?q=xyz',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client, array $objects) {
-                $data = json_decode($client->getResponse()->getContent(), true);
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertCount(0, $data);
             },
         ];
 
         yield 'suggest requires q parameter' => [
             'uri' => '/api/countries/suggest',
-            'fixtures' => [],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 404,
             'afterCallback' => static function ($client, array $objects) {
             },

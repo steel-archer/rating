@@ -23,12 +23,16 @@ class ListControllerTest extends WebTestCase
         string $method,
         string $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
-        ?callable $mockSetup = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         $crawler = $client->request($method, $uri);
 
@@ -41,10 +45,21 @@ class ListControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
         yield 'list shows tournaments with calculated team counts' => [
             'method' => 'GET',
             'uri' => '/tournaments/list',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -74,7 +89,8 @@ class ListControllerTest extends WebTestCase
         yield 'list filters by name' => [
             'method' => 'GET',
             'uri' => '/tournaments/list?name=%D0%92%D0%B5%D1%81%D0%BD',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
@@ -86,7 +102,8 @@ class ListControllerTest extends WebTestCase
         yield 'list empty when no tournaments' => [
             'method' => 'GET',
             'uri' => '/tournaments/list',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertCount(0, $crawler->filter('table tbody tr td a'));
@@ -96,7 +113,8 @@ class ListControllerTest extends WebTestCase
         yield 'POST not allowed' => [
             'method' => 'POST',
             'uri' => '/tournaments/list',
-            'fixtures' => [],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
             'expectedStatus' => 405,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },

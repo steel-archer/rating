@@ -11,10 +11,8 @@ use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/moderator/venues/{id}/reject', name: 'moderator_venue_reject', requirements: ['id' => '\d+'], methods: ['POST'])]
-#[IsGranted('ROLE_MODERATOR')]
 #[RateLimited('moderator')]
 class ClaimRejectController extends AbstractController
 {

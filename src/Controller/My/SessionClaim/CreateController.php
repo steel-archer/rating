@@ -14,10 +14,8 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/my/session-claims/create/{tournamentId}', name: 'my_session_claim_create', requirements: ['tournamentId' => '\d+'], methods: ['GET'])]
-#[IsGranted('ROLE_PLAYER')]
 class CreateController extends AbstractController
 {
     public function __invoke(

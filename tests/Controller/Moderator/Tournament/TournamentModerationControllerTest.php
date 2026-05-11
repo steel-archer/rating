@@ -269,7 +269,7 @@ class TournamentModerationControllerTest extends WebTestCase
             'fixtures' => $fixtures,
             'loginAs' => 'user_regular',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request('GET', '/tournament/' . $objects['tournament_pending']->getId()),
-            'expectedStatus' => 404,
+            'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];

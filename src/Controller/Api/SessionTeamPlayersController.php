@@ -14,7 +14,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(
     '/api/session/{sessionId}/team/{teamId}/players',
@@ -22,7 +21,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     requirements: ['sessionId' => '\d+', 'teamId' => '\d+'],
     methods: ['GET'],
 )]
-#[IsGranted('ROLE_PLAYER')]
 #[RateLimited('api_suggest')]
 class SessionTeamPlayersController extends AbstractController
 {

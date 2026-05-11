@@ -19,11 +19,16 @@ class TownSuggestControllerTest extends WebTestCase
     public function testSuggest(
         string $uri,
         array $fixtures,
+        ?string $loginAs,
         int $expectedStatus,
         callable $afterCallback,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
+
+        if ($loginAs !== null) {
+            $client->loginUser($objects[$loginAs]);
+        }
 
         $client->request('GET', $uri);
 
@@ -36,12 +41,22 @@ class TownSuggestControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'anonymous gets redirected' => [
+            'uri' => '/api/towns/suggest?q=test',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => null,
+            'expectedStatus' => 302,
+            'afterCallback' => static function ($client, array $objects) {
+            },
+        ];
+
         yield 'suggest returns matching towns' => [
             'uri' => '/api/towns/suggest?q=%D0%9A%D0%B8%D1%97',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client, array $objects) {
-                $data = json_decode($client->getResponse()->getContent(), true);
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertCount(1, $data);
                 static::assertSame('Київ', $data[0]['name']);
             },
@@ -49,27 +64,30 @@ class TownSuggestControllerTest extends WebTestCase
 
         yield 'suggest returns multiple matches' => [
             'uri' => '/api/towns/suggest?q=%D0%9B%D1%8C',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client, array $objects) {
-                $data = json_decode($client->getResponse()->getContent(), true);
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertGreaterThanOrEqual(1, count($data));
             },
         ];
 
         yield 'suggest returns empty for no match' => [
             'uri' => '/api/towns/suggest?q=xyz',
-            'fixtures' => ['Entity/base.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client, array $objects) {
-                $data = json_decode($client->getResponse()->getContent(), true);
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertCount(0, $data);
             },
         ];
 
         yield 'suggest requires q parameter' => [
             'uri' => '/api/towns/suggest',
-            'fixtures' => [],
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
             'expectedStatus' => 404,
             'afterCallback' => static function ($client, array $objects) {
             },
