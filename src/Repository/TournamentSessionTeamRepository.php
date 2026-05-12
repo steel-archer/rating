@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Team;
 use App\Entity\Tournament;
+use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Helper\FractionalRanking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -20,6 +21,22 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, TournamentSessionTeam::class);
+    }
+
+    /**
+     * @return list<TournamentSessionTeam>
+     */
+    public function findBySessionWithTeamAndTown(TournamentSession $session): array
+    {
+        return $this->createQueryBuilder('st')
+            ->join('st.team', 'team')
+            ->join('team.town', 'town')
+            ->addSelect('team', 'town')
+            ->where('st.tournamentSession = :session')
+            ->setParameter('session', $session)
+            ->orderBy('team.name', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**

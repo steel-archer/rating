@@ -1,7 +1,8 @@
 FROM php:8.5-apache
 RUN apt-get update \
-    && apt-get install -y libicu-dev git unzip curl nodejs npm \
-    && docker-php-ext-install mysqli pdo pdo_mysql intl \
+    && apt-get install -y libicu-dev libpng-dev libjpeg-dev libfreetype6-dev libzip-dev git unzip curl nodejs npm \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install mysqli pdo pdo_mysql intl gd zip \
     && pecl install redis pcov && docker-php-ext-enable redis pcov
 RUN echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short-open-tag.ini
 RUN echo 'date.timezone = Europe/Kyiv' > /usr/local/etc/php/conf.d/timezone.ini

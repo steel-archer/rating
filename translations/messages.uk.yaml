@@ -23,7 +23,6 @@ common:
   teams_count: 'Команд'
   tournament: 'Турнір'
   town: 'Місто'
-
 contact:
   facebook: 'Facebook'
   facebook.invalid: 'Невірний формат Facebook (лише літери, цифри та крапка)'
@@ -314,3 +313,29 @@ venue:
     approved: 'Схвалено'
     pending: 'На розгляді'
   venue: 'Майданчик'
+
+results:
+  current_results: 'Поточні результати'
+  download_template: 'Завантажити шаблон'
+  error:
+    file_too_large: 'Файл занадто великий (максимум 5 МБ)'
+    incomplete_results: 'Неповні результати для команди «%1%»: %2% з %3% питань'
+    invalid_answer_value: 'Невірне значення відповіді для команди «%1%», тур %2%, питання %3% (допустимо 0 або 1)'
+    invalid_file_format: 'Невірний формат файлу (очікується .xlsx)'
+    invalid_tour: 'Невірний номер туру: %1%'
+    missing_team_results: 'Відсутні результати для команди «%1%»'
+    no_file: 'Файл не обрано'
+    no_questions_per_tour: 'Кількість питань у турі не задана'
+    no_teams: 'Немає команд для внесення результатів'
+    no_tours_count: 'Кількість турів не задана'
+    not_all_teams_have_results: 'Не всі команди мають результати'
+    nothing_to_submit: 'Немає результатів для підтвердження'
+    unknown_team: 'Невідома команда з ID %1%'
+  submit: 'Підтвердити результати'
+  submitted: 'Результати підтверджено'
+  tour_short: 'Тур'
+  unsubmitted_notice: 'Результати завантажено, але ще не підтверджено. Перевірте їх та натисніть кнопку нижче.'
+  upload: 'Завантажити'
+  upload_file: 'Файл з результатами (.xlsx)'
+  upload_success: 'Результати завантажено успішно'
+  upload_title: 'Внесення результатів'

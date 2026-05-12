@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'results.upload_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a></span><span><a href="{{ path('my_session_claim_edit', {id: session.id}) }}">{{ 'session_claim.edit_title'|trans }}</a></span><span>{{ 'results.upload_title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'results.upload_title'|trans }}</h1>
+
+    <div class="card">
+        <div class="form-group">
+            <a href="{{ path('my_session_claim_results_template', {id: session.id}) }}" class="btn btn-primary">{{ 'results.download_template'|trans }}</a>
+        </div>
+
+        <div class="form-group">
+            <label for="results-file">{{ 'results.upload_file'|trans }}</label>
+            <input type="file" id="results-file" accept=".xlsx">
+            <button type="button" class="btn btn-primary" id="upload-btn" data-upload-url="{{ path('my_session_claim_results_upload', {id: session.id}) }}">{{ 'results.upload'|trans }}</button>
+        </div>
+
+        <div id="upload-errors" class="form-error" hidden></div>
+        <div id="upload-success" class="form-success" hidden>{{ 'results.upload_success'|trans }}</div>
+    </div>
+
+    {% if hasUnsubmittedResults %}
+        <div class="card">
+            <p>{{ 'results.unsubmitted_notice'|trans }}</p>
+            <button type="button" class="btn btn-success" id="submit-btn" data-submit-url="{{ path('my_session_claim_results_submit', {id: session.id}) }}">{{ 'results.submit'|trans }}</button>
+            <div id="submit-errors" class="form-error" hidden></div>
+        </div>
+    {% endif %}
+
+    {% if teams is not empty %}
+        <div class="card card-wide">
+            <h2>{{ 'results.current_results'|trans }}</h2>
+            <div class="table-scroll">
+                <table class="results-breakdown" aria-label="{{ 'results.current_results'|trans }}">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col">{{ 'common.team'|trans }}</th>
+                            <th>{{ 'common.town'|trans }}</th>
+                            {% for tour in 1..session.toursCount %}
+                                {% for q in 1..session.questionsPerTour %}
+                                    <th class="answer-col">{{ (tour - 1) * session.questionsPerTour + q }}</th>
+                                {% endfor %}
+                                <th class="tour-total-col">Σ{{ tour }}</th>
+                            {% endfor %}
+                            <th class="total-col">{{ 'common.result'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams %}
+                            {% set data = breakdown[team.sessionTeamId] ?? null %}
+                            <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                                <td class="sticky-col">{{ team.oneTimeName ?? team.teamName }}</td>
+                                <td>{{ team.teamTownName }}</td>
+                                {% if data %}
+                                    {% for tour in 0..(session.toursCount - 1) %}
+                                        {% for q in 0..(session.questionsPerTour - 1) %}
+                                            {% set idx = tour * session.questionsPerTour + q %}
+                                            <td class="answer-col {{ data.answers[idx] ? 'answer-correct' : 'answer-wrong' }}">{{ data.answers[idx] }}</td>
+                                        {% endfor %}
+                                        <td class="tour-total-col"><strong>{{ data.tourScores[tour] }}</strong></td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for i in 1..(session.toursCount * session.questionsPerTour + session.toursCount) %}
+                                        <td class="answer-col">—</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="total-col"><strong>{{ team.score ?? '—' }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <a href="{{ path('my_session_claim_edit', {id: session.id}) }}" class="btn">{{ 'squad.back_to_session'|trans }}</a>
+    </div>
+{% endblock %}

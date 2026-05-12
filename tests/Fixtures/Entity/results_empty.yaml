@@ -1,0 +1,32 @@
+App\Entity\User:
+    user_results_empty_rep:
+        email: 'results_empty_rep@example.com'
+        googleId: 'google_results_empty_rep'
+        roles: []
+        player: '@player_shevchenko'
+
+App\Entity\Tournament:
+    tournament_results_empty:
+        name: 'Турнір без команд'
+        status: '<(App\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days"))>'
+        toursCount: 2
+        questionsPerTour: 3
+
+App\Entity\TournamentSession:
+    session_results_empty:
+        tournament: '@tournament_results_empty'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 2
+
+App\Entity\SessionClaim:
+    claim_results_empty:
+        session: '@session_results_empty'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'

@@ -1,0 +1,47 @@
+App\Entity\User:
+    user_results_rep:
+        email: 'results_rep@example.com'
+        googleId: 'google_results_rep'
+        roles: []
+        player: '@player_shevchenko'
+    user_results_other:
+        email: 'results_other@example.com'
+        googleId: 'google_results_other'
+        roles: []
+        player: '@player_lesya'
+
+App\Entity\Tournament:
+    tournament_results:
+        name: 'Турнір для результатів'
+        status: '<(App\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days"))>'
+        toursCount: 2
+        questionsPerTour: 3
+
+App\Entity\TournamentSession:
+    session_results:
+        tournament: '@tournament_results'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 2
+
+App\Entity\SessionClaim:
+    claim_results:
+        session: '@session_results'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
+
+App\Entity\TournamentSessionTeam:
+    session_team_alpha_results:
+        tournamentSession: '@session_results'
+        team: '@team_alpha'
+        score: 0
+    session_team_beta_results:
+        tournamentSession: '@session_results'
+        team: '@team_beta'
+        score: 0
