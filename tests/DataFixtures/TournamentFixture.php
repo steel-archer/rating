@@ -159,6 +159,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                     $sessionTeam = new TournamentSessionTeam();
                     $sessionTeam->setTournamentSession($session);
                     $sessionTeam->setTeam($this->getReference("team_$teamIndex", Team::class));
+                    $sessionTeam->setResultsSubmitted(true);
                     $manager->persist($sessionTeam);
 
                     $correctProbability = $faker->numberBetween(20, 85);

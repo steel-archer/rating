@@ -31,6 +31,9 @@ class TournamentSessionTeam
     #[ORM\Column]
     private int $score = 0;
 
+    #[ORM\Column]
+    private bool $resultsSubmitted = false;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $oneTimeName = null;
 
@@ -98,6 +101,18 @@ class TournamentSessionTeam
     public function setOneTimeName(?string $oneTimeName): static
     {
         $this->oneTimeName = $oneTimeName;
+
+        return $this;
+    }
+
+    public function isResultsSubmitted(): bool
+    {
+        return $this->resultsSubmitted;
+    }
+
+    public function setResultsSubmitted(bool $resultsSubmitted): static
+    {
+        $this->resultsSubmitted = $resultsSubmitted;
 
         return $this;
     }

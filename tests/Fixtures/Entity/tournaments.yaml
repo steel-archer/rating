@@ -72,19 +72,23 @@ App\Entity\TournamentSessionTeam:
         tournamentSession: '@session_spring_kyiv'
         team: '@team_alpha'
         score: 25
+        resultsSubmitted: true
     session_team_spring_beta:
         tournamentSession: '@session_spring_lviv'
         team: '@team_beta'
         score: 30
         oneTimeName: 'Зоряні Леви'
+        resultsSubmitted: true
     session_team_spring_gamma:
         tournamentSession: '@session_spring_kyiv'
         team: '@team_gamma'
         score: 20
+        resultsSubmitted: true
     session_team_autumn_alpha:
         tournamentSession: '@session_autumn_kyiv'
         team: '@team_alpha'
         score: 40
+        resultsSubmitted: true
 
 App\Entity\TournamentSessionTeamAnswer:
     answer_spring_alpha_{1..25}:

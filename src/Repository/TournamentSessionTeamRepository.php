@@ -32,6 +32,7 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             ->select('COUNT(st.id)')
             ->join('st.tournamentSession', 'ts')
             ->where('ts.tournament = :t')
+            ->andWhere('st.resultsSubmitted = true')
             ->setParameter('t', $tournament)
             ->getQuery()
             ->getSingleScalarResult();
@@ -46,6 +47,7 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         return (int) $this->createQueryBuilder('st')
             ->select('COUNT(st.id)')
             ->where('st.team = :team')
+            ->andWhere('st.resultsSubmitted = true')
             ->setParameter('team', $team)
             ->getQuery()
             ->getSingleScalarResult();
@@ -88,6 +90,7 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             ->leftJoin('tournament.season', 'season')
             ->addSelect('ts', 'tournament', 'season')
             ->where('st.team = :team')
+            ->andWhere('st.resultsSubmitted = true')
             ->setParameter('team', $team)
             ->orderBy('ts.playedAt', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
@@ -107,6 +110,7 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             ->join('st.tournamentSession', 'ts')
             ->addSelect('team', 'town')
             ->where('ts.tournament = :t')
+            ->andWhere('st.resultsSubmitted = true')
             ->setParameter('t', $tournament)
             ->orderBy('st.score', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
@@ -165,6 +169,7 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
              FROM tournament_session_team st
              JOIN tournament_session ts ON ts.id = st.tournament_session_id
              WHERE ts.tournament_id IN (' . self::placeholders($tournamentIdsValues) . ')
+               AND st.results_submitted = 1
              ORDER BY ts.tournament_id, st.score DESC',
             $tournamentIdsValues,
         );
