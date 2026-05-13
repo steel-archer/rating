@@ -37,6 +37,7 @@ security:
 
     access_control:
         - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/license$, roles: PUBLIC_ACCESS }
         - { path: ^/connect/google, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
         - { path: ^/moderator, roles: ROLE_MODERATOR }

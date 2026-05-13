@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'license.title'|trans }} — {{ parent() }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'license.title'|trans }}</h1>
+    <div class="license-text">
+        <p><strong>{{ 'license.owner_label'|trans }}:</strong> {{ 'license.owner'|trans }}</p>
+        <p>Copyright © {{ 'now'|date('Y') }} {{ 'license.owner'|trans }}. {{ 'license.all_rights_reserved'|trans }}</p>
+
+        <h2>1. {{ 'license.section.source_code'|trans }}</h2>
+        <p>{{ 'license.text.source_code_allowed'|trans }}</p>
+        <p>{{ 'license.text.source_code_prohibited'|trans }}</p>
+
+        <h2>2. {{ 'license.section.commercial'|trans }}</h2>
+        <p>{{ 'license.text.commercial'|trans }}</p>
+
+        <h2>3. {{ 'license.section.ethical'|trans }}</h2>
+        <p>{{ 'license.text.ethical_intro'|trans }}</p>
+        <ul>
+            <li>{{ 'license.text.ethical_a'|trans }}</li>
+            <li>{{ 'license.text.ethical_b'|trans }}</li>
+            <li>{{ 'license.text.ethical_c'|trans }}</li>
+            <li>{{ 'license.text.ethical_d'|trans }}</li>
+            <li>{{ 'license.text.ethical_e'|trans }}</li>
+            <li>{{ 'license.text.ethical_f'|trans }}</li>
+        </ul>
+        <p>{{ 'license.text.ethical_outro'|trans }}</p>
+
+        <h2>4. {{ 'license.section.warranty'|trans }}</h2>
+        <p>{{ 'license.text.warranty'|trans }}</p>
+
+        <h2>5. {{ 'license.section.liability'|trans }}</h2>
+        <p>{{ 'license.text.liability'|trans }}</p>
+
+        <p>{{ 'license.contact'|trans }}: <a href="mailto:rating.support@gmail.com">rating.support@gmail.com</a></p>
+    </div>
+{% endblock %}

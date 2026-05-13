@@ -66,9 +66,12 @@
     </main>
     <footer>
         <div class="footer-inner">
-            <span>© {{ 'now'|date('Y') }} {{ 'site.title'|trans }}</span>
-            <a href="mailto:rating.support@gmail.com">rating.support@gmail.com</a>
-            <a href="https://github.com/steel-archer/rating" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <span>© {{ 'now'|date('Y') }} {{ 'license.copyright_holder'|trans }}</span>
+            <div class="footer-links">
+                <a href="{{ path('license') }}">{{ 'license.title'|trans }}</a>
+                <a href="mailto:rating.support@gmail.com">rating.support@gmail.com</a>
+                <a href="https://github.com/steel-archer/rating" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
         </div>
     </footer>
 </body>

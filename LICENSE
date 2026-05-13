@@ -1,30 +1,57 @@
-Business Source License 1.1
+ЛІЦЕНЗІЯ
 
-Licensor: Bohdan Sokulskyi
-Licensed Work: Rating (Ukrainian "What? Where? When?" rating site)
-Change Date: 2035-01-01
-Change License: Apache License, Version 2.0
+Правовласник: Богдан Сокульський (далі — «Правовласник»)
+Copyright (c) 2026 Правовласник. Усі права захищені.
 
-Terms
+УМОВИ ВИКОРИСТАННЯ
 
-The Licensor hereby grants you the right to copy, modify, create derivative
-works, redistribute, and make non-production use of the Licensed Work.
+1. ВИКОРИСТАННЯ ВИХІДНОГО КОДУ
 
-Additional Use Grant: You may use the Licensed Work for any non-commercial
-purpose. Commercial use requires explicit written permission from the Licensor.
+Користувачу дозволяється клонувати, копіювати, модифікувати та
+розповсюджувати вихідний код цього програмного забезпечення за умови, що це
+не суперечить іншим пунктам цієї Ліцензії.
 
-Effective on the Change Date, the Licensor hereby grants you rights under the
-terms of the Change License, and the rights granted in the paragraph above
-terminate.
+Забороняється розгортання цього програмного забезпечення або його похідних
+робіт у мережі Інтернет або будь-якій іншій публічно доступній мережі
+без попередньої письмової згоди Правовласника.
 
-If your use of the Licensed Work does not comply with the requirements currently
-in effect as described in this License, you must purchase a commercial license
-from the Licensor, or you must refrain from using the Licensed Work.
+2. КОМЕРЦІЙНЕ ВИКОРИСТАННЯ
 
-All copies of the original and modified Licensed Work, and derivative works of
-the Licensed Work, are subject to this License.
+Будь-яке комерційне використання вихідного коду цього програмного забезпечення
+або вебсайту, що функціонує на його основі, включаючи, але не обмежуючись,
+отримання прямого чи опосередкованого прибутку, надання платних послуг або
+використання в комерційних продуктах, дозволяється виключно за попередньою
+письмовою згодою Правовласника.
 
-This License does not grant you any right in any trademark or logo of Licensor
-or its affiliates.
+3. ЕТИЧНА УМОВА
 
-TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSED
+Використовуючи вихідний код цього програмного забезпечення або вебсайт, що
+функціонує на його основі, Користувач підтверджує, що він:
+
+  а) визнає факт збройної агресії російської федерації проти України;
+  б) засуджує цю агресію як порушення міжнародного права, суверенітету та
+     територіальної цілісності України;
+  в) виступає за повну військову поразку російської федерації;
+  г) підтримує деколонізацію російської федерації;
+  ґ) підтримує притягнення до відповідальності російської федерації, її
+     політичного та військового керівництва, військовослужбовців та інших осіб,
+     причетних до злочинів агресії, воєнних злочинів та злочинів проти людяності;
+  д) підтримує виплату російською федерацією повних репарацій Україні за завдані
+     збитки.
+
+Якщо Користувач не погоджується з будь-яким із зазначених пунктів, він
+зобов'язаний негайно припинити використання вихідного коду та вебсайту.
+
+4. ВІДМОВА ВІД ГАРАНТІЙ
+
+ЦЕ ПРОГРАМНЕ ЗАБЕЗПЕЧЕННЯ НАДАЄТЬСЯ «ЯК Є», БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ, ЯВНИХ
+ЧИ НЕЯВНИХ, ВКЛЮЧАЮЧИ, АЛЕ НЕ ОБМЕЖУЮЧИСЬ, ГАРАНТІЯМИ ПРИДАТНОСТІ ДЛЯ
+КОНКРЕТНОЇ МЕТИ ТА НЕПОРУШЕННЯ ПРАВ ТРЕТІХ ОСІБ.
+
+5. ОБМЕЖЕННЯ ВІДПОВІДАЛЬНОСТІ
+
+ПРАВОВЛАСНИК ЗА ЖОДНИХ ОБСТАВИН НЕ НЕСЕ ВІДПОВІДАЛЬНОСТІ ЗА БУДЬ-ЯКІ ПРЯМІ,
+НЕПРЯМІ, ВИПАДКОВІ, ОСОБЛИВІ АБО ПОБІЧНІ ЗБИТКИ, ЩО ВИНИКЛИ ВНАСЛІДОК
+ВИКОРИСТАННЯ АБО НЕМОЖЛИВОСТІ ВИКОРИСТАННЯ ЦЬОГО ПРОГРАМНОГО ЗАБЕЗПЕЧЕННЯ.
+
+Контакт для отримання дозволу: rating.support@gmail.com
