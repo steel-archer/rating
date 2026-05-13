@@ -1,0 +1,90 @@
+App\Entity\Tournament:
+    tournament_hidden_results:
+        name: 'Турнір з прихованими результатами'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15 23:59:59"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+30 days midnight"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        difficulty: 3.5
+        trueDl: 2.8
+        status: '<(App\Enum\TournamentStatus::Published)>'
+
+App\Entity\TournamentOfficial:
+    official_hidden_organizer:
+        tournament: '@tournament_hidden_results'
+        player: '@player_shevchenko'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+    official_hidden_editor:
+        tournament: '@tournament_hidden_results'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
+
+App\Entity\TournamentSession:
+    session_hidden_kyiv:
+        tournament: '@tournament_hidden_results'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_lesya'
+        playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
+
+App\Entity\TournamentSessionTeam:
+    session_team_hidden_alpha:
+        tournamentSession: '@session_hidden_kyiv'
+        team: '@team_alpha'
+        score: 25
+        resultsSubmitted: true
+    session_team_hidden_beta:
+        tournamentSession: '@session_hidden_kyiv'
+        team: '@team_beta'
+        score: 30
+        resultsSubmitted: true
+
+App\Entity\TournamentSessionTeamAnswer:
+    answer_hidden_alpha_{1..25}:
+        tournamentSessionTeam: '@session_team_hidden_alpha'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_hidden_alpha_no_{1..11}:
+        tournamentSessionTeam: '@session_team_hidden_alpha'
+        questionNumber: '<($current + 25)>'
+        isCorrect: false
+    answer_hidden_beta_{1..30}:
+        tournamentSessionTeam: '@session_team_hidden_beta'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_hidden_beta_no_{1..6}:
+        tournamentSessionTeam: '@session_team_hidden_beta'
+        questionNumber: '<($current + 30)>'
+        isCorrect: false
+
+App\Entity\TournamentSessionTeamPlayer:
+    stp_hidden_alpha_shevchenko:
+        tournamentSessionTeam: '@session_team_hidden_alpha'
+        player: '@player_shevchenko'
+        isLegionary: false
+    stp_hidden_beta_franko:
+        tournamentSessionTeam: '@session_team_hidden_beta'
+        player: '@player_franko'
+        isLegionary: false
+
+App\Entity\TeamPlayer:
+    team_player_hidden_alpha_shevchenko:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    team_player_hidden_beta_franko:
+        team: '@team_beta'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: true
+
+App\Entity\SessionClaim:
+    session_claim_hidden_kyiv:
+        session: '@session_hidden_kyiv'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'

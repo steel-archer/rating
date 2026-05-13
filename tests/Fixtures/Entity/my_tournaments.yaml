@@ -17,6 +17,7 @@ App\Entity\Tournament:
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+30 days midnight"))>'
         endedAt: '<(new \DateTimeImmutable("+31 days 23:59:59"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+32 days midnight"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.5
@@ -27,6 +28,7 @@ App\Entity\Tournament:
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+60 days midnight"))>'
         endedAt: '<(new \DateTimeImmutable("+61 days 23:59:59"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+62 days midnight"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 4.0

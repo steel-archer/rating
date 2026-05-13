@@ -36,6 +36,11 @@ class TournamentOfficialRepository extends ServiceEntityRepository
 
     public function isOrganizer(Player $player, Tournament $tournament): bool
     {
+        return $this->hasRole($player, $tournament, TournamentOfficialRole::Organizer);
+    }
+
+    public function hasRole(Player $player, Tournament $tournament, TournamentOfficialRole $role): bool
+    {
         return (bool) $this->createQueryBuilder('o')
             ->select('1')
             ->where('o.tournament = :tournament')
@@ -43,7 +48,7 @@ class TournamentOfficialRepository extends ServiceEntityRepository
             ->andWhere('o.role = :role')
             ->setParameter('tournament', $tournament)
             ->setParameter('player', $player)
-            ->setParameter('role', TournamentOfficialRole::Organizer)
+            ->setParameter('role', $role)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

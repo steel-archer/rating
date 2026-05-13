@@ -656,6 +656,34 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
+        yield 'update with resultsHiddenUntil before endedAt returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => (new DateTime('+30 days'))->format('Y-m-d'),
+                    'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
+                    'resultsHiddenUntil' => (new DateTime('+30 days'))->format('Y-m-d'),
+                    'toursCount' => null,
+                    'questionsPerTour' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
         yield 'create adds creator as organizer' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',

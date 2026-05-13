@@ -30,6 +30,7 @@ final class TournamentEntryMapping implements MappingInterface
         $mapper = $context['mapper'];
         $session = $source->getTournamentSession();
         $tournament = $session->getTournament();
+        $resultsHidden = $tournament->areResultsHidden();
 
         $players = array_map(
             static fn(TournamentSessionTeamPlayer $a) => $mapper->map($a, TournamentPlayerDTO::class, ['squadInfo' => $context['squadInfo']]),
@@ -40,8 +41,8 @@ final class TournamentEntryMapping implements MappingInterface
             tournamentId: $tournament->getId(),
             tournamentName: $tournament->getName(),
             playedAt: $session->getPlayedAt(),
-            score: $source->getScore(),
-            place: $context['place'] ?? null,
+            score: $resultsHidden ? null : $source->getScore(),
+            place: $resultsHidden ? null : ($context['place'] ?? null),
             players: $players,
             oneTimeName: $source->getOneTimeName(),
         );

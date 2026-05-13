@@ -32,11 +32,18 @@ class TournamentValidator
         try {
             $startedAt = $dto->startedAt ? new DateTimeImmutable($dto->startedAt) : null;
             $endedAt = $dto->endedAt ? new DateTimeImmutable($dto->endedAt) : null;
+            $resultsHiddenUntil = $dto->resultsHiddenUntil ? new DateTimeImmutable($dto->resultsHiddenUntil) : null;
         } catch (DateMalformedStringException) {
             return ['tournament.error.invalid_date'];
         }
 
-        return $this->validateDates($startedAt, $endedAt);
+        $errors = $this->validateDates($startedAt, $endedAt);
+
+        if ($resultsHiddenUntil !== null && $endedAt !== null && $resultsHiddenUntil <= $endedAt) {
+            $errors[] = 'tournament.error.results_hidden_before_end';
+        }
+
+        return $errors;
     }
 
     /** @return list<string> */
@@ -57,6 +64,12 @@ class TournamentValidator
         }
 
         $errors = [...$errors, ...$this->validateDates($tournament->getStartedAt(), $tournament->getEndedAt())];
+
+        if ($tournament->getResultsHiddenUntil() === null) {
+            $errors[] = 'tournament.publish_error.no_results_hidden_until';
+        } elseif ($tournament->getEndedAt() !== null && $tournament->getResultsHiddenUntil() <= $tournament->getEndedAt()) {
+            $errors[] = 'tournament.error.results_hidden_before_end';
+        }
 
         if ($tournament->getToursCount() === null) {
             $errors[] = 'tournament.publish_error.no_tours_count';

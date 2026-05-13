@@ -28,6 +28,7 @@ final class TournamentMapping implements MappingInterface
             seasonName: $source->getSeason()?->getName(),
             startedAt: $source->getStartedAt(),
             endedAt: $source->getEndedAt(),
+            resultsHiddenUntil: $source->getResultsHiddenUntil(),
             toursCount: $source->getToursCount(),
             questionsPerTour: $source->getQuestionsPerTour(),
             difficulty: $source->getDifficulty(),

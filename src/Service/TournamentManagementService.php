@@ -92,6 +92,11 @@ class TournamentManagementService
                 ? (new DateTimeImmutable($dto->endedAt))->setTime(23, 59, 59)
                 : null,
         );
+        $tournament->setResultsHiddenUntil(
+            $dto->resultsHiddenUntil
+                ? (new DateTimeImmutable($dto->resultsHiddenUntil))->setTime(0, 0, 0)
+                : null,
+        );
         $tournament->setToursCount($dto->toursCount);
         $tournament->setQuestionsPerTour($dto->questionsPerTour);
         $tournament->setDifficulty($dto->difficulty);

@@ -14,6 +14,7 @@ final readonly class TournamentEditDTO
         public string $status,
         public ?DateTimeImmutable $startedAt,
         public ?DateTimeImmutable $endedAt,
+        public ?DateTimeImmutable $resultsHiddenUntil,
         public ?int $toursCount,
         public ?int $questionsPerTour,
         public ?float $difficulty,

@@ -87,6 +87,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $endDate = $startDate->modify('+' . $faker->numberBetween(7, 14) . ' days')->setTime(23, 59, 59);
             $tournament->setStartedAt($startDate);
             $tournament->setEndedAt($endDate);
+            $tournament->setResultsHiddenUntil($endDate->modify('+1 day')->setTime(0, 0, 0));
             $tournament->setStatus(TournamentStatus::Published);
             $tournament->setToursCount($faker->boolean(90) ? 3 : $faker->randomElement([4, 5]));
             $tournament->setQuestionsPerTour($faker->boolean(90) ? 12 : $faker->randomElement([13, 14, 15]));

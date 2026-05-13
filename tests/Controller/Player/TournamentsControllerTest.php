@@ -146,5 +146,21 @@ class TournamentsControllerTest extends WebTestCase
                 static::getContainer()->set(PlayerTournamentService::class, $stub);
             },
         ];
+
+        yield 'hidden results show empty score and place' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId() . '/tournaments',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_hidden.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                $row = $rows->eq(0);
+                // place column (index 5) and score column (index 6) should be empty
+                static::assertSame('—', trim($row->filter('td')->eq(5)->text()));
+                static::assertSame('—', trim($row->filter('td')->eq(6)->text()));
+            },
+        ];
     }
 }

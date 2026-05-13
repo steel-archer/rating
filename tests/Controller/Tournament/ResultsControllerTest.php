@@ -163,5 +163,28 @@ class ResultsControllerTest extends WebTestCase
                 static::getContainer()->set(TournamentResultService::class, $stub);
             },
         ];
+
+        yield 'hidden results show notice for regular user' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_hidden_results']->getId() . '/results',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_hidden.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(0, $crawler->filter('table'));
+            },
+        ];
+
+        yield 'hidden results visible to organizer' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_hidden_results']->getId() . '/results',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_hidden.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(2, $rows);
+            },
+        ];
     }
 }

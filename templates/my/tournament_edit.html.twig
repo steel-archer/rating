@@ -80,6 +80,11 @@
                 <small class="hint">{{ 'tournament.my.end_time_hint'|trans }}</small>
             </div>
             <div class="form-group">
+                <label for="results_hidden_until">{{ 'tournament.my.results_hidden_until'|trans }}</label>
+                <input type="date" id="results_hidden_until" name="resultsHiddenUntil" value="{{ tournament.resultsHiddenUntil ? tournament.resultsHiddenUntil|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
+                <small class="hint">{{ 'tournament.my.results_hidden_until_hint'|trans }}</small>
+            </div>
+            <div class="form-group">
                 <label for="tours_count">{{ 'tournament.tours_count'|trans }}</label>
                 <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}" {{ readonly ? 'disabled' : '' }}>
             </div>

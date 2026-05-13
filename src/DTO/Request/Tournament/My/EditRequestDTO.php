@@ -27,6 +27,9 @@ final readonly class EditRequestDTO
         #[Assert\Date]
         public ?string $endedAt = null,
 
+        #[Assert\Date]
+        public ?string $resultsHiddenUntil = null,
+
         #[Assert\Positive]
         public ?int $toursCount = null,
 

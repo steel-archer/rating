@@ -40,6 +40,9 @@ class Tournament
     private ?DateTimeImmutable $endedAt = null;
 
     #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $resultsHiddenUntil = null;
+
+    #[ORM\Column(nullable: true)]
     private ?int $toursCount = null;
 
     #[ORM\Column(nullable: true)]
@@ -120,6 +123,24 @@ class Tournament
         $this->endedAt = $endedAt;
 
         return $this;
+    }
+
+    public function getResultsHiddenUntil(): ?DateTimeImmutable
+    {
+        return $this->resultsHiddenUntil;
+    }
+
+    public function setResultsHiddenUntil(?DateTimeImmutable $resultsHiddenUntil): static
+    {
+        $this->resultsHiddenUntil = $resultsHiddenUntil;
+
+        return $this;
+    }
+
+    public function areResultsHidden(): bool
+    {
+        return $this->resultsHiddenUntil !== null
+            && $this->resultsHiddenUntil > new DateTimeImmutable();
     }
 
     public function getToursCount(): ?int

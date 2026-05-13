@@ -17,6 +17,7 @@ final readonly class TournamentDTO
         public ?string $seasonName,
         public ?DateTimeInterface $startedAt,
         public ?DateTimeInterface $endedAt,
+        public ?DateTimeInterface $resultsHiddenUntil,
         public ?int $toursCount,
         public ?int $questionsPerTour,
         public ?float $difficulty,

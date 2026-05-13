@@ -24,6 +24,7 @@ final class TournamentEditMapping implements MappingInterface
             status: $source->getStatus()->value,
             startedAt: $source->getStartedAt(),
             endedAt: $source->getEndedAt(),
+            resultsHiddenUntil: $source->getResultsHiddenUntil(),
             toursCount: $source->getToursCount(),
             questionsPerTour: $source->getQuestionsPerTour(),
             difficulty: $source->getDifficulty(),
