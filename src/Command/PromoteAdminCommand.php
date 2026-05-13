@@ -53,7 +53,11 @@ final class PromoteAdminCommand extends Command
             return Command::FAILURE;
         }
 
-        $user->setRoles(['ROLE_ADMIN']);
+        $roles = $user->getRoles();
+        if (!in_array('ROLE_ADMIN', $roles, true)) {
+            $roles[] = 'ROLE_ADMIN';
+            $user->setRoles($roles);
+        }
         $this->em->flush();
 
         $io->success("User \"$email\" is now an admin.");

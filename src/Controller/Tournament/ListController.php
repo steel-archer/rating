@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Tournament;
 
 use App\DTO\Request\TournamentListRequestDTO;
-use App\Repository\TournamentRepository;
+use App\Service\TournamentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -15,16 +15,18 @@ use Symfony\Component\Routing\Attribute\Route;
 class ListController extends AbstractController
 {
     public function __construct(
-        private readonly TournamentRepository $tournamentRepository,
+        private readonly TournamentService $tournamentService,
     ) {
     }
 
     public function __invoke(#[MapQueryString] TournamentListRequestDTO $requestDto = new TournamentListRequestDTO()): Response
     {
+        $result = $this->tournamentService->getList($requestDto);
+
         return $this->render('tournament/_list.html.twig', [
-            'tournaments' => $this->tournamentRepository->findForList($requestDto),
+            'tournaments' => $result['tournaments'],
             'page' => $requestDto->page,
-            'lastPage' => $this->tournamentRepository->getLastPageNumber($requestDto),
+            'lastPage' => $result['lastPage'],
             'filters' => $requestDto->getFilters(),
         ]);
     }

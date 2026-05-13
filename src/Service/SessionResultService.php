@@ -6,10 +6,14 @@ namespace App\Service;
 
 use App\DTO\Response\Tournament\SessionTeamDTO;
 use App\Entity\TournamentSession;
+use App\Enum\CacheTag;
 use App\Helper\SessionTeamResultBuilder;
 use App\Repository\TournamentSessionTeamAnswerRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Doctrine\DBAL\Exception as DbalException;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class SessionResultService
 {
@@ -17,14 +21,37 @@ class SessionResultService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionTeamAnswerRepository $answerRepository,
         private SessionTeamResultBuilder $resultBuilder,
+        private TagAwareCacheInterface $cache,
     ) {
     }
 
     /**
      * @return list<SessionTeamDTO>
+     *
      * @throws DbalException
+     * @throws InvalidArgumentException
      */
     public function getSessionResults(TournamentSession $session): array
+    {
+        if ($this->hasUnsubmittedResults($session)) {
+            return $this->buildSessionResults($session);
+        }
+
+        $sessionId = $session->getId();
+        $tournamentId = $session->getTournament()->getId();
+
+        return $this->cache->get("session_results_{$sessionId}", function (ItemInterface $item) use ($session, $tournamentId) {
+            $item->tag([CacheTag::tournament($tournamentId)]);
+            $item->expiresAfter(86400);
+
+            return $this->buildSessionResults($session);
+        });
+    }
+
+    /**
+     * @return list<SessionTeamDTO>
+     */
+    private function buildSessionResults(TournamentSession $session): array
     {
         $sessionTeams = $this->sessionTeamRepository->findBy(
             ['tournamentSession' => $session],

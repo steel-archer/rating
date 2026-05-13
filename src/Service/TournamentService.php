@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\Request\TournamentListRequestDTO;
+use App\DTO\Response\Tournament\TournamentListItemDTO;
 use App\DTO\Response\TournamentDTO;
 use App\Entity\Tournament;
 use App\Enum\CacheTag;
@@ -43,6 +45,26 @@ class TournamentService
                 ?? throw EntityNotFoundException::forId('Tournament', $id);
 
             return $this->buildDto($tournament);
+        });
+    }
+
+    /**
+     * @return array{tournaments: list<TournamentListItemDTO>, lastPage: int}
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getList(TournamentListRequestDTO $requestDto): array
+    {
+        $cacheKey = 'tournament_list_' . md5(serialize($requestDto));
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($requestDto) {
+            $item->tag([CacheTag::TournamentList->value]);
+            $item->expiresAfter(3600);
+
+            return [
+                'tournaments' => $this->tournamentRepository->findForList($requestDto),
+                'lastPage' => $this->tournamentRepository->getLastPageNumber($requestDto),
+            ];
         });
     }
 

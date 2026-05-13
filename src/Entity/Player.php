@@ -126,6 +126,6 @@ class Player
 
     public function getFullName(): string
     {
-        return trim($this->lastName . ' ' . $this->firstName . ' ' . ($this->patronymic ?? ''));
+        return implode(' ', array_filter([$this->lastName, $this->firstName, $this->patronymic]));
     }
 }

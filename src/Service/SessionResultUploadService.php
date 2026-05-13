@@ -347,7 +347,7 @@ class SessionResultUploadService
         $mimeType = $file->getMimeType() ?? '';
         $extension = strtolower($file->getClientOriginalExtension());
 
-        if ($extension !== 'xlsx' && $mimeType !== self::MIME_XLSX) {
+        if ($extension !== 'xlsx' || $mimeType !== self::MIME_XLSX) {
             $errors[] = 'results.error.invalid_file_format';
         }
 

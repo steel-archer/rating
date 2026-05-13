@@ -57,7 +57,7 @@ class TournamentDocumentService
             throw new LogicException('tournament.document.error.invalid_type');
         }
 
-        $originalName = mb_substr(trim($file->getClientOriginalName()), 0, 200);
+        $originalName = mb_substr(trim(basename($file->getClientOriginalName())), 0, 200);
         $safeFilename = $this->slugger->slug(
             pathinfo($originalName, PATHINFO_FILENAME),
         );
