@@ -14,6 +14,8 @@ use App\Repository\TournamentDocumentRepository;
 use App\Security\SessionRepresentativeVoter;
 use App\Service\SessionResultService;
 use DateTimeImmutable;
+use Doctrine\DBAL\Exception;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,6 +23,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/my/session-claims/{id}/edit', name: 'my_session_claim_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
 class EditController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
     public function __invoke(
         TournamentSession $session,
         SessionClaimRepository $claimRepository,

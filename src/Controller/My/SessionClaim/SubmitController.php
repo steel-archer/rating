@@ -9,6 +9,7 @@ use App\DTO\Request\Session\ClaimRequestDTO;
 use App\Entity\Tournament;
 use App\Entity\User;
 use App\Service\SessionClaimService;
+use DateMalformedStringException;
 use LogicException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[RateLimited('mutation')]
 class SubmitController extends AbstractController
 {
+    /**
+     * @throws DateMalformedStringException
+     */
     public function __invoke(
         #[MapEntity(id: 'tournamentId')] Tournament $tournament,
         #[MapRequestPayload] ClaimRequestDTO $dto,

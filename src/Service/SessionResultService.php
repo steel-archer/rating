@@ -11,6 +11,8 @@ use App\Helper\SessionTeamResultBuilder;
 use App\Repository\TournamentSessionTeamAnswerRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Doctrine\DBAL\Exception as DbalException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -30,6 +32,8 @@ class SessionResultService
      *
      * @throws DbalException
      * @throws InvalidArgumentException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getSessionResults(TournamentSession $session): array
     {
@@ -49,31 +53,14 @@ class SessionResultService
     }
 
     /**
-     * @return list<SessionTeamDTO>
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
-    private function buildSessionResults(TournamentSession $session): array
-    {
-        $sessionTeams = $this->sessionTeamRepository->findBy(
-            ['tournamentSession' => $session],
-            ['score' => 'DESC'],
-        );
-
-        return $this->resultBuilder->build($sessionTeams, $session->getTournament()->getSeason());
-    }
-
     public function hasUnsubmittedResults(TournamentSession $session): bool
     {
-        $unsubmittedIds = $this->getUnsubmittedTeamIds($session);
-        if ($unsubmittedIds === []) {
-            return false;
-        }
+        $unsubmittedIds = $this->sessionTeamRepository->findUnsubmittedIdsBySession($session);
 
-        return (int) $this->answerRepository->createQueryBuilder('a')
-            ->select('COUNT(a.id)')
-            ->where('a.tournamentSessionTeam IN (:ids)')
-            ->setParameter('ids', $unsubmittedIds)
-            ->getQuery()
-            ->getSingleScalarResult() > 0;
+        return $this->answerRepository->hasAnswersForTeams($unsubmittedIds);
     }
 
     /**
@@ -95,12 +82,7 @@ class SessionResultService
             return [];
         }
 
-        $rows = $this->answerRepository->createQueryBuilder('a')
-            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'a.questionNumber', 'a.isCorrect')
-            ->where('a.tournamentSessionTeam IN (:ids)')
-            ->setParameter('ids', $sessionTeamIds)
-            ->getQuery()
-            ->getArrayResult();
+        $rows = $this->answerRepository->findBySessionTeamIds($sessionTeamIds);
 
         $answersByTeam = [];
         foreach ($rows as $row) {
@@ -135,19 +117,15 @@ class SessionResultService
     }
 
     /**
-     * @return list<int>
+     * @return list<SessionTeamDTO>
      */
-    private function getUnsubmittedTeamIds(TournamentSession $session): array
+    private function buildSessionResults(TournamentSession $session): array
     {
-        $sessionTeams = $this->sessionTeamRepository->findBy(['tournamentSession' => $session]);
+        $sessionTeams = $this->sessionTeamRepository->findBy(
+            ['tournamentSession' => $session],
+            ['score' => 'DESC'],
+        );
 
-        $ids = [];
-        foreach ($sessionTeams as $sessionTeam) {
-            if (!$sessionTeam->isResultsSubmitted()) {
-                $ids[] = $sessionTeam->getId();
-            }
-        }
-
-        return $ids;
+        return $this->resultBuilder->build($sessionTeams, $session->getTournament()->getSeason());
     }
 }

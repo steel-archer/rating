@@ -207,6 +207,22 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         return $result;
     }
 
+    /**
+     * @return list<int>
+     */
+    public function findUnsubmittedIdsBySession(TournamentSession $session): array
+    {
+        $rows = $this->createQueryBuilder('st')
+            ->select('st.id')
+            ->where('st.tournamentSession = :session')
+            ->andWhere('st.resultsSubmitted = false')
+            ->setParameter('session', $session)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn(array $row) => (int) $row['id'], $rows);
+    }
+
     /** @param list<mixed> $items */
     private static function placeholders(array $items): string
     {

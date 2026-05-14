@@ -11,6 +11,7 @@ use App\Mapping\Mapper;
 use App\Service\SessionResultService;
 use App\Service\SessionSquadService;
 use Doctrine\DBAL\Exception as DbalException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -20,6 +21,7 @@ class ResultsController extends AbstractController
 {
     /**
      * @throws DbalException
+     * @throws InvalidArgumentException
      */
     public function __invoke(
         TournamentSession $session,

@@ -9,6 +9,7 @@ use App\DTO\Request\Session\UpdateRequestDTO;
 use App\Entity\TournamentSession;
 use App\Entity\User;
 use App\Service\SessionClaimService;
+use DateMalformedStringException;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,6 +20,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[RateLimited('mutation')]
 class UpdateController extends AbstractController
 {
+    /**
+     * @throws DateMalformedStringException
+     */
     public function __invoke(
         TournamentSession $session,
         #[MapRequestPayload] UpdateRequestDTO $dto,
