@@ -52,7 +52,11 @@ MYSQL_ROOT_PASSWORD=ваш_пароль_root
 MYSQL_DATABASE=rating
 MYSQL_USER=rating_user
 MYSQL_PASSWORD=ваш_пароль_користувача
+GOOGLE_CLIENT_ID=отримайте_від_розробника
+GOOGLE_CLIENT_SECRET=отримайте_від_розробника
 ```
+
+> **Google OAuth:** значення `GOOGLE_CLIENT_ID` та `GOOGLE_CLIENT_SECRET` потрібно отримати від розробника проєкту. Без них автентифікація через Google не працюватиме.
 
 Також оновіть рядок `DATABASE_URL`, підставивши ваші значення:
 
