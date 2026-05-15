@@ -60,7 +60,11 @@
                                     {% for tour in 0..(session.toursCount - 1) %}
                                         {% for q in 0..(session.questionsPerTour - 1) %}
                                             {% set idx = tour * session.questionsPerTour + q %}
-                                            <td class="answer-col {{ data.answers[idx] ? 'answer-correct' : 'answer-wrong' }}">{{ data.answers[idx] }}</td>
+                                            {% if data.answers[idx] == '?' %}
+                                                <td class="answer-col answer-dispute">?</td>
+                                            {% else %}
+                                                <td class="answer-col {{ data.answers[idx] ? 'answer-correct' : 'answer-wrong' }}">{{ data.answers[idx] }}</td>
+                                            {% endif %}
                                         {% endfor %}
                                         <td class="tour-total-col"><strong>{{ data.tourScores[tour] }}</strong></td>
                                     {% endfor %}

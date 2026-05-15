@@ -71,16 +71,15 @@ class ResultsUploadControllerTest extends WebTestCase
             },
         ];
 
-        yield 'upload with invalid answer values' => [
+        yield 'upload with dispute values creates disputes' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_results_rep',
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/upload',
-            'file' => static fn(array $objects) => self::buildXlsxWithInvalidValues($objects),
-            'expectedStatus' => 422,
+            'file' => static fn(array $objects) => self::buildXlsxWithDisputeValues($objects),
+            'expectedStatus' => 200,
             'afterCallback' => static function ($client) {
                 $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertNotEmpty($body['errors']);
-                static::assertStringContainsString('results.error.invalid_answer_value', $body['errors'][0]);
+                static::assertTrue($body['success']);
             },
         ];
 
@@ -222,7 +221,7 @@ class ResultsUploadControllerTest extends WebTestCase
     /**
      * @param array<string, object> $objects
      */
-    private static function buildXlsxWithInvalidValues(array $objects): UploadedFile
+    private static function buildXlsxWithDisputeValues(array $objects): UploadedFile
     {
         /** @var TournamentSessionTeam $teamAlpha */
         $teamAlpha = $objects['session_team_alpha_results'];
@@ -232,7 +231,7 @@ class ResultsUploadControllerTest extends WebTestCase
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         self::writeHeader($sheet);
-        self::fillTeamRow($sheet, 3, $teamAlpha->getId(), 1, [1, 2, 1]);
+        self::fillTeamRow($sheet, 3, $teamAlpha->getId(), 1, [1, 'спірна відповідь', 1]);
         self::fillTeamRow($sheet, 4, $teamBeta->getId(), 1, [0, 1, 1]);
         self::fillTeamRow($sheet, 6, $teamAlpha->getId(), 2, [1, 1, 0]);
         self::fillTeamRow($sheet, 7, $teamBeta->getId(), 2, [1, 0, 0]);
@@ -348,7 +347,7 @@ class ResultsUploadControllerTest extends WebTestCase
     }
 
     /**
-     * @param list<int> $answers
+     * @param list<int|string> $answers
      */
     private static function fillTeamRow(Worksheet $sheet, int $row, int $teamId, int $tour, array $answers): void
     {

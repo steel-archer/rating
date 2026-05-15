@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'dispute.title'|trans }} — {{ tournament.name }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></span><span>{{ 'dispute.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'dispute.title'|trans }}: {{ tournament.name }}</h1>
+
+    {% if disputes is not empty %}
+        <div class="card card-wide">
+            <table aria-label="{{ 'dispute.title'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'dispute.question_number'|trans }}</th>
+                        <th>{{ 'common.team'|trans }}</th>
+                        <th>{{ 'dispute.answer_text'|trans }}</th>
+                        <th>{{ 'tournament.my.status'|trans }}</th>
+                        <th>{{ 'dispute.comment'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dispute in disputes %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                            <td>{{ dispute.questionNumber }}</td>
+                            <td>{{ dispute.teamName }}</td>
+                            <td>{{ dispute.text }}</td>
+                            <td><span class="badge badge-dispute-{{ dispute.status }}">{{ ('dispute.status.' ~ dispute.status)|trans }}</span></td>
+                            <td>{{ dispute.comment ?? '—' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>{{ 'dispute.empty'|trans }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

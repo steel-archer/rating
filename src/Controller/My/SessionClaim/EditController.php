@@ -55,7 +55,7 @@ class EditController extends AbstractController
 
         $teams = [];
         if ($canEnterResults) {
-            $teams = $resultService->getSessionResults($session);
+            $teams = $resultService->getAllSessionTeams($session);
         }
 
         return $this->render('my/session_claim_edit.html.twig', [

@@ -6,6 +6,8 @@ import './player-claim.js';
 import './session-claim.js';
 import './session-squad.js';
 import './session-results.js';
+import './session-disputes.js';
+import './dispute-resolve.js';
 import './suggest.js';
 import './sync-url.js';
 import './tournament-edit.js';

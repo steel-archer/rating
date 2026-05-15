@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\DTO\Request\Session;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+final readonly class DisputeSubmitRequestDTO
+{
+    /**
+     * @param list<int> $ids
+     */
+    public function __construct(
+        #[Assert\NotBlank]
+        #[Assert\All([new Assert\Positive()])]
+        public array $ids = [],
+    ) {
+    }
+}

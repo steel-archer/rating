@@ -7,6 +7,7 @@ namespace App\Service;
 use App\DTO\Response\Tournament\SessionTeamDTO;
 use App\Entity\TournamentSession;
 use App\Enum\CacheTag;
+use App\Enum\DisputeStatus;
 use App\Helper\SessionTeamResultBuilder;
 use App\Repository\TournamentSessionTeamAnswerRepository;
 use App\Repository\TournamentSessionTeamRepository;
@@ -44,7 +45,7 @@ class SessionResultService
         $sessionId = $session->getId();
         $tournamentId = $session->getTournament()->getId();
 
-        return $this->cache->get("session_results_{$sessionId}", function (ItemInterface $item) use ($session, $tournamentId) {
+        return $this->cache->get("session_results_$sessionId", function (ItemInterface $item) use ($session, $tournamentId) {
             $item->tag([CacheTag::tournament($tournamentId)]);
             $item->expiresAfter(86400);
 
@@ -64,7 +65,7 @@ class SessionResultService
     }
 
     /**
-     * @return array<int, array{answers: list<int>, tourScores: list<int>}> sessionTeamId => data
+     * @return array<int, array{answers: list<int|string>, tourScores: list<int>}> sessionTeamId => data
      */
     public function getAnswerBreakdown(TournamentSession $session): array
     {
@@ -89,6 +90,8 @@ class SessionResultService
             $answersByTeam[(int) $row['teamId']][] = $row;
         }
 
+        $unresolvedStatuses = [DisputeStatus::Created, DisputeStatus::Submitted];
+
         $result = [];
         foreach ($sessionTeams as $sessionTeam) {
             $teamAnswers = $answersByTeam[$sessionTeam->getId()] ?? [];
@@ -102,7 +105,20 @@ class SessionResultService
             foreach ($teamAnswers as $row) {
                 $qNum = (int) $row['questionNumber'];
                 $isCorrect = $row['isCorrect'] ? 1 : 0;
-                $answersByQuestion[$qNum] = $isCorrect;
+
+                $rawStatus = $row['disputeStatus'];
+                $disputeStatus = match (true) {
+                    $rawStatus instanceof DisputeStatus => $rawStatus,
+                    $rawStatus !== null => DisputeStatus::from($rawStatus),
+                    default => null,
+                };
+
+                if ($disputeStatus !== null && in_array($disputeStatus, $unresolvedStatuses, true)) {
+                    $answersByQuestion[$qNum] = '?';
+                } else {
+                    $answersByQuestion[$qNum] = $isCorrect;
+                }
+
                 $tourIndex = (int) ceil($qNum / $questionsPerTour) - 1;
                 $tourTotals[$tourIndex] += $isCorrect;
             }
@@ -117,7 +133,20 @@ class SessionResultService
     }
 
     /**
+     * Returns all teams for a session including those without results.
+     *
      * @return list<SessionTeamDTO>
+     *
+     * @throws DbalException
+     */
+    public function getAllSessionTeams(TournamentSession $session): array
+    {
+        return $this->buildSessionResults($session);
+    }
+
+    /**
+     * @return list<SessionTeamDTO>
+     * @throws DbalException
      */
     private function buildSessionResults(TournamentSession $session): array
     {

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'dispute.jury_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'dispute.jury_title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'dispute.jury_title'|trans }}</h1>
+
+    {% if tournaments is not empty %}
+        <div class="card">
+            <table aria-label="{{ 'dispute.jury_title'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'common.tournament'|trans }}</th>
+                        <th>{{ 'dispute.resolved_count'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in tournaments %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                            <td><a href="{{ path('my_disputes_tournament', {id: item.tournamentId}) }}">{{ item.tournamentName }}</a></td>
+                            <td>{{ item.resolved }} / {{ item.total }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>{{ 'dispute.jury_empty'|trans }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

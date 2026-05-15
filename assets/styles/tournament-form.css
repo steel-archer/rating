@@ -324,6 +324,54 @@
     color: #991b1b;
 }
 
+.badge-dispute-created {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-dispute-submitted {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-dispute-accepted {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-dispute-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.dispute-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.dispute-comment-input {
+    width: 200px;
+    font-size: 0.875rem;
+}
+
+#dispute-create-form {
+    max-width: 500px;
+}
+
+#dispute-create-form select,
+#dispute-create-form input[type="text"] {
+    font-size: 1.0625rem;
+    padding: 8px 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#dispute-create-form label {
+    font-size: 1rem;
+}
+
 .squad-team-mode {
     display: flex;
     gap: 20px;

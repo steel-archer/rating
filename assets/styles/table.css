@@ -136,6 +136,11 @@ tr.row-dark { background: #e8e8ed; }
     color: var(--text-secondary);
 }
 
+.results-breakdown .answer-dispute {
+    color: #b45309;
+    font-weight: bold;
+}
+
 .results-breakdown .tour-total-col {
     text-align: center;
     padding: 6px 8px;

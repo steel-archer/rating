@@ -40,7 +40,7 @@ final class SessionTeamMapping implements MappingInterface
             teamId: $team->getId(),
             teamName: $team->getName(),
             teamTownName: $team->getTown()->getName(),
-            score: $source->getScore(),
+            score: $source->getAnswers()->isEmpty() ? null : $source->getScore(),
             place: $context['place'] ?? null,
             players: $playerDTOs,
             oneTimeName: $source->getOneTimeName(),

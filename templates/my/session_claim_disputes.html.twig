@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'dispute.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a></span><span><a href="{{ path('my_session_claim_edit', {id: session.id}) }}">{{ 'session_claim.edit_title'|trans }}</a></span><span>{{ 'dispute.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'dispute.title'|trans }}</h1>
+
+    <div class="card">
+        <h2>{{ 'dispute.add_title'|trans }}</h2>
+        <form id="dispute-create-form" data-url="{{ path('my_session_claim_dispute_create', {id: session.id}) }}">
+            <div class="form-group">
+                <label for="dispute-team">{{ 'common.team'|trans }}</label>
+                <select id="dispute-team" name="sessionTeamId" required>
+                    <option value="">—</option>
+                    {% for team in teams %}
+                        <option value="{{ team.id }}">{{ team.oneTimeName ?? team.teamName }} ({{ team.teamTownName }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dispute-question">{{ 'dispute.question_number'|trans }}</label>
+                <select id="dispute-question" name="questionNumber" required>
+                    <option value="">—</option>
+                    {% for q in 1..(session.toursCount * session.questionsPerTour) %}
+                        <option value="{{ q }}">{{ q }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dispute-text">{{ 'dispute.answer_text'|trans }}</label>
+                <input type="text" id="dispute-text" name="text" maxlength="500">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{{ 'dispute.add'|trans }}</button>
+            </div>
+            <div id="dispute-create-error" class="form-error" hidden></div>
+        </form>
+    </div>
+
+    {% if disputes is not empty %}
+        <div class="card">
+            <h2>{{ 'dispute.list_title'|trans }}</h2>
+            <form id="dispute-submit-form" data-url="{{ path('my_session_claim_dispute_submit', {id: session.id}) }}">
+                <table aria-label="{{ 'dispute.list_title'|trans }}">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="dispute-select-all"></th>
+                            <th>{{ 'common.team'|trans }}</th>
+                            <th>{{ 'dispute.question_number'|trans }}</th>
+                            <th>{{ 'dispute.answer_text'|trans }}</th>
+                            <th>{{ 'tournament.my.status'|trans }}</th>
+                            <th>{{ 'dispute.comment'|trans }}</th>
+                            <th>{{ 'tournament.my.actions'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dispute in disputes %}
+                            <tr>
+                                <td>
+                                    {% if dispute.status == 'created' %}
+                                        <input type="checkbox" name="ids[]" value="{{ dispute.id }}" class="dispute-checkbox">
+                                    {% endif %}
+                                </td>
+                                <td>{{ dispute.teamName }}</td>
+                                <td>{{ dispute.questionNumber }}</td>
+                                <td>{{ dispute.text }}</td>
+                                <td><span class="badge badge-dispute-{{ dispute.status }}">{{ ('dispute.status.' ~ dispute.status)|trans }}</span></td>
+                                <td>{{ dispute.comment ?? '—' }}</td>
+                                <td>
+                                    {% if dispute.status == 'created' %}
+                                        <button type="button" class="btn btn-small btn-reject" data-dispute-delete="{{ path('my_session_claim_dispute_delete', {id: dispute.id}) }}">{{ 'dispute.delete'|trans }}</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-success">{{ 'dispute.submit_selected'|trans }}</button>
+                <div id="dispute-submit-error" class="form-error" hidden></div>
+            </form>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>{{ 'dispute.empty'|trans }}</p>
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <a href="{{ path('my_session_claim_edit', {id: session.id}) }}" class="btn">{{ 'squad.back_to_session'|trans }}</a>
+    </div>
+{% endblock %}

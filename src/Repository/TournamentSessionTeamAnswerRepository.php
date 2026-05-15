@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Player;
+use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeamAnswer;
+use App\Enum\DisputeStatus;
+use App\Enum\TournamentOfficialRole;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -43,7 +47,7 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
     /**
      * @param list<int> $sessionTeamIds
      *
-     * @return list<array{teamId: int, questionNumber: int, isCorrect: bool}>
+     * @return list<array{teamId: int, questionNumber: int, isCorrect: bool, disputeStatus: ?string}>
      */
     public function findBySessionTeamIds(array $sessionTeamIds): array
     {
@@ -52,7 +56,12 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
         }
 
         return $this->createQueryBuilder('a')
-            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'a.questionNumber', 'a.isCorrect')
+            ->select(
+                'IDENTITY(a.tournamentSessionTeam) AS teamId',
+                'a.questionNumber',
+                'a.isCorrect',
+                'a.disputeStatus',
+            )
             ->where('a.tournamentSessionTeam IN (:ids)')
             ->setParameter('ids', $sessionTeamIds)
             ->getQuery()
@@ -71,5 +80,154 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
             ->setParameter('session', $session)
             ->getQuery()
             ->getArrayResult();
+    }
+
+    /**
+     * @param list<int> $sessionTeamIds
+     */
+    public function submitCreatedDisputes(array $sessionTeamIds): void
+    {
+        if ($sessionTeamIds === []) {
+            return;
+        }
+
+        $this->createQueryBuilder('a')
+            ->update()
+            ->set('a.disputeStatus', ':newStatus')
+            ->where('a.tournamentSessionTeam IN (:ids)')
+            ->andWhere('a.disputeStatus = :oldStatus')
+            ->setParameter('ids', $sessionTeamIds)
+            ->setParameter('newStatus', DisputeStatus::Submitted->value)
+            ->setParameter('oldStatus', DisputeStatus::Created->value)
+            ->getQuery()
+            ->execute();
+    }
+
+
+    /**
+     * @return list<TournamentSessionTeamAnswer>
+     */
+    public function findDisputesBySession(TournamentSession $session): array
+    {
+        return $this->createQueryBuilder('a')
+            ->join('a.tournamentSessionTeam', 'st')
+            ->join('st.team', 'team')
+            ->addSelect('st', 'team')
+            ->where('st.tournamentSession = :session')
+            ->andWhere('a.disputeStatus IS NOT NULL')
+            ->setParameter('session', $session)
+            ->orderBy('a.questionNumber')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<TournamentSessionTeamAnswer>
+     */
+    public function findDisputesByTournament(Tournament $tournament): array
+    {
+        return $this->createQueryBuilder('a')
+            ->join('a.tournamentSessionTeam', 'st')
+            ->join('st.team', 'team')
+            ->join('st.tournamentSession', 's')
+            ->addSelect('st', 'team')
+            ->where('s.tournament = :tournament')
+            ->andWhere('a.disputeStatus IS NOT NULL')
+            ->setParameter('tournament', $tournament)
+            ->orderBy('a.questionNumber')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<TournamentSessionTeamAnswer>
+     */
+    public function findSubmittedDisputesByTournament(Tournament $tournament): array
+    {
+        return $this->createQueryBuilder('a')
+            ->join('a.tournamentSessionTeam', 'st')
+            ->join('st.team', 'team')
+            ->join('st.tournamentSession', 's')
+            ->addSelect('st', 'team')
+            ->where('s.tournament = :tournament')
+            ->andWhere('a.disputeStatus IN (:statuses)')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('statuses', [
+                DisputeStatus::Submitted->value,
+                DisputeStatus::Accepted->value,
+                DisputeStatus::Rejected->value,
+            ])
+            ->orderBy('a.questionNumber')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param list<int> $answerIds
+     *
+     * @return list<TournamentSessionTeamAnswer>
+     */
+    public function findDisputesBySessionAndIds(TournamentSession $session, array $answerIds): array
+    {
+        if ($answerIds === []) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('a')
+            ->join('a.tournamentSessionTeam', 'st')
+            ->where('st.tournamentSession = :session')
+            ->andWhere('a.id IN (:ids)')
+            ->andWhere('a.disputeStatus IS NOT NULL')
+            ->setParameter('session', $session)
+            ->setParameter('ids', $answerIds)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<array{tournamentId: int, tournamentName: string, total: int, resolved: int}>
+     */
+    public function findJuryTournamentStats(Player $player): array
+    {
+        $rows = $this->getEntityManager()->createQueryBuilder()
+            ->select(
+                't.id AS tournamentId',
+                't.name AS tournamentName',
+                'COUNT(a.id) AS total',
+                'SUM(CASE WHEN a.disputeStatus IN (:resolvedStatuses) THEN 1 ELSE 0 END) AS resolved',
+            )
+            ->from(TournamentSessionTeamAnswer::class, 'a')
+            ->join('a.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 's')
+            ->join('s.tournament', 't')
+            ->join('App\Entity\TournamentOfficial', 'o', 'WITH', 'o.tournament = t AND o.player = :player AND o.role = :role')
+            ->where('a.disputeStatus IN (:allStatuses)')
+            ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::GameJury)
+            ->setParameter('resolvedStatuses', [
+                DisputeStatus::Accepted->value,
+                DisputeStatus::Rejected->value,
+            ])
+            ->setParameter('allStatuses', [
+                DisputeStatus::Submitted->value,
+                DisputeStatus::Accepted->value,
+                DisputeStatus::Rejected->value,
+            ])
+            ->groupBy('t.id, t.name')
+            ->orderBy('t.name')
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = [
+                'tournamentId' => (int) $row['tournamentId'],
+                'tournamentName' => $row['tournamentName'],
+                'total' => (int) $row['total'],
+                'resolved' => (int) $row['resolved'],
+            ];
+        }
+
+        return $result;
     }
 }

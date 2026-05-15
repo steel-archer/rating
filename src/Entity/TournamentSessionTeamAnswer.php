@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\DisputeStatus;
 use App\Repository\TournamentSessionTeamAnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,6 +27,15 @@ class TournamentSessionTeamAnswer
 
     #[ORM\Column]
     private bool $isCorrect;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $disputeText = null;
+
+    #[ORM\Column(length: 20, nullable: true, enumType: DisputeStatus::class)]
+    private ?DisputeStatus $disputeStatus = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $disputeComment = null;
 
     public function getId(): ?int
     {
@@ -64,6 +74,42 @@ class TournamentSessionTeamAnswer
     public function setIsCorrect(bool $isCorrect): static
     {
         $this->isCorrect = $isCorrect;
+
+        return $this;
+    }
+
+    public function getDisputeText(): ?string
+    {
+        return $this->disputeText;
+    }
+
+    public function setDisputeText(?string $disputeText): static
+    {
+        $this->disputeText = $disputeText;
+
+        return $this;
+    }
+
+    public function getDisputeStatus(): ?DisputeStatus
+    {
+        return $this->disputeStatus;
+    }
+
+    public function setDisputeStatus(?DisputeStatus $disputeStatus): static
+    {
+        $this->disputeStatus = $disputeStatus;
+
+        return $this;
+    }
+
+    public function getDisputeComment(): ?string
+    {
+        return $this->disputeComment;
+    }
+
+    public function setDisputeComment(?string $disputeComment): static
+    {
+        $this->disputeComment = $disputeComment;
 
         return $this;
     }

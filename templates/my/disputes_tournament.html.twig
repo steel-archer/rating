@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'dispute.jury_title'|trans }} — {{ tournament.name }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_disputes') }}">{{ 'dispute.jury_title'|trans }}</a></span><span>{{ tournament.name }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'dispute.jury_title'|trans }}: {{ tournament.name }}</h1>
+
+    {% if disputes is not empty %}
+        <div class="card card-wide">
+            <table aria-label="{{ 'dispute.jury_title'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'dispute.question_number'|trans }}</th>
+                        <th>{{ 'common.team'|trans }}</th>
+                        <th>{{ 'dispute.answer_text'|trans }}</th>
+                        <th>{{ 'tournament.my.status'|trans }}</th>
+                        <th>{{ 'dispute.comment'|trans }}</th>
+                        <th>{{ 'tournament.my.actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dispute in disputes %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}" data-dispute-id="{{ dispute.id }}">
+                            <td>{{ dispute.questionNumber }}</td>
+                            <td>{{ dispute.teamName }}</td>
+                            <td>{{ dispute.text }}</td>
+                            <td><span class="badge badge-dispute-{{ dispute.status }}">{{ ('dispute.status.' ~ dispute.status)|trans }}</span></td>
+                            <td class="dispute-comment-cell">{{ dispute.comment ?? '—' }}</td>
+                            <td>
+                                {% if dispute.status == 'submitted' %}
+                                    <div class="dispute-actions">
+                                        <input type="text" class="dispute-comment-input" placeholder="{{ 'dispute.comment'|trans }}" maxlength="500">
+                                        <button type="button" class="btn btn-small btn-success" data-dispute-resolve="{{ path('my_dispute_resolve', {id: dispute.id}) }}" data-action="accept">{{ 'dispute.accept'|trans }}</button>
+                                        <button type="button" class="btn btn-small btn-reject" data-dispute-resolve="{{ path('my_dispute_resolve', {id: dispute.id}) }}" data-action="reject">{{ 'dispute.reject'|trans }}</button>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>{{ 'dispute.jury_empty'|trans }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

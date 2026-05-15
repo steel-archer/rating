@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Entity\TournamentSessionTeamAnswer;
+use App\Enum\DisputeStatus;
 use App\Repository\TournamentSessionTeamAnswerRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use App\Service\Cache\CacheInvalidator;
@@ -176,16 +177,20 @@ class SessionResultUploadService
                     $value = 0;
                 }
 
-                $intValue = (int) $value;
-                if ($intValue !== 0 && $intValue !== 1) {
-                    $teamName = $sessionTeamsById[$teamId]->getOneTimeName()
-                        ?? $sessionTeamsById[$teamId]->getTeam()->getName();
-                    $errors[] = "results.error.invalid_answer_value:$teamName:$tourNumber:$q";
-                    continue;
-                }
-
+                $stringValue = trim((string) $value);
                 $questionNumber = ($tourNumber - 1) * $questionsPerTour + $q;
-                $parsedResults[$teamId][$questionNumber] = $intValue === 1;
+
+                if ($stringValue === '0' || $stringValue === '1') {
+                    $parsedResults[$teamId][$questionNumber] = [
+                        'isCorrect' => $stringValue === '1',
+                        'disputeText' => null,
+                    ];
+                } else {
+                    $parsedResults[$teamId][$questionNumber] = [
+                        'isCorrect' => false,
+                        'disputeText' => $stringValue,
+                    ];
+                }
             }
         }
 
@@ -199,6 +204,17 @@ class SessionResultUploadService
                 $teamName = $sessionTeam->getOneTimeName() ?? $sessionTeam->getTeam()->getName();
                 $got = count($parsedResults[$teamId]);
                 $errors[] = "results.error.incomplete_results:$teamName:$got:$totalQuestions";
+            }
+        }
+
+        // Validate max one dispute per team per question (enforced by structure)
+        // Validate dispute text length
+        foreach ($parsedResults as $answers) {
+            foreach ($answers as $answerData) {
+                if ($answerData['disputeText'] !== null && mb_strlen($answerData['disputeText']) > 500) {
+                    $errors[] = 'dispute.error.text_too_long';
+                    break 2;
+                }
             }
         }
 
@@ -242,8 +258,17 @@ class SessionResultUploadService
         }
 
         $this->recalculateScores($sessionTeamIds);
+        $this->submitCreatedDisputes($sessionTeamIds);
         $this->em->flush();
         $this->cacheInvalidator->invalidateTournamentWithParticipants($session->getTournament());
+    }
+
+    /**
+     * @param list<int> $sessionTeamIds
+     */
+    private function submitCreatedDisputes(array $sessionTeamIds): void
+    {
+        $this->answerRepository->submitCreatedDisputes($sessionTeamIds);
     }
 
     /**
@@ -302,7 +327,7 @@ class SessionResultUploadService
 
     /**
      * @param array<int, TournamentSessionTeam> $sessionTeamsById
-     * @param array<int, array<int, bool>> $parsedResults teamId => [questionNumber => isCorrect]
+     * @param array<int, array<int, array{isCorrect: bool, disputeText: ?string}>> $parsedResults
      */
     private function saveResults(array $sessionTeamsById, array $parsedResults): void
     {
@@ -322,11 +347,17 @@ class SessionResultUploadService
             $sessionTeam->setResultsSubmitted(false);
             $sessionTeam->getAnswers()->clear();
 
-            foreach ($answers as $questionNumber => $isCorrect) {
+            foreach ($answers as $questionNumber => $answerData) {
                 $answer = new TournamentSessionTeamAnswer();
                 $answer->setTournamentSessionTeam($sessionTeam);
                 $answer->setQuestionNumber($questionNumber);
-                $answer->setIsCorrect($isCorrect);
+                $answer->setIsCorrect($answerData['isCorrect']);
+
+                if ($answerData['disputeText'] !== null) {
+                    $answer->setDisputeText($answerData['disputeText']);
+                    $answer->setDisputeStatus(DisputeStatus::Created);
+                }
+
                 $sessionTeam->getAnswers()->add($answer);
                 $this->em->persist($answer);
             }
@@ -360,31 +391,38 @@ class SessionResultUploadService
 
     /**
      * @param list<TournamentSessionTeam> $sessionTeams
-     * @return array<int, array<int, int>> teamId => [questionNumber => 0|1]
+     * @return array<int, array<int, int|string>> teamId => [questionNumber => 0|1|disputeText]
      */
     private function buildAnswerMap(array $sessionTeams): array
     {
-        $unsubmittedIds = [];
-        foreach ($sessionTeams as $sessionTeam) {
-            if (!$sessionTeam->isResultsSubmitted()) {
-                $unsubmittedIds[] = $sessionTeam->getId();
-            }
-        }
+        $ids = array_map(static fn($st) => $st->getId(), $sessionTeams);
 
-        if ($unsubmittedIds === []) {
+        if ($ids === []) {
             return [];
         }
 
         $rows = $this->answerRepository->createQueryBuilder('a')
-            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'a.questionNumber', 'a.isCorrect')
+            ->select(
+                'IDENTITY(a.tournamentSessionTeam) AS teamId',
+                'a.questionNumber',
+                'a.isCorrect',
+                'a.disputeText',
+            )
             ->where('a.tournamentSessionTeam IN (:ids)')
-            ->setParameter('ids', $unsubmittedIds)
+            ->setParameter('ids', $ids)
             ->getQuery()
             ->getArrayResult();
 
         $map = [];
         foreach ($rows as $row) {
-            $map[(int) $row['teamId']][(int) $row['questionNumber']] = $row['isCorrect'] ? 1 : 0;
+            $teamId = (int) $row['teamId'];
+            $questionNumber = (int) $row['questionNumber'];
+
+            if ($row['disputeText'] !== null) {
+                $map[$teamId][$questionNumber] = $row['disputeText'];
+            } else {
+                $map[$teamId][$questionNumber] = $row['isCorrect'] ? 1 : 0;
+            }
         }
 
         return $map;
