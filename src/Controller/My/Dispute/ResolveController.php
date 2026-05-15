@@ -30,11 +30,10 @@ class ResolveController extends AbstractController
     ): JsonResponse {
         /** @var User $user */
         $user = $this->getUser();
-        $player = $user->getPlayer();
 
         $tournament = $answer->getTournamentSessionTeam()->getTournamentSession()->getTournament();
 
-        if ($player === null || !$officialRepository->hasRole($player, $tournament, TournamentOfficialRole::GameJury)) {
+        if (!$officialRepository->hasRole($user->getPlayer(), $tournament, TournamentOfficialRole::GameJury)) {
             throw $this->createAccessDeniedException();
         }
 

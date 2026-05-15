@@ -85,5 +85,18 @@ class ResultsTemplateControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'template pre-filled with existing answers' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/results_uploaded.yaml'],
+            'loginAs' => 'user_results_uploaded_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results_uploaded']->getId() . '/results/template',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client) {
+                static::assertResponseHeaderSame(
+                    'content-type',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                );
+            },
+        ];
     }
 }

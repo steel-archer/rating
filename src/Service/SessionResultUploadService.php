@@ -39,11 +39,7 @@ class SessionResultUploadService
      */
     public function generateTemplate(TournamentSession $session): StreamedResponse
     {
-        $tournament = $session->getTournament();
-        $toursCount = $tournament->getToursCount()
-            ?? throw new LogicException('results.error.no_tours_count');
-        $questionsPerTour = $tournament->getQuestionsPerTour()
-            ?? throw new LogicException('results.error.no_questions_per_tour');
+        [$toursCount, $questionsPerTour] = $this->getTournamentStructure($session);
 
         $sessionTeams = $this->sessionTeamRepository->findBySessionWithTeamAndTown($session);
 
@@ -121,11 +117,7 @@ class SessionResultUploadService
             return $errors;
         }
 
-        $tournament = $session->getTournament();
-        $toursCount = $tournament->getToursCount()
-            ?? throw new LogicException('results.error.no_tours_count');
-        $questionsPerTour = $tournament->getQuestionsPerTour()
-            ?? throw new LogicException('results.error.no_questions_per_tour');
+        [$toursCount, $questionsPerTour] = $this->getTournamentStructure($session);
 
         $sessionTeams = $this->sessionTeamRepository->findBy(
             ['tournamentSession' => $session],
@@ -437,5 +429,22 @@ class SessionResultUploadService
         return chr(ord('E') + $questionNumber - 1 > ord('Z')
             ? throw new LogicException('Too many questions per tour')
             : ord('E') + $questionNumber - 1);
+    }
+
+    /**
+     * @return array{int, int} [toursCount, questionsPerTour]
+     *
+     * @throws LogicException
+     */
+    private function getTournamentStructure(TournamentSession $session): array
+    {
+        $tournament = $session->getTournament();
+
+        $toursCount = $tournament->getToursCount()
+            ?? throw new LogicException('results.error.no_tours_count');
+        $questionsPerTour = $tournament->getQuestionsPerTour()
+            ?? throw new LogicException('results.error.no_questions_per_tour');
+
+        return [$toursCount, $questionsPerTour];
     }
 }

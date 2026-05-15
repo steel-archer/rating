@@ -30,7 +30,7 @@ class DeleteController extends AbstractController
         $squadService->ensureCanManageSquad($session, $user->getPlayer());
 
         try {
-            $disputeService->deleteDispute($answer, $session);
+            $disputeService->deleteDispute($answer);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

@@ -19,13 +19,8 @@ class ListController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $player = $user->getPlayer();
 
-        if ($player === null) {
-            throw $this->createAccessDeniedException();
-        }
-
-        $stats = $answerRepository->findJuryTournamentStats($player);
+        $stats = $answerRepository->findJuryTournamentStats($user->getPlayer());
 
         return $this->render('my/disputes.html.twig', [
             'tournaments' => $mapper->mapMultiple($stats, DisputeTournamentDTO::class),

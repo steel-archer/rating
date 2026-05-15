@@ -91,6 +91,22 @@ class ResultsSubmitControllerTest extends WebTestCase
             },
         ];
 
+        yield 'submit transitions created disputes to submitted' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_results_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/submit',
+            'setup' => static function ($client, array $objects) {
+                $file = self::buildXlsxWithDispute($objects);
+                $uri = '/my/session-claims/' . $objects['session_results']->getId() . '/results/upload';
+                $client->request('POST', $uri, [], ['file' => $file]);
+            },
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertTrue($body['success']);
+            },
+        ];
+
         yield 'submit without upload' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_results_rep',
@@ -157,6 +173,27 @@ class ResultsSubmitControllerTest extends WebTestCase
         return self::toUploadedFile($spreadsheet);
     }
 
+    /**
+     * @param array<string, object> $objects
+     */
+    private static function buildXlsxWithDispute(array $objects): UploadedFile
+    {
+        /** @var TournamentSessionTeam $teamAlpha */
+        $teamAlpha = $objects['session_team_alpha_results'];
+        /** @var TournamentSessionTeam $teamBeta */
+        $teamBeta = $objects['session_team_beta_results'];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        self::writeHeader($sheet);
+        self::fillTeamRow($sheet, 3, $teamAlpha->getId(), 1, [1, 'спірна', 1]);
+        self::fillTeamRow($sheet, 4, $teamBeta->getId(), 1, [0, 1, 1]);
+        self::fillTeamRow($sheet, 6, $teamAlpha->getId(), 2, [1, 1, 0]);
+        self::fillTeamRow($sheet, 7, $teamBeta->getId(), 2, [1, 0, 0]);
+
+        return self::toUploadedFile($spreadsheet);
+    }
+
     private static function writeHeader(Worksheet $sheet): void
     {
         $sheet->setCellValue('A2', 'Team ID');
@@ -169,7 +206,7 @@ class ResultsSubmitControllerTest extends WebTestCase
     }
 
     /**
-     * @param list<int> $answers
+     * @param list<int|string> $answers
      */
     private static function fillTeamRow(Worksheet $sheet, int $row, int $teamId, int $tour, array $answers): void
     {

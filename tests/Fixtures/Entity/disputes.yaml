@@ -1,0 +1,94 @@
+App\Entity\User:
+    user_dispute_rep:
+        email: 'dispute_rep@example.com'
+        googleId: 'google_dispute_rep'
+        roles: []
+        player: '@player_shevchenko'
+    user_dispute_jury:
+        email: 'dispute_jury@example.com'
+        googleId: 'google_dispute_jury'
+        roles: []
+        player: '@player_franko'
+    user_dispute_other:
+        email: 'dispute_other@example.com'
+        googleId: 'google_dispute_other'
+        roles: []
+        player: '@player_lesya'
+
+App\Entity\Tournament:
+    tournament_dispute:
+        name: 'Турнір зі спірними'
+        status: '<(App\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days"))>'
+        toursCount: 1
+        questionsPerTour: 3
+
+App\Entity\TournamentOfficial:
+    official_dispute_jury:
+        tournament: '@tournament_dispute'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
+    official_dispute_organizer:
+        tournament: '@tournament_dispute'
+        player: '@player_shevchenko'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Entity\TournamentSession:
+    session_dispute:
+        tournament: '@tournament_dispute'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 2
+
+App\Entity\SessionClaim:
+    claim_dispute:
+        session: '@session_dispute'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
+
+App\Entity\TournamentSessionTeam:
+    session_team_dispute_alpha:
+        tournamentSession: '@session_dispute'
+        team: '@team_alpha'
+        score: 2
+        resultsSubmitted: true
+    session_team_dispute_beta:
+        tournamentSession: '@session_dispute'
+        team: '@team_beta'
+        score: 1
+        resultsSubmitted: true
+
+App\Entity\TournamentSessionTeamAnswer:
+    answer_dispute_alpha_1:
+        tournamentSessionTeam: '@session_team_dispute_alpha'
+        questionNumber: 1
+        isCorrect: true
+    answer_dispute_alpha_2:
+        tournamentSessionTeam: '@session_team_dispute_alpha'
+        questionNumber: 2
+        isCorrect: true
+    answer_dispute_alpha_3:
+        tournamentSessionTeam: '@session_team_dispute_alpha'
+        questionNumber: 3
+        isCorrect: false
+        disputeText: 'спірна відповідь'
+        disputeStatus: '<(App\Enum\DisputeStatus::Submitted)>'
+    answer_dispute_beta_1:
+        tournamentSessionTeam: '@session_team_dispute_beta'
+        questionNumber: 1
+        isCorrect: true
+    answer_dispute_beta_2:
+        tournamentSessionTeam: '@session_team_dispute_beta'
+        questionNumber: 2
+        isCorrect: false
+    answer_dispute_beta_3:
+        tournamentSessionTeam: '@session_team_dispute_beta'
+        questionNumber: 3
+        isCorrect: false
+        disputeText: 'ще одна спірна'
+        disputeStatus: '<(App\Enum\DisputeStatus::Created)>'

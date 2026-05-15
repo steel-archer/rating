@@ -26,9 +26,8 @@ class TournamentController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
-        $player = $user->getPlayer();
 
-        if ($player === null || !$officialRepository->hasRole($player, $tournament, TournamentOfficialRole::GameJury)) {
+        if (!$officialRepository->hasRole($user->getPlayer(), $tournament, TournamentOfficialRole::GameJury)) {
             throw $this->createAccessDeniedException();
         }
 

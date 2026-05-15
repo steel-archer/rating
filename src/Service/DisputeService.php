@@ -87,12 +87,8 @@ class DisputeService
     /**
      * @throws LogicException
      */
-    public function deleteDispute(TournamentSessionTeamAnswer $answer, TournamentSession $session): void
+    public function deleteDispute(TournamentSessionTeamAnswer $answer): void
     {
-        if ($answer->getTournamentSessionTeam()->getTournamentSession()->getId() !== $session->getId()) {
-            throw new LogicException('common.not_found');
-        }
-
         if ($answer->getDisputeStatus() !== DisputeStatus::Created) {
             throw new LogicException('dispute.error.cannot_delete');
         }

@@ -180,5 +180,126 @@ class SquadSaveControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'error: empty team name' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => '',
+                'townId' => $objects['town_kyiv']->getId(),
+                'players' => [
+                    ['id' => null, 'lastName' => 'Тестенко', 'firstName' => 'Тест', 'patronymic' => null, 'townId' => null],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertStringContainsString('team_required', $data['error']);
+            },
+        ];
+
+        yield 'error: new team without town' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => 'Нова команда',
+                'townId' => null,
+                'players' => [
+                    ['id' => null, 'lastName' => 'Тестенко', 'firstName' => 'Тест', 'patronymic' => null, 'townId' => null],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertStringContainsString('town_required', $data['error']);
+            },
+        ];
+
+        yield 'error: no players (DTO validation)' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_alpha']->getId(),
+                'players' => [],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'error: too many players (DTO validation)' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_alpha']->getId(),
+                'players' => array_fill(0, 9, ['id' => null, 'lastName' => 'Тест', 'firstName' => 'Тест', 'patronymic' => null, 'townId' => null]),
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'error: duplicate players' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_alpha']->getId(),
+                'players' => [
+                    ['id' => $objects['player_shevchenko']->getId()],
+                    ['id' => $objects['player_shevchenko']->getId()],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertStringContainsString('duplicate_players', $data['error']);
+            },
+        ];
+
+        yield 'error: new player without last name' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_alpha']->getId(),
+                'players' => [
+                    ['id' => null, 'lastName' => '', 'firstName' => 'Тест', 'patronymic' => null, 'townId' => null],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertStringContainsString('player_last_name_required', $data['error']);
+            },
+        ];
+
+        yield 'error: new player without first name' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_alpha']->getId(),
+                'players' => [
+                    ['id' => null, 'lastName' => 'Тестенко', 'firstName' => '', 'patronymic' => null, 'townId' => null],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertStringContainsString('player_first_name_required', $data['error']);
+            },
+        ];
     }
 }
