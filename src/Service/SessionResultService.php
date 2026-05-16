@@ -107,11 +107,7 @@ class SessionResultService
                 $isCorrect = $row['isCorrect'] ? 1 : 0;
 
                 $rawStatus = $row['disputeStatus'];
-                $disputeStatus = match (true) {
-                    $rawStatus instanceof DisputeStatus => $rawStatus,
-                    $rawStatus !== null => DisputeStatus::from($rawStatus),
-                    default => null,
-                };
+                $disputeStatus = $rawStatus !== null ? DisputeStatus::from($rawStatus) : null;
 
                 if ($disputeStatus !== null && in_array($disputeStatus, $unresolvedStatuses, true)) {
                     $answersByQuestion[$qNum] = '?';
