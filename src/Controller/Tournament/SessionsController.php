@@ -21,18 +21,12 @@ class SessionsController extends AbstractController
         VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
     ): Response {
-        /** @var User|null $user */
+        /** @var User $user */
         $user = $this->getUser();
-        $player = $user?->getPlayer();
-
-        $canSubmitClaim = false;
-        if ($player !== null) {
-            $canSubmitClaim = $representativeRepository->hasVenuesByPlayer($player);
-        }
 
         return $this->render('tournament/sessions.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
-            'canSubmitClaim' => $canSubmitClaim,
+            'canSubmitClaim' => $representativeRepository->hasVenuesByPlayer($user->getPlayer()),
         ]);
     }
 }

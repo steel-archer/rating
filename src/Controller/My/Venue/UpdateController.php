@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Entity\Venue;
 use App\Service\VenueManagementService;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -19,6 +20,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[RateLimited('mutation')]
 class UpdateController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __invoke(
         Venue $venue,
         #[MapRequestPayload] UpdateRequestDTO $dto,
@@ -27,7 +31,7 @@ class UpdateController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($venue->getCreatedBy()?->getId() !== $user->getPlayer()?->getId()) {
+        if ($venue->getCreatedBy()?->getId() !== $user->getPlayer()->getId()) {
             return $this->json(['error' => 'common.not_found'], 404);
         }
 

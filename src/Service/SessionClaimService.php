@@ -7,11 +7,14 @@ namespace App\Service;
 use App\DTO\Request\Session\ClaimRequestDTO;
 use App\DTO\Request\Session\RejectRequestDTO;
 use App\DTO\Request\Session\UpdateRequestDTO;
+use App\DTO\Response\My\SessionClaimGroupDTO;
+use App\DTO\Response\Tournament\SessionClaimDTO;
 use App\Entity\Player;
 use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
+use App\Mapping\Mapper;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionClaimRepository;
 use App\Repository\TournamentOfficialRepository;
@@ -33,7 +36,58 @@ class SessionClaimService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private VenueRepresentativeRepository $representativeRepository,
         private TournamentOfficialRepository $officialRepository,
+        private Mapper $mapper,
     ) {
+    }
+
+    /**
+     * @return list<SessionClaimGroupDTO>
+     */
+    public function getPendingClaimsByOrganizer(Player $player): array
+    {
+        return $this->buildClaimGroups($this->claimRepository->findPendingByOrganizer($player));
+    }
+
+    /**
+     * @return list<SessionClaimGroupDTO>
+     */
+    public function getActiveClaimsByOrganizer(Player $player): array
+    {
+        return $this->buildClaimGroups($this->claimRepository->findActiveByOrganizer($player));
+    }
+
+    /**
+     * @param list<SessionClaim> $claims
+     * @return list<SessionClaimGroupDTO>
+     */
+    private function buildClaimGroups(array $claims): array
+    {
+        $grouped = [];
+        foreach ($claims as $claim) {
+            $tournament = $claim->getSession()->getTournament();
+            $tournamentId = $tournament->getId();
+            if (!isset($grouped[$tournamentId])) {
+                $grouped[$tournamentId] = [
+                    'tournament' => $tournament,
+                    'claims' => [],
+                ];
+            }
+            $grouped[$tournamentId]['claims'][] = $claim;
+        }
+
+        return array_values(array_map(
+            function (array $group) {
+                /** @var list<SessionClaimDTO> $claims */
+                $claims = $this->mapper->mapMultiple($group['claims'], SessionClaimDTO::class);
+
+                return new SessionClaimGroupDTO(
+                    tournamentId: $group['tournament']->getId(),
+                    tournamentName: $group['tournament']->getName(),
+                    claims: $claims,
+                );
+            },
+            $grouped,
+        ));
     }
 
     /**

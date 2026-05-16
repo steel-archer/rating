@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Attribute\RateLimited;
-use App\DTO\Response\UserContactsDTO;
 use App\Entity\User;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentSessionRepository;
+use App\Service\UserContactsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +27,7 @@ class SessionClaimContactsController extends AbstractController
         int $sessionId,
         TournamentSessionRepository $sessionRepository,
         TournamentOfficialRepository $officialRepository,
+        UserContactsService $contactsService,
     ): JsonResponse {
         /** @var User $currentUser */
         $currentUser = $this->getUser();
@@ -48,20 +49,6 @@ class SessionClaimContactsController extends AbstractController
 
         $representativeUser = $session->getRepresentative()->getUser();
 
-        if ($representativeUser === null) {
-            return $this->json(new UserContactsDTO(
-                email: '',
-                telegram: null,
-                facebook: null,
-                phone: null,
-            ));
-        }
-
-        return $this->json(new UserContactsDTO(
-            email: $representativeUser->getEmail(),
-            telegram: $representativeUser->getTelegram(),
-            facebook: $representativeUser->getFacebook(),
-            phone: $representativeUser->getPhone(),
-        ));
+        return $this->json($contactsService->getContacts($representativeUser));
     }
 }

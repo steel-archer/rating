@@ -26,12 +26,12 @@ class DisputesController extends AbstractController
         TournamentOfficialRepository $officialRepository,
         Mapper $mapper,
     ): Response {
-        /** @var User|null $user */
+        /** @var User $user */
         $user = $this->getUser();
-        $player = $user?->getPlayer();
+        $player = $user->getPlayer();
 
         // TournamentOfficial can always see; others only after publication
-        $isOfficial = $player !== null && $officialRepository->findOneBy([
+        $isOfficial = $officialRepository->findOneBy([
             'tournament' => $tournament,
             'player' => $player,
         ]) !== null;

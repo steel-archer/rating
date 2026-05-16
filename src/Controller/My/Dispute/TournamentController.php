@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\My\Dispute;
 
 use App\DTO\Response\My\DisputeDTO;
+use App\DTO\Response\Tournament\TournamentContextDTO;
 use App\Entity\Tournament;
 use App\Entity\User;
 use App\Enum\TournamentOfficialRole;
@@ -34,7 +35,7 @@ class TournamentController extends AbstractController
         $disputes = $answerRepository->findSubmittedDisputesByTournament($tournament);
 
         return $this->render('my/disputes_tournament.html.twig', [
-            'tournament' => $tournament,
+            'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
             'disputes' => $mapper->mapMultiple($disputes, DisputeDTO::class),
         ]);
     }

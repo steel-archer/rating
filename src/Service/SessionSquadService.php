@@ -6,12 +6,14 @@ namespace App\Service;
 
 use App\DTO\Request\Session\SquadPlayerDTO;
 use App\DTO\Request\Session\SquadRequestDTO;
+use App\DTO\Response\Tournament\SessionTeamPlayerSuggestDTO;
 use App\Entity\Player;
 use App\Entity\Team;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
 use App\Entity\TournamentSessionTeamPlayer;
 use App\Enum\SessionClaimStatus;
+use App\Mapping\Mapper;
 use App\Repository\PlayerRepository;
 use App\Repository\SessionClaimRepository;
 use App\Repository\TeamPlayerRepository;
@@ -35,7 +37,49 @@ class SessionSquadService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private SessionClaimRepository $claimRepository,
+        private Mapper $mapper,
     ) {
+    }
+
+    /**
+     * @return list<SessionTeamPlayerSuggestDTO>
+     */
+    public function getTeamPlayerSuggestions(TournamentSession $session, Team $team): array
+    {
+        $season = $session->getTournament()->getSeason();
+        if ($season === null) {
+            return [];
+        }
+
+        $baseSquadPlayerIds = [];
+        $result = [];
+
+        $squadMap = $this->teamPlayerRepository->getSquadMapBySeason($season);
+        $squadInfo = $squadMap[$team->getId()] ?? null;
+
+        if ($squadInfo !== null) {
+            $baseSquadPlayerIds = $squadInfo['playerIds'];
+            $captainId = $squadInfo['captainId'];
+            $baseSquadPlayers = $this->teamPlayerRepository->findPlayersForTeamAndSeason($team, $season);
+
+            foreach ($baseSquadPlayers as $player) {
+                $result[] = $this->mapper->map($player, SessionTeamPlayerSuggestDTO::class, [
+                    'group' => 'base',
+                    'isCaptain' => $player->getId() === $captainId,
+                ]);
+            }
+        }
+
+        $seasonPlayers = $this->sessionTeamPlayerRepository->findPlayersByTeamAndSeason($team, $season);
+        foreach ($seasonPlayers as $player) {
+            if (!in_array($player->getId(), $baseSquadPlayerIds, true)) {
+                $result[] = $this->mapper->map($player, SessionTeamPlayerSuggestDTO::class, [
+                    'group' => 'season',
+                ]);
+            }
+        }
+
+        return $result;
     }
 
     /**

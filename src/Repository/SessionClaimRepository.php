@@ -28,19 +28,19 @@ class SessionClaimRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{tournamentId: int, tournamentName: string, claims: list<SessionClaim>}>
+     * @return list<SessionClaim>
      */
     public function findPendingByOrganizer(Player $player): array
     {
-        return $this->findGroupedByOrganizer($player, SessionClaimStatus::Pending);
+        return $this->findByOrganizerAndStatus($player, SessionClaimStatus::Pending);
     }
 
     /**
-     * @return list<array{tournamentId: int, tournamentName: string, claims: list<SessionClaim>}>
+     * @return list<SessionClaim>
      */
     public function findActiveByOrganizer(Player $player): array
     {
-        return $this->findGroupedByOrganizer($player, SessionClaimStatus::Approved, activeOnly: true);
+        return $this->findByOrganizerAndStatus($player, SessionClaimStatus::Approved, activeOnly: true);
     }
 
     public function hasApprovedByPlayerAndTournament(Player $player, Tournament $tournament): bool
@@ -80,7 +80,10 @@ class SessionClaimRepository extends ServiceEntityRepository
     /**
      * @return list<array{tournamentId: int, tournamentName: string, claims: list<SessionClaim>}>
      */
-    private function findGroupedByOrganizer(
+    /**
+     * @return list<SessionClaim>
+     */
+    private function findByOrganizerAndStatus(
         Player $player,
         SessionClaimStatus $status,
         bool $activeOnly = false,
@@ -114,22 +117,6 @@ class SessionClaimRepository extends ServiceEntityRepository
                 ->setParameter('now', new DateTimeImmutable());
         }
 
-        $claims = $qb->getQuery()->getResult();
-
-        $grouped = [];
-        foreach ($claims as $claim) {
-            $tournament = $claim->getSession()->getTournament();
-            $tournamentId = $tournament->getId();
-            if (!isset($grouped[$tournamentId])) {
-                $grouped[$tournamentId] = [
-                    'tournamentId' => $tournamentId,
-                    'tournamentName' => $tournament->getName(),
-                    'claims' => [],
-                ];
-            }
-            $grouped[$tournamentId]['claims'][] = $claim;
-        }
-
-        return array_values($grouped);
+        return $qb->getQuery()->getResult();
     }
 }

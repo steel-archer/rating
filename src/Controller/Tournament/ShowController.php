@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Mapping\Mapper;
 use App\Repository\TournamentModerationClaimRepository;
 use App\Service\TournamentService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,6 +18,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/tournament/{id}', name: 'tournament_show', requirements: ['id' => '\d+'], methods: ['GET'])]
 class ShowController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __invoke(
         int $id,
         TournamentService $tournamentService,
@@ -26,9 +30,9 @@ class ShowController extends AbstractController
         $tournament = $tournamentService->get($id);
 
         if ($tournament->status !== TournamentStatus::Published->value) {
-            /** @var User|null $user */
+            /** @var User $user */
             $user = $this->getUser();
-            $isOwner = $user !== null && $tournament->createdById === $user->getPlayer()?->getId();
+            $isOwner = $tournament->createdById === $user->getPlayer()?->getId();
             $isModerator = $this->isGranted('ROLE_MODERATOR');
 
             if (!$isOwner && !$isModerator) {

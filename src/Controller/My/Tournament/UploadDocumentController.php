@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Controller\My\Tournament;
 
 use App\Attribute\RateLimited;
+use App\DTO\Response\My\UploadedDocumentDTO;
 use App\Entity\Tournament;
+use App\Mapping\Mapper;
 use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentDocumentService;
 use LogicException;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,10 +21,14 @@ use Symfony\Component\Routing\Attribute\Route;
 #[RateLimited('upload')]
 class UploadDocumentController extends AbstractController
 {
+    /**
+     * @throws RandomException
+     */
     public function __invoke(
         Tournament $tournament,
         Request $request,
         TournamentDocumentService $service,
+        Mapper $mapper,
     ): JsonResponse {
         if (!$this->isGranted(TournamentOrganizerVoter::EDIT, $tournament)) {
             return $this->json(['error' => 'common.not_found'], 404);
@@ -44,11 +51,7 @@ class UploadDocumentController extends AbstractController
 
         return $this->json([
             'success' => true,
-            'document' => [
-                'id' => $document->getId(),
-                'originalName' => $document->getOriginalName(),
-                'size' => $document->getSize(),
-            ],
+            'document' => $mapper->map($document, UploadedDocumentDTO::class),
         ], 201);
     }
 }

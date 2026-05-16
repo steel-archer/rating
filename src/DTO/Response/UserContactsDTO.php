@@ -13,4 +13,14 @@ final readonly class UserContactsDTO
         public ?string $phone,
     ) {
     }
+
+    public static function empty(): self
+    {
+        return new self(
+            email: '',
+            telegram: null,
+            facebook: null,
+            phone: null,
+        );
+    }
 }

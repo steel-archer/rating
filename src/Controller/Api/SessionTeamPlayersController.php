@@ -7,9 +7,8 @@ namespace App\Controller\Api;
 use App\Attribute\RateLimited;
 use App\Entity\Team;
 use App\Entity\TournamentSession;
-use App\Repository\TeamPlayerRepository;
-use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Security\SessionRepresentativeVoter;
+use App\Service\SessionSquadService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,46 +26,10 @@ class SessionTeamPlayersController extends AbstractController
     public function __invoke(
         #[MapEntity(id: 'sessionId')] TournamentSession $session,
         #[MapEntity(id: 'teamId')] Team $team,
-        TeamPlayerRepository $teamPlayerRepository,
-        TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
+        SessionSquadService $service,
     ): JsonResponse {
         $this->denyAccessUnlessGranted(SessionRepresentativeVoter::MANAGE, $session);
 
-        $season = $session->getTournament()->getSeason();
-        $baseSquadPlayerIds = [];
-        $result = [];
-
-        if ($season !== null) {
-            $squadMap = $teamPlayerRepository->getSquadMapBySeason($season);
-            $squadInfo = $squadMap[$team->getId()] ?? null;
-
-            if ($squadInfo !== null) {
-                $baseSquadPlayerIds = $squadInfo['playerIds'];
-                $captainId = $squadInfo['captainId'];
-                $baseSquadPlayers = $teamPlayerRepository->findPlayersForTeamAndSeason($team, $season);
-
-                foreach ($baseSquadPlayers as $player) {
-                    $result[] = [
-                        'id' => $player->getId(),
-                        'name' => $player->getFullName(),
-                        'group' => 'base',
-                        'isCaptain' => $player->getId() === $captainId,
-                    ];
-                }
-            }
-
-            $seasonPlayers = $sessionTeamPlayerRepository->findPlayersByTeamAndSeason($team, $season);
-            foreach ($seasonPlayers as $player) {
-                if (!in_array($player->getId(), $baseSquadPlayerIds, true)) {
-                    $result[] = [
-                        'id' => $player->getId(),
-                        'name' => $player->getFullName(),
-                        'group' => 'season',
-                    ];
-                }
-            }
-        }
-
-        return $this->json($result);
+        return $this->json($service->getTeamPlayerSuggestions($session, $team));
     }
 }
