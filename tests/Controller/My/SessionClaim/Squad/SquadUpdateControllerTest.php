@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\My\SessionClaim;
+namespace App\Tests\Controller\My\SessionClaim\Squad;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -81,6 +81,24 @@ class SquadUpdateControllerTest extends WebTestCase
                 'players' => [
                     ['id' => $objects['player_lesya']->getId()],
                     ['id' => null, 'lastName' => 'Новенко', 'firstName' => 'Новий', 'patronymic' => null, 'townId' => null],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertTrue($data['success']);
+            },
+        ];
+
+        yield 'update squad: replace player' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-teams/' . $objects['session_team_existing']->getId() . '/update',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_beta']->getId(),
+                'players' => [
+                    ['id' => $objects['player_franko']->getId()],
                 ],
                 'captainIndex' => 0,
             ],

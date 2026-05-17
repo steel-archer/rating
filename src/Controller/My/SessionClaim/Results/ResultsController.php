@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\My\SessionClaim;
+namespace App\Controller\My\SessionClaim\Results;
 
 use App\DTO\Response\My\ResultsSessionDTO;
 use App\Entity\TournamentSession;

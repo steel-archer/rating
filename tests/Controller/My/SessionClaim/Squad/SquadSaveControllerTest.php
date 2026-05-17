@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\My\SessionClaim;
+namespace App\Tests\Controller\My\SessionClaim\Squad;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -73,12 +73,32 @@ class SquadSaveControllerTest extends WebTestCase
             },
         ];
 
+        yield 'save squad with new player with town' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => 'Ще команда 2',
+                'townId' => $objects['town_kyiv']->getId(),
+                'players' => [
+                    ['id' => null, 'lastName' => 'Містенко', 'firstName' => 'Місто', 'patronymic' => 'Містович', 'townId' => $objects['town_kyiv']->getId()],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertTrue($data['success']);
+            },
+        ];
+
         yield 'save squad with existing team and existing players' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_rep',
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
             'payload' => static fn(array $objects) => [
                 'teamId' => $objects['team_alpha']->getId(),
+                'oneTimeName' => 'Зоряні Леви',
                 'players' => [
                     ['id' => $objects['player_shevchenko']->getId()],
                     ['id' => $objects['player_franko']->getId()],

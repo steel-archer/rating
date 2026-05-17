@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\My\SessionClaim;
+namespace App\Tests\Controller\My\SessionClaim\Squad;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class SquadDeleteControllerTest extends WebTestCase
+class SquadEditControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
@@ -21,12 +21,11 @@ class SquadDeleteControllerTest extends WebTestCase
      * @param list<string> $fixtures
      */
     #[DataProvider('dataProvider')]
-    public function testDeleteSquad(
+    public function testEditSquad(
         array $fixtures,
         ?string $loginAs,
         callable $uri,
         int $expectedStatus,
-        callable $afterCallback,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
@@ -35,16 +34,9 @@ class SquadDeleteControllerTest extends WebTestCase
             $client->loginUser($objects[$loginAs]);
         }
 
-        $client->request(
-            'POST',
-            $uri($objects),
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-        );
+        $client->request('GET', $uri($objects));
 
         static::assertResponseStatusCodeSame($expectedStatus);
-        $afterCallback($client, $objects);
     }
 
     /**
@@ -52,24 +44,18 @@ class SquadDeleteControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'delete squad successfully' => [
+        yield 'edit squad page for owner' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_rep',
-            'uri' => static fn(array $objects) => '/my/session-teams/' . $objects['session_team_existing']->getId() . '/delete',
+            'uri' => static fn(array $objects) => '/my/session-teams/' . $objects['session_team_existing']->getId() . '/edit',
             'expectedStatus' => 200,
-            'afterCallback' => static function ($client) {
-                $data = json_decode($client->getResponse()->getContent(), true);
-                static::assertTrue($data['success']);
-            },
         ];
 
         yield 'access denied for non-owner' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_other',
-            'uri' => static fn(array $objects) => '/my/session-teams/' . $objects['session_team_existing']->getId() . '/delete',
+            'uri' => static fn(array $objects) => '/my/session-teams/' . $objects['session_team_existing']->getId() . '/edit',
             'expectedStatus' => 403,
-            'afterCallback' => static function () {
-            },
         ];
     }
 }

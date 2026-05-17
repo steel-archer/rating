@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\My\SessionClaim;
+namespace App\Tests\Controller\My\SessionClaim\Results;
 
 use App\Entity\TournamentSessionTeam;
 use App\Tests\FixturesTrait;

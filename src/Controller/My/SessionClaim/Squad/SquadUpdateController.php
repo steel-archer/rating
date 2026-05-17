@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\My\SessionClaim;
+namespace App\Controller\My\SessionClaim\Squad;
 
 use App\Attribute\RateLimited;
 use App\DTO\Request\Session\SquadRequestDTO;

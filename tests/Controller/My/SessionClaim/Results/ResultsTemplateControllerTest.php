@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\My\SessionClaim;
+namespace App\Tests\Controller\My\SessionClaim\Results;
 
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ResultsControllerTest extends WebTestCase
+class ResultsTemplateControllerTest extends WebTestCase
 {
     use FixturesTrait;
 
@@ -21,7 +21,7 @@ class ResultsControllerTest extends WebTestCase
      * @param list<string> $fixtures
      */
     #[DataProvider('dataProvider')]
-    public function testResults(
+    public function testTemplate(
         array $fixtures,
         ?string $loginAs,
         callable $uri,
@@ -46,23 +46,23 @@ class ResultsControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'results page for owner' => [
+        yield 'download template for owner' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_results_rep',
-            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/template',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client) {
-                $crawler = $client->getCrawler();
-                static::assertCount(1, $crawler->filter('#upload-btn'));
-                static::assertCount(1, $crawler->filter('a[href*="template"]'));
-                static::assertCount(0, $crawler->filter('#submit-btn'));
+                static::assertResponseHeaderSame(
+                    'content-type',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                );
             },
         ];
 
         yield 'access denied for non-owner' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_results_other',
-            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/template',
             'expectedStatus' => 403,
             'afterCallback' => static function () {
             },
@@ -71,35 +71,31 @@ class ResultsControllerTest extends WebTestCase
         yield 'redirect for anonymous' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => null,
-            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/template',
             'expectedStatus' => 302,
             'afterCallback' => static function () {
             },
         ];
 
-        yield 'not found for non-existent session' => [
-            'fixtures' => self::FIXTURES,
-            'loginAs' => 'user_results_rep',
-            'uri' => static fn(array $objects) => '/my/session-claims/999999/results',
+        yield 'not found when session has no teams' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/results_empty.yaml'],
+            'loginAs' => 'user_results_empty_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results_empty']->getId() . '/results/template',
             'expectedStatus' => 404,
             'afterCallback' => static function () {
             },
         ];
 
-        yield 'shows submit button and breakdown when unsubmitted results exist' => [
+        yield 'template pre-filled with existing answers' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/results_uploaded.yaml'],
             'loginAs' => 'user_results_uploaded_rep',
-            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results_uploaded']->getId() . '/results',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results_uploaded']->getId() . '/results/template',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client) {
-                $crawler = $client->getCrawler();
-                static::assertCount(1, $crawler->filter('#submit-btn'));
-                static::assertCount(1, $crawler->filter('.results-breakdown'));
-                // 2 teams in breakdown
-                static::assertCount(2, $crawler->filter('.results-breakdown tbody tr'));
-                // Per-question answer cells exist (2 tours × 3 questions = 6 answer-col per row)
-                $answerCells = $crawler->filter('.results-breakdown tbody .answer-col');
-                static::assertGreaterThan(0, $answerCells->count());
+                static::assertResponseHeaderSame(
+                    'content-type',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                );
             },
         ];
     }

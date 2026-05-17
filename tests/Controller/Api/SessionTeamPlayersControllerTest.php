@@ -59,6 +59,19 @@ class SessionTeamPlayersControllerTest extends WebTestCase
             },
         ];
 
+        yield 'returns season players for team with history' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/api/session/' . $objects['session_squad_approved']->getId() . '/team/' . $objects['team_beta']->getId() . '/players',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertNotEmpty($data);
+                $seasonGroup = array_filter($data, static fn($item) => $item['group'] === 'season');
+                static::assertNotEmpty($seasonGroup);
+            },
+        ];
+
         yield 'returns empty for team without squad' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_rep',

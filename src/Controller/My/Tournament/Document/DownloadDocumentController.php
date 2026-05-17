@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\My\Tournament;
+namespace App\Controller\My\Tournament\Document;
 
 use App\Entity\TournamentDocument;
 use App\Entity\User;

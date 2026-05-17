@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\My;
+namespace App\Tests\Controller\My\Tournament;
 
 use App\Entity\Tournament;
 use App\Entity\TournamentModerationClaim;
@@ -12,7 +12,7 @@ use App\Enum\TournamentOfficialRole;
 use App\Enum\TournamentStatus;
 use App\Service\TournamentManagementService;
 use App\Service\TournamentModerationService;
-use App\Tests\Controller\My\Tournament\DocumentTestTrait;
+use App\Tests\Controller\My\Tournament\Document\DocumentTestTrait;
 use App\Tests\FixturesTrait;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -414,6 +414,30 @@ class TournamentControllerTest extends WebTestCase
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'publish fails with invalid dates' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/users.yaml',
+                'Entity/my_tournaments_invalid_dates.yaml',
+            ],
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_invalid_dates']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('tournament.error.results_hidden_before_end', $json['error']);
+                static::assertStringContainsString('tournament.error.registration_after_end', $json['error']);
+                static::assertStringContainsString('tournament.error.details_hidden_before_results', $json['error']);
+                static::assertStringContainsString('tournament.error.submission_before_end', $json['error']);
             },
         ];
 

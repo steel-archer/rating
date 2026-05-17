@@ -1,0 +1,47 @@
+App\Entity\User:
+    user_creator:
+        email: 'creator@example.com'
+        googleId: 'google_creator_123'
+        roles: []
+        player: '@player_franko'
+
+App\Entity\Tournament:
+    tournament_invalid_dates:
+        name: 'Турнір з невалідними датами'
+        status: '<(App\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("+30 days midnight"))>'
+        endedAt: '<(new \DateTimeImmutable("+31 days 23:59:59"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+31 days midnight"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+32 days 23:59:59"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+30 days midnight"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+31 days midnight"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        difficulty: 3.5
+
+App\Entity\TournamentOfficial:
+    official_org:
+        tournament: '@tournament_invalid_dates'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+    official_editor:
+        tournament: '@tournament_invalid_dates'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
+    official_game_jury:
+        tournament: '@tournament_invalid_dates'
+        player: '@player_lesya'
+        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
+    official_appeal_jury:
+        tournament: '@tournament_invalid_dates'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::AppealJury)>'
+
+App\Entity\TournamentModerationClaim:
+    claim_approved:
+        tournament: '@tournament_invalid_dates'
+        status: '<(App\Enum\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+        resolvedAt: '<(new \DateTimeImmutable())>'
