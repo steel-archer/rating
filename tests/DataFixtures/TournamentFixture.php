@@ -250,13 +250,14 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                         }
                     }
 
-                    foreach ($squad as $entry) {
+                    foreach ($squad as $squadIndex => $entry) {
                         $usedPlayers[$entry['player']] = true;
 
                         $sessionTeamPlayer = new TournamentSessionTeamPlayer();
                         $sessionTeamPlayer->setTournamentSessionTeam($sessionTeam);
                         $sessionTeamPlayer->setPlayer($this->getReference("player_{$entry['player']}", Player::class));
                         $sessionTeamPlayer->setIsLegionary($entry['legionary']);
+                        $sessionTeamPlayer->setIsCaptain($squadIndex === 0);
                         $manager->persist($sessionTeamPlayer);
                     }
                 }

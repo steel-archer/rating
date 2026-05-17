@@ -47,6 +47,9 @@ function initTournamentEditForm() {
             startedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="startedAt"]')).value || null,
             endedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="endedAt"]')).value || null,
             resultsHiddenUntil: /** @type {HTMLInputElement} */ (form.querySelector('[name="resultsHiddenUntil"]')).value || null,
+            registrationDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="registrationDeadline"]')).value || null,
+            detailsHiddenUntil: /** @type {HTMLInputElement} */ (form.querySelector('[name="detailsHiddenUntil"]')).value || null,
+            submissionDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="submissionDeadline"]')).value || null,
             toursCount: /** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value
                 ? parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value)
                 : null,

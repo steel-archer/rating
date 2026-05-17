@@ -85,6 +85,21 @@
                 <small class="hint">{{ 'tournament.my.results_hidden_until_hint'|trans }}</small>
             </div>
             <div class="form-group">
+                <label for="registration_deadline">{{ 'tournament.my.registration_deadline'|trans }}</label>
+                <input type="date" id="registration_deadline" name="registrationDeadline" value="{{ tournament.registrationDeadline ? tournament.registrationDeadline|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
+                <small class="hint">{{ 'tournament.my.registration_deadline_hint'|trans }}</small>
+            </div>
+            <div class="form-group">
+                <label for="details_hidden_until">{{ 'tournament.my.details_hidden_until'|trans }}</label>
+                <input type="date" id="details_hidden_until" name="detailsHiddenUntil" value="{{ tournament.detailsHiddenUntil ? tournament.detailsHiddenUntil|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
+                <small class="hint">{{ 'tournament.my.details_hidden_until_hint'|trans }}</small>
+            </div>
+            <div class="form-group">
+                <label for="submission_deadline">{{ 'tournament.my.submission_deadline'|trans }}</label>
+                <input type="date" id="submission_deadline" name="submissionDeadline" value="{{ tournament.submissionDeadline ? tournament.submissionDeadline|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
+                <small class="hint">{{ 'tournament.my.submission_deadline_hint'|trans }}</small>
+            </div>
+            <div class="form-group">
                 <label for="tours_count">{{ 'tournament.tours_count'|trans }}</label>
                 <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}" {{ readonly ? 'disabled' : '' }}>
             </div>

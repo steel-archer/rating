@@ -17,6 +17,7 @@ function initOfficialsSuggest(wrapper) {
     }
     const fieldName = /** @type {string} */ (group.dataset.role);
     initializedWrappers.add(wrapper);
+    wrapper.dataset.suggestInit = '1';
 
     initSuggestBehavior(input, dropdown, apiUrl, (item) => {
         const existing = group.querySelectorAll(`input[value="${item.id}"]`);
