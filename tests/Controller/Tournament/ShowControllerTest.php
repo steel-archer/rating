@@ -94,6 +94,12 @@ class ShowControllerTest extends WebTestCase
                 static::assertStringContainsString('Шевченко', $officialsCard->text());
                 static::assertStringContainsString('Франко', $officialsCard->text());
 
+                // deadlines
+                static::assertStringContainsString('14.03.2025', $card->text());
+                static::assertStringContainsString('17.03.2025', $card->text());
+                static::assertStringContainsString('19.03.2025', $card->text());
+                static::assertStringContainsString('18.03.2025', $card->text());
+
                 // dates in meta
                 static::assertStringContainsString('01.03.2025', $crawler->filter('.meta')->text());
                 static::assertStringContainsString('15.03.2025', $crawler->filter('.meta')->text());

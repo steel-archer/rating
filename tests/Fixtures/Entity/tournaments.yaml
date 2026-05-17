@@ -4,6 +4,10 @@ App\Entity\Tournament:
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("2025-03-15 23:59:59"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("2025-03-17 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("2025-03-14 23:59:59"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("2025-03-19 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("2025-03-18 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.5

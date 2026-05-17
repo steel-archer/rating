@@ -18,6 +18,9 @@ App\Entity\Tournament:
         startedAt: '<(new \DateTimeImmutable("+30 days midnight"))>'
         endedAt: '<(new \DateTimeImmutable("+31 days 23:59:59"))>'
         resultsHiddenUntil: '<(new \DateTimeImmutable("+32 days midnight"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+31 days 12:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+33 days midnight"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+32 days 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.5
@@ -29,6 +32,9 @@ App\Entity\Tournament:
         startedAt: '<(new \DateTimeImmutable("+60 days midnight"))>'
         endedAt: '<(new \DateTimeImmutable("+61 days 23:59:59"))>'
         resultsHiddenUntil: '<(new \DateTimeImmutable("+62 days midnight"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+61 days 12:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+63 days midnight"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+62 days 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 4.0

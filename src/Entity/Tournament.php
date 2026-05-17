@@ -54,6 +54,15 @@ class Tournament
     #[ORM\Column(nullable: true)]
     private ?float $trueDl = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $registrationDeadline = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $detailsHiddenUntil = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $submissionDeadline = null;
+
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
@@ -141,6 +150,60 @@ class Tournament
     {
         return $this->resultsHiddenUntil !== null
             && $this->resultsHiddenUntil > new DateTimeImmutable();
+    }
+
+    public function getRegistrationDeadline(): ?DateTimeImmutable
+    {
+        return $this->registrationDeadline;
+    }
+
+    public function setRegistrationDeadline(?DateTimeImmutable $registrationDeadline): static
+    {
+        $this->registrationDeadline = $registrationDeadline;
+
+        return $this;
+    }
+
+    public function isRegistrationOpen(): bool
+    {
+        return $this->registrationDeadline !== null
+            && $this->registrationDeadline > new DateTimeImmutable();
+    }
+
+    public function getDetailsHiddenUntil(): ?DateTimeImmutable
+    {
+        return $this->detailsHiddenUntil;
+    }
+
+    public function setDetailsHiddenUntil(?DateTimeImmutable $detailsHiddenUntil): static
+    {
+        $this->detailsHiddenUntil = $detailsHiddenUntil;
+
+        return $this;
+    }
+
+    public function areDetailsHidden(): bool
+    {
+        return $this->detailsHiddenUntil !== null
+            && $this->detailsHiddenUntil > new DateTimeImmutable();
+    }
+
+    public function getSubmissionDeadline(): ?DateTimeImmutable
+    {
+        return $this->submissionDeadline;
+    }
+
+    public function setSubmissionDeadline(?DateTimeImmutable $submissionDeadline): static
+    {
+        $this->submissionDeadline = $submissionDeadline;
+
+        return $this;
+    }
+
+    public function isSubmissionOpen(): bool
+    {
+        return $this->submissionDeadline !== null
+            && $this->submissionDeadline > new DateTimeImmutable();
     }
 
     public function getToursCount(): ?int

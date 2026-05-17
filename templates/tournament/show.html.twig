@@ -35,6 +35,22 @@
                     <dt>{{ 'tournament.true_dl'|trans }}</dt>
                     <dd>{{ tournament.trueDl }}</dd>
                 {% endif %}
+                {% if tournament.registrationDeadline %}
+                    <dt>{{ 'tournament.registration_deadline'|trans }}</dt>
+                    <dd>{{ tournament.registrationDeadline|date('d.m.Y H:i') }}</dd>
+                {% endif %}
+                {% if tournament.resultsHiddenUntil %}
+                    <dt>{{ 'tournament.results_hidden_until'|trans }}</dt>
+                    <dd>{{ tournament.resultsHiddenUntil|date('d.m.Y H:i') }}</dd>
+                {% endif %}
+                {% if tournament.detailsHiddenUntil %}
+                    <dt>{{ 'tournament.details_hidden_until'|trans }}</dt>
+                    <dd>{{ tournament.detailsHiddenUntil|date('d.m.Y H:i') }}</dd>
+                {% endif %}
+                {% if tournament.submissionDeadline %}
+                    <dt>{{ 'tournament.submission_deadline'|trans }}</dt>
+                    <dd>{{ tournament.submissionDeadline|date('d.m.Y H:i') }}</dd>
+                {% endif %}
                 {% if tournament.sessionCount %}
                     <dt>{{ 'tournament.sessions'|trans }}</dt>
                     <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">{{ tournament.sessionCount }}</a></dd>

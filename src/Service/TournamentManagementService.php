@@ -97,6 +97,21 @@ class TournamentManagementService
                 ? (new DateTimeImmutable($dto->resultsHiddenUntil))->setTime(0, 0, 0)
                 : null,
         );
+        $tournament->setRegistrationDeadline(
+            $dto->registrationDeadline
+                ? (new DateTimeImmutable($dto->registrationDeadline))->setTime(23, 59, 59)
+                : null,
+        );
+        $tournament->setDetailsHiddenUntil(
+            $dto->detailsHiddenUntil
+                ? (new DateTimeImmutable($dto->detailsHiddenUntil))->setTime(0, 0, 0)
+                : null,
+        );
+        $tournament->setSubmissionDeadline(
+            $dto->submissionDeadline
+                ? (new DateTimeImmutable($dto->submissionDeadline))->setTime(23, 59, 59)
+                : null,
+        );
         $tournament->setToursCount($dto->toursCount);
         $tournament->setQuestionsPerTour($dto->questionsPerTour);
         $tournament->setDifficulty($dto->difficulty);

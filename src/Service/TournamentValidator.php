@@ -33,6 +33,9 @@ class TournamentValidator
             $startedAt = $dto->startedAt ? new DateTimeImmutable($dto->startedAt) : null;
             $endedAt = $dto->endedAt ? new DateTimeImmutable($dto->endedAt) : null;
             $resultsHiddenUntil = $dto->resultsHiddenUntil ? new DateTimeImmutable($dto->resultsHiddenUntil) : null;
+            $registrationDeadline = $dto->registrationDeadline ? new DateTimeImmutable($dto->registrationDeadline) : null;
+            $detailsHiddenUntil = $dto->detailsHiddenUntil ? new DateTimeImmutable($dto->detailsHiddenUntil) : null;
+            $submissionDeadline = $dto->submissionDeadline ? new DateTimeImmutable($dto->submissionDeadline) : null;
         } catch (DateMalformedStringException) {
             return ['tournament.error.invalid_date'];
         }
@@ -41,6 +44,18 @@ class TournamentValidator
 
         if ($resultsHiddenUntil !== null && $endedAt !== null && $resultsHiddenUntil <= $endedAt) {
             $errors[] = 'tournament.error.results_hidden_before_end';
+        }
+        if ($registrationDeadline !== null && $startedAt !== null && $registrationDeadline < $startedAt) {
+            $errors[] = 'tournament.error.registration_before_start';
+        }
+        if ($registrationDeadline !== null && $endedAt !== null && $registrationDeadline > $endedAt) {
+            $errors[] = 'tournament.error.registration_after_end';
+        }
+        if ($detailsHiddenUntil !== null && $resultsHiddenUntil !== null && $detailsHiddenUntil < $resultsHiddenUntil) {
+            $errors[] = 'tournament.error.details_hidden_before_results';
+        }
+        if ($submissionDeadline !== null && $endedAt !== null && $submissionDeadline <= $endedAt) {
+            $errors[] = 'tournament.error.submission_before_end';
         }
 
         return $errors;
@@ -69,6 +84,33 @@ class TournamentValidator
             $errors[] = 'tournament.publish_error.no_results_hidden_until';
         } elseif ($tournament->getEndedAt() !== null && $tournament->getResultsHiddenUntil() <= $tournament->getEndedAt()) {
             $errors[] = 'tournament.error.results_hidden_before_end';
+        }
+
+        if ($tournament->getRegistrationDeadline() === null) {
+            $errors[] = 'tournament.publish_error.no_registration_deadline';
+        } elseif (
+            $tournament->getEndedAt() !== null
+            && $tournament->getRegistrationDeadline() > $tournament->getEndedAt()
+        ) {
+            $errors[] = 'tournament.error.registration_after_end';
+        }
+
+        if ($tournament->getDetailsHiddenUntil() === null) {
+            $errors[] = 'tournament.publish_error.no_details_hidden_until';
+        } elseif (
+            $tournament->getResultsHiddenUntil() !== null
+            && $tournament->getDetailsHiddenUntil() < $tournament->getResultsHiddenUntil()
+        ) {
+            $errors[] = 'tournament.error.details_hidden_before_results';
+        }
+
+        if ($tournament->getSubmissionDeadline() === null) {
+            $errors[] = 'tournament.publish_error.no_submission_deadline';
+        } elseif (
+            $tournament->getEndedAt() !== null
+            && $tournament->getSubmissionDeadline() <= $tournament->getEndedAt()
+        ) {
+            $errors[] = 'tournament.error.submission_before_end';
         }
 
         if ($tournament->getToursCount() === null) {

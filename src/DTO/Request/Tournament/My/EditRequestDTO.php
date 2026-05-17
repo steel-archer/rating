@@ -30,6 +30,15 @@ final readonly class EditRequestDTO
         #[Assert\Date]
         public ?string $resultsHiddenUntil = null,
 
+        #[Assert\Date]
+        public ?string $registrationDeadline = null,
+
+        #[Assert\Date]
+        public ?string $detailsHiddenUntil = null,
+
+        #[Assert\Date]
+        public ?string $submissionDeadline = null,
+
         #[Assert\Positive]
         public ?int $toursCount = null,
 
