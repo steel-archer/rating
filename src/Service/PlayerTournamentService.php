@@ -38,7 +38,7 @@ class PlayerTournamentService
     public function getTournaments(Player $player, int $page): array
     {
         $playerId = $player->getId();
-        $cacheKey = "player_tournaments_{$playerId}_page_{$page}";
+        $cacheKey = "player_tournaments_{$playerId}_page_$page";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($player, $page, $playerId) {
             $item->tag([CacheTag::player($playerId)]);
@@ -56,7 +56,7 @@ class PlayerTournamentService
     public function getLastPageNumber(Player $player): int
     {
         $playerId = $player->getId();
-        $cacheKey = "player_tournaments_last_page_{$playerId}";
+        $cacheKey = "player_tournaments_last_page_$playerId";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($player, $playerId) {
             $item->tag([CacheTag::player($playerId)]);
@@ -70,6 +70,7 @@ class PlayerTournamentService
 
     /**
      * @return list<TournamentAppearanceDTO>
+     * @throws DbalException
      */
     private function buildTournaments(Player $player, int $page): array
     {

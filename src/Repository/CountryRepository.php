@@ -11,6 +11,7 @@ use App\Helper\LikeEscape;
 use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -27,6 +28,7 @@ class CountryRepository extends ServiceEntityRepository
 
     /**
      * @return list<SuggestItemDTO>
+     * @throws InvalidArgumentException
      */
     public function suggest(string $query): array
     {

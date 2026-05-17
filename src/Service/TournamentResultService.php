@@ -35,7 +35,7 @@ class TournamentResultService
     public function getResults(Tournament $tournament, int $page): array
     {
         $tournamentId = $tournament->getId();
-        $cacheKey = "tournament_results_{$tournamentId}_page_{$page}";
+        $cacheKey = "tournament_results_{$tournamentId}_page_$page";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($tournament, $page, $tournamentId) {
             $item->tag([CacheTag::tournament($tournamentId)]);
@@ -53,7 +53,7 @@ class TournamentResultService
     public function getLastPageNumber(Tournament $tournament): int
     {
         $tournamentId = $tournament->getId();
-        $cacheKey = "tournament_results_last_page_{$tournamentId}";
+        $cacheKey = "tournament_results_last_page_$tournamentId";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($tournament, $tournamentId) {
             $item->tag([CacheTag::tournament($tournamentId)]);
@@ -67,6 +67,7 @@ class TournamentResultService
 
     /**
      * @return list<SessionTeamDTO>
+     * @throws DbalException
      */
     private function buildResults(Tournament $tournament, int $page): array
     {

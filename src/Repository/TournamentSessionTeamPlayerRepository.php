@@ -98,14 +98,13 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
         $playerIds = array_map(static fn(array $row) => (int) $row['playerId'], $rows);
 
         $entityManager = $this->getEntityManager();
-        $players = $entityManager->getRepository(Player::class)->createQueryBuilder('p')
+
+        return $entityManager->getRepository(Player::class)->createQueryBuilder('p')
             ->where('p.id IN (:ids)')
             ->setParameter('ids', $playerIds)
             ->orderBy('p.lastName')
             ->getQuery()
             ->getResult();
-
-        return $players;
     }
 
     /** @return list<TournamentSessionTeamPlayer> */

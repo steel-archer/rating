@@ -38,11 +38,9 @@ class ListController extends AbstractController
 
         $tournamentDtos = $mapper->mapMultiple($tournaments, TournamentListDTO::class);
 
-        $claims = [];
-        foreach ($claimEntities as $tournamentId => $claim) {
-            /** @var TournamentModerationClaim $claim */
-            $claims[$tournamentId] = $mapper->map($claim, TournamentModerationListDTO::class);
-        }
+        $claims = array_map(static function ($claim) use ($mapper) {
+            return $mapper->map($claim, TournamentModerationListDTO::class);
+        }, $claimEntities);
 
         return $this->render('my/tournaments.html.twig', [
             'tournaments' => $tournamentDtos,

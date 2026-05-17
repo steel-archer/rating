@@ -6,6 +6,7 @@ namespace App\Controller\Tournament;
 
 use App\DTO\Request\TournamentListRequestDTO;
 use App\Service\TournamentService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -19,6 +20,9 @@ class ListController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __invoke(#[MapQueryString] TournamentListRequestDTO $requestDto = new TournamentListRequestDTO()): Response
     {
         $result = $this->tournamentService->getList($requestDto);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Team;
 
 use App\Service\TeamService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,6 +13,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/team/{id}', name: 'team_show', requirements: ['id' => '\d+'], methods: ['GET'])]
 class ShowController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __invoke(int $id, TeamService $teamService): Response
     {
         $team = $teamService->get($id);

@@ -36,7 +36,7 @@ class PlayerService
      */
     public function get(int $id): PlayerDTO
     {
-        $cacheKey = "player_show_{$id}";
+        $cacheKey = "player_show_$id";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->tag([CacheTag::player($id)]);

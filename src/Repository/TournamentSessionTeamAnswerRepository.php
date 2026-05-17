@@ -14,6 +14,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\TournamentOfficial;
 
 /** @extends ServiceEntityRepository<TournamentSessionTeamAnswer> */
 class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
@@ -69,20 +70,6 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{teamId: int, questionNumber: int, isCorrect: bool}>
-     */
-    public function findBySession(TournamentSession $session): array
-    {
-        return $this->createQueryBuilder('a')
-            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'a.questionNumber', 'a.isCorrect')
-            ->join('a.tournamentSessionTeam', 'st')
-            ->where('st.tournamentSession = :session')
-            ->setParameter('session', $session)
-            ->getQuery()
-            ->getArrayResult();
-    }
-
-    /**
      * @param list<int> $sessionTeamIds
      */
     public function submitCreatedDisputes(array $sessionTeamIds): void
@@ -124,24 +111,6 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
     /**
      * @return list<TournamentSessionTeamAnswer>
      */
-    public function findDisputesByTournament(Tournament $tournament): array
-    {
-        return $this->createQueryBuilder('a')
-            ->join('a.tournamentSessionTeam', 'st')
-            ->join('st.team', 'team')
-            ->join('st.tournamentSession', 's')
-            ->addSelect('st', 'team')
-            ->where('s.tournament = :tournament')
-            ->andWhere('a.disputeStatus IS NOT NULL')
-            ->setParameter('tournament', $tournament)
-            ->orderBy('a.questionNumber')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @return list<TournamentSessionTeamAnswer>
-     */
     public function findSubmittedDisputesByTournament(Tournament $tournament): array
     {
         return $this->createQueryBuilder('a')
@@ -163,11 +132,110 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param list<int> $answerIds
-     *
-     * @return list<TournamentSessionTeamAnswer>
+     * @param list<int> $sessionTeamIds
+     * @return array<int, int> sessionTeamId => count
      */
-    public function findDisputesBySessionAndIds(TournamentSession $session, array $answerIds): array
+    public function getAnswerCountsByTeamIds(array $sessionTeamIds): array
+    {
+        if ($sessionTeamIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('a')
+            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'COUNT(a.id) AS cnt')
+            ->where('a.tournamentSessionTeam IN (:ids)')
+            ->setParameter('ids', $sessionTeamIds)
+            ->groupBy('a.tournamentSessionTeam')
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(int) $row['teamId']] = (int) $row['cnt'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<int> $sessionTeamIds
+     * @return array<int, int> sessionTeamId => score
+     */
+    public function getScoresByTeamIds(array $sessionTeamIds): array
+    {
+        if ($sessionTeamIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('a')
+            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'SUM(CASE WHEN a.isCorrect = true THEN 1 ELSE 0 END) AS score')
+            ->where('a.tournamentSessionTeam IN (:ids)')
+            ->setParameter('ids', $sessionTeamIds)
+            ->groupBy('a.tournamentSessionTeam')
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(int) $row['teamId']] = (int) $row['score'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<int> $sessionTeamIds
+     */
+    public function deleteBySessionTeamIds(array $sessionTeamIds): void
+    {
+        if ($sessionTeamIds === []) {
+            return;
+        }
+
+        $this->createQueryBuilder('a')
+            ->delete()
+            ->where('a.tournamentSessionTeam IN (:ids)')
+            ->setParameter('ids', $sessionTeamIds)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * @param list<int> $sessionTeamIds
+     * @return array<int, array<int, int|string>> teamId => [questionNumber => 0|1|disputeText]
+     */
+    public function getAnswerMapByTeamIds(array $sessionTeamIds): array
+    {
+        if ($sessionTeamIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('a')
+            ->select(
+                'IDENTITY(a.tournamentSessionTeam) AS teamId',
+                'a.questionNumber',
+                'a.isCorrect',
+                'a.disputeText',
+            )
+            ->where('a.tournamentSessionTeam IN (:ids)')
+            ->setParameter('ids', $sessionTeamIds)
+            ->getQuery()
+            ->getArrayResult();
+
+        $map = [];
+        foreach ($rows as $row) {
+            $teamId = (int) $row['teamId'];
+            $questionNumber = (int) $row['questionNumber'];
+
+            if ($row['disputeText'] !== null) {
+                $map[$teamId][$questionNumber] = $row['disputeText'];
+            } else {
+                $map[$teamId][$questionNumber] = $row['isCorrect'] ? 1 : 0;
+            }
+        }
+
+        return $map;
+    }
     {
         if ($answerIds === []) {
             return [];
@@ -198,9 +266,8 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
             )
             ->from(TournamentSessionTeamAnswer::class, 'a')
             ->join('a.tournamentSessionTeam', 'st')
-            ->join('st.tournamentSession', 's')
-            ->join('s.tournament', 't')
-            ->join('App\Entity\TournamentOfficial', 'o', 'WITH', 'o.tournament = t AND o.player = :player AND o.role = :role')
+            ->join('st.tournamentSession', 's')->join('s.tournament', 't')
+            ->join(TournamentOfficial::class, 'o', 'WITH', 'o.tournament = t AND o.player = :player AND o.role = :role')
             ->where('a.disputeStatus IN (:allStatuses)')
             ->setParameter('player', $player)
             ->setParameter('role', TournamentOfficialRole::GameJury)

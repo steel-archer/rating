@@ -9,6 +9,7 @@ use App\Entity\Tournament;
 use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentManagementService;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,6 +18,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[RateLimited('mutation')]
 class DeleteController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __invoke(
         Tournament $tournament,
         TournamentManagementService $service,

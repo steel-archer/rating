@@ -32,7 +32,7 @@ class VenueService
      */
     public function get(int $id): VenueDTO
     {
-        $cacheKey = "venue_show_{$id}";
+        $cacheKey = "venue_show_$id";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->tag([CacheTag::Venues->value]);

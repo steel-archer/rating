@@ -37,7 +37,7 @@ class TournamentService
      */
     public function get(int $id): TournamentDTO
     {
-        return $this->cache->get("tournament_show_{$id}", function (ItemInterface $item) use ($id) {
+        return $this->cache->get("tournament_show_$id", function (ItemInterface $item) use ($id) {
             $item->tag([CacheTag::tournament($id)]);
             $item->expiresAfter(86400);
 

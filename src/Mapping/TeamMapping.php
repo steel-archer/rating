@@ -8,7 +8,6 @@ use App\DTO\Response\Team\SeasonSquadDTO;
 use App\DTO\Response\Team\SquadPlayerDTO;
 use App\DTO\Response\TeamDTO;
 use App\Entity\Team;
-use App\Entity\TeamPlayer;
 
 #[AsMapper(source: Team::class, destination: TeamDTO::class)]
 final class TeamMapping implements MappingInterface

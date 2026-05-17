@@ -9,7 +9,9 @@ use App\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Entity\Tournament;
 use App\Security\TournamentOrganizerVoter;
 use App\Service\TournamentManagementService;
+use DateMalformedStringException;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -19,6 +21,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[RateLimited('mutation')]
 class UpdateController extends AbstractController
 {
+    /**
+     * @throws DateMalformedStringException
+     * @throws InvalidArgumentException
+     */
     public function __invoke(
         Tournament $tournament,
         #[MapRequestPayload] EditRequestDTO $dto,

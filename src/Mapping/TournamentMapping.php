@@ -7,6 +7,7 @@ namespace App\Mapping;
 use App\DTO\Response\Tournament\OfficialDTO;
 use App\DTO\Response\TournamentDTO;
 use App\Entity\Tournament;
+use App\Entity\TournamentOfficial;
 use InvalidArgumentException;
 
 #[AsMapper(source: Tournament::class, destination: TournamentDTO::class)]
@@ -43,7 +44,7 @@ final class TournamentMapping implements MappingInterface
     }
 
     /**
-     * @param list<\App\Entity\TournamentOfficial> $officials
+     * @param list<TournamentOfficial> $officials
      * @return array<string, list<OfficialDTO>>
      */
     private static function groupOfficials(Mapper $mapper, array $officials): array

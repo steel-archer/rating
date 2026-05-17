@@ -82,34 +82,34 @@ class TournamentManagementService
         $nameChanged = $tournament->getName() !== $dto->name;
 
         $startedAt = $dto->startedAt
-            ? (new DateTimeImmutable($dto->startedAt))->setTime(0, 0, 0)
+            ? new DateTimeImmutable($dto->startedAt)->setTime(0, 0)
             : null;
 
         $tournament->setName($dto->name);
         $tournament->setStartedAt($startedAt);
         $tournament->setEndedAt(
             $dto->endedAt
-                ? (new DateTimeImmutable($dto->endedAt))->setTime(23, 59, 59)
+                ? new DateTimeImmutable($dto->endedAt)->setTime(23, 59, 59)
                 : null,
         );
         $tournament->setResultsHiddenUntil(
             $dto->resultsHiddenUntil
-                ? (new DateTimeImmutable($dto->resultsHiddenUntil))->setTime(0, 0, 0)
+                ? new DateTimeImmutable($dto->resultsHiddenUntil)->setTime(0, 0)
                 : null,
         );
         $tournament->setRegistrationDeadline(
             $dto->registrationDeadline
-                ? (new DateTimeImmutable($dto->registrationDeadline))->setTime(23, 59, 59)
+                ? new DateTimeImmutable($dto->registrationDeadline)->setTime(23, 59, 59)
                 : null,
         );
         $tournament->setDetailsHiddenUntil(
             $dto->detailsHiddenUntil
-                ? (new DateTimeImmutable($dto->detailsHiddenUntil))->setTime(0, 0, 0)
+                ? new DateTimeImmutable($dto->detailsHiddenUntil)->setTime(0, 0)
                 : null,
         );
         $tournament->setSubmissionDeadline(
             $dto->submissionDeadline
-                ? (new DateTimeImmutable($dto->submissionDeadline))->setTime(23, 59, 59)
+                ? new DateTimeImmutable($dto->submissionDeadline)->setTime(23, 59, 59)
                 : null,
         );
         $tournament->setToursCount($dto->toursCount);

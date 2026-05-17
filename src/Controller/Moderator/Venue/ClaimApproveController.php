@@ -8,6 +8,7 @@ use App\Attribute\RateLimited;
 use App\Entity\Venue;
 use App\Service\VenueManagementService;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,6 +17,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[RateLimited('moderator')]
 class ClaimApproveController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __invoke(
         Venue $venue,
         VenueManagementService $service,

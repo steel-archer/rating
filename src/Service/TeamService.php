@@ -36,7 +36,7 @@ class TeamService
      */
     public function get(int $id): TeamDTO
     {
-        $cacheKey = "team_show_{$id}";
+        $cacheKey = "team_show_$id";
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->tag([CacheTag::team($id)]);

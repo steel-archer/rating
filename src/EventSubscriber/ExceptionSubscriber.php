@@ -7,6 +7,7 @@ namespace App\EventSubscriber;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -47,7 +48,7 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
 
         $event->setResponse(new JsonResponse(
             ['error' => 'common.error'],
-            JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            Response::HTTP_INTERNAL_SERVER_ERROR,
         ));
     }
 }

@@ -39,6 +39,6 @@ class DownloadDocumentController extends AbstractController
 
         $path = $service->getFilePath($document);
 
-        return $this->file($path, $document->getOriginalName(), ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+        return $this->file($path, $document->getOriginalName());
     }
 }
