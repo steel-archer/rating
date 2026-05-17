@@ -25,6 +25,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         'Блискучі',
         'Бурхливі',
         'Веселі',
+        'Відважні',
         'Вільні',
         'Відчайдушні',
         'Вогняні',
@@ -35,7 +36,9 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         'Крижані',
         'Лісові',
         'Магічні',
+        'Могутні',
         'Мудрі',
+        'Невловимі',
         'Нескорені',
         'Нічні',
         'Палкі',
@@ -51,6 +54,8 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         'Шалені',
         'Швидкі',
         'Яскраві',
+        'Зухвалі',
+        'Невгамовні',
     ];
 
     private const array NOUNS = [
@@ -82,6 +87,13 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         'Химери',
         'Шершні',
         'Яструби',
+        'Ведмеді',
+        'Круки',
+        'Саламандри',
+        'Відьми',
+        'Вікінги',
+        'Спартанці',
+        'Гладіатори',
     ];
 
     /** @var array<int, list<int>> team index => list of player indices (season 1 squad) */

@@ -19,13 +19,23 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
         'Антикафе',
         'Арт-простір',
         'Бар',
+        'Бістро',
         'Галерея',
+        'Гастропаб',
         "Кав'ярня",
         'Квіз-бар',
         'Клуб',
+        'Коворкінг',
+        'Культурний центр',
         'Лаунж',
+        'Лофт',
         'Паб',
+        'Піцерія',
+        'Ресторан',
+        'Студія',
+        'Тераса',
         'Хаб',
+        'Чайна',
     ];
 
     /** @var array<int, list<int>> town index => list of venue indices */
