@@ -236,6 +236,13 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
 
         return $map;
     }
+
+    /**
+     * @param list<int> $answerIds
+     *
+     * @return list<TournamentSessionTeamAnswer>
+     */
+    public function findDisputesBySessionAndIds(TournamentSession $session, array $answerIds): array
     {
         if ($answerIds === []) {
             return [];

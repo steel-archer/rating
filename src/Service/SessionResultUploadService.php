@@ -269,24 +269,7 @@ class SessionResultUploadService
      */
     private function getAnswerCounts(array $sessionTeamIds): array
     {
-        if ($sessionTeamIds === []) {
-            return [];
-        }
-
-        $rows = $this->answerRepository->createQueryBuilder('a')
-            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'COUNT(a.id) AS cnt')
-            ->where('a.tournamentSessionTeam IN (:ids)')
-            ->setParameter('ids', $sessionTeamIds)
-            ->groupBy('a.tournamentSessionTeam')
-            ->getQuery()
-            ->getArrayResult();
-
-        $result = [];
-        foreach ($rows as $row) {
-            $result[(int) $row['teamId']] = (int) $row['cnt'];
-        }
-
-        return $result;
+        return $this->answerRepository->getAnswerCountsByTeamIds($sessionTeamIds);
     }
 
     /**
@@ -294,22 +277,7 @@ class SessionResultUploadService
      */
     private function recalculateScores(array $sessionTeamIds): void
     {
-        if ($sessionTeamIds === []) {
-            return;
-        }
-
-        $rows = $this->answerRepository->createQueryBuilder('a')
-            ->select('IDENTITY(a.tournamentSessionTeam) AS teamId', 'SUM(CASE WHEN a.isCorrect = true THEN 1 ELSE 0 END) AS score')
-            ->where('a.tournamentSessionTeam IN (:ids)')
-            ->setParameter('ids', $sessionTeamIds)
-            ->groupBy('a.tournamentSessionTeam')
-            ->getQuery()
-            ->getArrayResult();
-
-        $scoreMap = [];
-        foreach ($rows as $row) {
-            $scoreMap[(int) $row['teamId']] = (int) $row['score'];
-        }
+        $scoreMap = $this->answerRepository->getScoresByTeamIds($sessionTeamIds);
 
         $sessionTeams = $this->sessionTeamRepository->findBy(['id' => $sessionTeamIds]);
         foreach ($sessionTeams as $sessionTeam) {
@@ -325,13 +293,7 @@ class SessionResultUploadService
     {
         $teamIds = array_keys($parsedResults);
 
-        // Bulk delete existing answers
-        $this->answerRepository->createQueryBuilder('a')
-            ->delete()
-            ->where('a.tournamentSessionTeam IN (:ids)')
-            ->setParameter('ids', $teamIds)
-            ->getQuery()
-            ->execute();
+        $this->answerRepository->deleteBySessionTeamIds($teamIds);
 
         // Insert new answers
         foreach ($parsedResults as $teamId => $answers) {
@@ -389,35 +351,7 @@ class SessionResultUploadService
     {
         $ids = array_map(static fn($st) => $st->getId(), $sessionTeams);
 
-        if ($ids === []) {
-            return [];
-        }
-
-        $rows = $this->answerRepository->createQueryBuilder('a')
-            ->select(
-                'IDENTITY(a.tournamentSessionTeam) AS teamId',
-                'a.questionNumber',
-                'a.isCorrect',
-                'a.disputeText',
-            )
-            ->where('a.tournamentSessionTeam IN (:ids)')
-            ->setParameter('ids', $ids)
-            ->getQuery()
-            ->getArrayResult();
-
-        $map = [];
-        foreach ($rows as $row) {
-            $teamId = (int) $row['teamId'];
-            $questionNumber = (int) $row['questionNumber'];
-
-            if ($row['disputeText'] !== null) {
-                $map[$teamId][$questionNumber] = $row['disputeText'];
-            } else {
-                $map[$teamId][$questionNumber] = $row['isCorrect'] ? 1 : 0;
-            }
-        }
-
-        return $map;
+        return $this->answerRepository->getAnswerMapByTeamIds($ids);
     }
 
     /**
