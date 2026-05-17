@@ -85,19 +85,16 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('uk_UA');
         $seasons = $manager->getRepository(Season::class)->findAll();
-        $season = $seasons[0] ?? throw new RuntimeException('No seasons found');
+        $seasonId = ($seasons[0] ?? throw new RuntimeException('No seasons found'))->getId();
 
         $townCount = TownFixture::$townCount;
         $teamCount = TeamFixture::TEAM_COUNT;
         $playerCount = TeamFixture::PLAYER_COUNT;
 
-        // town → team indices
-        $townTeams = [];
-        for ($t = 0; $t < $teamCount; $t++) {
-            $townTeams[$t % $townCount][] = $t;
-        }
-
         foreach (self::NAMES as $i => $name) {
+            $season = $manager->getRepository(Season::class)->find($seasonId)
+                ?? throw new RuntimeException('Season not found');
+
             $tournament = new Tournament();
             $tournament->setName($name);
             $tournament->setSeason($season);
@@ -142,12 +139,18 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $usedPlayers = [];
             $oneTimeNameAssigned = false;
 
-            // Sessions — random subset of towns
-            $sessionTownCount = $faker->numberBetween(5, min(13, $townCount));
-            $sessionTowns = $faker->randomElements(range(0, $townCount - 1), $sessionTownCount);
+            // Sessions — fewer sessions, more teams per session
+            $sessionCount = $faker->numberBetween(3, min(7, $townCount));
+            $sessionTowns = $faker->randomElements(range(0, $townCount - 1), $sessionCount);
             $totalQuestions = $tournament->getToursCount() * $tournament->getQuestionsPerTour();
 
-            foreach ($sessionTowns as $townIndex) {
+            // Pick a limited pool of teams for this tournament
+            $teamsPerTournament = $faker->numberBetween($sessionCount * 2, $sessionCount * 10);
+            $availableTeams = $faker->randomElements(range(0, $teamCount - 1), min($teamsPerTournament, $teamCount));
+            shuffle($availableTeams);
+            $teamChunks = array_chunk($availableTeams, (int)ceil(count($availableTeams) / $sessionCount));
+
+            foreach ($sessionTowns as $sessionIndex => $townIndex) {
                 $venueIndices = VenueFixture::$townVenueMap[$townIndex] ?? [];
                 if ($venueIndices === []) {
                     continue;
@@ -170,13 +173,16 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                 $claim->setResolvedAt(new DateTimeImmutable("2024-$month-$day"));
                 $manager->persist($claim);
 
-                // Teams from this town (skip already used in this tournament)
-                $teams = $townTeams[$townIndex] ?? [];
-                foreach ($teams as $teamIndex) {
+                // Take teams for this session
+                $chunk = $teamChunks[$sessionIndex] ?? [];
+                $actualTeamCount = 0;
+
+                foreach ($chunk as $teamIndex) {
                     if (isset($usedTeams[$teamIndex])) {
                         continue;
                     }
                     $usedTeams[$teamIndex] = true;
+                    $actualTeamCount++;
 
                     $teamTownIndex = $teamIndex % $townCount;
 
@@ -254,10 +260,15 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                         $manager->persist($sessionTeamPlayer);
                     }
                 }
-            }
-        }
 
-        $manager->flush();
+                // Set estimated teams close to actual count
+                $deviation = $faker->numberBetween(-1, 2);
+                $session->setEstimatedTeams(max(1, $actualTeamCount + $deviation));
+            }
+
+            $manager->flush();
+            $manager->clear();
+        }
     }
 
     /**

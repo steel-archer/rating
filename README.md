@@ -103,7 +103,7 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 Якщо хочете наповнити базу тестовими турнірами, командами та гравцями:
 
 ```bash
-docker compose exec app php bin/console doctrine:fixtures:load --append --no-interaction
+docker compose exec app php -d memory_limit=512M bin/console doctrine:fixtures:load --append --no-interaction
 ```
 
 ### 8. Налаштуйте адміністратора

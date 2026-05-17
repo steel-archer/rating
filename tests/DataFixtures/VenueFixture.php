@@ -52,10 +52,16 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
             $town = $this->getReference("town_$townIndex", Town::class);
             $count = $faker->numberBetween(1, 3);
             self::$townVenueMap[$townIndex] = [];
+            $usedNames = [];
 
             for ($i = 0; $i < $count; $i++) {
+                do {
+                    $name = $faker->randomElement(self::VENUE_NAMES) . ' «' . $faker->lastName() . '»';
+                } while (isset($usedNames[$name]));
+                $usedNames[$name] = true;
+
                 $venue = new Venue();
-                $venue->setName($faker->randomElement(self::VENUE_NAMES) . ' ' . $faker->lastName());
+                $venue->setName($name);
                 $venue->setTown($town);
                 $venue->setIsApproved(true);
                 $manager->persist($venue);
