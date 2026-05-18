@@ -96,6 +96,10 @@ class SessionClaimService
      */
     public function submit(Tournament $tournament, Player $player, ClaimRequestDTO $dto): void
     {
+        if (!$tournament->isRegistrationOpen()) {
+            throw new LogicException('session_claim.error.registration_closed');
+        }
+
         $venue = $this->venueRepository->find($dto->venueId)
             ?? throw new LogicException('common.not_found');
 
@@ -132,6 +136,10 @@ class SessionClaimService
     public function update(TournamentSession $session, Player $player, UpdateRequestDTO $dto): void
     {
         $this->ensureSessionOwner($player, $session);
+
+        if (!$session->getTournament()->isRegistrationOpen()) {
+            throw new LogicException('session_claim.error.registration_closed');
+        }
 
         $playedAt = $dto->playedAt !== null ? new DateTimeImmutable($dto->playedAt) : null;
         $this->validateDate($session->getTournament(), $playedAt);
@@ -192,6 +200,11 @@ class SessionClaimService
     public function resubmit(TournamentSession $session, Player $player): void
     {
         $this->ensureSessionOwner($player, $session);
+
+        if (!$session->getTournament()->isRegistrationOpen()) {
+            throw new LogicException('session_claim.error.registration_closed');
+        }
+
         $this->validateDate($session->getTournament(), $session->getPlayedAt());
 
         $claim = $this->claimRepository->findBySession($session)

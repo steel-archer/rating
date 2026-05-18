@@ -51,7 +51,10 @@ class EditController extends AbstractController
 
         $canEnterResults = $claim->getStatus() === SessionClaimStatus::Approved
             && $session->getPlayedAt() !== null
-            && $session->getPlayedAt() <= new DateTimeImmutable('today');
+            && $session->getPlayedAt() <= new DateTimeImmutable('today')
+            && $session->getTournament()->isSubmissionOpen();
+
+        $isRegistrationOpen = $session->getTournament()->isRegistrationOpen();
 
         $teams = [];
         if ($canEnterResults) {
@@ -62,6 +65,7 @@ class EditController extends AbstractController
             'claim' => $mapper->map($claim, SessionClaimEditDTO::class),
             'documents' => $documents,
             'canEnterResults' => $canEnterResults,
+            'isRegistrationOpen' => $isRegistrationOpen,
             'teams' => $teams,
         ]);
     }

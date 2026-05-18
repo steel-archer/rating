@@ -68,6 +68,15 @@ class CreateControllerTest extends WebTestCase
             },
         ];
 
+        yield 'registration closed' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_expired.yaml'],
+            'loginAs' => 'user_representative_exp',
+            'uri' => static fn(array $objects) => '/my/session-claims/create/' . $objects['tournament_expired']->getId(),
+            'expectedStatus' => 403,
+            'afterCallback' => static function () {
+            },
+        ];
+
         yield 'not found for non-existent tournament' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',

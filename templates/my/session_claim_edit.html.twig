@@ -44,11 +44,11 @@
             <div id="save-status" class="form-error" hidden></div>
             <div class="form-group">
                 <label for="edit-date">{{ 'session_claim.estimated_date'|trans }}</label>
-                <input type="date" id="edit-date" name="playedAt" value="{{ claim.playedAt ? claim.playedAt|date('Y-m-d') : '' }}">
+                <input type="date" id="edit-date" name="playedAt" value="{{ claim.playedAt ? claim.playedAt|date('Y-m-d') : '' }}" {{ not isRegistrationOpen ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
                 <label for="edit-teams">{{ 'session_claim.estimated_teams'|trans }}</label>
-                <input type="number" id="edit-teams" name="estimatedTeams" min="1" value="{{ claim.estimatedTeams }}">
+                <input type="number" id="edit-teams" name="estimatedTeams" min="1" value="{{ claim.estimatedTeams }}" {{ not isRegistrationOpen ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
                 <label>{{ 'venue.host'|trans }}</label>
@@ -57,26 +57,32 @@
                         <div class="official-entry">
                             <input type="hidden" name="hostId" value="{{ claim.hostId }}">
                             {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
-                            <button type="button" class="btn-remove">×</button>
+                            {% if isRegistrationOpen %}
+                                <button type="button" class="btn-remove">×</button>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>
-                <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
-                    <input type="text" data-suggest-input placeholder="{{ 'session_claim.add_host'|trans }}">
-                    <div data-suggest-dropdown hidden></div>
+                {% if isRegistrationOpen %}
+                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                        <input type="text" data-suggest-input placeholder="{{ 'session_claim.add_host'|trans }}">
+                        <div data-suggest-dropdown hidden></div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if isRegistrationOpen %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">{{ 'tournament.my.save'|trans }}</button>
+
+                    {% if claim.status == 'rejected' %}
+                        <button type="button" class="btn btn-success" data-session-resubmit="{{ claim.sessionId }}">{{ 'session_claim.resubmit'|trans }}</button>
+                    {% endif %}
+                    {% if claim.status != 'approved' %}
+                        <button type="button" class="btn btn-reject" data-session-delete="{{ claim.sessionId }}" data-redirect="{{ path('my_session_claims') }}">{{ 'session_claim.delete'|trans }}</button>
+                    {% endif %}
                 </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">{{ 'tournament.my.save'|trans }}</button>
-
-                {% if claim.status == 'rejected' %}
-                    <button type="button" class="btn btn-success" data-session-resubmit="{{ claim.sessionId }}">{{ 'session_claim.resubmit'|trans }}</button>
-                {% endif %}
-                {% if claim.status != 'approved' %}
-                    <button type="button" class="btn btn-reject" data-session-delete="{{ claim.sessionId }}" data-redirect="{{ path('my_session_claims') }}">{{ 'session_claim.delete'|trans }}</button>
-                {% endif %}
-            </div>
+            {% endif %}
         </form>
     </div>
 

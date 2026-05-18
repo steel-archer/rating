@@ -23,6 +23,10 @@ class CreateController extends AbstractController
         VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
     ): Response {
+        if (!$tournament->isRegistrationOpen()) {
+            throw $this->createAccessDeniedException();
+        }
+
         /** @var User $user */
         $user = $this->getUser();
         $player = $user->getPlayer();

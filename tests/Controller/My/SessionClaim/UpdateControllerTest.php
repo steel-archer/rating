@@ -187,6 +187,26 @@ class UpdateControllerTest extends WebTestCase
             },
         ];
 
+        yield 'registration closed' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_expired.yaml'],
+            'loginAs' => 'user_representative_exp',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['session_expired_approved']->getId() . '/update',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'estimatedTeams' => 12,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.registration_closed', $body['error']);
+            },
+        ];
+
         yield 'throwable returns 500' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',

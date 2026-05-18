@@ -8,7 +8,6 @@ use App\DTO\Request\PageRequestDTO;
 use App\DTO\Response\Tournament\TournamentContextDTO;
 use App\Entity\Tournament;
 use App\Entity\User;
-use App\Enum\TournamentOfficialRole;
 use App\Mapping\Mapper;
 use App\Repository\TournamentOfficialRepository;
 use App\Service\TournamentResultService;
@@ -38,13 +37,12 @@ class ResultsController extends AbstractController
             /** @var User $user */
             $user = $this->getUser();
 
-            $isOrganizer = $officialRepository->hasRole(
-                $user->getPlayer(),
-                $tournament,
-                TournamentOfficialRole::Organizer,
-            );
+            $isOfficial = $officialRepository->findOneBy([
+                'tournament' => $tournament,
+                'player' => $user->getPlayer(),
+            ]) !== null;
 
-            if (!$isOrganizer) {
+            if (!$isOfficial) {
                 return $this->render('tournament/_results_hidden.html.twig', [
                     'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
                     'hiddenUntil' => $tournament->getResultsHiddenUntil(),

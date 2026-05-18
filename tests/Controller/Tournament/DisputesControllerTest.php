@@ -64,5 +64,19 @@ class DisputesControllerTest extends WebTestCase
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_dispute']->getId() . '/disputes',
             'expectedStatus' => 200,
         ];
+
+        yield 'non-official denied when details hidden' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/disputes_hidden.yaml'],
+            'loginAs' => 'user_dispute_hidden_other',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_dispute_hidden']->getId() . '/disputes',
+            'expectedStatus' => 403,
+        ];
+
+        yield 'official can view when details hidden' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/disputes_hidden.yaml'],
+            'loginAs' => 'user_dispute_hidden_jury',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_dispute_hidden']->getId() . '/disputes',
+            'expectedStatus' => 200,
+        ];
     }
 }

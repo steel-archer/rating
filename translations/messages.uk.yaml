@@ -193,6 +193,7 @@ session_claim:
     not_pending: 'Заявка не очікує розгляду'
     not_rejected: 'Заявка не відхилена'
     not_representative: 'Ви не є представником цього майданчика'
+    registration_closed: 'Реєстрацію на цей турнір завершено'
   estimated_date: 'Дата'
   estimated_teams: 'Орієнтовна кількість команд'
   my_empty: 'У вас немає заявок на відіграші'

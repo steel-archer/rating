@@ -164,6 +164,28 @@ class SubmitControllerTest extends WebTestCase
             },
         ];
 
+        yield 'registration closed' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_expired.yaml'],
+            'loginAs' => 'user_representative_exp',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_expired']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => (new \DateTimeImmutable('-45 days'))->format('Y-m-d'),
+                    'estimatedTeams' => 6,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.registration_closed', $body['error']);
+            },
+        ];
+
         yield 'non-existent tournament' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',

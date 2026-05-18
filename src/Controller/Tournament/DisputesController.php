@@ -37,7 +37,7 @@ class DisputesController extends AbstractController
         ]) !== null;
 
         if (!$isOfficial) {
-            if ($tournament->getStatus() !== TournamentStatus::Published || $tournament->areResultsHidden()) {
+            if ($tournament->getStatus() !== TournamentStatus::Published || $tournament->areDetailsHidden()) {
                 throw $this->createAccessDeniedException();
             }
         }

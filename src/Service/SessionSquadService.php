@@ -97,6 +97,7 @@ class SessionSquadService
             || $claim->getStatus() !== SessionClaimStatus::Approved
             || $session->getPlayedAt() === null
             || $session->getPlayedAt() > new DateTimeImmutable('today')
+            || !$session->getTournament()->isSubmissionOpen()
         ) {
             throw new AccessDeniedHttpException();
         }

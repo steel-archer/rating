@@ -26,7 +26,8 @@ class SessionsController extends AbstractController
 
         return $this->render('tournament/sessions.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
-            'canSubmitClaim' => $representativeRepository->hasVenuesByPlayer($user->getPlayer()),
+            'canSubmitClaim' => $tournament->isRegistrationOpen()
+                && $representativeRepository->hasVenuesByPlayer($user->getPlayer()),
         ]);
     }
 }

@@ -16,6 +16,8 @@ App\Entity\Tournament:
         status: '<(App\Enum\TournamentStatus::Published)>'
         startedAt: '<(new \DateTimeImmutable("+1 month midnight"))>'
         endedAt: '<(new \DateTimeImmutable("+2 months 23:59:59"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
 

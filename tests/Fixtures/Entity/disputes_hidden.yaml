@@ -1,0 +1,30 @@
+App\Entity\User:
+    user_dispute_hidden_jury:
+        email: 'dispute_hidden_jury@example.com'
+        googleId: 'google_dispute_hidden_jury'
+        roles: []
+        player: '@player_franko'
+    user_dispute_hidden_other:
+        email: 'dispute_hidden_other@example.com'
+        googleId: 'google_dispute_hidden_other'
+        roles: []
+        player: '@player_lesya'
+
+App\Entity\Tournament:
+    tournament_dispute_hidden:
+        name: 'Турнір з прихованими деталями'
+        status: '<(App\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
+        endedAt: '<(new \DateTimeImmutable("-10 days"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+5 days midnight"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+10 days midnight"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
+        toursCount: 1
+        questionsPerTour: 3
+
+App\Entity\TournamentOfficial:
+    official_dispute_hidden_jury:
+        tournament: '@tournament_dispute_hidden'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'

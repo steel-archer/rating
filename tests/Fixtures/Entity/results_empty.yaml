@@ -12,6 +12,7 @@ App\Entity\Tournament:
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-30 days"))>'
         endedAt: '<(new \DateTimeImmutable("+30 days"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
         toursCount: 2
         questionsPerTour: 3
 

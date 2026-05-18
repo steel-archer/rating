@@ -158,6 +158,7 @@ export default {
     "session_claim.error.not_pending": "Заявка не очікує розгляду",
     "session_claim.error.not_rejected": "Заявка не відхилена",
     "session_claim.error.not_representative": "Ви не є представником цього майданчика",
+    "session_claim.error.registration_closed": "Реєстрацію на цей турнір завершено",
     "session_claim.estimated_date": "Дата",
     "session_claim.estimated_teams": "Орієнтовна кількість команд",
     "session_claim.my_empty": "У вас немає заявок на відіграші",
