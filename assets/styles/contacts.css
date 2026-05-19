@@ -13,6 +13,28 @@
     white-space: normal;
 }
 
+.contacts-popover--hidden {
+    display: none;
+}
+
+.btn-contacts {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    vertical-align: middle;
+    color: #0055b3;
+}
+
+.btn-contacts:hover {
+    color: #003d80;
+}
+
+.cell-contacts {
+    position: relative;
+}
+
 .contacts-popover div {
     white-space: nowrap;
     line-height: 1.8;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mapping\Tournament;
 
 use App\DTO\Response\Tournament\SessionClaimDTO;
+use App\DTO\Response\UserContactsDTO;
 use App\Entity\SessionClaim;
 use App\Mapping\AsMapper;
 use App\Mapping\MappingInterface;
@@ -33,7 +34,7 @@ final class SessionClaimMapping implements MappingInterface
             playerId: $player->getId(),
             playerName: $player->getFullName(),
             playerHasUser: $player->hasUser(),
-            playerEmail: $player->getUser()?->getEmail(),
+            playerContacts: $context['playerContacts'] ?? UserContactsDTO::empty(),
             hostId: $host?->getId(),
             hostName: $host?->getFullName(),
             hostHasUser: $host?->hasUser() ?? false,

@@ -21,6 +21,7 @@ use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use App\Repository\VenueRepresentativeRepository;
 use App\Repository\VenueRepository;
+use App\Service\UserContactsService;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,7 @@ class SessionClaimService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private VenueRepresentativeRepository $representativeRepository,
         private TournamentOfficialRepository $officialRepository,
+        private UserContactsService $contactsService,
         private Mapper $mapper,
     ) {
     }
@@ -78,7 +80,14 @@ class SessionClaimService
         return array_values(array_map(
             function (array $group) {
                 /** @var list<SessionClaimDTO> $claims */
-                $claims = $this->mapper->mapMultiple($group['claims'], SessionClaimDTO::class);
+                $claims = array_map(
+                    fn(SessionClaim $claim) => $this->mapper->map(
+                        $claim,
+                        SessionClaimDTO::class,
+                        ['playerContacts' => $this->contactsService->getContacts($claim->getPlayer()->getUser())],
+                    ),
+                    $group['claims'],
+                );
 
                 return new SessionClaimGroupDTO(
                     tournamentId: $group['tournament']->getId(),

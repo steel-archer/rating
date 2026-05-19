@@ -2,6 +2,7 @@ export default {
     "auth.login": "Увійти",
     "auth.logout": "Вийти",
     "common.back_home": "На головну",
+    "common.contacts": "Контакти",
     "common.country": "Країна",
     "common.rate_limit_exceeded": "Забагато запитів. Спробуйте пізніше.",
     "common.date": "Дата",

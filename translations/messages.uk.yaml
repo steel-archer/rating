@@ -4,6 +4,7 @@ auth:
 
 common:
   back_home: 'На головну'
+  contacts: 'Контакти'
   country: 'Країна'
   rate_limit_exceeded: 'Забагато запитів. Спробуйте пізніше.'
   date: 'Дата'

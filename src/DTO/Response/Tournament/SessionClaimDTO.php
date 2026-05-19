@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Response\Tournament;
 
+use App\DTO\Response\UserContactsDTO;
 use DateTimeImmutable;
 
 final readonly class SessionClaimDTO
@@ -18,7 +19,7 @@ final readonly class SessionClaimDTO
         public int $playerId,
         public string $playerName,
         public bool $playerHasUser,
-        public ?string $playerEmail,
+        public UserContactsDTO $playerContacts,
         public ?int $hostId,
         public ?string $hostName,
         public bool $hostHasUser,
