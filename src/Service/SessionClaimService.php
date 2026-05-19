@@ -21,6 +21,7 @@ use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use App\Repository\VenueRepresentativeRepository;
 use App\Repository\VenueRepository;
+use App\Service\Cache\CacheInvalidator;
 use App\Service\UserContactsService;
 use DateMalformedStringException;
 use DateTimeImmutable;
@@ -37,6 +38,7 @@ class SessionClaimService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private VenueRepresentativeRepository $representativeRepository,
         private TournamentOfficialRepository $officialRepository,
+        private CacheInvalidator $cacheInvalidator,
         private UserContactsService $contactsService,
         private Mapper $mapper,
     ) {
@@ -180,6 +182,7 @@ class SessionClaimService
         $claim->setResolvedAt(new DateTimeImmutable());
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament($session->getTournament());
     }
 
     /**
@@ -201,6 +204,7 @@ class SessionClaimService
         $claim->setResolvedAt(new DateTimeImmutable());
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament($session->getTournament());
     }
 
     /**

@@ -91,7 +91,7 @@ function initSessionClaimActions() {
             buttonAction(
                 `/my/tournament-claims/${id}/approve`,
                 /** @type {HTMLButtonElement} */ (approveBtn),
-                { onSuccess: () => { removeSessionClaimCard(approveBtn); } },
+                { onSuccess: () => { moveClaimToApproved(approveBtn); } },
             );
             return;
         }
@@ -155,6 +155,92 @@ function removeSessionClaimCard(btn) {
     if (container && container.querySelectorAll('[data-session-claim-id]').length === 0) {
         container.remove();
     }
+}
+
+/**
+ * @param {Element} btn
+ */
+function moveClaimToApproved(btn) {
+    const row = btn.closest('[data-session-claim-id]');
+    if (!row) {
+        return;
+    }
+
+    const pendingCard = row.closest('.card');
+    const tournamentId = pendingCard ? pendingCard.id.replace('tournament-claims-', '') : null;
+
+    // Remove actions column from the row
+    const actionsCell = row.querySelector('td:last-child');
+    if (actionsCell && actionsCell.querySelector('.moderation-actions')) {
+        actionsCell.remove();
+    }
+    row.removeAttribute('data-session-claim-id');
+
+    // Find or create the approved card for this tournament
+    const approvedSection = document.getElementById('approved-section');
+    if (!approvedSection) {
+        return;
+    }
+
+    // Remove empty state message if present
+    const emptyState = approvedSection.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+
+    const approvedCard = tournamentId ? document.getElementById(`tournament-approved-${tournamentId}`) : null;
+
+    if (approvedCard) {
+        const tbody = approvedCard.querySelector('tbody');
+        if (tbody) {
+            tbody.appendChild(row);
+        }
+    } else if (pendingCard && tournamentId) {
+        // Create a new approved card cloning the structure
+        const heading = pendingCard.querySelector('h3');
+        const headingHtml = heading ? heading.outerHTML : '';
+        const tableLabel = pendingCard.querySelector('table')?.getAttribute('aria-label') || '';
+
+        const newCard = document.createElement('div');
+        newCard.className = 'card card-wide';
+        newCard.id = `tournament-approved-${tournamentId}`;
+        newCard.innerHTML = `${headingHtml}
+                <table aria-label="${tableLabel}">
+                    <thead>
+                        ${getApprovedTableHeader(pendingCard)}
+                    </thead>
+                    <tbody></tbody>
+                </table>`;
+        approvedSection.appendChild(newCard);
+
+        const tbody = newCard.querySelector('tbody');
+        if (tbody) {
+            tbody.appendChild(row);
+        }
+    }
+
+    // Remove pending card if empty
+    if (pendingCard && pendingCard.querySelectorAll('[data-session-claim-id]').length === 0) {
+        pendingCard.remove();
+    }
+}
+
+/**
+ * @param {Element} pendingCard
+ * @returns {string}
+ */
+function getApprovedTableHeader(pendingCard) {
+    const headerRow = pendingCard.querySelector('thead tr');
+    if (!headerRow) {
+        return '';
+    }
+    // Clone header without the last column (actions)
+    const clone = /** @type {HTMLElement} */ (headerRow.cloneNode(true));
+    const lastTh = clone.querySelector('th:last-child');
+    if (lastTh) {
+        lastTh.remove();
+    }
+    return clone.outerHTML;
 }
 
 initSessionClaimActions();
