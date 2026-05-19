@@ -14,6 +14,7 @@ use App\Mapping\Mapper;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
 use App\Repository\TournamentSessionRepository;
+use App\Repository\TournamentSessionTeamAnswerRepository;
 use App\Repository\TournamentSessionTeamRepository;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -26,6 +27,7 @@ class TournamentService
         private TournamentOfficialRepository $officialRepository,
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionRepository $sessionRepository,
+        private TournamentSessionTeamAnswerRepository $answerRepository,
         private Mapper $mapper,
         private TagAwareCacheInterface $cache,
     ) {
@@ -41,11 +43,17 @@ class TournamentService
             $item->tag([CacheTag::tournament($id)]);
             $item->expiresAfter(86400);
 
-            $tournament = $this->tournamentRepository->findWithSeason($id)
-                ?? throw EntityNotFoundException::forId('Tournament', $id);
-
-            return $this->buildDto($tournament);
+            return $this->buildDto($this->getEntity($id));
         });
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getEntity(int $id): Tournament
+    {
+        return $this->tournamentRepository->findWithSeason($id)
+            ?? throw EntityNotFoundException::forId('Tournament', $id);
     }
 
     /**
@@ -75,6 +83,7 @@ class TournamentService
             'officials' => $this->officialRepository->findByTournament($tournament),
             'teamCount' => $this->sessionTeamRepository->countByTournament($tournament),
             'sessionCount' => $this->sessionRepository->countByTournament($tournament),
+            'disputeCount' => $this->answerRepository->countSubmittedDisputesByTournament($tournament),
         ]);
     }
 }

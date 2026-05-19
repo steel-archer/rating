@@ -74,6 +74,21 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
         return array_map(static fn(array $row) => (int) $row['playerId'], $rows);
     }
 
+    public function hasPlayedInTournament(Player $player, Tournament $tournament): bool
+    {
+        return (bool) $this->createQueryBuilder('stp')
+            ->select('1')
+            ->join('stp.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 'ts')
+            ->where('ts.tournament = :tournament')
+            ->andWhere('stp.player = :player')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('player', $player)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * @return list<Player>
      */

@@ -39,6 +39,7 @@ final class TournamentMapping implements MappingInterface
             trueDl: $source->getTrueDl(),
             teamCount: $context['teamCount'] ?? 0,
             sessionCount: $context['sessionCount'] ?? 0,
+            disputeCount: $context['disputeCount'] ?? 0,
             officials: self::groupOfficials($mapper, $context['officials'] ?? []),
         );
     }

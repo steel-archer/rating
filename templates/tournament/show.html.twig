@@ -58,6 +58,10 @@
                     <dt>{{ 'tournament.sessions'|trans }}</dt>
                     <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">0</a></dd>
                 {% endif %}
+                {% if canViewDisputes %}
+                    <dt>{{ 'dispute.title'|trans }}</dt>
+                    <dd><a href="{{ path('tournament_disputes', {id: tournament.id}) }}">{{ tournament.disputeCount }}</a></dd>
+                {% endif %}
             </dl>
         </div>
 

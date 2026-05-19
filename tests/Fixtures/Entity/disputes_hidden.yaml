@@ -9,6 +9,16 @@ App\Entity\User:
         googleId: 'google_dispute_hidden_other'
         roles: []
         player: '@player_lesya'
+    user_dispute_hidden_rep:
+        email: 'dispute_hidden_rep@example.com'
+        googleId: 'google_dispute_hidden_rep'
+        roles: []
+        player: '@player_shevchenko'
+    user_dispute_hidden_player:
+        email: 'dispute_hidden_player@example.com'
+        googleId: 'google_dispute_hidden_player'
+        roles: []
+        player: '@player_kotsubynsky'
 
 App\Entity\Tournament:
     tournament_dispute_hidden:
@@ -28,3 +38,31 @@ App\Entity\TournamentOfficial:
         tournament: '@tournament_dispute_hidden'
         player: '@player_franko'
         role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
+
+App\Entity\TournamentSession:
+    session_dispute_hidden:
+        tournament: '@tournament_dispute_hidden'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-15 days"))>'
+        estimatedTeams: 2
+
+App\Entity\SessionClaim:
+    claim_dispute_hidden:
+        session: '@session_dispute_hidden'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-20 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-19 days"))>'
+
+App\Entity\TournamentSessionTeam:
+    session_team_dispute_hidden:
+        tournamentSession: '@session_dispute_hidden'
+        team: '@team_alpha'
+        score: 2
+        resultsSubmitted: true
+
+App\Entity\TournamentSessionTeamPlayer:
+    session_team_player_dispute_hidden:
+        tournamentSessionTeam: '@session_team_dispute_hidden'
+        player: '@player_kotsubynsky'

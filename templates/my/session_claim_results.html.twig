@@ -73,7 +73,7 @@
                                         <td class="answer-col">—</td>
                                     {% endfor %}
                                 {% endif %}
-                                <td class="total-col"><strong>{{ team.score ?? '—' }}</strong></td>
+                                <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) : '—' }}</strong></td>
                             </tr>
                         {% endfor %}
                     </tbody>

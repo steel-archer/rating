@@ -304,4 +304,22 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
 
         return $result;
     }
+
+    public function countSubmittedDisputesByTournament(Tournament $tournament): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->join('a.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 's')
+            ->where('s.tournament = :tournament')
+            ->andWhere('a.disputeStatus IN (:statuses)')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('statuses', [
+                DisputeStatus::Submitted->value,
+                DisputeStatus::Accepted->value,
+                DisputeStatus::Rejected->value,
+            ])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

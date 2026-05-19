@@ -27,6 +27,7 @@ final readonly class TournamentDTO
         public ?float $trueDl,
         public int $teamCount = 0,
         public int $sessionCount = 0,
+        public int $disputeCount = 0,
         /** @var array<string, list<OfficialDTO>> role => officials */
         public array $officials = [],
     ) {

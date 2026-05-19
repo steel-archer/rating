@@ -15,7 +15,6 @@
                 <thead>
                     <tr>
                         <th>{{ 'dispute.question_number'|trans }}</th>
-                        <th>{{ 'common.team'|trans }}</th>
                         <th>{{ 'dispute.answer_text'|trans }}</th>
                         <th>{{ 'tournament.my.status'|trans }}</th>
                         <th>{{ 'dispute.comment'|trans }}</th>
@@ -25,7 +24,6 @@
                     {% for dispute in disputes %}
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                             <td>{{ dispute.questionNumber }}</td>
-                            <td>{{ dispute.teamName }}</td>
                             <td>{{ dispute.text }}</td>
                             <td><span class="badge badge-dispute-{{ dispute.status }}">{{ ('dispute.status.' ~ dispute.status)|trans }}</span></td>
                             <td>{{ dispute.comment ?? '—' }}</td>

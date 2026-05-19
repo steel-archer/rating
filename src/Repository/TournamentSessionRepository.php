@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\Response\Venue\VenueTournamentDTO;
+use App\Entity\Player;
 use App\Entity\SessionClaim;
 use App\Enum\SessionClaimStatus;
 use App\Entity\Tournament;
@@ -131,5 +132,18 @@ class TournamentSessionRepository extends ServiceEntityRepository
             ->setParameter('status', SessionClaimStatus::Approved->value)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function isRepresentativeOfTournament(Player $player, Tournament $tournament): bool
+    {
+        return (bool) $this->createQueryBuilder('ts')
+            ->select('1')
+            ->where('ts.tournament = :tournament')
+            ->andWhere('ts.representative = :player')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('player', $player)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }
