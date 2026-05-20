@@ -11,6 +11,7 @@ use App\Entity\Tournament;
 use App\Enum\CacheTag;
 use App\Exception\EntityNotFoundException;
 use App\Mapping\Mapper;
+use App\Repository\AppealRepository;
 use App\Repository\TournamentOfficialRepository;
 use App\Repository\TournamentRepository;
 use App\Repository\TournamentSessionRepository;
@@ -28,6 +29,7 @@ class TournamentService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionRepository $sessionRepository,
         private TournamentSessionTeamAnswerRepository $answerRepository,
+        private AppealRepository $appealRepository,
         private Mapper $mapper,
         private TagAwareCacheInterface $cache,
     ) {
@@ -84,6 +86,7 @@ class TournamentService
             'teamCount' => $this->sessionTeamRepository->countByTournament($tournament),
             'sessionCount' => $this->sessionRepository->countByTournament($tournament),
             'disputeCount' => $this->answerRepository->countSubmittedDisputesByTournament($tournament),
+            'appealCount' => $this->appealRepository->countByTournament($tournament),
         ]);
     }
 }

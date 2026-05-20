@@ -48,7 +48,7 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
     /**
      * @param list<int> $sessionTeamIds
      *
-     * @return list<array{teamId: int, questionNumber: int, isCorrect: bool, disputeStatus: ?string}>
+     * @return list<array{teamId: int, questionNumber: int, isCorrect: bool, disputeStatus: DisputeStatus|null, isQuestionRemoved: bool}>
      */
     public function findBySessionTeamIds(array $sessionTeamIds): array
     {
@@ -62,6 +62,7 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
                 'a.questionNumber',
                 'a.isCorrect',
                 'a.disputeStatus',
+                'a.isQuestionRemoved',
             )
             ->where('a.tournamentSessionTeam IN (:ids)')
             ->setParameter('ids', $sessionTeamIds)

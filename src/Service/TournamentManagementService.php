@@ -112,6 +112,11 @@ class TournamentManagementService
                 ? new DateTimeImmutable($dto->submissionDeadline)->setTime(23, 59, 59)
                 : null,
         );
+        $tournament->setAppealDeadline(
+            $dto->appealDeadline
+                ? new DateTimeImmutable($dto->appealDeadline)->setTime(23, 59, 59)
+                : null,
+        );
         $tournament->setToursCount($dto->toursCount);
         $tournament->setQuestionsPerTour($dto->questionsPerTour);
         $tournament->setDifficulty($dto->difficulty);

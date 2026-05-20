@@ -37,6 +37,9 @@ class TournamentSessionTeamAnswer
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $disputeComment = null;
 
+    #[ORM\Column]
+    private bool $isQuestionRemoved = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -110,6 +113,18 @@ class TournamentSessionTeamAnswer
     public function setDisputeComment(?string $disputeComment): static
     {
         $this->disputeComment = $disputeComment;
+
+        return $this;
+    }
+
+    public function isQuestionRemoved(): bool
+    {
+        return $this->isQuestionRemoved;
+    }
+
+    public function setIsQuestionRemoved(bool $isQuestionRemoved): static
+    {
+        $this->isQuestionRemoved = $isQuestionRemoved;
 
         return $this;
     }

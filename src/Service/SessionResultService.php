@@ -105,14 +105,12 @@ class SessionResultService
             foreach ($teamAnswers as $row) {
                 $qNum = (int) $row['questionNumber'];
                 $isCorrect = $row['isCorrect'] ? 1 : 0;
+                $isRemoved = (bool) $row['isQuestionRemoved'];
+                $disputeStatus = $row['disputeStatus'];
 
-                $rawStatus = $row['disputeStatus'];
-                /** @var DisputeStatus|string|null $rawStatus */
-                $disputeStatus = $rawStatus instanceof DisputeStatus
-                    ? $rawStatus
-                    : ($rawStatus !== null ? DisputeStatus::from($rawStatus) : null);
-
-                if ($disputeStatus !== null && in_array($disputeStatus, $unresolvedStatuses, true)) {
+                if ($isRemoved) {
+                    $answersByQuestion[$qNum] = 'X';
+                } elseif ($disputeStatus !== null && in_array($disputeStatus, $unresolvedStatuses, true)) {
                     $answersByQuestion[$qNum] = '?';
                 } else {
                     $answersByQuestion[$qNum] = $isCorrect;

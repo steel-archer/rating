@@ -63,6 +63,9 @@ class Tournament
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $submissionDeadline = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $appealDeadline = null;
+
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
@@ -204,6 +207,24 @@ class Tournament
     {
         return $this->submissionDeadline !== null
             && $this->submissionDeadline > new DateTimeImmutable();
+    }
+
+    public function getAppealDeadline(): ?DateTimeImmutable
+    {
+        return $this->appealDeadline;
+    }
+
+    public function setAppealDeadline(?DateTimeImmutable $appealDeadline): static
+    {
+        $this->appealDeadline = $appealDeadline;
+
+        return $this;
+    }
+
+    public function isAppealOpen(): bool
+    {
+        return $this->appealDeadline !== null
+            && $this->appealDeadline > new DateTimeImmutable();
     }
 
     public function getToursCount(): ?int

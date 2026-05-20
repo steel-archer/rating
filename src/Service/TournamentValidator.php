@@ -36,6 +36,7 @@ class TournamentValidator
             $registrationDeadline = $dto->registrationDeadline ? new DateTimeImmutable($dto->registrationDeadline) : null;
             $detailsHiddenUntil = $dto->detailsHiddenUntil ? new DateTimeImmutable($dto->detailsHiddenUntil) : null;
             $submissionDeadline = $dto->submissionDeadline ? new DateTimeImmutable($dto->submissionDeadline) : null;
+            $appealDeadline = $dto->appealDeadline ? new DateTimeImmutable($dto->appealDeadline) : null;
         } catch (DateMalformedStringException) {
             return ['tournament.error.invalid_date'];
         }
@@ -56,6 +57,9 @@ class TournamentValidator
         }
         if ($submissionDeadline !== null && $endedAt !== null && $submissionDeadline <= $endedAt) {
             $errors[] = 'tournament.error.submission_before_end';
+        }
+        if ($appealDeadline !== null && $submissionDeadline !== null && $appealDeadline <= $submissionDeadline) {
+            $errors[] = 'tournament.error.appeal_deadline_before_submission';
         }
 
         return $errors;
@@ -111,6 +115,15 @@ class TournamentValidator
             && $tournament->getSubmissionDeadline() <= $tournament->getEndedAt()
         ) {
             $errors[] = 'tournament.error.submission_before_end';
+        }
+
+        if ($tournament->getAppealDeadline() === null) {
+            $errors[] = 'tournament.publish_error.no_appeal_deadline';
+        } elseif (
+            $tournament->getSubmissionDeadline() !== null
+            && $tournament->getAppealDeadline() <= $tournament->getSubmissionDeadline()
+        ) {
+            $errors[] = 'tournament.error.appeal_deadline_before_submission';
         }
 
         if ($tournament->getToursCount() === null) {

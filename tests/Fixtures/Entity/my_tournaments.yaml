@@ -21,6 +21,7 @@ App\Entity\Tournament:
         registrationDeadline: '<(new \DateTimeImmutable("+31 days 12:00:00"))>'
         detailsHiddenUntil: '<(new \DateTimeImmutable("+33 days midnight"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+32 days 23:59:59"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+34 days 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.5
@@ -35,6 +36,7 @@ App\Entity\Tournament:
         registrationDeadline: '<(new \DateTimeImmutable("+61 days 12:00:00"))>'
         detailsHiddenUntil: '<(new \DateTimeImmutable("+63 days midnight"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+62 days 23:59:59"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+64 days 23:59:59"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 4.0

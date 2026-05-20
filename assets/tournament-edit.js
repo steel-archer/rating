@@ -50,6 +50,7 @@ function initTournamentEditForm() {
             registrationDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="registrationDeadline"]')).value || null,
             detailsHiddenUntil: /** @type {HTMLInputElement} */ (form.querySelector('[name="detailsHiddenUntil"]')).value || null,
             submissionDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="submissionDeadline"]')).value || null,
+            appealDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="appealDeadline"]')).value || null,
             toursCount: /** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value
                 ? parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value)
                 : null,

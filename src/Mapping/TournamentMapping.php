@@ -33,6 +33,7 @@ final class TournamentMapping implements MappingInterface
             registrationDeadline: $source->getRegistrationDeadline(),
             detailsHiddenUntil: $source->getDetailsHiddenUntil(),
             submissionDeadline: $source->getSubmissionDeadline(),
+            appealDeadline: $source->getAppealDeadline(),
             toursCount: $source->getToursCount(),
             questionsPerTour: $source->getQuestionsPerTour(),
             difficulty: $source->getDifficulty(),
@@ -40,6 +41,7 @@ final class TournamentMapping implements MappingInterface
             teamCount: $context['teamCount'] ?? 0,
             sessionCount: $context['sessionCount'] ?? 0,
             disputeCount: $context['disputeCount'] ?? 0,
+            appealCount: $context['appealCount'] ?? 0,
             officials: self::groupOfficials($mapper, $context['officials'] ?? []),
         );
     }

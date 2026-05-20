@@ -141,6 +141,11 @@ tr.row-dark { background: #e8e8ed; }
     font-weight: bold;
 }
 
+.results-breakdown .answer-removed {
+    color: #6b7280;
+    font-weight: bold;
+}
+
 .results-breakdown .tour-total-col {
     text-align: center;
     padding: 6px 8px;

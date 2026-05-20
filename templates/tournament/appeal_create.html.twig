@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'appeal.create'|trans }} — {{ tournament.name }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></span><span><a href="{{ path('tournament_appeals', {id: tournament.id}) }}">{{ 'appeal.title'|trans }}</a></span><span>{{ 'appeal.create'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'appeal.create'|trans }}</h1>
+
+    <div class="card">
+        <form id="appeal-create-form" class="tournament-form" data-url="{{ path('tournament_appeal_store', {id: tournament.id}) }}">
+            <div class="form-group">
+                <label for="appeal-question">{{ 'dispute.question_number'|trans }}</label>
+                <select id="appeal-question" name="questionNumber" required>
+                    <option value="">—</option>
+                    {% for i in 1..totalQuestions %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>{{ 'appeal.type_label'|trans }}</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="type" value="remove" checked>
+                        {{ 'appeal.type.remove'|trans }}
+                    </label>
+                    <label>
+                        <input type="radio" name="type" value="accept" id="appeal-type-accept" {{ rejectedDisputeQuestions is empty ? 'disabled' : '' }}>
+                        {{ 'appeal.type.accept'|trans }}
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="appeal-text">{{ 'appeal.text_label'|trans }}</label>
+                <textarea id="appeal-text" name="text" rows="10" maxlength="5000" required></textarea>
+            </div>
+
+            <button type="submit" class="btn">{{ 'appeal.submit'|trans }}</button>
+            <div id="appeal-status" class="form-error" hidden></div>
+        </form>
+    </div>
+
+    <script type="application/json" id="rejected-dispute-questions">{{ rejectedDisputeQuestions|json_encode }}</script>
+{% endblock %}

@@ -21,6 +21,7 @@ final readonly class TournamentDTO
         public ?DateTimeInterface $registrationDeadline,
         public ?DateTimeInterface $detailsHiddenUntil,
         public ?DateTimeInterface $submissionDeadline,
+        public ?DateTimeInterface $appealDeadline,
         public ?int $toursCount,
         public ?int $questionsPerTour,
         public ?float $difficulty,
@@ -28,6 +29,7 @@ final readonly class TournamentDTO
         public int $teamCount = 0,
         public int $sessionCount = 0,
         public int $disputeCount = 0,
+        public int $appealCount = 0,
         /** @var array<string, list<OfficialDTO>> role => officials */
         public array $officials = [],
     ) {

@@ -62,6 +62,8 @@
                                             {% set idx = tour * session.questionsPerTour + q %}
                                             {% if data.answers[idx] == '?' %}
                                                 <td class="answer-col answer-dispute">?</td>
+                                            {% elseif data.answers[idx] == 'X' %}
+                                                <td class="answer-col answer-removed">X</td>
                                             {% else %}
                                                 <td class="answer-col {{ data.answers[idx] ? 'answer-correct' : 'answer-wrong' }}">{{ data.answers[idx] }}</td>
                                             {% endif %}

@@ -100,6 +100,11 @@
                 <small class="hint">{{ 'tournament.my.submission_deadline_hint'|trans }}</small>
             </div>
             <div class="form-group">
+                <label for="appeal_deadline">{{ 'tournament.my.appeal_deadline'|trans }}</label>
+                <input type="date" id="appeal_deadline" name="appealDeadline" value="{{ tournament.appealDeadline ? tournament.appealDeadline|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
+                <small class="hint">{{ 'tournament.my.appeal_deadline_hint'|trans }}</small>
+            </div>
+            <div class="form-group">
                 <label for="tours_count">{{ 'tournament.tours_count'|trans }}</label>
                 <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}" {{ readonly ? 'disabled' : '' }}>
             </div>

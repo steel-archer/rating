@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'appeal.jury_title'|trans }} — {{ tournament.name }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_appeals') }}">{{ 'appeal.jury_title'|trans }}</a></span><span>{{ tournament.name }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'appeal.jury_title'|trans }}: {{ tournament.name }}</h1>
+
+    {% if appeals is not empty %}
+        <div class="card card-wide">
+            <table aria-label="{{ 'appeal.jury_title'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'appeal.type_label'|trans }}</th>
+                        <th>{{ 'dispute.question_number'|trans }}</th>
+                        <th>{{ 'appeal.text_label'|trans }}</th>
+                        <th>{{ 'tournament.my.status'|trans }}</th>
+                        <th>{{ 'appeal.verdict'|trans }}</th>
+                        <th>{{ 'tournament.my.actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appeal in appeals %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}" data-appeal-id="{{ appeal.id }}">
+                            <td>{{ ('appeal.type.' ~ appeal.type)|trans }}</td>
+                            <td>{{ appeal.questionNumber }}</td>
+                            <td class="appeal-text">{{ appeal.text|nl2br }}</td>
+                            <td><span class="badge badge-appeal-{{ appeal.status }}">{{ ('appeal.status.' ~ appeal.status)|trans }}</span></td>
+                            <td class="appeal-verdict-cell">{{ appeal.verdict ? appeal.verdict|nl2br : '—' }}</td>
+                            <td>
+                                {% if appeal.status == 'pending' %}
+                                    <div class="appeal-actions">
+                                        <textarea class="appeal-verdict-input" placeholder="{{ 'appeal.verdict'|trans }}" maxlength="5000"></textarea>
+                                        <button type="button" class="btn btn-small btn-success" data-appeal-resolve="{{ path('my_appeal_resolve', {id: appeal.id}) }}" data-action="accept">{{ 'dispute.accept'|trans }}</button>
+                                        <button type="button" class="btn btn-small btn-reject" data-appeal-resolve="{{ path('my_appeal_resolve', {id: appeal.id}) }}" data-action="reject">{{ 'dispute.reject'|trans }}</button>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>{{ 'appeal.jury_empty'|trans }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

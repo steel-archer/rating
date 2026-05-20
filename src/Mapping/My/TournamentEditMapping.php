@@ -28,6 +28,7 @@ final class TournamentEditMapping implements MappingInterface
             registrationDeadline: $source->getRegistrationDeadline(),
             detailsHiddenUntil: $source->getDetailsHiddenUntil(),
             submissionDeadline: $source->getSubmissionDeadline(),
+            appealDeadline: $source->getAppealDeadline(),
             toursCount: $source->getToursCount(),
             questionsPerTour: $source->getQuestionsPerTour(),
             difficulty: $source->getDifficulty(),

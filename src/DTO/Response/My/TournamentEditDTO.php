@@ -18,6 +18,7 @@ final readonly class TournamentEditDTO
         public ?DateTimeImmutable $registrationDeadline,
         public ?DateTimeImmutable $detailsHiddenUntil,
         public ?DateTimeImmutable $submissionDeadline,
+        public ?DateTimeImmutable $appealDeadline,
         public ?int $toursCount,
         public ?int $questionsPerTour,
         public ?float $difficulty,

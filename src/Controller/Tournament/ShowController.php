@@ -56,6 +56,7 @@ class ShowController extends AbstractController
             'tournament' => $tournament,
             'moderationClaim' => $claim !== null ? $mapper->map($claim, ModerationClaimDTO::class) : null,
             'canViewDisputes' => $canViewDisputes,
+            'canViewAppeals' => $canViewDisputes,
         ]);
     }
 }

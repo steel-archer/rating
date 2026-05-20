@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'appeal.title'|trans }} — {{ tournament.name }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></span><span>{{ 'appeal.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'appeal.title'|trans }}: {{ tournament.name }}</h1>
+
+    {% if canSubmitAppeal %}
+        <p><a href="{{ path('tournament_appeal_create', {id: tournament.id}) }}" class="btn">{{ 'appeal.create'|trans }}</a></p>
+    {% endif %}
+
+    {% if appeals is not empty %}
+        <div class="card card-wide">
+            <table aria-label="{{ 'appeal.title'|trans }}">
+                <thead>
+                    <tr>
+                        <th class="appeal-col-type">{{ 'appeal.type_label'|trans }}</th>
+                        <th class="appeal-col-question">{{ 'dispute.question_number'|trans }}</th>
+                        <th class="appeal-col-status">{{ 'tournament.my.status'|trans }}</th>
+                        <th class="appeal-col-text">{{ 'appeal.text_label'|trans }}</th>
+                        <th class="appeal-col-verdict">{{ 'appeal.verdict'|trans }}</th>
+                        <th class="appeal-col-toggle">
+                            <button type="button" class="btn-toggle-text" data-toggle-all-appeals>{{ 'squad.show_all'|trans }}</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appeal in appeals %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                            <td>{{ ('appeal.type.' ~ appeal.type)|trans }}</td>
+                            <td>{{ appeal.questionNumber }}</td>
+                            <td><span class="badge badge-appeal-{{ appeal.status }}">{{ ('appeal.status.' ~ appeal.status)|trans }}</span></td>
+                            <td>
+                                <div class="appeal-details" hidden>{{ appeal.text|nl2br }}</div>
+                            </td>
+                            <td>
+                                <div class="appeal-details" hidden>{{ appeal.verdict ? appeal.verdict|nl2br : '—' }}</div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn-toggle-text" data-toggle-appeal>{{ 'squad.show'|trans }}</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>{{ 'appeal.empty'|trans }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

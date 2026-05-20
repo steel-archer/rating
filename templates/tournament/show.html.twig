@@ -51,6 +51,10 @@
                     <dt>{{ 'tournament.submission_deadline'|trans }}</dt>
                     <dd>{{ tournament.submissionDeadline|date('d.m.Y H:i') }}</dd>
                 {% endif %}
+                {% if tournament.appealDeadline %}
+                    <dt>{{ 'tournament.appeal_deadline'|trans }}</dt>
+                    <dd>{{ tournament.appealDeadline|date('d.m.Y H:i') }}</dd>
+                {% endif %}
                 {% if tournament.sessionCount %}
                     <dt>{{ 'tournament.sessions'|trans }}</dt>
                     <dd><a href="{{ path('tournament_sessions', {id: tournament.id}) }}">{{ tournament.sessionCount }}</a></dd>
@@ -61,6 +65,10 @@
                 {% if canViewDisputes %}
                     <dt>{{ 'dispute.title'|trans }}</dt>
                     <dd><a href="{{ path('tournament_disputes', {id: tournament.id}) }}">{{ tournament.disputeCount }}</a></dd>
+                {% endif %}
+                {% if canViewAppeals %}
+                    <dt>{{ 'appeal.title'|trans }}</dt>
+                    <dd><a href="{{ path('tournament_appeals', {id: tournament.id}) }}">{{ tournament.appealCount }}</a></dd>
                 {% endif %}
             </dl>
         </div>

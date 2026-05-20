@@ -39,6 +39,9 @@ final readonly class EditRequestDTO
         #[Assert\Date]
         public ?string $submissionDeadline = null,
 
+        #[Assert\Date]
+        public ?string $appealDeadline = null,
+
         #[Assert\Positive]
         public ?int $toursCount = null,
 

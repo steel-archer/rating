@@ -90,6 +90,26 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
     }
 
     /**
+     * Returns the session team ID for the player in the given tournament, or null if not found.
+     */
+    public function findSessionTeamIdByPlayerAndTournament(Player $player, Tournament $tournament): ?int
+    {
+        $row = $this->createQueryBuilder('stp')
+            ->select('IDENTITY(stp.tournamentSessionTeam) AS sessionTeamId')
+            ->join('stp.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 'ts')
+            ->where('ts.tournament = :tournament')
+            ->andWhere('stp.player = :player')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('player', $player)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $row !== null ? (int) $row['sessionTeamId'] : null;
+    }
+
+    /**
      * @return list<Player>
      */
     public function findPlayersByTeamAndSeason(Team $team, Season $season): array

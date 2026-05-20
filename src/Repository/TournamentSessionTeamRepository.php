@@ -26,6 +26,21 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
     /**
      * @return list<TournamentSessionTeam>
      */
+    public function findByTournament(Tournament $tournament): array
+    {
+        return $this->createQueryBuilder('st')
+            ->join('st.tournamentSession', 'ts')
+            ->leftJoin('st.answers', 'a')
+            ->addSelect('a')
+            ->where('ts.tournament = :t')
+            ->setParameter('t', $tournament)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<TournamentSessionTeam>
+     */
     public function findBySessionWithTeamAndTown(TournamentSession $session): array
     {
         return $this->createQueryBuilder('st')
