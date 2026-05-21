@@ -56,10 +56,6 @@ class AppealService
         AppealType $type,
         string $text,
     ): void {
-        if ($text === '') {
-            throw new LogicException('appeal.error.empty_text');
-        }
-
         $tournament = $answer->getTournamentSessionTeam()
             ->getTournamentSession()
             ->getTournament();
@@ -73,10 +69,8 @@ class AppealService
             throw new LogicException('appeal.error.already_exists');
         }
 
-        if ($type === AppealType::Accept) {
-            if ($answer->getDisputeStatus() !== DisputeStatus::Rejected) {
-                throw new LogicException('appeal.error.no_rejected_dispute');
-            }
+        if ($type === AppealType::Accept && $answer->getDisputeStatus() !== DisputeStatus::Rejected) {
+            throw new LogicException('appeal.error.no_rejected_dispute');
         }
 
         $appeal = new Appeal();
@@ -104,19 +98,24 @@ class AppealService
         $appeal->setVerdict($verdict);
 
         $answer = $appeal->getTournamentSessionTeamAnswer();
-        $tournament = $answer->getTournamentSessionTeam()
+        $tournamentId = $answer->getTournamentSessionTeam()
             ->getTournamentSession()
-            ->getTournament();
+            ->getTournament()
+            ->getId();
 
         if ($appeal->getType() === AppealType::Accept) {
             $answer->setIsCorrect(true);
-            $answer->getTournamentSessionTeam()->recalculateScore();
+            $this->em->flush();
+            $sessionTeamId = $answer->getTournamentSessionTeam()->getId();
+            $this->recalculateScore($sessionTeamId);
         } else {
-            $this->removeQuestion($tournament, $answer->getQuestionNumber());
+            $this->em->flush();
+            $this->sessionTeamRepository->markQuestionRemoved($tournamentId, $answer->getQuestionNumber());
+            $this->recalculateAllScores($tournamentId);
         }
 
-        $this->em->flush();
-        $this->cacheInvalidator->invalidateTournamentWithParticipants($tournament);
+        $freshTournament = $this->em->getRepository(Tournament::class)->find($tournamentId);
+        $this->cacheInvalidator->invalidateTournamentWithParticipants($freshTournament);
     }
 
     /**
@@ -134,18 +133,26 @@ class AppealService
         $this->em->flush();
     }
 
-    private function removeQuestion(Tournament $tournament, int $questionNumber): void
+    private function recalculateScore(int $sessionTeamId): void
     {
-        $sessionTeams = $this->sessionTeamRepository->findByTournament($tournament);
+        $this->em->clear();
 
+        $sessionTeam = $this->sessionTeamRepository->findWithAnswers($sessionTeamId);
+        $sessionTeam->recalculateScore();
+
+        $this->em->flush();
+    }
+
+    private function recalculateAllScores(int $tournamentId): void
+    {
+        $this->em->clear();
+
+        $tournament = $this->em->getRepository(Tournament::class)->find($tournamentId);
+        $sessionTeams = $this->sessionTeamRepository->findByTournament($tournament);
         foreach ($sessionTeams as $sessionTeam) {
-            foreach ($sessionTeam->getAnswers() as $answer) {
-                if ($answer->getQuestionNumber() === $questionNumber) {
-                    $answer->setIsQuestionRemoved(true);
-                    $answer->setIsCorrect(false);
-                }
-            }
             $sessionTeam->recalculateScore();
         }
+
+        $this->em->flush();
     }
 }

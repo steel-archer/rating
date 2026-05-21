@@ -54,7 +54,6 @@ export default {
     "appeal.error.already_exists": "Апеляція на це запитання вже існує",
     "appeal.error.already_resolved": "Апеляцію вже розглянуто",
     "appeal.error.deadline_passed": "Термін подачі апеляцій минув",
-    "appeal.error.empty_text": "Текст апеляції не може бути порожнім",
     "appeal.error.no_rejected_dispute": "Для апеляції на зарахування потрібна відхилена спірна на це запитання",
     "appeal.jury_empty": "Немає апеляцій на розгляд",
     "appeal.jury_title": "Апеляції",

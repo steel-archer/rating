@@ -1,0 +1,114 @@
+App\Entity\User:
+    user_appeal_player:
+        email: 'appeal_player@example.com'
+        googleId: 'google_appeal_player'
+        roles: []
+        player: '@player_shevchenko'
+    user_appeal_jury:
+        email: 'appeal_jury@example.com'
+        googleId: 'google_appeal_jury'
+        roles: []
+        player: '@player_franko'
+    user_appeal_other:
+        email: 'appeal_other@example.com'
+        googleId: 'google_appeal_other'
+        roles: []
+        player: '@player_lesya'
+
+App\Entity\Tournament:
+    tournament_appeal:
+        name: 'Турнір з апеляціями'
+        status: '<(App\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
+        endedAt: '<(new \DateTimeImmutable("-20 days"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("-10 days"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+30 days"))>'
+        toursCount: 1
+        questionsPerTour: 3
+
+App\Entity\TournamentOfficial:
+    official_appeal_jury:
+        tournament: '@tournament_appeal'
+        player: '@player_franko'
+        role: '<(App\Enum\TournamentOfficialRole::AppealJury)>'
+    official_appeal_organizer:
+        tournament: '@tournament_appeal'
+        player: '@player_lesya'
+        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Entity\TournamentSession:
+    session_appeal:
+        tournament: '@tournament_appeal'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-25 days"))>'
+        estimatedTeams: 2
+
+App\Entity\SessionClaim:
+    claim_appeal:
+        session: '@session_appeal'
+        player: '@player_shevchenko'
+        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-35 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-34 days"))>'
+
+App\Entity\TournamentSessionTeam:
+    session_team_appeal_alpha:
+        tournamentSession: '@session_appeal'
+        team: '@team_alpha'
+        score: 2
+        resultsSubmitted: true
+    session_team_appeal_beta:
+        tournamentSession: '@session_appeal'
+        team: '@team_beta'
+        score: 1
+        resultsSubmitted: true
+
+App\Entity\TournamentSessionTeamPlayer:
+    session_team_player_appeal_shevchenko:
+        tournamentSessionTeam: '@session_team_appeal_alpha'
+        player: '@player_shevchenko'
+        isCaptain: true
+        isLegionary: false
+    session_team_player_appeal_lesya:
+        tournamentSessionTeam: '@session_team_appeal_beta'
+        player: '@player_lesya'
+        isCaptain: true
+        isLegionary: false
+
+App\Entity\TournamentSessionTeamAnswer:
+    answer_appeal_alpha_1:
+        tournamentSessionTeam: '@session_team_appeal_alpha'
+        questionNumber: 1
+        isCorrect: true
+    answer_appeal_alpha_2:
+        tournamentSessionTeam: '@session_team_appeal_alpha'
+        questionNumber: 2
+        isCorrect: false
+        disputeText: 'спірна відповідь'
+        disputeStatus: '<(App\Enum\DisputeStatus::Rejected)>'
+        disputeComment: 'відхилено'
+    answer_appeal_alpha_3:
+        tournamentSessionTeam: '@session_team_appeal_alpha'
+        questionNumber: 3
+        isCorrect: false
+    answer_appeal_beta_1:
+        tournamentSessionTeam: '@session_team_appeal_beta'
+        questionNumber: 1
+        isCorrect: true
+    answer_appeal_beta_2:
+        tournamentSessionTeam: '@session_team_appeal_beta'
+        questionNumber: 2
+        isCorrect: false
+    answer_appeal_beta_3:
+        tournamentSessionTeam: '@session_team_appeal_beta'
+        questionNumber: 3
+        isCorrect: false
+
+App\Entity\Appeal:
+    appeal_existing:
+        tournamentSessionTeamAnswer: '@answer_appeal_alpha_3'
+        type: '<(App\Enum\AppealType::Remove)>'
+        text: 'Запитання некоректне'
+        status: '<(App\Enum\AppealStatus::Pending)>'

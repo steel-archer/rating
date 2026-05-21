@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Enum\TournamentStatus;
 use App\Mapping\Mapper;
 use App\Repository\AppealRepository;
+use App\Repository\TournamentSessionTeamPlayerRepository;
 use App\Service\TournamentDisputeAccessService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,7 @@ class ListController extends AbstractController
     public function __invoke(
         #[MapEntity(expr: 'repository.findWithSeason(id)')] Tournament $tournament,
         AppealRepository $appealRepository,
+        TournamentSessionTeamPlayerRepository $playerRepository,
         TournamentDisputeAccessService $accessService,
         Mapper $mapper,
     ): Response {
@@ -40,10 +42,14 @@ class ListController extends AbstractController
 
         $appeals = $appealRepository->findByTournament($tournament);
 
+        $canSubmitAppeal = $tournament->isAppealOpen()
+            && $player !== null
+            && $playerRepository->findSessionTeamIdByPlayerAndTournament($player, $tournament) !== null;
+
         return $this->render('tournament/appeals.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
             'appeals' => $mapper->mapMultiple($appeals, AppealDTO::class),
-            'canSubmitAppeal' => $tournament->isAppealOpen(),
+            'canSubmitAppeal' => $canSubmitAppeal,
         ]);
     }
 }

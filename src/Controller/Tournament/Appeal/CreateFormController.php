@@ -62,7 +62,6 @@ class CreateFormController extends AbstractController
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
             'totalQuestions' => $totalQuestions,
             'rejectedDisputeQuestions' => $rejectedDisputeQuestions,
-            'sessionTeamId' => $sessionTeamId,
         ]);
     }
 }

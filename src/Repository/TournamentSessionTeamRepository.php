@@ -8,6 +8,7 @@ use App\Entity\Team;
 use App\Entity\Tournament;
 use App\Entity\TournamentSession;
 use App\Entity\TournamentSessionTeam;
+use App\Entity\TournamentSessionTeamAnswer;
 use App\Helper\FractionalRanking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception as DbalException;
@@ -36,6 +37,37 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
             ->setParameter('t', $tournament)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findWithAnswers(int $sessionTeamId): TournamentSessionTeam
+    {
+        return $this->createQueryBuilder('st')
+            ->leftJoin('st.answers', 'a')
+            ->addSelect('a')
+            ->where('st.id = :id')
+            ->setParameter('id', $sessionTeamId)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    public function markQuestionRemoved(int $tournamentId, int $questionNumber): void
+    {
+        $this->getEntityManager()->createQueryBuilder()
+            ->update(TournamentSessionTeamAnswer::class, 'a')
+            ->set('a.isQuestionRemoved', ':removed')
+            ->set('a.isCorrect', ':incorrect')
+            ->where('a.tournamentSessionTeam IN (
+                SELECT st.id FROM App\Entity\TournamentSessionTeam st
+                JOIN st.tournamentSession ts
+                WHERE ts.tournament = :tournamentId
+            )')
+            ->andWhere('a.questionNumber = :questionNumber')
+            ->setParameter('removed', true)
+            ->setParameter('incorrect', false)
+            ->setParameter('tournamentId', $tournamentId)
+            ->setParameter('questionNumber', $questionNumber)
+            ->getQuery()
+            ->execute();
     }
 
     /**

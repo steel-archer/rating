@@ -28,22 +28,6 @@ class TournamentSessionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws NonUniqueResultException
-     */
-    public function findWithRepresentativeUser(int $id): ?TournamentSession
-    {
-        return $this->createQueryBuilder('ts')
-            ->join('ts.representative', 'rep')
-            ->leftJoin('rep.user', 'u')
-            ->join('ts.tournament', 't')
-            ->addSelect('rep', 'u', 't')
-            ->where('ts.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
-    /**
      * @return list<TournamentSession>
      */
     public function findByTournamentPaginated(Tournament $tournament, int $page): array
