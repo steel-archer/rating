@@ -1,0 +1,39 @@
+App\Entity\Season:
+    season_previous:
+        name: '2024-2025'
+        startedAt: '<(new \DateTimeImmutable("2024-10-01"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-09-30"))>'
+
+App\Entity\User:
+    user_captain:
+        email: 'captain@example.com'
+        googleId: 'google_captain'
+        roles: []
+        player: '@player_shevchenko'
+    user_member:
+        email: 'member@example.com'
+        googleId: 'google_member'
+        roles: []
+        player: '@player_franko'
+    user_outsider:
+        email: 'outsider@example.com'
+        googleId: 'google_outsider'
+        roles: []
+        player: '@player_lesya'
+
+App\Entity\TeamPlayer:
+    tp_captain:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    tp_member:
+        team: '@team_alpha'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: false
+    tp_other_team:
+        team: '@team_beta'
+        player: '@player_kotsubynsky'
+        season: '@season_current'
+        isCaptain: true

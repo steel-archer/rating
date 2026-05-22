@@ -166,6 +166,14 @@ class TeamManagementService
             }
         }
 
+        $existingEntry = $this->teamPlayerRepository->findBy([
+            'player' => $player,
+            'season' => $season,
+        ]);
+        if ($existingEntry !== []) {
+            throw new LogicException('team_management.error.player_in_another_team');
+        }
+
         $teamPlayer = new TeamPlayer();
         $teamPlayer->setTeam($team);
         $teamPlayer->setPlayer($player);
