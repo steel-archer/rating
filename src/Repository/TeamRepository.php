@@ -8,6 +8,7 @@ use App\DTO\Request\TeamListRequestDTO;
 use App\DTO\Response\SuggestItemDTO;
 use App\DTO\Response\Team\TeamListItemDTO;
 use App\Entity\Team;
+use App\Entity\Town;
 use App\Helper\LikeEscape;
 use App\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -36,6 +37,21 @@ class TeamRepository extends ServiceEntityRepository
             ->addSelect('town')
             ->where('t.id = :id')
             ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findByNameAndTown(string $name, Town $town): ?Team
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.name = :name')
+            ->andWhere('t.town = :town')
+            ->setParameter('name', $name)
+            ->setParameter('town', $town)
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }

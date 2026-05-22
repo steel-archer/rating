@@ -21,6 +21,11 @@ enum CacheTag: string
         return 'player_' . $id;
     }
 
+    public static function playerSquad(int $id): string
+    {
+        return 'player_squad_' . $id;
+    }
+
     public static function team(int $id): string
     {
         return 'team_' . $id;

@@ -44,4 +44,18 @@ class SeasonRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findPrevious(Season $current): ?Season
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.endedAt < :start')
+            ->setParameter('start', $current->getStartedAt())
+            ->orderBy('s.startedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

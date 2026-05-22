@@ -187,6 +187,26 @@ class PlayerRepository extends ServiceEntityRepository
         return $player?->getUser();
     }
 
+    /**
+     * @param list<int> $ids
+     * @return list<Player>
+     */
+    public function findByIdsWithUser(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.user', 'u')
+            ->addSelect('u')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->orderBy('p.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     private function buildFilteredQuery(PlayerListRequestDTO $requestDto): QueryBuilder
     {
         $qb = $this->createQueryBuilder('p')

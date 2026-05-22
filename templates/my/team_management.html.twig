@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'team_management.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'team_management.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    {% if team is null %}
+        <h1>{{ 'team_management.title'|trans }}</h1>
+        <p class="empty-state">{{ 'team_management.not_in_team'|trans }}</p>
+    {% else %}
+        <h1>
+            {{ 'team_management.title'|trans }}:
+            <a href="{{ path('team_show', {id: team.teamId}) }}">{{ team.teamName }} ({{ team.townName }})</a>,
+            {{ team.seasonName }}
+        </h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="flash flash-success">{{ message|trans }}</div>
+        {% endfor %}
+
+        {% if team.isCaptain %}
+            <div class="card">
+                <h2>{{ 'team_management.edit_team'|trans }}</h2>
+                <form id="team-update-form" class="tournament-form" data-url="{{ path('my_team_update') }}" data-initial-town-id="{{ team.townId }}">
+                    <div class="form-group">
+                        <label for="team-name">{{ 'team_management.team_name'|trans }}</label>
+                        <input type="text" id="team-name" name="name" value="{{ team.teamName }}" maxlength="255" required>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ 'team_management.team_town'|trans }}</label>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                            <input type="text" data-suggest-input value="{{ team.townName }}">
+                            <input type="hidden" data-suggest-hidden id="team-town-id">
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">{{ 'common.save'|trans }}</button>
+                    <span id="team-update-status" class="save-status" hidden></span>
+                </form>
+            </div>
+        {% endif %}
+
+        <div class="card">
+            <h2>{{ 'team_management.roster'|trans }}</h2>
+            {% if team.isCaptain %}
+                <p class="meta" style="margin-bottom: 20px;">{{ 'team_management.roster_hint'|trans }}</p>
+            {% endif %}
+
+            {% if team.players is not empty %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ 'player.full_name'|trans }}</th>
+                            <th>{{ 'squad.captain'|trans }}</th>
+                            {% if team.isCaptain %}
+                                <th></th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in team.players %}
+                            <tr>
+                                <td>
+                                    {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
+                                </td>
+                                <td>
+                                    {% if player.isCaptain %}
+                                        <span class="badge badge-published">{{ 'squad.captain'|trans }}</span>
+                                    {% elseif team.isCaptain %}
+                                        <button type="button" class="btn btn-small btn-suggestion" data-set-captain="{{ player.playerId }}">{{ 'team_management.make_captain'|trans }}</button>
+                                    {% endif %}
+                                </td>
+                                {% if team.isCaptain %}
+                                    <td>
+                                        {% if not player.isCaptain %}
+                                            <button type="button" class="btn-remove" data-remove-player="{{ player.playerId }}" title="{{ 'team_management.remove_player'|trans }}">×</button>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">{{ 'team_management.no_players'|trans }}</p>
+            {% endif %}
+
+            {% if team.isCaptain %}
+                <form id="add-player-form" class="tournament-form" style="margin-top: 24px;">
+                    <div class="form-group">
+                        <label>{{ 'team_management.add_player'|trans }}</label>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                            <input type="text" data-suggest-input id="add-player-input" placeholder="{{ 'team_management.add_player_hint'|trans }}">
+                            <input type="hidden" data-suggest-hidden id="add-player-id">
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    </div>
+                    <button type="button" id="add-player-btn" class="btn btn-primary">{{ 'squad.add_player'|trans }}</button>
+                    <span id="roster-status" class="save-status" hidden></span>
+                </form>
+            {% endif %}
+        </div>
+
+        {% if team.isCaptain and team.seasonPlayers is not empty %}
+            <div class="card">
+                <h2>{{ 'team_management.season_players'|trans }}</h2>
+                <p class="meta" style="margin-bottom: 12px;">{{ 'team_management.season_players_hint'|trans }}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ 'player.full_name'|trans }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in team.seasonPlayers %}
+                            <tr>
+                                <td>
+                                    {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-small btn-suggestion" data-add-player-quick="{{ player.playerId }}">{{ 'team_management.add_to_roster'|trans }}</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if team.isCaptain and team.previousSeasonPlayers is not empty %}
+            <div class="card">
+                <h2>{{ 'team_management.previous_season_players'|trans }}</h2>
+                <p class="meta" style="margin-bottom: 12px;">{{ 'team_management.previous_season_players_hint'|trans }}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ 'player.full_name'|trans }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in team.previousSeasonPlayers %}
+                            <tr>
+                                <td>
+                                    {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-small btn-suggestion" data-add-player-quick="{{ player.playerId }}">{{ 'team_management.add_to_roster'|trans }}</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if not team.isCaptain %}
+            <div class="card">
+                <h2>{{ 'team_management.leave_team'|trans }}</h2>
+                <p class="meta" style="margin-bottom: 12px;">{{ 'team_management.leave_team_hint'|trans }}</p>
+                <button type="button" id="leave-team-btn" class="btn btn-reject">{{ 'team_management.leave_team'|trans }}</button>
+                <span id="leave-status" class="save-status" hidden></span>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

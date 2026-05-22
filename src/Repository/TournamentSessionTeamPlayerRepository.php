@@ -142,6 +142,39 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @param list<Season> $seasons
+     * @return array<int, list<int>> seasonId => list of playerIds
+     */
+    public function findPlayerIdsByTeamAndSeasons(Team $team, array $seasons): array
+    {
+        if ($seasons === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('stp')
+            ->select('DISTINCT IDENTITY(stp.player) AS playerId, IDENTITY(t.season) AS seasonId')
+            ->join('stp.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 'ts')
+            ->join('ts.tournament', 't')
+            ->where('st.team = :team')
+            ->andWhere('t.season IN (:seasons)')
+            ->setParameter('team', $team)
+            ->setParameter('seasons', $seasons)
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($seasons as $season) {
+            $result[$season->getId()] = [];
+        }
+        foreach ($rows as $row) {
+            $result[(int) $row['seasonId']][] = (int) $row['playerId'];
+        }
+
+        return $result;
+    }
+
     /** @return list<TournamentSessionTeamPlayer> */
     public function findByPlayerPaginated(Player $player, int $page, int $perPage): array
     {

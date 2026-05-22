@@ -9,6 +9,7 @@ use App\Entity\Season;
 use App\Entity\Team;
 use App\Entity\TeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /** @extends ServiceEntityRepository<TeamPlayer> */
@@ -76,6 +77,24 @@ class TeamPlayerRepository extends ServiceEntityRepository
     /**
      * @return list<TeamPlayer>
      */
+    public function findByTeamAndSeason(Team $team, Season $season): array
+    {
+        return $this->createQueryBuilder('tp')
+            ->join('tp.player', 'player')
+            ->leftJoin('player.user', 'playerUser')
+            ->addSelect('player', 'playerUser')
+            ->where('tp.team = :team')
+            ->andWhere('tp.season = :season')
+            ->setParameter('team', $team)
+            ->setParameter('season', $season)
+            ->orderBy('player.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<TeamPlayer>
+     */
     public function findByTeamWithPlayerAndSeason(Team $team): array
     {
         return $this->createQueryBuilder('tp')
@@ -89,6 +108,25 @@ class TeamPlayerRepository extends ServiceEntityRepository
             ->addOrderBy('player.lastName', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findCaptainEntry(Player $player, Season $season): ?TeamPlayer
+    {
+        return $this->createQueryBuilder('tp')
+            ->join('tp.team', 'team')
+            ->join('team.town', 'town')
+            ->addSelect('team', 'town')
+            ->where('tp.player = :player')
+            ->andWhere('tp.season = :season')
+            ->andWhere('tp.isCaptain = true')
+            ->setParameter('player', $player)
+            ->setParameter('season', $season)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
