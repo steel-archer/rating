@@ -122,8 +122,14 @@ class TournamentDocumentService
 
     public function getFilePath(TournamentDocument $document): string
     {
+        $storedName = $document->getStoredName();
+
+        if (str_contains($storedName, '..') || str_contains($storedName, '/')) {
+            throw new LogicException('tournament.document.error.invalid_name');
+        }
+
         return $this->getDirectory($document->getTournament())
-            . '/' . $document->getStoredName();
+            . '/' . $storedName;
     }
 
     private function getDirectory(Tournament $tournament): string

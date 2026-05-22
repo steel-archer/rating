@@ -7,6 +7,7 @@ RUN apt-get update \
 RUN echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short-open-tag.ini
 RUN echo 'date.timezone = Europe/Kyiv' > /usr/local/etc/php/conf.d/timezone.ini
 RUN echo 'memory_limit = 256M' > /usr/local/etc/php/conf.d/memory-limit.ini
+RUN echo 'expose_php = Off' > /usr/local/etc/php/conf.d/security.ini
 COPY --from=composer:2.9 /usr/bin/composer /usr/bin/composer
 RUN git config --global user.email "dev@rating.local" && git config --global user.name "Rating Dev"
 RUN a2enmod rewrite

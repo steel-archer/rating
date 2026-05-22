@@ -144,7 +144,7 @@ class AddPlayerControllerTest extends WebTestCase
         );
     }
 
-    private static function assertError(KernelBrowser $client, string $expectedError): void
+    protected static function assertError(KernelBrowser $client, string $expectedError): void
     {
         $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         static::assertSame($expectedError, $json['error']);
