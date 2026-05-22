@@ -35,9 +35,9 @@ App\Entity\Tournament:
         name: 'Тестовий турнір'
         status: '<(App\Enum\TournamentStatus::Published)>'
         startedAt: '<(new \DateTimeImmutable("2025-06-01 00:00:00"))>'
-        endedAt: '<(new \DateTimeImmutable("2025-06-30 23:59:59"))>'
-        registrationDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
-        submissionDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-06-30 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 3
         questionsPerTour: 12
 

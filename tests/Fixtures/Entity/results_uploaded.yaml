@@ -10,9 +10,9 @@ App\Entity\Tournament:
         name: 'Турнір із завантаженими результатами'
         status: '<(App\Enum\TournamentStatus::Published)>'
         season: '@season_current'
-        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
-        endedAt: '<(new \DateTimeImmutable("+30 days"))>'
-        submissionDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 2
         questionsPerTour: 3
 

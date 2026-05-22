@@ -9,10 +9,10 @@ App\Entity\Tournament:
     tournament_expired:
         name: 'Турнір з минулими дедлайнами'
         status: '<(App\Enum\TournamentStatus::Published)>'
-        startedAt: '<(new \DateTimeImmutable("-60 days"))>'
-        endedAt: '<(new \DateTimeImmutable("-30 days"))>'
-        registrationDeadline: '<(new \DateTimeImmutable("-7 days 23:59:59"))>'
-        submissionDeadline: '<(new \DateTimeImmutable("-1 day 23:59:59"))>'
+        startedAt: '<(new \DateTimeImmutable("-60 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("-7 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("-1 day 00:00:00"))>'
         toursCount: 3
         questionsPerTour: 12
 

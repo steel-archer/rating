@@ -89,7 +89,7 @@ class TournamentManagementService
         $tournament->setStartedAt($startedAt);
         $tournament->setEndedAt(
             $dto->endedAt
-                ? new DateTimeImmutable($dto->endedAt)->setTime(23, 59, 59)
+                ? new DateTimeImmutable($dto->endedAt)->setTime(0, 0)
                 : null,
         );
         $tournament->setResultsHiddenUntil(
@@ -99,7 +99,7 @@ class TournamentManagementService
         );
         $tournament->setRegistrationDeadline(
             $dto->registrationDeadline
-                ? new DateTimeImmutable($dto->registrationDeadline)->setTime(23, 59, 59)
+                ? new DateTimeImmutable($dto->registrationDeadline)->setTime(0, 0)
                 : null,
         );
         $tournament->setDetailsHiddenUntil(
@@ -109,12 +109,12 @@ class TournamentManagementService
         );
         $tournament->setSubmissionDeadline(
             $dto->submissionDeadline
-                ? new DateTimeImmutable($dto->submissionDeadline)->setTime(23, 59, 59)
+                ? new DateTimeImmutable($dto->submissionDeadline)->setTime(0, 0)
                 : null,
         );
         $tournament->setAppealDeadline(
             $dto->appealDeadline
-                ? new DateTimeImmutable($dto->appealDeadline)->setTime(23, 59, 59)
+                ? new DateTimeImmutable($dto->appealDeadline)->setTime(0, 0)
                 : null,
         );
         $tournament->setToursCount($dto->toursCount);

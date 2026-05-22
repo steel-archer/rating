@@ -25,11 +25,11 @@ App\Entity\Tournament:
         name: 'Турнір з прихованими деталями'
         status: '<(App\Enum\TournamentStatus::Published)>'
         season: '@season_current'
-        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
-        endedAt: '<(new \DateTimeImmutable("-10 days"))>'
-        resultsHiddenUntil: '<(new \DateTimeImmutable("+5 days midnight"))>'
-        detailsHiddenUntil: '<(new \DateTimeImmutable("+10 days midnight"))>'
-        submissionDeadline: '<(new \DateTimeImmutable("+1 year 23:59:59"))>'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+5 days 00:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+10 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 1
         questionsPerTour: 3
 

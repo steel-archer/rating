@@ -43,7 +43,7 @@ class TournamentValidator
 
         $errors = $this->validateDates($startedAt, $endedAt);
 
-        if ($resultsHiddenUntil !== null && $endedAt !== null && $resultsHiddenUntil <= $endedAt) {
+        if ($resultsHiddenUntil !== null && $endedAt !== null && $resultsHiddenUntil < $endedAt) {
             $errors[] = 'tournament.error.results_hidden_before_end';
         }
         if ($registrationDeadline !== null && $startedAt !== null && $registrationDeadline < $startedAt) {
@@ -55,10 +55,10 @@ class TournamentValidator
         if ($detailsHiddenUntil !== null && $resultsHiddenUntil !== null && $detailsHiddenUntil < $resultsHiddenUntil) {
             $errors[] = 'tournament.error.details_hidden_before_results';
         }
-        if ($submissionDeadline !== null && $endedAt !== null && $submissionDeadline <= $endedAt) {
+        if ($submissionDeadline !== null && $endedAt !== null && $submissionDeadline < $endedAt) {
             $errors[] = 'tournament.error.submission_before_end';
         }
-        if ($appealDeadline !== null && $submissionDeadline !== null && $appealDeadline <= $submissionDeadline) {
+        if ($appealDeadline !== null && $submissionDeadline !== null && $appealDeadline < $submissionDeadline) {
             $errors[] = 'tournament.error.appeal_deadline_before_submission';
         }
 
@@ -86,7 +86,7 @@ class TournamentValidator
 
         if ($tournament->getResultsHiddenUntil() === null) {
             $errors[] = 'tournament.publish_error.no_results_hidden_until';
-        } elseif ($tournament->getEndedAt() !== null && $tournament->getResultsHiddenUntil() <= $tournament->getEndedAt()) {
+        } elseif ($tournament->getEndedAt() !== null && $tournament->getResultsHiddenUntil() < $tournament->getEndedAt()) {
             $errors[] = 'tournament.error.results_hidden_before_end';
         }
 
@@ -112,7 +112,7 @@ class TournamentValidator
             $errors[] = 'tournament.publish_error.no_submission_deadline';
         } elseif (
             $tournament->getEndedAt() !== null
-            && $tournament->getSubmissionDeadline() <= $tournament->getEndedAt()
+            && $tournament->getSubmissionDeadline() < $tournament->getEndedAt()
         ) {
             $errors[] = 'tournament.error.submission_before_end';
         }
@@ -121,7 +121,7 @@ class TournamentValidator
             $errors[] = 'tournament.publish_error.no_appeal_deadline';
         } elseif (
             $tournament->getSubmissionDeadline() !== null
-            && $tournament->getAppealDeadline() <= $tournament->getSubmissionDeadline()
+            && $tournament->getAppealDeadline() < $tournament->getSubmissionDeadline()
         ) {
             $errors[] = 'tournament.error.appeal_deadline_before_submission';
         }
@@ -153,13 +153,13 @@ class TournamentValidator
         $errors = [];
         $now = DateTimeImmutable::createFromInterface($this->clock->now());
 
-        if ($startedAt !== null && $startedAt <= $now) {
+        if ($startedAt !== null && $startedAt < $now) {
             $errors[] = 'tournament.error.start_in_past';
         }
-        if ($endedAt !== null && $endedAt <= $now) {
+        if ($endedAt !== null && $endedAt < $now) {
             $errors[] = 'tournament.error.end_in_past';
         }
-        if ($startedAt !== null && $endedAt !== null && $endedAt <= $startedAt) {
+        if ($startedAt !== null && $endedAt !== null && $endedAt < $startedAt) {
             $errors[] = 'tournament.error.end_before_start';
         }
         if ($startedAt !== null && $endedAt !== null) {

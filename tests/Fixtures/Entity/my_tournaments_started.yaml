@@ -11,8 +11,8 @@ App\Entity\Tournament:
         status: '<(App\Enum\TournamentStatus::Published)>'
         createdBy: '@player_franko'
         season: '@season_current'
-        startedAt: '<(new \DateTimeImmutable("-1 day midnight"))>'
-        endedAt: '<(new \DateTimeImmutable("+1 day 23:59:59"))>'
+        startedAt: '<(new \DateTimeImmutable("-1 day 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+1 day 00:00:00"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.0

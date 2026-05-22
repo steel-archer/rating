@@ -3,8 +3,8 @@ App\Entity\Tournament:
         name: 'Турнір з прихованими результатами'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
-        endedAt: '<(new \DateTimeImmutable("2025-03-15 23:59:59"))>'
-        resultsHiddenUntil: '<(new \DateTimeImmutable("+30 days midnight"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15 00:00:00"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
         toursCount: 3
         questionsPerTour: 12
         difficulty: 3.5

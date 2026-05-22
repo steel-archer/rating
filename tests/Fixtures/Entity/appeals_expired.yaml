@@ -10,10 +10,10 @@ App\Entity\Tournament:
         name: 'Турнір з минулим дедлайном'
         status: '<(App\Enum\TournamentStatus::Published)>'
         season: '@season_current'
-        startedAt: '<(new \DateTimeImmutable("-60 days"))>'
-        endedAt: '<(new \DateTimeImmutable("-50 days"))>'
-        submissionDeadline: '<(new \DateTimeImmutable("-40 days"))>'
-        appealDeadline: '<(new \DateTimeImmutable("-30 days"))>'
+        startedAt: '<(new \DateTimeImmutable("-60 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("-50 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("-40 days 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
         toursCount: 1
         questionsPerTour: 3
 

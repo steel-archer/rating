@@ -15,10 +15,10 @@ App\Entity\Tournament:
         name: 'Турнір з апеляцією на зарахування'
         status: '<(App\Enum\TournamentStatus::Published)>'
         season: '@season_current'
-        startedAt: '<(new \DateTimeImmutable("-30 days"))>'
-        endedAt: '<(new \DateTimeImmutable("-20 days"))>'
-        submissionDeadline: '<(new \DateTimeImmutable("-10 days"))>'
-        appealDeadline: '<(new \DateTimeImmutable("+30 days"))>'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("-20 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
         toursCount: 1
         questionsPerTour: 3
 
