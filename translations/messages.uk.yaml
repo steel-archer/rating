@@ -338,6 +338,7 @@ tournament:
     publish: 'Опублікувати'
     publish_requirements: 'Вимоги для публікації'
     readonly_notice: 'Цей турнір вже почався і не може бути відредагований'
+    required_for_publish: "обов'язкове для публікації"
     results_hidden_until: 'Результати приховані до'
     results_hidden_until_hint: 'Результати будуть приховані до 00:00:00 вказаної дати'
     registration_deadline: 'Дедлайн реєстрації'
