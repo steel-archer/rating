@@ -1,4 +1,4 @@
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_spring:
         name: 'Весняний кубок'
         season: '@season_current'
@@ -12,7 +12,7 @@ App\Entity\Tournament:
         questionsPerTour: 12
         difficulty: 3.5
         trueDl: 2.8
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
     tournament_autumn:
         name: 'Осінній бриз'
         season: '@season_current'
@@ -22,19 +22,19 @@ App\Entity\Tournament:
         questionsPerTour: 15
         difficulty: 4.2
         trueDl: 3.1
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_organizer:
         tournament: '@tournament_spring'
         player: '@player_shevchenko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
     official_editor:
         tournament: '@tournament_spring'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_spring_kyiv:
         tournament: '@tournament_spring'
         venue: '@venue_kyiv'
@@ -54,7 +54,7 @@ App\Entity\TournamentSession:
         host: '@player_lesya'
         playedAt: '<(new \DateTimeImmutable("2024-10-10 19:00"))>'
 
-App\Entity\TeamPlayer:
+App\Classic\Entity\TeamPlayer:
     team_player_alpha_shevchenko:
         team: '@team_alpha'
         player: '@player_shevchenko'
@@ -71,7 +71,7 @@ App\Entity\TeamPlayer:
         season: '@season_current'
         isCaptain: true
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_spring_alpha:
         tournamentSession: '@session_spring_kyiv'
         team: '@team_alpha'
@@ -94,7 +94,7 @@ App\Entity\TournamentSessionTeam:
         score: 40
         resultsSubmitted: true
 
-App\Entity\TournamentSessionTeamAnswer:
+App\Classic\Entity\TournamentSessionTeamAnswer:
     answer_spring_alpha_{1..25}:
         tournamentSessionTeam: '@session_team_spring_alpha'
         questionNumber: '<current()>'
@@ -128,7 +128,7 @@ App\Entity\TournamentSessionTeamAnswer:
         questionNumber: '<($current + 40)>'
         isCorrect: false
 
-App\Entity\TournamentSessionTeamPlayer:
+App\Classic\Entity\TournamentSessionTeamPlayer:
     stp_spring_alpha_shevchenko:
         tournamentSessionTeam: '@session_team_spring_alpha'
         player: '@player_shevchenko'
@@ -146,22 +146,22 @@ App\Entity\TournamentSessionTeamPlayer:
         player: '@player_shevchenko'
         isLegionary: true
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     session_claim_spring_kyiv:
         session: '@session_spring_kyiv'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'
     session_claim_spring_lviv:
         session: '@session_spring_lviv'
         player: '@player_franko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'
     session_claim_autumn_kyiv:
         session: '@session_autumn_kyiv'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2024-10-05"))>'
         resolvedAt: '<(new \DateTimeImmutable("2024-10-06"))>'

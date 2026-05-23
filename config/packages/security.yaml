@@ -5,7 +5,7 @@ security:
     providers:
         app_user_provider:
             entity:
-                class: App\Entity\User
+                class: App\Common\Entity\User
                 property: email
 
     firewalls:
@@ -15,10 +15,10 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            entry_point: App\Security\GoogleAuthenticator
+            entry_point: App\Common\Security\GoogleAuthenticator
             custom_authenticators:
-                - App\Security\GoogleAuthenticator
-            access_denied_handler: App\Security\AccessDeniedHandler
+                - App\Common\Security\GoogleAuthenticator
+            access_denied_handler: App\Common\Security\AccessDeniedHandler
             login_throttling:
                 max_attempts: 5
                 interval: '1 minute'

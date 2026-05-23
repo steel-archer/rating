@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\DataFixtures;
 
-use App\Entity\Player;
-use App\Entity\Season;
-use App\Entity\Team;
-use App\Entity\TeamPlayer;
-use App\Entity\Town;
+use App\Common\Entity\Player;
+use App\Common\Entity\Season;
+use App\Classic\Entity\Team;
+use App\Classic\Entity\TeamPlayer;
+use App\Common\Entity\Town;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

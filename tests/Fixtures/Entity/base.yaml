@@ -1,8 +1,8 @@
-App\Entity\Country:
+App\Common\Entity\Country:
     country_ukraine:
         name: 'Україна'
 
-App\Entity\Town:
+App\Common\Entity\Town:
     town_kyiv:
         name: 'Київ'
         country: '@country_ukraine'
@@ -10,13 +10,13 @@ App\Entity\Town:
         name: 'Львів'
         country: '@country_ukraine'
 
-App\Entity\Season:
+App\Common\Entity\Season:
     season_current:
         name: '2025-2026'
         startedAt: '<(new \DateTimeImmutable("2025-10-01"))>'
         endedAt: '<(new \DateTimeImmutable("2026-09-30"))>'
 
-App\Entity\Player:
+App\Common\Entity\Player:
     player_shevchenko:
         lastName: 'Шевченко'
         firstName: 'Тарас'
@@ -38,7 +38,7 @@ App\Entity\Player:
         patronymic: 'Михайлович'
         town: '@town_kyiv'
 
-App\Entity\Team:
+App\Classic\Entity\Team:
     team_alpha:
         name: 'Альфа'
         town: '@town_kyiv'
@@ -49,7 +49,7 @@ App\Entity\Team:
         name: 'Гамма'
         town: '@town_kyiv'
 
-App\Entity\Venue:
+App\Common\Entity\Venue:
     venue_kyiv:
         name: 'Квіз-бар Київ'
         town: '@town_kyiv'
@@ -61,7 +61,7 @@ App\Entity\Venue:
         isApproved: true
         createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
 
-App\Entity\VenueRepresentative:
+App\Common\Entity\VenueRepresentative:
     venue_rep_kyiv:
         venue: '@venue_kyiv'
         player: '@player_shevchenko'

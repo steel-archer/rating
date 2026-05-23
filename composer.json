@@ -111,6 +111,7 @@
         "doctrine/doctrine-fixtures-bundle": "^4.3.1",
         "fakerphp/faker": "^1.24.1",
         "nelmio/alice": "^3.17",
+        "phpat/phpat": "^0.12.4",
         "phpstan/extension-installer": "^1.4.3",
         "phpstan/phpstan": "^2.1.55",
         "phpstan/phpstan-doctrine": "^2.0.22",

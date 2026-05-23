@@ -1,11 +1,11 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_franko_owner:
         email: 'franko_owner@example.com'
         googleId: 'google_franko_owner'
         roles: []
         player: '@player_franko'
 
-App\Entity\PlayerClaim:
+App\Common\Entity\PlayerClaim:
     player_claim_already_taken:
         user: '@user_regular'
         player: '@player_franko'

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataFixtures;
 
-use App\Entity\Town;
+use App\Common\Entity\Town;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;

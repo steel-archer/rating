@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_results_rep:
         email: 'results_rep@example.com'
         googleId: 'google_results_rep'
@@ -10,10 +10,10 @@ App\Entity\User:
         roles: []
         player: '@player_lesya'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_results:
         name: 'Турнір для результатів'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
@@ -21,7 +21,7 @@ App\Entity\Tournament:
         toursCount: 2
         questionsPerTour: 3
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_results:
         tournament: '@tournament_results'
         venue: '@venue_kyiv'
@@ -29,15 +29,15 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("-1 day"))>'
         estimatedTeams: 2
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_results:
         session: '@session_results'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_alpha_results:
         tournamentSession: '@session_results'
         team: '@team_alpha'

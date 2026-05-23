@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_squad_rep:
         email: 'squad_rep@example.com'
         googleId: 'google_squad_rep'
@@ -10,10 +10,10 @@ App\Entity\User:
         roles: []
         player: '@player_lesya'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_squad:
         name: 'Турнір для складів'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
@@ -21,7 +21,7 @@ App\Entity\Tournament:
         toursCount: 3
         questionsPerTour: 12
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_squad_approved:
         tournament: '@tournament_squad'
         venue: '@venue_kyiv'
@@ -35,21 +35,21 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("+7 days"))>'
         estimatedTeams: 5
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_squad_approved:
         session: '@session_squad_approved'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
     claim_squad_future:
         session: '@session_squad_future'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
 
-App\Entity\TeamPlayer:
+App\Classic\Entity\TeamPlayer:
     team_player_shevchenko:
         team: '@team_alpha'
         player: '@player_shevchenko'
@@ -61,13 +61,13 @@ App\Entity\TeamPlayer:
         season: '@season_current'
         isCaptain: false
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_existing:
         tournamentSession: '@session_squad_approved'
         team: '@team_beta'
         score: 5
 
-App\Entity\TournamentSessionTeamPlayer:
+App\Classic\Entity\TournamentSessionTeamPlayer:
     session_team_player_lesya:
         tournamentSessionTeam: '@session_team_existing'
         player: '@player_lesya'

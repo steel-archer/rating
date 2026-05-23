@@ -8,16 +8,17 @@ parameters:
     ignoreErrors:
         -
             identifier: arguments.count
-            path: src/Controller/Auth/GoogleConnectController.php
+            path: src/Common/Controller/Auth/GoogleConnectController.php
         -
             identifier: parameter.defaultValue
-            path: src/Mapping/*
+            path: '*/Mapping/*'
         -
             identifier: nullCoalesce.offset
-            path: src/Mapping/*
+            path: '*/Mapping/*'
         -
             identifier: return.unusedType
-            path: src/Security/GoogleAuthenticator.php
+            path: src/Common/Security/GoogleAuthenticator.php
         -
             identifier: function.alreadyNarrowedType
             path: tests/bootstrap.php
+    reportUnmatchedIgnoredErrors: false

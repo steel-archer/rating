@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\DataFixtures;
 
-use App\Entity\Player;
-use App\Entity\Town;
-use App\Entity\Venue;
-use App\Entity\VenueRepresentative;
+use App\Common\Entity\Player;
+use App\Common\Entity\Town;
+use App\Common\Entity\Venue;
+use App\Common\Entity\VenueRepresentative;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

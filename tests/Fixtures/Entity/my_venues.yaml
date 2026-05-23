@@ -1,11 +1,11 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_venue_creator:
         email: 'venue_creator@example.com'
         googleId: 'google_venue_creator'
         roles: []
         player: '@player_franko'
 
-App\Entity\Venue:
+App\Common\Entity\Venue:
     venue_pending:
         name: 'Новий майданчик'
         town: '@town_kyiv'
@@ -19,7 +19,7 @@ App\Entity\Venue:
         isApproved: true
         createdAt: '<(new \DateTimeImmutable("-1 day"))>'
 
-App\Entity\VenueRepresentative:
+App\Common\Entity\VenueRepresentative:
     rep_pending:
         venue: '@venue_pending'
         player: '@player_franko'

@@ -1,14 +1,14 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_appeal_expired_player:
         email: 'appeal_expired@example.com'
         googleId: 'google_appeal_expired'
         roles: []
         player: '@player_shevchenko'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_appeal_expired:
         name: 'Турнір з минулим дедлайном'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-60 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("-50 days 00:00:00"))>'
@@ -17,13 +17,13 @@ App\Entity\Tournament:
         toursCount: 1
         questionsPerTour: 3
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_expired_organizer:
         tournament: '@tournament_appeal_expired'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_appeal_expired:
         tournament: '@tournament_appeal_expired'
         venue: '@venue_kyiv'
@@ -31,29 +31,29 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("-55 days"))>'
         estimatedTeams: 1
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_appeal_expired:
         session: '@session_appeal_expired'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-65 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-64 days"))>'
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_expired_alpha:
         tournamentSession: '@session_appeal_expired'
         team: '@team_alpha'
         score: 1
         resultsSubmitted: true
 
-App\Entity\TournamentSessionTeamPlayer:
+App\Classic\Entity\TournamentSessionTeamPlayer:
     session_team_player_expired:
         tournamentSessionTeam: '@session_team_expired_alpha'
         player: '@player_shevchenko'
         isCaptain: true
         isLegionary: false
 
-App\Entity\TournamentSessionTeamAnswer:
+App\Classic\Entity\TournamentSessionTeamAnswer:
     answer_expired_1:
         tournamentSessionTeam: '@session_team_expired_alpha'
         questionNumber: 1

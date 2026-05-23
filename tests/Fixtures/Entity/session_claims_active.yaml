@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_organizer_active:
         email: 'organizer_active@example.com'
         googleId: 'google_org_active_123'
@@ -10,10 +10,10 @@ App\Entity\User:
         roles: []
         player: '@player_shevchenko'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_active:
         name: 'Активний турнір'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         startedAt: '<(new \DateTimeImmutable("+1 month 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("+2 months 00:00:00"))>'
         registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
@@ -21,13 +21,13 @@ App\Entity\Tournament:
         toursCount: 3
         questionsPerTour: 12
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_org_active:
         tournament: '@tournament_active'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_active_approved:
         tournament: '@tournament_active'
         venue: '@venue_kyiv'
@@ -35,10 +35,10 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("+1 month +5 days"))>'
         estimatedTeams: 10
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_active_approved:
         session: '@session_active_approved'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-1 week"))>'
         resolvedAt: '<(new \DateTimeImmutable("-1 day"))>'

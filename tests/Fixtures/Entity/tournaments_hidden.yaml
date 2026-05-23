@@ -1,4 +1,4 @@
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_hidden_results:
         name: 'Турнір з прихованими результатами'
         season: '@season_current'
@@ -9,19 +9,19 @@ App\Entity\Tournament:
         questionsPerTour: 12
         difficulty: 3.5
         trueDl: 2.8
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_hidden_organizer:
         tournament: '@tournament_hidden_results'
         player: '@player_shevchenko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
     official_hidden_editor:
         tournament: '@tournament_hidden_results'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_hidden_kyiv:
         tournament: '@tournament_hidden_results'
         venue: '@venue_kyiv'
@@ -29,7 +29,7 @@ App\Entity\TournamentSession:
         host: '@player_lesya'
         playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_hidden_alpha:
         tournamentSession: '@session_hidden_kyiv'
         team: '@team_alpha'
@@ -41,7 +41,7 @@ App\Entity\TournamentSessionTeam:
         score: 30
         resultsSubmitted: true
 
-App\Entity\TournamentSessionTeamAnswer:
+App\Classic\Entity\TournamentSessionTeamAnswer:
     answer_hidden_alpha_{1..25}:
         tournamentSessionTeam: '@session_team_hidden_alpha'
         questionNumber: '<current()>'
@@ -59,7 +59,7 @@ App\Entity\TournamentSessionTeamAnswer:
         questionNumber: '<($current + 30)>'
         isCorrect: false
 
-App\Entity\TournamentSessionTeamPlayer:
+App\Classic\Entity\TournamentSessionTeamPlayer:
     stp_hidden_alpha_shevchenko:
         tournamentSessionTeam: '@session_team_hidden_alpha'
         player: '@player_shevchenko'
@@ -69,7 +69,7 @@ App\Entity\TournamentSessionTeamPlayer:
         player: '@player_franko'
         isLegionary: false
 
-App\Entity\TeamPlayer:
+App\Classic\Entity\TeamPlayer:
     team_player_hidden_alpha_shevchenko:
         team: '@team_alpha'
         player: '@player_shevchenko'
@@ -81,10 +81,10 @@ App\Entity\TeamPlayer:
         season: '@season_current'
         isCaptain: true
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     session_claim_hidden_kyiv:
         session: '@session_hidden_kyiv'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'

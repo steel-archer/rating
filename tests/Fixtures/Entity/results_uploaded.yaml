@@ -1,14 +1,14 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_results_uploaded_rep:
         email: 'results_uploaded_rep@example.com'
         googleId: 'google_results_uploaded_rep'
         roles: []
         player: '@player_shevchenko'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_results_uploaded:
         name: 'Турнір із завантаженими результатами'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
@@ -16,7 +16,7 @@ App\Entity\Tournament:
         toursCount: 2
         questionsPerTour: 3
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_results_uploaded:
         tournament: '@tournament_results_uploaded'
         venue: '@venue_kyiv'
@@ -24,15 +24,15 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("-1 day"))>'
         estimatedTeams: 2
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_results_uploaded:
         session: '@session_results_uploaded'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_uploaded_alpha:
         tournamentSession: '@session_results_uploaded'
         team: '@team_alpha'
@@ -42,7 +42,7 @@ App\Entity\TournamentSessionTeam:
         team: '@team_beta'
         score: 3
 
-App\Entity\TournamentSessionTeamAnswer:
+App\Classic\Entity\TournamentSessionTeamAnswer:
     answer_uploaded_alpha_{1..4}:
         tournamentSessionTeam: '@session_team_uploaded_alpha'
         questionNumber: '<current()>'

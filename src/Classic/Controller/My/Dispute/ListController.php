@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Classic\Controller\My\Dispute;
+
+use App\Classic\DTO\Response\My\DisputeTournamentDTO;
+use App\Common\Entity\User;
+use App\Common\Mapping\Mapper;
+use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/my/disputes', name: 'my_disputes', methods: ['GET'])]
+class ListController extends AbstractController
+{
+    public function __invoke(TournamentSessionTeamAnswerRepository $answerRepository, Mapper $mapper): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $stats = $answerRepository->findJuryTournamentStats($user->getPlayer());
+
+        return $this->render('my/disputes.html.twig', [
+            'tournaments' => $mapper->mapMultiple($stats, DisputeTournamentDTO::class),
+        ]);
+    }
+}

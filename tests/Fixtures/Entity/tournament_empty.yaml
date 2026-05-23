@@ -1,4 +1,4 @@
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_empty:
         name: 'Порожній турнір'
         season: '@season_current'
@@ -6,4 +6,4 @@ App\Entity\Tournament:
         endedAt: '<(new \DateTimeImmutable("2026-01-15 00:00:00"))>'
         toursCount: 3
         questionsPerTour: 12
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'

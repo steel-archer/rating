@@ -1,0 +1,134 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Classic\Repository;
+
+use App\Classic\DTO\Response\Venue\VenueTournamentDTO;
+use App\Common\Contract\VenueTournamentProviderInterface;
+use App\Common\Entity\Player;
+use App\Classic\Entity\SessionClaim;
+use App\Classic\Enum\SessionClaimStatus;
+use App\Classic\Entity\Tournament;
+use App\Classic\Entity\TournamentSession;
+use App\Common\Entity\Venue;
+use App\Common\Mapping\Mapper;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\Persistence\ManagerRegistry;
+
+/** @extends ServiceEntityRepository<TournamentSession> */
+class TournamentSessionRepository extends ServiceEntityRepository implements VenueTournamentProviderInterface
+{
+    private const int PER_PAGE = 50;
+
+    public function __construct(ManagerRegistry $registry, private Mapper $mapper)
+    {
+        parent::__construct($registry, TournamentSession::class);
+    }
+
+    /**
+     * @return list<TournamentSession>
+     */
+    public function findByTournamentPaginated(Tournament $tournament, int $page): array
+    {
+        return $this->createQueryBuilder('ts')
+            ->join('ts.venue', 'v')
+            ->join('v.town', 'town')
+            ->join('ts.representative', 'rep')
+            ->leftJoin('rep.user', 'repUser')
+            ->leftJoin('ts.host', 'host')
+            ->leftJoin('host.user', 'hostUser')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
+            ->addSelect('v', 'town', 'rep', 'repUser', 'host', 'hostUser')
+            ->where('ts.tournament = :t')
+            ->andWhere('sc.status = :status')
+            ->setParameter('t', $tournament)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->orderBy('town.name', 'ASC')
+            ->setFirstResult(($page - 1) * self::PER_PAGE)
+            ->setMaxResults(self::PER_PAGE)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getLastPageNumberByTournament(Tournament $tournament): int
+    {
+        return max(1, (int) ceil($this->countByTournament($tournament) / self::PER_PAGE));
+    }
+
+    public function countByTournament(Tournament $tournament): int
+    {
+        return (int) $this->createQueryBuilder('ts')
+            ->select('COUNT(ts.id)')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
+            ->where('ts.tournament = :t')
+            ->andWhere('sc.status = :status')
+            ->setParameter('t', $tournament)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return list<VenueTournamentDTO>
+     */
+    public function findByVenuePaginated(Venue $venue, int $page): array
+    {
+        $rows = $this->createQueryBuilder('ts')
+            ->join('ts.tournament', 't')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
+            ->select('t.id AS tournamentId', 't.name AS tournamentName', 'ts.playedAt')
+            ->where('ts.venue = :venue')
+            ->andWhere('sc.status = :status')
+            ->setParameter('venue', $venue)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->orderBy('ts.playedAt', 'DESC')
+            ->setFirstResult(($page - 1) * self::PER_PAGE)
+            ->setMaxResults(self::PER_PAGE)
+            ->getQuery()
+            ->getArrayResult();
+
+        return $this->mapper->mapMultiple($rows, VenueTournamentDTO::class);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getLastPageNumberByVenue(Venue $venue): int
+    {
+        return max(1, (int) ceil($this->countByVenue($venue) / self::PER_PAGE));
+    }
+
+    public function countByVenue(Venue $venue): int
+    {
+        return (int) $this->createQueryBuilder('ts')
+            ->select('COUNT(ts.id)')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
+            ->where('ts.venue = :venue')
+            ->andWhere('sc.status = :status')
+            ->setParameter('venue', $venue)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function isRepresentativeOfTournament(Player $player, Tournament $tournament): bool
+    {
+        return (bool) $this->createQueryBuilder('ts')
+            ->select('1')
+            ->where('ts.tournament = :tournament')
+            ->andWhere('ts.representative = :player')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('player', $player)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+}

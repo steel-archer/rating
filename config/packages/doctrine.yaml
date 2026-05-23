@@ -16,9 +16,15 @@ doctrine:
             App:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
+                dir: '%kernel.project_dir%/src/Classic/Entity'
+                prefix: 'App\Classic\Entity'
                 alias: App
+            Common:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Common/Entity'
+                prefix: 'App\Common\Entity'
+                alias: Common
 
 when@test:
     doctrine:

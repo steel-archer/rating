@@ -1,4 +1,4 @@
-App\Entity\PlayerClaim:
+App\Common\Entity\PlayerClaim:
     player_claim_user_has_player:
         user: '@user_with_player'
         player: '@player_franko'

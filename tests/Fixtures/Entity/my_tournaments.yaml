@@ -1,18 +1,18 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_creator:
         email: 'creator@example.com'
         googleId: 'google_creator_123'
         roles: []
         player: '@player_franko'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_draft:
         name: 'Мій чернетковий турнір'
-        status: '<(App\Enum\TournamentStatus::Draft)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
         createdBy: '@player_franko'
     tournament_approved:
         name: 'Схвалений турнір'
-        status: '<(App\Enum\TournamentStatus::Draft)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
         createdBy: '@player_franko'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
@@ -27,7 +27,7 @@ App\Entity\Tournament:
         difficulty: 3.5
     tournament_published:
         name: 'Опублікований турнір'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         createdBy: '@player_franko'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("+60 days 00:00:00"))>'
@@ -41,52 +41,52 @@ App\Entity\Tournament:
         questionsPerTour: 12
         difficulty: 4.0
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_draft_org:
         tournament: '@tournament_draft'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
     official_approved_org:
         tournament: '@tournament_approved'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
     official_approved_editor:
         tournament: '@tournament_approved'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
     official_approved_game_jury:
         tournament: '@tournament_approved'
         player: '@player_lesya'
-        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
     official_approved_appeal_jury:
         tournament: '@tournament_approved'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::AppealJury)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
     official_published_org:
         tournament: '@tournament_published'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
     official_published_editor:
         tournament: '@tournament_published'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Editor)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
     official_published_game_jury:
         tournament: '@tournament_published'
         player: '@player_lesya'
-        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
     official_published_appeal_jury:
         tournament: '@tournament_published'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::AppealJury)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
 
-App\Entity\TournamentModerationClaim:
+App\Classic\Entity\TournamentModerationClaim:
     claim_approved:
         tournament: '@tournament_approved'
-        status: '<(App\Enum\TournamentModerationStatus::Approved)>'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-1 day"))>'
         resolvedAt: '<(new \DateTimeImmutable())>'
     claim_published:
         tournament: '@tournament_published'
-        status: '<(App\Enum\TournamentModerationStatus::Approved)>'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'

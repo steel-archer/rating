@@ -1,0 +1,11 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Common\Mapping;
+
+interface MappingInterface
+{
+    /** @param array<string, mixed> $context */
+    public function map(mixed $source, string $destinationClass, array $context = []): object;
+}

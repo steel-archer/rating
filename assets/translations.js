@@ -254,6 +254,7 @@ export default {
     "team_management.error.name_taken": "Команда з такою назвою в цьому місті вже існує",
     "team_management.error.no_season": "Поточний сезон не знайдено",
     "team_management.error.not_captain": "Ви не є капітаном команди",
+    "team_management.error.player_in_another_team": "Гравець вже в базовому складі іншої команди",
     "team_management.error.player_not_found": "Гравця не знайдено",
     "team_management.error.player_not_in_team": "Гравець не у складі команди",
     "team_management.error.select_player": "Оберіть гравця",

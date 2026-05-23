@@ -8,21 +8,21 @@ services:
         autoconfigure: true
 
     _instanceof:
-        App\Mapping\MappingInterface:
+        App\Common\Mapping\MappingInterface:
             tags: ['app.mapping']
 
     App\:
         resource: '../src/'
 
-    App\Mapping\Mapper:
+    App\Common\Mapping\Mapper:
         arguments:
             $mappings: !tagged_iterator app.mapping
 
-    App\Service\TournamentDocumentService:
+    App\Classic\Service\TournamentDocumentService:
         arguments:
             $uploadDir: '%app.upload_dir%'
 
-    App\EventSubscriber\RateLimitSubscriber:
+    App\Common\EventSubscriber\RateLimitSubscriber:
         arguments:
             $rateLimiters: !service_locator
                 claim: '@limiter.claim'

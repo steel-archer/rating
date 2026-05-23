@@ -1,14 +1,14 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_dispute_unpublished:
         email: 'dispute_unpublished@example.com'
         googleId: 'google_dispute_unpublished'
         roles: []
         player: '@player_shevchenko'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_dispute_unpublished:
         name: 'Неопублікований турнір'
-        status: '<(App\Enum\TournamentStatus::Draft)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
         season: '@season_current'
         toursCount: 1
         questionsPerTour: 3

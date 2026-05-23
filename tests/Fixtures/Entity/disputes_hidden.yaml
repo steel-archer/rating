@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_dispute_hidden_jury:
         email: 'dispute_hidden_jury@example.com'
         googleId: 'google_dispute_hidden_jury'
@@ -20,10 +20,10 @@ App\Entity\User:
         roles: []
         player: '@player_kotsubynsky'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_dispute_hidden:
         name: 'Турнір з прихованими деталями'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
@@ -33,13 +33,13 @@ App\Entity\Tournament:
         toursCount: 1
         questionsPerTour: 3
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_dispute_hidden_jury:
         tournament: '@tournament_dispute_hidden'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_dispute_hidden:
         tournament: '@tournament_dispute_hidden'
         venue: '@venue_kyiv'
@@ -47,22 +47,22 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("-15 days"))>'
         estimatedTeams: 2
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_dispute_hidden:
         session: '@session_dispute_hidden'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-20 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-19 days"))>'
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_dispute_hidden:
         tournamentSession: '@session_dispute_hidden'
         team: '@team_alpha'
         score: 2
         resultsSubmitted: true
 
-App\Entity\TournamentSessionTeamPlayer:
+App\Classic\Entity\TournamentSessionTeamPlayer:
     session_team_player_dispute_hidden:
         tournamentSessionTeam: '@session_team_dispute_hidden'
         player: '@player_kotsubynsky'

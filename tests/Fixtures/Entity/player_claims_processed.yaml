@@ -1,4 +1,4 @@
-App\Entity\PlayerClaim:
+App\Common\Entity\PlayerClaim:
     player_claim_approved:
         user: '@user_admin'
         player: '@player_lesya'

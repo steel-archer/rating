@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_appeal_player:
         email: 'appeal_player@example.com'
         googleId: 'google_appeal_player'
@@ -10,10 +10,10 @@ App\Entity\User:
         roles: []
         player: '@player_franko'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_appeal_accept:
         name: 'Турнір з апеляцією на зарахування'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("-20 days 00:00:00"))>'
@@ -22,13 +22,13 @@ App\Entity\Tournament:
         toursCount: 1
         questionsPerTour: 3
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_appeal_accept_jury:
         tournament: '@tournament_appeal_accept'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::AppealJury)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_appeal_accept:
         tournament: '@tournament_appeal_accept'
         venue: '@venue_kyiv'
@@ -36,29 +36,29 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("-25 days"))>'
         estimatedTeams: 1
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_appeal_accept:
         session: '@session_appeal_accept'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-35 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-34 days"))>'
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_accept_alpha:
         tournamentSession: '@session_appeal_accept'
         team: '@team_alpha'
         score: 1
         resultsSubmitted: true
 
-App\Entity\TournamentSessionTeamPlayer:
+App\Classic\Entity\TournamentSessionTeamPlayer:
     session_team_player_accept_shevchenko:
         tournamentSessionTeam: '@session_team_accept_alpha'
         player: '@player_shevchenko'
         isCaptain: true
         isLegionary: false
 
-App\Entity\TournamentSessionTeamAnswer:
+App\Classic\Entity\TournamentSessionTeamAnswer:
     answer_accept_alpha_1:
         tournamentSessionTeam: '@session_team_accept_alpha'
         questionNumber: 1
@@ -68,16 +68,16 @@ App\Entity\TournamentSessionTeamAnswer:
         questionNumber: 2
         isCorrect: false
         disputeText: 'спірна відповідь'
-        disputeStatus: '<(App\Enum\DisputeStatus::Rejected)>'
+        disputeStatus: '<(App\Classic\Enum\DisputeStatus::Rejected)>'
         disputeComment: 'відхилено'
     answer_accept_alpha_3:
         tournamentSessionTeam: '@session_team_accept_alpha'
         questionNumber: 3
         isCorrect: false
 
-App\Entity\Appeal:
+App\Classic\Entity\Appeal:
     appeal_accept:
         tournamentSessionTeamAnswer: '@answer_accept_alpha_2'
-        type: '<(App\Enum\AppealType::Accept)>'
+        type: '<(App\Classic\Enum\AppealType::Accept)>'
         text: 'Наша відповідь правильна'
-        status: '<(App\Enum\AppealStatus::Pending)>'
+        status: '<(App\Classic\Enum\AppealStatus::Pending)>'

@@ -1,10 +1,10 @@
-App\Entity\Season:
+App\Common\Entity\Season:
     season_previous:
         name: '2024-2025'
         startedAt: '<(new \DateTimeImmutable("2024-10-01"))>'
         endedAt: '<(new \DateTimeImmutable("2025-09-30"))>'
 
-App\Entity\User:
+App\Common\Entity\User:
     user_captain:
         email: 'captain@example.com'
         googleId: 'google_captain'
@@ -21,7 +21,7 @@ App\Entity\User:
         roles: []
         player: '@player_lesya'
 
-App\Entity\TeamPlayer:
+App\Classic\Entity\TeamPlayer:
     tp_captain:
         team: '@team_alpha'
         player: '@player_shevchenko'

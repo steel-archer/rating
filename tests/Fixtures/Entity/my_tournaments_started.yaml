@@ -1,14 +1,14 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_creator:
         email: 'creator@example.com'
         googleId: 'google_creator_123'
         roles: []
         player: '@player_franko'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_started:
         name: 'Турнір що почався'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         createdBy: '@player_franko'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-1 day 00:00:00"))>'
@@ -17,8 +17,8 @@ App\Entity\Tournament:
         questionsPerTour: 12
         difficulty: 3.0
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_started_org:
         tournament: '@tournament_started'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'

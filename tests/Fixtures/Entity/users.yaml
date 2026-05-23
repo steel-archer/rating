@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_regular:
         email: 'user@example.com'
         googleId: 'google_user_123'

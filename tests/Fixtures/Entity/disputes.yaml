@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_dispute_rep:
         email: 'dispute_rep@example.com'
         googleId: 'google_dispute_rep'
@@ -15,10 +15,10 @@ App\Entity\User:
         roles: []
         player: '@player_lesya'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_dispute:
         name: 'Турнір зі спірними'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         season: '@season_current'
         startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
@@ -26,17 +26,17 @@ App\Entity\Tournament:
         toursCount: 1
         questionsPerTour: 3
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_dispute_jury:
         tournament: '@tournament_dispute'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::GameJury)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
     official_dispute_organizer:
         tournament: '@tournament_dispute'
         player: '@player_shevchenko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_dispute:
         tournament: '@tournament_dispute'
         venue: '@venue_kyiv'
@@ -44,15 +44,15 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("-1 day"))>'
         estimatedTeams: 2
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_dispute:
         session: '@session_dispute'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
 
-App\Entity\TournamentSessionTeam:
+App\Classic\Entity\TournamentSessionTeam:
     session_team_dispute_alpha:
         tournamentSession: '@session_dispute'
         team: '@team_alpha'
@@ -64,7 +64,7 @@ App\Entity\TournamentSessionTeam:
         score: 1
         resultsSubmitted: true
 
-App\Entity\TournamentSessionTeamAnswer:
+App\Classic\Entity\TournamentSessionTeamAnswer:
     answer_dispute_alpha_1:
         tournamentSessionTeam: '@session_team_dispute_alpha'
         questionNumber: 1
@@ -78,7 +78,7 @@ App\Entity\TournamentSessionTeamAnswer:
         questionNumber: 3
         isCorrect: false
         disputeText: 'спірна відповідь'
-        disputeStatus: '<(App\Enum\DisputeStatus::Submitted)>'
+        disputeStatus: '<(App\Classic\Enum\DisputeStatus::Submitted)>'
     answer_dispute_beta_1:
         tournamentSessionTeam: '@session_team_dispute_beta'
         questionNumber: 1
@@ -92,4 +92,4 @@ App\Entity\TournamentSessionTeamAnswer:
         questionNumber: 3
         isCorrect: false
         disputeText: 'ще одна спірна'
-        disputeStatus: '<(App\Enum\DisputeStatus::Created)>'
+        disputeStatus: '<(App\Classic\Enum\DisputeStatus::Created)>'

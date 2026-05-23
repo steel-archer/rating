@@ -1,4 +1,4 @@
-App\Entity\User:
+App\Common\Entity\User:
     user_representative:
         email: 'representative@example.com'
         googleId: 'google_rep_123'
@@ -20,7 +20,7 @@ App\Entity\User:
         roles: ['ROLE_MODERATOR']
         player: '@player_moderator_sc'
 
-App\Entity\Player:
+App\Common\Entity\Player:
     player_moderator_sc:
         lastName: 'Модераторенко'
         firstName: 'Модератор'
@@ -30,10 +30,10 @@ App\Entity\Player:
         firstName: 'Безюзер'
         town: '@town_kyiv'
 
-App\Entity\Tournament:
+App\Classic\Entity\Tournament:
     tournament_session_test:
         name: 'Тестовий турнір'
-        status: '<(App\Enum\TournamentStatus::Published)>'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
         startedAt: '<(new \DateTimeImmutable("2025-06-01 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("2025-06-30 00:00:00"))>'
         registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
@@ -41,13 +41,13 @@ App\Entity\Tournament:
         toursCount: 3
         questionsPerTour: 12
 
-App\Entity\TournamentOfficial:
+App\Classic\Entity\TournamentOfficial:
     official_org_test:
         tournament: '@tournament_session_test'
         player: '@player_franko'
-        role: '<(App\Enum\TournamentOfficialRole::Organizer)>'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
 
-App\Entity\TournamentSession:
+App\Classic\Entity\TournamentSession:
     session_pending:
         tournament: '@tournament_session_test'
         venue: '@venue_kyiv'
@@ -73,27 +73,27 @@ App\Entity\TournamentSession:
         playedAt: '<(new \DateTimeImmutable("2025-06-25 19:00"))>'
         estimatedTeams: 6
 
-App\Entity\SessionClaim:
+App\Classic\Entity\SessionClaim:
     claim_pending:
         session: '@session_pending'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Pending)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
     claim_rejected:
         session: '@session_rejected'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Rejected)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Rejected)>'
         comment: 'Дата не підходить'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
     claim_approved:
         session: '@session_approved'
         player: '@player_shevchenko'
-        status: '<(App\Enum\SessionClaimStatus::Approved)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
     claim_no_user:
         session: '@session_no_user'
         player: '@player_no_user'
-        status: '<(App\Enum\SessionClaimStatus::Pending)>'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-22"))>'

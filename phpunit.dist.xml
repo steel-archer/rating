@@ -34,12 +34,14 @@
         </include>
 
         <exclude>
-            <directory>src/Entity</directory>
-            <directory>src/Enum</directory>
-            <file>src/Command/GenerateTranslationsCommand.php</file>
-            <file>src/Command/PromoteAdminCommand.php</file>
-            <directory>src/Controller/Auth</directory>
-            <file>src/Security/GoogleAuthenticator.php</file>
+            <directory>src/Classic/Entity</directory>
+            <directory>src/Common/Entity</directory>
+            <directory>src/Classic/Enum</directory>
+            <directory>src/Common/Enum</directory>
+            <file>src/Common/Command/GenerateTranslationsCommand.php</file>
+            <file>src/Common/Command/PromoteAdminCommand.php</file>
+            <directory>src/Common/Controller/Auth</directory>
+            <file>src/Common/Security/GoogleAuthenticator.php</file>
         </exclude>
 
         <deprecationTrigger>
