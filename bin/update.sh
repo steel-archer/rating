@@ -2,6 +2,8 @@
 
 set -e
 
+git pull
+
 if git diff HEAD@{1} --name-only 2>/dev/null | grep -qE '^(docker/|docker-compose\.yml)'; then
     docker compose up -d --build
 else
