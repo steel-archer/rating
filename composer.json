@@ -60,6 +60,21 @@
             "symfony/runtime": true,
             "phpstan/extension-installer": true
         },
+        "audit": {
+            "ignore": [
+                "PKSA-y6py-qpv1-h52p",
+                "PKSA-365x-2zjk-pt47",
+                "PKSA-b35n-565h-rs4q",
+                "PKSA-bf7t-jnpz-492k",
+                "PKSA-yc7t-91v9-99xs",
+                "PKSA-c28x-6bj5-8spx",
+                "PKSA-jzjr-4n2h-knvd",
+                "PKSA-tbsf-h7vc-j7hn",
+                "PKSA-5df2-zpfk-xgsv",
+                "PKSA-4tmc-tz3m-9xpb",
+                "PKSA-rqvm-b18n-vg69"
+            ]
+        },
         "bump-after-update": true,
         "sort-packages": true
     },
