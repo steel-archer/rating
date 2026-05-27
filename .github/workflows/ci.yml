@@ -150,12 +150,18 @@ jobs:
           git commit -m "Update badges [skip ci]"
           git push
 
-      # TODO: uncomment when Symfony releases patches for PKSA-y6py-qpv1-h52p, PKSA-365x-2zjk-pt47, PKSA-b35n-565h-rs4q, PKSA-bf7t-jnpz-492k, PKSA-yc7t-91v9-99xs
-      # - name: Composer audit
-      #   id: composer_audit
-      #   continue-on-error: true
-      #   run: composer audit
+      - name: Composer audit
+        id: composer_audit
+        continue-on-error: true
+        run: composer audit
 
+      - name: Symfony security check
+        id: security_check
+        continue-on-error: true
+        run: |
+          curl -sS https://get.symfony.com/cli/installer | bash
+          export PATH="$HOME/.symfony5/bin:$PATH"
+          symfony security:check
 
       - name: Gitleaks
         id: gitleaks
@@ -174,6 +180,8 @@ jobs:
           echo "ESLint: ${{ steps.eslint.outcome }}"
           echo "Stylelint: ${{ steps.stylelint.outcome }}"
           echo "TwigCS: ${{ steps.twigcs.outcome }}"
+          echo "Composer audit: ${{ steps.composer_audit.outcome }}"
+          echo "Security check: ${{ steps.security_check.outcome }}"
           echo "Gitleaks: ${{ steps.gitleaks.outcome }}"
           if [[ "${{ steps.phpcs.outcome }}" == "failure" || \
                 "${{ steps.phpstan.outcome }}" == "failure" || \
@@ -181,6 +189,8 @@ jobs:
                 "${{ steps.eslint.outcome }}" == "failure" || \
                 "${{ steps.stylelint.outcome }}" == "failure" || \
                 "${{ steps.twigcs.outcome }}" == "failure" || \
+                "${{ steps.composer_audit.outcome }}" == "failure" || \
+                "${{ steps.security_check.outcome }}" == "failure" || \
                 "${{ steps.gitleaks.outcome }}" == "failure" ]]; then
             echo "::error::One or more checks failed"
             exit 1
