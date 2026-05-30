@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\TournamentSessionClaim;
 
+use App\Classic\Entity\Appeal;
 use App\Classic\Entity\SessionClaim;
+use App\Classic\Entity\TournamentSessionTeam;
+use App\Classic\Entity\TournamentSessionTeamAnswer;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Service\SessionClaimService;
 use App\Tests\FixturesTrait;
@@ -122,6 +125,38 @@ class RevokeControllerTest extends WebTestCase
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'revoke with results and appeals deletes related data' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_with_results.yaml'],
+            'loginAs' => 'user_organizer',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournament-claims/' . $objects['session_approved_with_results']->getId() . '/revoke',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $em = static::getContainer()->get('doctrine')->getManager();
+
+                $claim = $em->getRepository(SessionClaim::class)
+                    ->findOneBy(['session' => $objects['session_approved_with_results']->getId()]);
+                static::assertSame(SessionClaimStatus::Revoked, $claim->getStatus());
+
+                $appeals = $em->getRepository(Appeal::class)
+                    ->findBy(['tournamentSessionTeamAnswer' => $objects['answer_revoke_2']->getId()]);
+                static::assertCount(0, $appeals);
+
+                $answers = $em->getRepository(TournamentSessionTeamAnswer::class)
+                    ->findBy(['tournamentSessionTeam' => $objects['session_team_revoke_alpha']->getId()]);
+                static::assertCount(0, $answers);
+
+                $teams = $em->getRepository(TournamentSessionTeam::class)
+                    ->findBy(['tournamentSession' => $objects['session_approved_with_results']->getId()]);
+                static::assertCount(0, $teams);
             },
         ];
 

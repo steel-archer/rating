@@ -1,0 +1,75 @@
+App\Common\Entity\User:
+    user_representative:
+        email: 'representative@example.com'
+        googleId: 'google_rep_123'
+        roles: []
+        player: '@player_shevchenko'
+    user_organizer:
+        email: 'organizer@example.com'
+        googleId: 'google_org_123'
+        roles: []
+        player: '@player_franko'
+
+App\Classic\Entity\Tournament:
+    tournament_session_test:
+        name: 'Тестовий турнір'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        startedAt: '<(new \DateTimeImmutable("2025-06-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-06-30 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        toursCount: 1
+        questionsPerTour: 3
+
+App\Classic\Entity\TournamentOfficial:
+    official_org_test:
+        tournament: '@tournament_session_test'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentSession:
+    session_approved_with_results:
+        tournament: '@tournament_session_test'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-06-20 19:00"))>'
+        estimatedTeams: 2
+
+App\Classic\Entity\SessionClaim:
+    claim_approved_with_results:
+        session: '@session_approved_with_results'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_revoke_alpha:
+        tournamentSession: '@session_approved_with_results'
+        team: '@team_alpha'
+        score: 1
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    session_team_player_revoke_shevchenko:
+        tournamentSessionTeam: '@session_team_revoke_alpha'
+        player: '@player_shevchenko'
+        isCaptain: true
+        isLegionary: false
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    answer_revoke_1:
+        tournamentSessionTeam: '@session_team_revoke_alpha'
+        questionNumber: 1
+        isCorrect: true
+    answer_revoke_2:
+        tournamentSessionTeam: '@session_team_revoke_alpha'
+        questionNumber: 2
+        isCorrect: false
+
+App\Classic\Entity\Appeal:
+    appeal_revoke:
+        tournamentSessionTeamAnswer: '@answer_revoke_2'
+        type: '<(App\Classic\Enum\AppealType::Accept)>'
+        text: 'Відповідь правильна'
+        status: '<(App\Classic\Enum\AppealStatus::Pending)>'
