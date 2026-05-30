@@ -84,11 +84,18 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
         $rows = $this->createQueryBuilder('ts')
             ->join('ts.tournament', 't')
             ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
-            ->select('t.id AS tournamentId', 't.name AS tournamentName', 'ts.playedAt')
+            ->leftJoin(TournamentSessionTeam::class, 'st', 'WITH', 'st.tournamentSession = ts AND st.resultsSubmitted = true')
+            ->select(
+                't.id AS tournamentId',
+                't.name AS tournamentName',
+                'ts.playedAt',
+                'COUNT(st.id) AS teamsCount',
+            )
             ->where('ts.venue = :venue')
             ->andWhere('sc.status = :status')
             ->setParameter('venue', $venue)
             ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->groupBy('ts.id', 't.id', 't.name', 'ts.playedAt')
             ->orderBy('ts.playedAt', 'DESC')
             ->setFirstResult(($page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)

@@ -77,6 +77,12 @@ class TournamentsControllerTest extends WebTestCase
                 static::assertStringContainsString('Осінній бриз', $allText);
                 static::assertStringContainsString('01.03.2025', $allText);
                 static::assertStringContainsString('10.10.2024', $allText);
+
+                // Spring session in Kyiv has 2 teams (alpha + gamma), autumn has 1 (alpha)
+                $firstRowCells = $rows->first()->filter('td');
+                static::assertSame('2', trim($firstRowCells->eq(2)->text()));
+                $secondRowCells = $rows->last()->filter('td');
+                static::assertSame('1', trim($secondRowCells->eq(2)->text()));
             },
         ];
 

@@ -22,6 +22,7 @@ final class VenueTournamentMapping implements MappingInterface
             tournamentId: $source['tournamentId'],
             tournamentName: $source['tournamentName'],
             playedAt: $source['playedAt'] instanceof DateTimeImmutable ? $source['playedAt'] : null,
+            teamsCount: (int) $source['teamsCount'],
         );
     }
 }

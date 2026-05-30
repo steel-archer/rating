@@ -12,6 +12,7 @@ final readonly class VenueTournamentDTO
         public int $tournamentId,
         public string $tournamentName,
         public ?DateTimeImmutable $playedAt,
+        public int $teamsCount,
     ) {
     }
 }
