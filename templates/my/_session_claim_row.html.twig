@@ -35,4 +35,9 @@
                                         </div>
                                     </td>
                                 {% endif %}
+                                {% if showRevoke is defined and showRevoke %}
+                                    <td>
+                                        <button type="button" class="btn btn-reject" data-session-revoke="{{ claim.sessionId }}">{{ 'session_claim.revoke'|trans }}</button>
+                                    </td>
+                                {% endif %}
                             </tr>

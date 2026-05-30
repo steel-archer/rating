@@ -137,6 +137,19 @@ function initSessionClaimActions() {
             );
         }
 
+        const revokeBtn = /** @type {HTMLElement} */ (event.target).closest('[data-session-revoke]');
+        if (revokeBtn) {
+            if (!confirm(trans('session_claim.confirm_revoke'))) {
+                return;
+            }
+            const id = /** @type {HTMLElement} */ (revokeBtn).dataset.sessionRevoke || '';
+            buttonAction(
+                `/my/tournament-claims/${id}/revoke`,
+                /** @type {HTMLButtonElement} */ (revokeBtn),
+                { onSuccess: () => removeApprovedClaimRow(revokeBtn) },
+            );
+        }
+
         const squadDeleteBtn = /** @type {HTMLElement} */ (event.target).closest('[data-squad-delete]');
         if (squadDeleteBtn) {
             const id = /** @type {HTMLElement} */ (squadDeleteBtn).dataset.squadDelete || '';
@@ -161,6 +174,21 @@ function removeSessionClaimCard(btn) {
     row.remove();
     if (container && container.querySelectorAll('[data-session-claim-id]').length === 0) {
         container.remove();
+    }
+}
+
+/**
+ * @param {Element} btn
+ */
+function removeApprovedClaimRow(btn) {
+    const row = btn.closest('tr');
+    if (!row) {
+        return;
+    }
+    const card = row.closest('.card');
+    row.remove();
+    if (card && card.querySelectorAll('tbody tr').length === 0) {
+        card.remove();
     }
 }
 

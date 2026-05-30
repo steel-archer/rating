@@ -323,4 +323,22 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * @param list<int> $sessionTeamIds
+     * @return list<int>
+     */
+    public function findIdsBySessionTeamIds(array $sessionTeamIds): array
+    {
+        if ($sessionTeamIds === []) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('a')
+            ->select('a.id')
+            ->where('a.tournamentSessionTeam IN (:ids)')
+            ->setParameter('ids', $sessionTeamIds)
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
 }

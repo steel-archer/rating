@@ -59,11 +59,12 @@
                                 <th>{{ 'session_claim.estimated_teams'|trans }}</th>
                                 <th>{{ 'venue.representative'|trans }}</th>
                                 <th>{{ 'venue.host'|trans }}</th>
+                                <th>{{ 'tournament.my.actions'|trans }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for claim in group.claims %}
-                                {{ include('my/_session_claim_row.html.twig', {claim: claim, rowIndex: loop.index}, with_context: false) }}
+                                {{ include('my/_session_claim_row.html.twig', {claim: claim, rowIndex: loop.index, showRevoke: true}, with_context: false) }}
                             {% endfor %}
                         </tbody>
                     </table>

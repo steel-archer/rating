@@ -16,9 +16,12 @@ use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentSession;
 use App\Common\Mapping\Mapper;
 use App\Common\Repository\PlayerRepository;
+use App\Classic\Repository\AppealRepository;
 use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TournamentOfficialRepository;
 use App\Classic\Repository\TournamentSessionRepository;
+use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
+use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Common\Repository\VenueRepresentativeRepository;
 use App\Common\Repository\VenueRepository;
@@ -28,6 +31,7 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
 
 class SessionClaimService
 {
@@ -38,6 +42,9 @@ class SessionClaimService
         private PlayerRepository $playerRepository,
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionRepository $sessionRepository,
+        private TournamentSessionTeamAnswerRepository $answerRepository,
+        private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
+        private AppealRepository $appealRepository,
         private VenueRepresentativeRepository $representativeRepository,
         private TournamentOfficialRepository $officialRepository,
         private CacheInvalidator $cacheInvalidator,
@@ -83,9 +90,10 @@ class SessionClaimService
             $venueIds[] = $claim->getSession()->getVenue()->getId();
         }
 
-        $venueSessionCounts = $this->sessionRepository->countPlayedByVenueIds(
-            array_values(array_unique($venueIds)),
-        );
+        $venueSessionCounts = $venueIds
+                |> array_unique(...)
+                |> array_values(...)
+                |> $this->sessionRepository->countPlayedByVenueIds(...);
 
         return array_values(array_map(
             function (array $group) use ($venueSessionCounts) {
@@ -177,6 +185,7 @@ class SessionClaimService
 
     /**
      * @throws LogicException
+     * @throws InvalidArgumentException
      */
     public function approve(TournamentSession $session, Player $player): void
     {
@@ -197,6 +206,7 @@ class SessionClaimService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function reject(TournamentSession $session, Player $player, RejectRequestDTO $dto): void
@@ -216,6 +226,45 @@ class SessionClaimService
 
         $this->em->flush();
         $this->cacheInvalidator->invalidateTournament($session->getTournament());
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     */
+    public function revoke(TournamentSession $session, Player $player): void
+    {
+        $this->ensureOrganizer($player, $session->getTournament());
+
+        $claim = $this->claimRepository->findBySession($session)
+            ?? throw new LogicException('session_claim.error.no_claim');
+
+        if ($claim->getStatus() !== SessionClaimStatus::Approved) {
+            throw new LogicException('session_claim.error.not_approved');
+        }
+
+        $this->deleteSessionData($session);
+
+        $claim->setStatus(SessionClaimStatus::Revoked);
+        $claim->setResolvedAt(new DateTimeImmutable());
+
+        $this->em->flush();
+        $this->cacheInvalidator->invalidateTournamentWithParticipants($session->getTournament());
+    }
+
+    private function deleteSessionData(TournamentSession $session): void
+    {
+        $sessionTeamIds = $this->sessionTeamRepository->findIdsBySession($session);
+
+        if ($sessionTeamIds === []) {
+            return;
+        }
+
+        $answerIds = $this->answerRepository->findIdsBySessionTeamIds($sessionTeamIds);
+        $this->appealRepository->deleteByAnswerIds($answerIds);
+        $this->answerRepository->deleteBySessionTeamIds($sessionTeamIds);
+        $this->sessionTeamPlayerRepository->deleteBySessionTeamIds($sessionTeamIds);
+        $this->sessionTeamRepository->deleteByIds($sessionTeamIds);
     }
 
     /**

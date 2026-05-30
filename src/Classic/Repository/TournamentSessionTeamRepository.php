@@ -278,4 +278,34 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
                 |> (static fn($x) => array_fill(0, $x, '?'))
                 |> (static fn($x) => implode(',', $x));
     }
+
+    /**
+     * @param list<int> $sessionTeamIds
+     */
+    public function deleteByIds(array $sessionTeamIds): void
+    {
+        if ($sessionTeamIds === []) {
+            return;
+        }
+
+        $this->createQueryBuilder('st')
+            ->delete()
+            ->where('st.id IN (:ids)')
+            ->setParameter('ids', $sessionTeamIds)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function findIdsBySession(TournamentSession $session): array
+    {
+        return $this->createQueryBuilder('st')
+            ->select('st.id')
+            ->where('st.tournamentSession = :session')
+            ->setParameter('session', $session)
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
 }

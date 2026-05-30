@@ -27,6 +27,21 @@ class AppealRepository extends ServiceEntityRepository
         return $this->findOneBy(['tournamentSessionTeamAnswer' => $answer]);
     }
 
+    /** @param list<int> $answerIds */
+    public function deleteByAnswerIds(array $answerIds): void
+    {
+        if ($answerIds === []) {
+            return;
+        }
+
+        $this->createQueryBuilder('a')
+            ->delete()
+            ->where('a.tournamentSessionTeamAnswer IN (:ids)')
+            ->setParameter('ids', $answerIds)
+            ->getQuery()
+            ->execute();
+    }
+
     /**
      * @return list<Appeal>
      */
