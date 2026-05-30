@@ -18,6 +18,7 @@ use App\Common\Mapping\Mapper;
 use App\Common\Repository\PlayerRepository;
 use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TournamentOfficialRepository;
+use App\Classic\Repository\TournamentSessionRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Common\Repository\VenueRepresentativeRepository;
 use App\Common\Repository\VenueRepository;
@@ -36,6 +37,7 @@ class SessionClaimService
         private VenueRepository $venueRepository,
         private PlayerRepository $playerRepository,
         private TournamentSessionTeamRepository $sessionTeamRepository,
+        private TournamentSessionRepository $sessionRepository,
         private VenueRepresentativeRepository $representativeRepository,
         private TournamentOfficialRepository $officialRepository,
         private CacheInvalidator $cacheInvalidator,
@@ -67,6 +69,7 @@ class SessionClaimService
     private function buildClaimGroups(array $claims): array
     {
         $grouped = [];
+        $venueIds = [];
         foreach ($claims as $claim) {
             $tournament = $claim->getSession()->getTournament();
             $tournamentId = $tournament->getId();
@@ -77,16 +80,24 @@ class SessionClaimService
                 ];
             }
             $grouped[$tournamentId]['claims'][] = $claim;
+            $venueIds[] = $claim->getSession()->getVenue()->getId();
         }
 
+        $venueSessionCounts = $this->sessionRepository->countPlayedByVenueIds(
+            array_values(array_unique($venueIds)),
+        );
+
         return array_values(array_map(
-            function (array $group) {
+            function (array $group) use ($venueSessionCounts) {
                 /** @var list<SessionClaimDTO> $claims */
                 $claims = array_map(
                     fn(SessionClaim $claim) => $this->mapper->map(
                         $claim,
                         SessionClaimDTO::class,
-                        ['playerContacts' => $this->contactsService->getContacts($claim->getPlayer()->getUser())],
+                        [
+                            'playerContacts' => $this->contactsService->getContacts($claim->getPlayer()->getUser()),
+                            'venueSessionCounts' => $venueSessionCounts,
+                        ],
                     ),
                     $group['claims'],
                 );

@@ -25,6 +25,7 @@ final readonly class SessionClaimDTO
         public bool $hostHasUser,
         public string $status,
         public ?string $comment,
+        public int $venuePlayedSessionsCount = 0,
     ) {
     }
 }

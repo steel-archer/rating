@@ -91,3 +91,15 @@
     padding: 4px 8px;
     font-size: 0.875rem;
 }
+
+.warning-badge {
+    display: inline-block;
+    color: var(--warning, #e6a700);
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.venue-sessions-count {
+    font-size: 0.8rem;
+    color: var(--text-muted, #6c757d);
+}

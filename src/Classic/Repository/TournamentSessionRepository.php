@@ -11,6 +11,7 @@ use App\Classic\Entity\SessionClaim;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentSession;
+use App\Classic\Entity\TournamentSessionTeam;
 use App\Common\Entity\Venue;
 use App\Common\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -117,6 +118,36 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
             ->setParameter('status', SessionClaimStatus::Approved->value)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Counts sessions with submitted results per venue (i.e. actually played games).
+     *
+     * @param list<int> $venueIds
+     * @return array<int, int>
+     */
+    public function countPlayedByVenueIds(array $venueIds): array
+    {
+        if ($venueIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('ts')
+            ->select('IDENTITY(ts.venue) AS venueId', 'COUNT(DISTINCT ts.id) AS cnt')
+            ->join(TournamentSessionTeam::class, 'st', 'WITH', 'st.tournamentSession = ts')
+            ->where('ts.venue IN (:venues)')
+            ->andWhere('st.resultsSubmitted = true')
+            ->setParameter('venues', $venueIds)
+            ->groupBy('ts.venue')
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(int) $row['venueId']] = (int) $row['cnt'];
+        }
+
+        return $result;
     }
 
     public function isRepresentativeOfTournament(Player $player, Tournament $tournament): bool

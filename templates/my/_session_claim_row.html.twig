@@ -1,5 +1,15 @@
-                            <tr class="{{ rowIndex is odd ? 'row-light' : 'row-dark' }}"{{ sessionClaimId is defined ? ' data-session-claim-id="' ~ sessionClaimId ~ '"' }}>
-                                <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
+                            <tr class="{{ rowIndex is odd ? 'row-light' : 'row-dark' }}"{{ sessionClaimId is defined ? ' data-session-claim-id="' ~ sessionClaimId ~ '"' }}{{ showActions is defined and showActions ? ' data-venue-sessions="' ~ claim.venuePlayedSessionsCount ~ '"' }}>
+                                <td>
+                                    <a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a>
+                                    {% if showActions is defined and showActions %}
+                                        <span class="venue-sessions-count">
+                                            ({{ 'session_claim.venue_sessions_count'|trans({'%count%': claim.venuePlayedSessionsCount}) }})
+                                        </span>
+                                        {% if claim.venuePlayedSessionsCount == 0 %}
+                                            <span class="warning-badge">{{ 'session_claim.venue_no_sessions_warning'|trans }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
                                 <td>{{ claim.townName }}</td>
                                 <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
                                 <td>{{ claim.estimatedTeams ?? '—' }}</td>

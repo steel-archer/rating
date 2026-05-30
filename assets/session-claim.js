@@ -88,6 +88,13 @@ function initSessionClaimActions() {
         const approveBtn = /** @type {HTMLElement} */ (event.target).closest('[data-session-approve]');
         if (approveBtn) {
             const id = /** @type {HTMLElement} */ (approveBtn).dataset.sessionApprove || '';
+            const row = approveBtn.closest('[data-venue-sessions]');
+            const venueSessions = row ? parseInt(/** @type {HTMLElement} */ (row).dataset.venueSessions || '0') : 1;
+
+            if (venueSessions === 0 && !confirm(trans('session_claim.confirm_approve_no_sessions'))) {
+                return;
+            }
+
             buttonAction(
                 `/my/tournament-claims/${id}/approve`,
                 /** @type {HTMLButtonElement} */ (approveBtn),
@@ -174,6 +181,10 @@ function moveClaimToApproved(btn) {
     if (actionsCell && actionsCell.querySelector('.moderation-actions')) {
         actionsCell.remove();
     }
+
+    // Remove venue warning info (not relevant for approved)
+    row.querySelectorAll('.venue-sessions-count, .warning-badge').forEach(el => el.remove());
+    row.removeAttribute('data-venue-sessions');
     row.removeAttribute('data-session-claim-id');
 
     // Find or create the approved card for this tournament

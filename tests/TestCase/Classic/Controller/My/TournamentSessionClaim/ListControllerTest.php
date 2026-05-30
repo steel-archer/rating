@@ -46,7 +46,7 @@ class ListControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'organizer sees pending claims' => [
+        yield 'organizer sees pending claims with venue sessions info' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_organizer',
             'expectedStatus' => 200,
@@ -54,6 +54,9 @@ class ListControllerTest extends WebTestCase
                 $crawler = $client->getCrawler();
                 $rows = $crawler->filter('table tbody tr');
                 static::assertGreaterThanOrEqual(1, $rows->count());
+                static::assertGreaterThanOrEqual(1, $crawler->filter('[data-venue-sessions]')->count());
+                static::assertStringContainsString('зіграно ігор:', $crawler->text());
+                static::assertStringContainsString('Жодної гри!', $crawler->text());
             },
         ];
 
