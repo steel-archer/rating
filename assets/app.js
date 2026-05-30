@@ -18,6 +18,7 @@ import './contacts.js';
 import './contacts-popover.js';
 import './venue-edit.js';
 import './team-management.js';
+import './user-block.js';
 import { trans } from './trans.js';
 
 let allExpanded = false;

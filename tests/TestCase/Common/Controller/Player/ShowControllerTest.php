@@ -175,5 +175,27 @@ class ShowControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
+        yield 'blocked user notice is visible to everyone' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_lesya']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/user_blocked.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertStringContainsString('Цього користувача заблоковано', $crawler->filter('.flash-error')->text());
+            },
+        ];
+
+        yield 'no blocked notice for active user' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/player/' . $objects['player_shevchenko']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(0, $crawler->filter('.flash-error'));
+            },
+        ];
     }
 }

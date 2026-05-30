@@ -1,0 +1,7 @@
+App\Common\Entity\User:
+    user_blocked:
+        email: 'blocked@example.com'
+        googleId: 'google_blocked_123'
+        roles: []
+        player: '@player_lesya'
+        blockedReason: 'Порушення правил сайту'

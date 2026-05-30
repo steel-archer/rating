@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'block.title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a>{% if blockedUser.playerId %}<span><a href="{{ path('player_show', {id: blockedUser.playerId}) }}">{{ blockedUser.playerName }}</a></span>{% endif %}<span>{{ 'block.title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'block.title'|trans }}</h1>
+
+    <div id="block-flash" class="flash flash-error" hidden></div>
+
+    <div class="card">
+        <dl>
+            <dt><strong>{{ 'common.email'|trans }}</strong></dt>
+            <dd>{{ blockedUser.email }}</dd>
+            {% if blockedUser.playerId %}
+                <dt><strong>{{ 'block.player'|trans }}</strong></dt>
+                <dd><a href="{{ path('player_show', {id: blockedUser.playerId}) }}">{{ blockedUser.playerName }}</a></dd>
+            {% endif %}
+        </dl>
+
+        {% if blockedUser.isBlocked %}
+            <hr class="block-separator">
+            <p><strong>{{ 'block.current_reason'|trans }}:</strong> {{ blockedUser.blockedReason }}</p>
+            <button type="button" class="btn btn-approve block-action-btn" id="unblock-btn"
+                    data-url="{{ path('moderator_user_unblock', {id: blockedUser.id}) }}">
+                {{ 'block.unblock'|trans }}
+            </button>
+        {% else %}
+            <form id="block-form" data-url="{{ path('moderator_user_block_action', {id: blockedUser.id}) }}">
+                <div class="form-group">
+                    <label for="block-reason"><strong>{{ 'block.reason'|trans }}</strong></label>
+                    <textarea id="block-reason" name="reason" class="search-input block-reason-textarea" rows="4" maxlength="500" required minlength="5"></textarea>
+                </div>
+                <button type="submit" class="btn btn-reject">{{ 'block.block'|trans }}</button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

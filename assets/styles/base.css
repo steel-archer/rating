@@ -145,9 +145,13 @@ a:hover {
 .btn-reject {
     background: #dc2626;
     color: #fff;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-reject:hover {
+    color: #fff;
+    text-decoration: none;
     opacity: 0.9;
 }
 

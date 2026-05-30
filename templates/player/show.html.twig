@@ -15,6 +15,10 @@
         </div>
     {% endif %}
 
+    {% if userIsBlocked %}
+        <div class="flash-error">🚫 {{ 'block.player_blocked_notice'|trans }}</div>
+    {% endif %}
+
     {% if contacts %}
         <div class="card" id="player-contacts">
             <h2>{{ 'contact.title'|trans }}</h2>
@@ -80,5 +84,11 @@
         <turbo-frame id="player-tournaments" src="{{ path('player_tournaments', {id: player.id}) }}">
             <p>{{ 'common.loading_tournaments'|trans }}</p>
         </turbo-frame>
+    {% endif %}
+
+    {% if userId and is_granted('ROLE_MODERATOR') and not canEditContacts %}
+        <div class="card">
+            <a href="{{ path('moderator_user_block', {id: userId}) }}" class="btn btn-reject">{{ userIsBlocked ? 'block.blocked_status'|trans : 'block.block'|trans }}</a>
+        </div>
     {% endif %}
 {% endblock %}

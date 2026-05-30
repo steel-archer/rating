@@ -51,6 +51,9 @@ class User implements UserInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $phone = null;
 
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $blockedReason = null;
+
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
@@ -207,6 +210,23 @@ class User implements UserInterface
     public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->blockedReason !== null;
+    }
+
+    public function getBlockedReason(): ?string
+    {
+        return $this->blockedReason;
+    }
+
+    public function setBlockedReason(?string $blockedReason): static
+    {
+        $this->blockedReason = $blockedReason;
 
         return $this;
     }

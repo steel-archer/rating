@@ -36,11 +36,16 @@ class ShowController extends AbstractController
         $isOwnProfile = $currentPlayerId === $id;
         $isModerator = $this->isGranted('ROLE_MODERATOR');
 
-        if ($isOwnProfile || $isModerator) {
-            $playerUser = $playerRepository->findUserByPlayerId($id);
+        $userId = null;
+        $userIsBlocked = false;
+        $playerUser = $playerRepository->findUserByPlayerId($id);
 
-            if ($playerUser !== null) {
+        if ($playerUser !== null) {
+            $userIsBlocked = $playerUser->isBlocked();
+
+            if ($isOwnProfile || $isModerator) {
                 $contacts = $mapper->map($playerUser, UserContactsDTO::class);
+                $userId = $playerUser->getId();
             }
         }
 
@@ -48,6 +53,8 @@ class ShowController extends AbstractController
             'player' => $player,
             'contacts' => $contacts,
             'canEditContacts' => $currentPlayerId === $id,
+            'userId' => $isModerator ? $userId : null,
+            'userIsBlocked' => $userIsBlocked,
         ]);
     }
 }

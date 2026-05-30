@@ -108,3 +108,17 @@
     font-size: 0.8rem;
     color: var(--text-muted, #6c757d);
 }
+
+.block-separator {
+    margin: 20px 0;
+}
+
+.block-reason-textarea {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.block-action-btn {
+    margin-top: 16px;
+}
