@@ -57,9 +57,14 @@
 
 .moderation-actions {
     display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.moderation-actions .moderation-buttons {
+    display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .reject-form {

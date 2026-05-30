@@ -27,9 +27,9 @@
                                 {% if showActions is defined and showActions %}
                                     <td>
                                         <div class="moderation-actions">
-                                            <button type="button" class="btn btn-approve" data-session-approve="{{ claim.sessionId }}">{{ 'moderator.approve'|trans }}</button>
-                                            <div class="reject-form">
-                                                <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-session-reject-comment="{{ claim.sessionId }}">
+                                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-session-reject-comment="{{ claim.sessionId }}">
+                                            <div class="moderation-buttons">
+                                                <button type="button" class="btn btn-approve" data-session-approve="{{ claim.sessionId }}">{{ 'moderator.approve'|trans }}</button>
                                                 <button type="button" class="btn btn-reject" data-session-reject="{{ claim.sessionId }}">{{ 'moderator.reject'|trans }}</button>
                                             </div>
                                         </div>

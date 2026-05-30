@@ -28,8 +28,11 @@
     }
 
     .moderation-actions {
-        flex-direction: column;
         align-items: stretch;
+    }
+
+    .moderation-actions .moderation-buttons {
+        flex-direction: column;
     }
 
     .reject-form {
