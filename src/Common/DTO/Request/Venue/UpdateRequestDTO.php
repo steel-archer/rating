@@ -12,6 +12,7 @@ final readonly class UpdateRequestDTO
      * @param list<int> $representatives
      */
     public function __construct(
+        #[Assert\Count(max: 10)]
         #[Assert\All([new Assert\Positive()])]
         public array $representatives = [],
     ) {

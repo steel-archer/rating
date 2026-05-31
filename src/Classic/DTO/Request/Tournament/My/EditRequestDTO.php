@@ -52,18 +52,22 @@ final readonly class EditRequestDTO
         public ?float $difficulty = null,
 
         /** @var list<int> */
+        #[Assert\Count(max: 20)]
         #[Assert\All([new Assert\Positive()])]
         public array $organizers = [],
 
         /** @var list<int> */
+        #[Assert\Count(max: 20)]
         #[Assert\All([new Assert\Positive()])]
         public array $editors = [],
 
         /** @var list<int> */
+        #[Assert\Count(max: 20)]
         #[Assert\All([new Assert\Positive()])]
         public array $gameJury = [],
 
         /** @var list<int> */
+        #[Assert\Count(max: 20)]
         #[Assert\All([new Assert\Positive()])]
         public array $appealJury = [],
     ) {

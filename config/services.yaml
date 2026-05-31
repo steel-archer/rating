@@ -22,6 +22,10 @@ services:
         arguments:
             $uploadDir: '%app.upload_dir%'
 
+    App\Common\EventSubscriber\SecurityHeadersSubscriber:
+        arguments:
+            $environment: '%kernel.environment%'
+
     App\Common\EventSubscriber\RateLimitSubscriber:
         arguments:
             $rateLimiters: !service_locator

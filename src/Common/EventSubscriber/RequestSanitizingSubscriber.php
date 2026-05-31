@@ -37,7 +37,7 @@ final class RequestSanitizingSubscriber implements EventSubscriberInterface
             $content = $request->getContent();
 
             if ($content !== '') {
-                $decoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+                $decoded = json_decode($content, true, 10, JSON_THROW_ON_ERROR);
 
                 if (is_array($decoded)) {
                     $request->request->replace(self::sanitize($decoded));

@@ -11,7 +11,6 @@ use App\Classic\Security\TournamentOrganizerVoter;
 use App\Classic\Service\TournamentDocumentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/my/tournaments/documents/{id}/download', name: 'my_tournament_document_download', requirements: ['id' => '\d+'], methods: ['GET'])]
@@ -39,6 +38,9 @@ class DownloadDocumentController extends AbstractController
 
         $path = $service->getFilePath($document);
 
-        return $this->file($path, $document->getOriginalName());
+        $response = $this->file($path, $document->getOriginalName());
+        $response->headers->set('Cache-Control', 'no-store, private');
+
+        return $response;
     }
 }

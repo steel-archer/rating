@@ -12,6 +12,7 @@ export function apiPost(url, data) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
         },
         body: data !== undefined ? JSON.stringify(data) : undefined,
     }).then(response =>

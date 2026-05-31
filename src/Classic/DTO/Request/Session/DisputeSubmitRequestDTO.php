@@ -13,6 +13,7 @@ final readonly class DisputeSubmitRequestDTO
      */
     public function __construct(
         #[Assert\NotBlank]
+        #[Assert\Count(max: 100)]
         #[Assert\All([new Assert\Positive()])]
         public array $ids = [],
     ) {
