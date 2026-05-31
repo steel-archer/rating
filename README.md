@@ -7,7 +7,6 @@
 ![ESLint](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/eslint.svg)
 ![Stylelint](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/stylelint.svg)
 ![TwigCS](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/twigcs.svg)
-[![DAST](https://github.com/steel-archer/rating/actions/workflows/dast.yml/badge.svg)](https://github.com/steel-archer/rating/actions/workflows/dast.yml)
 
 Вебсайт рейтингової системи інтелектуальних ігор: турніри, команди, гравці, майданчики.
 
