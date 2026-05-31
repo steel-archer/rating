@@ -69,6 +69,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Setup environment
+        run: composer dump-env prod
+
       - name: Setup database
         run: |
           php bin/console doctrine:migrations:migrate --no-interaction
@@ -76,7 +79,7 @@ jobs:
 
       - name: Start application
         run: |
-          php -S 0.0.0.0:8080 public/index.php > /tmp/php-server.log 2>&1 &
+          php -d expose_php=0 -S 0.0.0.0:8080 -t public .github/router.php > /tmp/php-server.log 2>&1 &
           for i in $(seq 1 15); do curl -sf http://localhost:8080/ > /dev/null && break || sleep 2; done
           if ! curl -sf http://localhost:8080/ > /dev/null; then
             cat /tmp/php-server.log
