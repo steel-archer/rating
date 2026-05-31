@@ -25,11 +25,13 @@ services:
     App\Common\EventSubscriber\RateLimitSubscriber:
         arguments:
             $rateLimiters: !service_locator
+                auth: '@limiter.auth'
                 claim: '@limiter.claim'
                 api_suggest: '@limiter.api_suggest'
                 mutation: '@limiter.mutation'
                 upload: '@limiter.upload'
                 moderator: '@limiter.moderator'
+                read: '@limiter.read'
 
 when@dev: &dev_fixtures
     services:

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Common\Controller\Auth;
 
+use App\Common\Attribute\RateLimited;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[RateLimited('auth')]
 #[Route('/connect/google/check', name: 'auth_google_check')]
 class GoogleCheckController extends AbstractController
 {

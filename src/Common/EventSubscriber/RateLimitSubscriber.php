@@ -19,6 +19,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class RateLimitSubscriber implements EventSubscriberInterface
 {
+    private const string FALLBACK_LIMITER = 'read';
+
     /**
      * @param ServiceLocator<RateLimiterFactory> $rateLimiters
      */
@@ -43,15 +45,9 @@ final readonly class RateLimitSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $attributes = $event->getAttributes(RateLimited::class);
+        $limiterName = $this->resolveLimiterName($event);
 
-        if ($attributes === []) {
-            return;
-        }
-
-        $limiterName = $attributes[0]->limiter;
-
-        if (!$this->rateLimiters->has($limiterName)) {
+        if ($limiterName === null || !$this->rateLimiters->has($limiterName)) {
             return;
         }
 
@@ -94,6 +90,39 @@ final readonly class RateLimitSubscriber implements EventSubscriberInterface
                 );
             });
         }
+    }
+
+    private function resolveLimiterName(ControllerEvent $event): ?string
+    {
+        $attributes = $event->getAttributes(RateLimited::class);
+
+        if ($attributes !== []) {
+            return $attributes[0]->limiter;
+        }
+
+        // Fallback: apply read limiter to GET requests handled by app controllers
+        $request = $event->getRequest();
+
+        if ($request->isMethod('GET') && $this->isAppController($event)) {
+            return self::FALLBACK_LIMITER;
+        }
+
+        return null;
+    }
+
+    private function isAppController(ControllerEvent $event): bool
+    {
+        $controller = $event->getController();
+
+        if (is_array($controller)) {
+            $controller = $controller[0];
+        }
+
+        if (!is_object($controller)) {
+            return false;
+        }
+
+        return str_starts_with($controller::class, 'App\\');
     }
 
     private function resolveIdentity(Request $request): string
