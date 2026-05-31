@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'tournament.detailed_results'|trans }} — {{ tournament.name }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('tournament_index') }}">{{ 'nav.tournaments'|trans }}</a></span><span><a href="{{ path('tournament_show', {id: tournament.id}) }}">{{ tournament.name }}</a></span><span>{{ 'tournament.detailed_results'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'tournament.detailed_results'|trans }}</h1>
+
+    {% if teams is not empty and toursCount > 0 and questionsPerTour > 0 %}
+        <div class="card card-wide">
+            <div class="table-scroll">
+                <table class="results-breakdown" aria-label="{{ 'tournament.detailed_results'|trans }}">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th class="sticky-col">{{ 'common.team'|trans }}</th>
+                            <th>{{ 'common.town'|trans }}</th>
+                            {% for tour in 1..toursCount %}
+                                {% for q in 1..questionsPerTour %}
+                                    <th class="answer-col">{{ (tour - 1) * questionsPerTour + q }}</th>
+                                {% endfor %}
+                                <th class="tour-total-col">Σ{{ tour }}</th>
+                            {% endfor %}
+                            <th class="total-col">{{ 'common.result'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams %}
+                            {% set data = breakdown[team.sessionTeamId] ?? null %}
+                            <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                                <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
+                                <td class="sticky-col">{{ team.oneTimeName ?? team.teamName }}</td>
+                                <td>{{ team.teamTownName }}</td>
+                                {% if data %}
+                                    {% for tour in 0..(toursCount - 1) %}
+                                        {% for q in 0..(questionsPerTour - 1) %}
+                                            {% set idx = tour * questionsPerTour + q %}
+                                            {% if data.answers[idx] == '?' %}
+                                                <td class="answer-col answer-dispute">?</td>
+                                            {% elseif data.answers[idx] == 'X' %}
+                                                <td class="answer-col answer-removed">X</td>
+                                            {% else %}
+                                                <td class="answer-col {{ data.answers[idx] ? 'answer-correct' : 'answer-wrong' }}">{{ data.answers[idx] }}</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <td class="tour-total-col"><strong>{{ data.tourScores[tour] }}</strong></td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for i in 1..(toursCount * questionsPerTour + toursCount) %}
+                                        <td class="answer-col">—</td>
+                                    {% endfor %}
+                                {% endif %}
+                                <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) : '—' }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

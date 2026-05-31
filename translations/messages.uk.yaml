@@ -441,6 +441,8 @@ tournament:
   questions_per_tour: 'Питань у турі'
   registration_deadline: 'Прийом заявок до'
   results: 'Результати'
+  detailed_results: 'Детальні результати'
+  detailed_results_link: '(детальні)'
   results_hidden_notice: 'Результати будуть доступні після %date%'
   results_hidden_until: 'Результати приховані до'
   details_hidden_until: 'Деталізація прихована до'

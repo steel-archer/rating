@@ -166,6 +166,24 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
     /**
      * @return list<TournamentSessionTeam>
      */
+    public function findByTournamentSubmitted(Tournament $tournament): array
+    {
+        return $this->createQueryBuilder('st')
+            ->join('st.team', 'team')
+            ->join('team.town', 'town')
+            ->join('st.tournamentSession', 'ts')
+            ->addSelect('team', 'town')
+            ->where('ts.tournament = :t')
+            ->andWhere('st.resultsSubmitted = true')
+            ->setParameter('t', $tournament)
+            ->orderBy('st.score', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<TournamentSessionTeam>
+     */
     public function findByTournamentPaginated(Tournament $tournament, int $page, int $perPage): array
     {
         return $this->createQueryBuilder('st')

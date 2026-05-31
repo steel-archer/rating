@@ -1,0 +1,125 @@
+App\Classic\Entity\Tournament:
+    tournament_detailed:
+        name: 'Турнір з деталізацією'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15 00:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        toursCount: 2
+        questionsPerTour: 3
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+
+    tournament_detailed_open:
+        name: 'Турнір з відкритою деталізацією'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15 00:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("-1 day 00:00:00"))>'
+        toursCount: 2
+        questionsPerTour: 3
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+
+App\Classic\Entity\TournamentOfficial:
+    official_detailed_organizer:
+        tournament: '@tournament_detailed'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_detailed_open_organizer:
+        tournament: '@tournament_detailed_open'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentSession:
+    session_detailed:
+        tournament: '@tournament_detailed'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
+    session_detailed_open:
+        tournament: '@tournament_detailed_open'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_detailed_alpha:
+        tournamentSession: '@session_detailed'
+        team: '@team_alpha'
+        score: 5
+        resultsSubmitted: true
+    session_team_detailed_beta:
+        tournamentSession: '@session_detailed'
+        team: '@team_beta'
+        score: 3
+        resultsSubmitted: true
+    session_team_detailed_open_alpha:
+        tournamentSession: '@session_detailed_open'
+        team: '@team_alpha'
+        score: 4
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    answer_detailed_alpha_{1..5}:
+        tournamentSessionTeam: '@session_team_detailed_alpha'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_detailed_alpha_no:
+        tournamentSessionTeam: '@session_team_detailed_alpha'
+        questionNumber: 6
+        isCorrect: false
+    answer_detailed_beta_{1..3}:
+        tournamentSessionTeam: '@session_team_detailed_beta'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_detailed_beta_no_{1..3}:
+        tournamentSessionTeam: '@session_team_detailed_beta'
+        questionNumber: '<($current + 3)>'
+        isCorrect: false
+    answer_detailed_open_alpha_{1..4}:
+        tournamentSessionTeam: '@session_team_detailed_open_alpha'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_detailed_open_alpha_no_{1..2}:
+        tournamentSessionTeam: '@session_team_detailed_open_alpha'
+        questionNumber: '<($current + 4)>'
+        isCorrect: false
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    stp_detailed_alpha_shevchenko:
+        tournamentSessionTeam: '@session_team_detailed_alpha'
+        player: '@player_shevchenko'
+        isLegionary: false
+    stp_detailed_beta_franko:
+        tournamentSessionTeam: '@session_team_detailed_beta'
+        player: '@player_franko'
+        isLegionary: false
+    stp_detailed_open_alpha_shevchenko:
+        tournamentSessionTeam: '@session_team_detailed_open_alpha'
+        player: '@player_shevchenko'
+        isLegionary: false
+
+App\Classic\Entity\TeamPlayer:
+    team_player_detailed_alpha_shevchenko:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    team_player_detailed_beta_franko:
+        team: '@team_beta'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: true
+
+App\Classic\Entity\SessionClaim:
+    session_claim_detailed:
+        session: '@session_detailed'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'
+    session_claim_detailed_open:
+        session: '@session_detailed_open'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'

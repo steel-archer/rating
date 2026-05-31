@@ -67,11 +67,41 @@ class TournamentResultService
 
     /**
      * @return list<SessionTeamDTO>
+     *
+     * @throws DbalException
+     * @throws InvalidArgumentException
+     */
+    public function getAllResults(Tournament $tournament): array
+    {
+        $tournamentId = $tournament->getId();
+        $cacheKey = "tournament_results_{$tournamentId}_all";
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($tournament, $tournamentId) {
+            $item->tag([CacheTag::tournament($tournamentId)]);
+            $item->expiresAfter(86400);
+
+            return $this->buildAllResults($tournament);
+        });
+    }
+
+    /**
+     * @return list<SessionTeamDTO>
      * @throws DbalException
      */
     private function buildResults(Tournament $tournament, int $page): array
     {
         $sessionTeams = $this->sessionTeamRepository->findByTournamentPaginated($tournament, $page, self::PER_PAGE);
+
+        return $this->resultBuilder->build($sessionTeams, $tournament->getSeason());
+    }
+
+    /**
+     * @return list<SessionTeamDTO>
+     * @throws DbalException
+     */
+    private function buildAllResults(Tournament $tournament): array
+    {
+        $sessionTeams = $this->sessionTeamRepository->findByTournamentSubmitted($tournament);
 
         return $this->resultBuilder->build($sessionTeams, $tournament->getSeason());
     }

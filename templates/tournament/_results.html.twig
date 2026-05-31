@@ -1,6 +1,6 @@
 <turbo-frame id="tournament-results">
     <div class="card card-wide">
-        <h2>{{ 'tournament.results'|trans }}</h2>
+        <h2>{{ 'tournament.results'|trans }}{% if canViewDetails %} <a href="{{ path('tournament_detailed_results', {id: tournament.id}) }}" data-turbo-frame="_top">{{ 'tournament.detailed_results_link'|trans }}</a>{% endif %}</h2>
         <table aria-label="{{ 'tournament.results'|trans }}">
             <thead>
                 <tr>

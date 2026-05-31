@@ -376,6 +376,8 @@ export default {
     "tournament.questions_per_tour": "Питань у турі",
     "tournament.registration_deadline": "Прийом заявок до",
     "tournament.results": "Результати",
+    "tournament.detailed_results": "Детальні результати",
+    "tournament.detailed_results_link": "(детальні)",
     "tournament.results_hidden_notice": "Результати будуть доступні після %date%",
     "tournament.results_hidden_until": "Результати приховані до",
     "tournament.details_hidden_until": "Деталізація прихована до",
