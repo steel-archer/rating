@@ -10,7 +10,9 @@ RUN echo 'memory_limit = 256M' > /usr/local/etc/php/conf.d/memory-limit.ini
 RUN echo 'expose_php = Off' > /usr/local/etc/php/conf.d/security.ini
 COPY --from=composer:2.9 /usr/bin/composer /usr/bin/composer
 RUN git config --global user.email "dev@rating.local" && git config --global user.name "Rating Dev"
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
+RUN echo 'ServerTokens Prod\nServerSignature Off' > /etc/apache2/conf-available/security-headers.conf \
+    && a2enconf security-headers
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
