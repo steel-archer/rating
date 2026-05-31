@@ -44,9 +44,9 @@
         {% endif %}
 
         <div class="card">
-            <h2>{{ 'team_management.roster'|trans }}</h2>
+            <h2>{{ 'team_management.squad'|trans }}</h2>
             {% if team.isCaptain %}
-                <p class="meta" style="margin-bottom: 20px;">{{ 'team_management.roster_hint'|trans }}</p>
+                <p class="meta" style="margin-bottom: 20px;">{{ 'team_management.squad_hint'|trans }}</p>
             {% endif %}
 
             {% if team.players is not empty %}
@@ -62,7 +62,7 @@
                     </thead>
                     <tbody>
                         {% for player in team.players %}
-                            <tr>
+                            <tr data-player-id="{{ player.playerId }}">
                                 <td>
                                     {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
                                 </td>
@@ -99,8 +99,12 @@
                         </div>
                     </div>
                     <button type="button" id="add-player-btn" class="btn btn-primary">{{ 'squad.add_player'|trans }}</button>
-                    <span id="roster-status" class="save-status" hidden></span>
+                    <span id="squad-status" class="save-status" hidden></span>
                 </form>
+                <div id="squad-save-section" style="margin-top: 24px;" hidden>
+                    <button type="button" id="save-squad-btn" class="btn btn-primary">{{ 'team_management.save_squad'|trans }}</button>
+                    <button type="button" id="cancel-squad-btn" class="btn btn-suggestion">{{ 'team_management.cancel_changes'|trans }}</button>
+                </div>
             {% endif %}
         </div>
 
@@ -122,7 +126,7 @@
                                     {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-small btn-suggestion" data-add-player-quick="{{ player.playerId }}">{{ 'team_management.add_to_roster'|trans }}</button>
+                                    <button type="button" class="btn btn-small btn-suggestion" data-add-player-quick="{{ player.playerId }}">{{ 'team_management.add_to_squad'|trans }}</button>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -149,7 +153,7 @@
                                     {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-small btn-suggestion" data-add-player-quick="{{ player.playerId }}">{{ 'team_management.add_to_roster'|trans }}</button>
+                                    <button type="button" class="btn btn-small btn-suggestion" data-add-player-quick="{{ player.playerId }}">{{ 'team_management.add_to_squad'|trans }}</button>
                                 </td>
                             </tr>
                         {% endfor %}

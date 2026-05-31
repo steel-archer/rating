@@ -1,0 +1,68 @@
+App\Common\Entity\Player:
+    player_fill_1:
+        lastName: 'Стус'
+        firstName: 'Василь'
+        patronymic: 'Семенович'
+        town: '@town_kyiv'
+    player_fill_2:
+        lastName: 'Костенко'
+        firstName: 'Ліна'
+        patronymic: null
+        town: '@town_kyiv'
+    player_fill_3:
+        lastName: 'Симоненко'
+        firstName: 'Василь'
+        patronymic: 'Андрійович'
+        town: '@town_kyiv'
+    player_fill_4:
+        lastName: 'Тичина'
+        firstName: 'Павло'
+        patronymic: 'Григорович'
+        town: '@town_kyiv'
+    player_fill_5:
+        lastName: 'Рильський'
+        firstName: 'Максим'
+        patronymic: 'Тадейович'
+        town: '@town_kyiv'
+    player_fill_6:
+        lastName: 'Довженко'
+        firstName: 'Олександр'
+        patronymic: 'Петрович'
+        town: '@town_kyiv'
+    player_extra:
+        lastName: 'Сковорода'
+        firstName: 'Григорій'
+        patronymic: 'Савич'
+        town: '@town_kyiv'
+
+App\Classic\Entity\TeamPlayer:
+    tp_fill_1:
+        team: '@team_alpha'
+        player: '@player_fill_1'
+        season: '@season_current'
+        isCaptain: false
+    tp_fill_2:
+        team: '@team_alpha'
+        player: '@player_fill_2'
+        season: '@season_current'
+        isCaptain: false
+    tp_fill_3:
+        team: '@team_alpha'
+        player: '@player_fill_3'
+        season: '@season_current'
+        isCaptain: false
+    tp_fill_4:
+        team: '@team_alpha'
+        player: '@player_fill_4'
+        season: '@season_current'
+        isCaptain: false
+    tp_fill_5:
+        team: '@team_alpha'
+        player: '@player_fill_5'
+        season: '@season_current'
+        isCaptain: false
+    tp_fill_6:
+        team: '@team_alpha'
+        player: '@player_fill_6'
+        season: '@season_current'
+        isCaptain: false

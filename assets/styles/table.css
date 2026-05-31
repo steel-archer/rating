@@ -157,3 +157,16 @@ tr.row-dark { background: #e8e8ed; }
     text-align: center;
     padding: 6px 8px;
 }
+
+tr.row-pending-remove {
+    opacity: 0.4;
+    text-decoration: line-through;
+}
+
+tr.row-pending-add {
+    background: #e8f5e9;
+}
+
+tr.row-pending-add-source {
+    opacity: 0.4;
+}
