@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Classic\Service;
 
-use App\Classic\DTO\Request\TeamManagement\AddPlayerRequestDTO;
-use App\Classic\DTO\Request\TeamManagement\RemovePlayerRequestDTO;
-use App\Classic\DTO\Request\TeamManagement\SetCaptainRequestDTO;
 use App\Classic\DTO\Request\TeamManagement\UpdateSquadRequestDTO;
 use App\Classic\DTO\Request\TeamManagement\UpdateTeamRequestDTO;
 use App\Classic\DTO\Response\My\TeamManagementDTO;
@@ -149,71 +146,6 @@ class TeamManagementService
      * @throws LogicException
      * @throws NonUniqueResultException
      */
-    public function addPlayer(Player $captain, AddPlayerRequestDTO $dto): void
-    {
-        [$team, $season] = $this->resolveTeamAndSeason($captain);
-
-        $currentPlayers = $this->teamPlayerRepository->findByTeamAndSeason($team, $season);
-        if (count($currentPlayers) >= self::MAX_PLAYERS) {
-            throw new LogicException('team_management.error.max_players');
-        }
-
-        $player = $this->playerRepository->find($dto->playerId)
-            ?? throw new LogicException('team_management.error.player_not_found');
-
-        foreach ($currentPlayers as $teamPlayer) {
-            if ($teamPlayer->getPlayer()->getId() === $dto->playerId) {
-                throw new LogicException('team_management.error.already_in_team');
-            }
-        }
-
-        $existingEntry = $this->teamPlayerRepository->findBy([
-            'player' => $player,
-            'season' => $season,
-        ]);
-        if ($existingEntry !== []) {
-            throw new LogicException('team_management.error.player_in_another_team');
-        }
-
-        $teamPlayer = new TeamPlayer();
-        $teamPlayer->setTeam($team);
-        $teamPlayer->setPlayer($player);
-        $teamPlayer->setSeason($season);
-
-        $this->entityManager->persist($teamPlayer);
-        $this->entityManager->flush();
-
-        $this->invalidateTeamCache($team);
-        $this->cache->invalidateTags([CacheTag::playerSquad($dto->playerId)]);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     * @throws LogicException
-     * @throws NonUniqueResultException
-     */
-    public function removePlayer(Player $captain, RemovePlayerRequestDTO $dto): void
-    {
-        [$team, $season] = $this->resolveTeamAndSeason($captain);
-
-        if ($dto->playerId === $captain->getId()) {
-            throw new LogicException('team_management.error.cannot_remove_self');
-        }
-
-        $targetEntry = $this->findPlayerEntry($team, $season, $dto->playerId);
-
-        $this->entityManager->remove($targetEntry);
-        $this->entityManager->flush();
-
-        $this->invalidateTeamCache($team);
-        $this->cache->invalidateTags([CacheTag::playerSquad($dto->playerId)]);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     * @throws LogicException
-     * @throws NonUniqueResultException
-     */
     public function updateSquad(Player $captain, UpdateSquadRequestDTO $dto): void
     {
         [$team, $season] = $this->resolveTeamAndSeason($captain);
@@ -319,26 +251,6 @@ class TeamManagementService
         if ($tags !== []) {
             $this->cache->invalidateTags($tags);
         }
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     * @throws LogicException
-     * @throws NonUniqueResultException
-     */
-    public function setCaptain(Player $currentCaptain, SetCaptainRequestDTO $dto): void
-    {
-        [$team, $season] = $this->resolveTeamAndSeason($currentCaptain);
-
-        $captainEntry = $this->teamPlayerRepository->findCaptainEntry($currentCaptain, $season);
-        $newCaptainEntry = $this->findPlayerEntry($team, $season, $dto->playerId);
-
-        $captainEntry->setIsCaptain(false);
-        $newCaptainEntry->setIsCaptain(true);
-
-        $this->entityManager->flush();
-
-        $this->invalidateTeamCache($team);
     }
 
     /**
