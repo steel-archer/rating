@@ -28,8 +28,23 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       DATABASE_URL: mysql://rating_user:rating_pass@127.0.0.1:3306/rating?serverVersion=9.3&charset=utf8mb4
+      REDIS_URL: redis://127.0.0.1:6379/1
+      REDIS_SESSION_URL: redis://127.0.0.1:6379/2
+      REDIS_RATE_LIMITER_URL: redis://127.0.0.1:6379/3
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      DEFAULT_URI: http://localhost:8080
       APP_ENV: prod
       APP_SECRET: dast_secret_key_change_me
       GOOGLE_CLIENT_ID: fake
@@ -42,7 +57,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.5'
-          extensions: intl, pdo_mysql
+          extensions: intl, pdo_mysql, redis
 
       - name: Cache Composer
         uses: actions/cache@v5
@@ -52,17 +67,21 @@ jobs:
           restore-keys: composer-
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Setup database
         run: |
           php bin/console doctrine:migrations:migrate --no-interaction
-          php bin/console cache:clear
+          php bin/console cache:warmup
 
       - name: Start application
         run: |
-          php -S 0.0.0.0:8080 -t public/ > /dev/null 2>&1 &
-          for i in $(seq 1 10); do curl -sf http://localhost:8080/ > /dev/null && break || sleep 1; done
+          php -S 0.0.0.0:8080 public/index.php > /tmp/php-server.log 2>&1 &
+          for i in $(seq 1 15); do curl -sf http://localhost:8080/ > /dev/null && break || sleep 2; done
+          if ! curl -sf http://localhost:8080/ > /dev/null; then
+            cat /tmp/php-server.log
+            exit 1
+          fi
 
       - name: ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.14.0
