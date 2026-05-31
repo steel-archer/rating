@@ -46,7 +46,7 @@
         <div class="card">
             <h2>{{ 'team_management.squad'|trans }}</h2>
             {% if team.isCaptain %}
-                <p class="meta" style="margin-bottom: 20px;">{{ 'team_management.squad_hint'|trans }}</p>
+                <p class="meta mb-20">{{ 'team_management.squad_hint'|trans }}</p>
             {% endif %}
 
             {% if team.players is not empty %}
@@ -89,7 +89,7 @@
             {% endif %}
 
             {% if team.isCaptain %}
-                <form id="add-player-form" class="tournament-form" style="margin-top: 24px;">
+                <form id="add-player-form" class="tournament-form mt-24">
                     <div class="form-group">
                         <label>{{ 'team_management.add_player'|trans }}</label>
                         <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
@@ -101,7 +101,7 @@
                     <button type="button" id="add-player-btn" class="btn btn-primary">{{ 'squad.add_player'|trans }}</button>
                     <span id="squad-status" class="save-status" hidden></span>
                 </form>
-                <div id="squad-save-section" style="margin-top: 24px;" hidden>
+                <div id="squad-save-section" class="mt-24" hidden>
                     <button type="button" id="save-squad-btn" class="btn btn-primary">{{ 'team_management.save_squad'|trans }}</button>
                     <button type="button" id="cancel-squad-btn" class="btn btn-suggestion">{{ 'team_management.cancel_changes'|trans }}</button>
                 </div>
@@ -111,7 +111,7 @@
         {% if team.isCaptain and team.seasonPlayers is not empty %}
             <div class="card">
                 <h2>{{ 'team_management.season_players'|trans }}</h2>
-                <p class="meta" style="margin-bottom: 12px;">{{ 'team_management.season_players_hint'|trans }}</p>
+                <p class="meta mb-12">{{ 'team_management.season_players_hint'|trans }}</p>
                 <table>
                     <thead>
                         <tr>
@@ -138,7 +138,7 @@
         {% if team.isCaptain and team.previousSeasonPlayers is not empty %}
             <div class="card">
                 <h2>{{ 'team_management.previous_season_players'|trans }}</h2>
-                <p class="meta" style="margin-bottom: 12px;">{{ 'team_management.previous_season_players_hint'|trans }}</p>
+                <p class="meta mb-12">{{ 'team_management.previous_season_players_hint'|trans }}</p>
                 <table>
                     <thead>
                         <tr>
@@ -165,7 +165,7 @@
         {% if not team.isCaptain %}
             <div class="card">
                 <h2>{{ 'team_management.leave_team'|trans }}</h2>
-                <p class="meta" style="margin-bottom: 12px;">{{ 'team_management.leave_team_hint'|trans }}</p>
+                <p class="meta mb-12">{{ 'team_management.leave_team_hint'|trans }}</p>
                 <button type="button" id="leave-team-btn" class="btn btn-reject">{{ 'team_management.leave_team'|trans }}</button>
                 <span id="leave-status" class="save-status" hidden></span>
             </div>
