@@ -224,7 +224,8 @@ class TeamManagementService
             if (in_array($dto->newCaptainId, $removePlayerIds, true)) {
                 throw new LogicException('team_management.error.player_not_in_team');
             }
-            if (!in_array($dto->newCaptainId, $currentPlayerIds, true)
+            if (
+                !in_array($dto->newCaptainId, $currentPlayerIds, true)
                 && !in_array($dto->newCaptainId, $addPlayerIds, true)
             ) {
                 throw new LogicException('team_management.error.player_not_in_team');

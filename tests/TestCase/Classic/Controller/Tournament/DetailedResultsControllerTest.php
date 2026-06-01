@@ -80,10 +80,10 @@ class DetailedResultsControllerTest extends WebTestCase
                 // First team (alpha, score 5) should have correct answers marked
                 $firstRow = $rows->eq(0);
                 $correctCells = $firstRow->filter('td.answer-correct');
-                static::assertSame(5, $correctCells->count());
+                static::assertCount(5, $correctCells);
 
                 $wrongCells = $firstRow->filter('td.answer-wrong');
-                static::assertSame(1, $wrongCells->count());
+                static::assertCount(1, $wrongCells);
             },
         ];
 
@@ -101,10 +101,10 @@ class DetailedResultsControllerTest extends WebTestCase
                 static::assertCount(1, $rows);
 
                 $correctCells = $rows->eq(0)->filter('td.answer-correct');
-                static::assertSame(4, $correctCells->count());
+                static::assertCount(4, $correctCells);
 
                 $wrongCells = $rows->eq(0)->filter('td.answer-wrong');
-                static::assertSame(2, $wrongCells->count());
+                static::assertCount(2, $wrongCells);
             },
         ];
 
