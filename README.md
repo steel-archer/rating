@@ -201,6 +201,12 @@ docker compose exec app composer audit
 docker compose exec app symfony security:check
 ```
 
+Усі перевірки якості (окрім тестів) одним скриптом:
+
+```bash
+./bin/lint.sh
+```
+
 ## Вирішення проблем
 
 **Docker не запускається:**

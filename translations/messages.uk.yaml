@@ -360,6 +360,12 @@ tournament:
   deleted: 'Турнір видалено'
   difficulty: 'Складність'
   discussion_link: 'Обговорення'
+  period:
+    active: 'Активні'
+    all: 'Усі турніри'
+    future: 'Майбутні'
+    label: 'Період'
+    past: 'Минулі'
   document:
     error:
       invalid_type: 'Дозволені формати: PDF, DOC, DOCX, ODT'

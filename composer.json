@@ -51,6 +51,7 @@
         "symfony/web-link": "8.0.*",
         "symfony/yaml": "8.0.*",
         "twig/extra-bundle": "^3.24",
+        "twig/string-extra": "^3.24",
         "twig/twig": "^3.27"
     },
     "config": {

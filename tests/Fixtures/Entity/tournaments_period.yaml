@@ -1,0 +1,37 @@
+App\Classic\Entity\Tournament:
+    tournament_past:
+        name: 'Зимовий кубок'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2026-01-10 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2026-01-20 00:00:00"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        difficulty: 3.0
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+    tournament_active:
+        name: 'Літній марафон'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2026-06-20 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2026-07-10 00:00:00"))>'
+        toursCount: 4
+        questionsPerTour: 15
+        difficulty: 4.0
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+    tournament_future:
+        name: 'Осінній вітер'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2026-09-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2026-09-15 00:00:00"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        difficulty: 3.5
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+    tournament_draft:
+        name: 'Чернетка'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2026-08-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2026-08-10 00:00:00"))>'
+        toursCount: 2
+        questionsPerTour: 10
+        difficulty: 2.5
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'

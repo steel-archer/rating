@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Classic\DTO\Request;
 
+use App\Classic\Enum\TournamentPeriod;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class TournamentListRequestDTO
@@ -14,6 +15,8 @@ final readonly class TournamentListRequestDTO
 
         #[Assert\Length(max: 255)]
         public ?string $name = null,
+
+        public ?TournamentPeriod $period = null,
     ) {
     }
 
@@ -24,6 +27,7 @@ final readonly class TournamentListRequestDTO
     {
         return array_filter([
             'name' => $this->name,
+            'period' => $this->period?->value,
         ], static fn($v) => $v !== null && $v !== '');
     }
 }

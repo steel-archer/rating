@@ -66,10 +66,11 @@ class TournamentService
     public function getList(TournamentListRequestDTO $requestDto): array
     {
         $cacheKey = 'tournament_list_' . md5(serialize($requestDto));
+        $ttl = $requestDto->period !== null ? 15 * 60 : 60 * 60;
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($requestDto) {
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($requestDto, $ttl) {
             $item->tag([CacheTag::TournamentList->value]);
-            $item->expiresAfter(3600);
+            $item->expiresAfter($ttl);
 
             return [
                 'tournaments' => $this->tournamentRepository->findForList($requestDto),

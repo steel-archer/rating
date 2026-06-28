@@ -119,5 +119,78 @@ class ListControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
+        yield 'filter by period=past shows only past tournaments' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?period=past',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_period.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Зимовий кубок', $rows->eq(0)->text());
+            },
+        ];
+
+        yield 'filter by period=active shows only active tournaments' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?period=active',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_period.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Літній марафон', $rows->eq(0)->text());
+            },
+        ];
+
+        yield 'filter by period=future shows only future tournaments' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?period=future',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_period.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Осінній вітер', $rows->eq(0)->text());
+            },
+        ];
+
+        yield 'filter by period combined with name' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?period=past&name=%D0%97%D0%B8%D0%BC',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_period.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Зимовий кубок', $rows->eq(0)->text());
+            },
+        ];
+
+        yield 'filter by period=active with non-matching name returns empty' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?period=active&name=%D0%97%D0%B8%D0%BC',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_period.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(0, $crawler->filter('table tbody tr td a'));
+            },
+        ];
+
+        yield 'invalid period value is ignored gracefully' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?period=invalid',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_period.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 404,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
     }
 }

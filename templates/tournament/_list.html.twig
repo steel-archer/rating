@@ -3,6 +3,12 @@
         <form action="{{ path('tournament_list') }}" method="get">
             <div class="search-row">
                 <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="{{ 'common.name'|trans }}" class="search-input">
+                <select name="period" class="search-input" aria-label="{{ 'tournament.period.label'|trans }}">
+                    <option value="">{{ 'tournament.period.all'|trans }}</option>
+                    <option value="past"{{ (filters.period ?? '') == 'past' ? ' selected' : '' }}>{{ 'tournament.period.past'|trans }}</option>
+                    <option value="active"{{ (filters.period ?? '') == 'active' ? ' selected' : '' }}>{{ 'tournament.period.active'|trans }}</option>
+                    <option value="future"{{ (filters.period ?? '') == 'future' ? ' selected' : '' }}>{{ 'tournament.period.future'|trans }}</option>
+                </select>
                 <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
             </div>
         </form>

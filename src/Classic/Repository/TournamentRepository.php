@@ -10,10 +10,12 @@ use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentModerationClaim;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
+use App\Classic\Enum\TournamentPeriod;
 use App\Classic\Enum\TournamentStatus;
 use App\Common\Entity\Player;
 use App\Common\Helper\LikeEscape;
 use App\Common\Mapping\Mapper;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -127,6 +129,23 @@ class TournamentRepository extends ServiceEntityRepository
         if ($requestDto->name !== null && $requestDto->name !== '') {
             $qb->andWhere('t.name LIKE :name')
                 ->setParameter('name', LikeEscape::contains($requestDto->name));
+        }
+
+        if ($requestDto->period !== null) {
+            $now = new DateTimeImmutable();
+
+            match ($requestDto->period) {
+                TournamentPeriod::Past => $qb
+                    ->andWhere('t.endedAt < :now')
+                    ->setParameter('now', $now),
+                TournamentPeriod::Active => $qb
+                    ->andWhere('t.startedAt <= :now')
+                    ->andWhere('(t.endedAt IS NULL OR t.endedAt >= :now)')
+                    ->setParameter('now', $now),
+                TournamentPeriod::Future => $qb
+                    ->andWhere('(t.startedAt IS NULL OR t.startedAt > :now)')
+                    ->setParameter('now', $now),
+            };
         }
 
         return $qb;
