@@ -162,12 +162,25 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
                 if ($seasonIndex === 0) {
                     $squad = $basePlayers;
                 } else {
-                    $squad = $basePlayers;
-                    $swapCount = $faker->numberBetween(1, min(2, count($squad)));
+                    // Start with basePlayers, but replace any already used in season 2
+                    $squad = [];
                     $excluded = $usedInSeason[1];
-                    foreach ($squad as $pi) {
-                        $excluded[$pi] = true;
+
+                    foreach ($basePlayers as $pi) {
+                        if (isset($excluded[$pi])) {
+                            $replacement = self::pickPlayers($faker, $townIndex, $townCount, 1, $excluded);
+                            if ($replacement !== []) {
+                                $squad[] = $replacement[0];
+                                $excluded[$replacement[0]] = true;
+                            }
+                        } else {
+                            $squad[] = $pi;
+                            $excluded[$pi] = true;
+                        }
                     }
+
+                    // Additional random swaps for roster variety
+                    $swapCount = $faker->numberBetween(1, min(2, count($squad)));
                     for ($s = 0; $s < $swapCount; $s++) {
                         $newPlayer = self::pickPlayers($faker, $townIndex, $townCount, 1, $excluded);
                         if ($newPlayer !== []) {
@@ -175,6 +188,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
                             $squad[$s] = $newPlayer[0];
                         }
                     }
+
                     foreach ($squad as $pi) {
                         $usedInSeason[1][$pi] = true;
                     }
