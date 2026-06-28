@@ -44,7 +44,10 @@
             <div id="save-status" class="form-error" hidden></div>
             <div class="form-group">
                 <label for="edit-date">{{ 'session_claim.estimated_date'|trans }}</label>
-                <input type="date" id="edit-date" name="playedAt" value="{{ claim.playedAt ? claim.playedAt|date('Y-m-d') : '' }}" {{ not isRegistrationOpen ? 'disabled' : '' }}>
+                <input type="date" id="edit-date" name="playedAt" value="{{ claim.playedAt ? claim.playedAt|date('Y-m-d') : '' }}"{% if tournamentStartedAt %} min="{{ tournamentStartedAt|date('Y-m-d') }}"{% endif %}{% if tournamentEndedAt %} max="{{ tournamentEndedAt|date('Y-m-d') }}"{% endif %} {{ not isRegistrationOpen ? 'disabled' : '' }}>
+                {% if tournamentStartedAt or tournamentEndedAt %}
+                    <small class="hint">{{ 'session_claim.date_range_hint'|trans({'%from%': tournamentStartedAt ? tournamentStartedAt|date('d.m.Y') : '—', '%to%': tournamentEndedAt ? tournamentEndedAt|date('d.m.Y') : '—'}) }}</small>
+                {% endif %}
             </div>
             <div class="form-group">
                 <label for="edit-teams">{{ 'session_claim.estimated_teams'|trans }}</label>

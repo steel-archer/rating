@@ -30,7 +30,10 @@
             </div>
             <div class="form-group">
                 <label for="claim-date">{{ 'session_claim.estimated_date'|trans }}</label>
-                <input type="date" id="claim-date" name="playedAt">
+                <input type="date" id="claim-date" name="playedAt"{% if tournament.startedAt %} min="{{ tournament.startedAt|date('Y-m-d') }}"{% endif %}{% if tournament.endedAt %} max="{{ tournament.endedAt|date('Y-m-d') }}"{% endif %}>
+                {% if tournament.startedAt or tournament.endedAt %}
+                    <small class="hint">{{ 'session_claim.date_range_hint'|trans({'%from%': tournament.startedAt ? tournament.startedAt|date('d.m.Y') : '—', '%to%': tournament.endedAt ? tournament.endedAt|date('d.m.Y') : '—'}) }}</small>
+                {% endif %}
             </div>
             <div class="form-group">
                 <label for="claim-teams">{{ 'session_claim.estimated_teams'|trans }}</label>

@@ -241,6 +241,7 @@ session_claim:
     not_representative: 'Ви не є представником цього майданчика'
     registration_closed: 'Реєстрацію на цей турнір завершено'
   estimated_date: 'Дата'
+  date_range_hint: 'від %from% до %to%'
   estimated_teams: 'Орієнтовна кількість команд'
   my_empty: 'У вас немає заявок на відіграші'
   my_title: 'Мої заявки на відіграші'

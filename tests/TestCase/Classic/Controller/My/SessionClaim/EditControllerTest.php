@@ -55,6 +55,15 @@ class EditControllerTest extends WebTestCase
             'afterCallback' => static function (KernelBrowser $client) {
                 $crawler = $client->getCrawler();
                 static::assertCount(1, $crawler->filter('#session-claim-edit-form'));
+
+                $dateInput = $crawler->filter('#edit-date');
+                static::assertSame('2025-06-01', $dateInput->attr('min'));
+                static::assertSame('2025-06-30', $dateInput->attr('max'));
+
+                $hint = $crawler->filter('#session-claim-edit-form .hint');
+                static::assertCount(1, $hint);
+                static::assertStringContainsString('01.06.2025', $hint->text());
+                static::assertStringContainsString('30.06.2025', $hint->text());
             },
         ];
 

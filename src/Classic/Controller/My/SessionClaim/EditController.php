@@ -55,6 +55,8 @@ class EditController extends AbstractController
             && $session->getTournament()->isSubmissionOpen();
 
         $isRegistrationOpen = $session->getTournament()->isRegistrationOpen();
+        $tournamentStartedAt = $session->getTournament()->getStartedAt();
+        $tournamentEndedAt = $session->getTournament()->getEndedAt();
 
         $teams = [];
         if ($canEnterResults) {
@@ -66,6 +68,8 @@ class EditController extends AbstractController
             'documents' => $documents,
             'canEnterResults' => $canEnterResults,
             'isRegistrationOpen' => $isRegistrationOpen,
+            'tournamentStartedAt' => $tournamentStartedAt,
+            'tournamentEndedAt' => $tournamentEndedAt,
             'teams' => $teams,
         ]);
     }

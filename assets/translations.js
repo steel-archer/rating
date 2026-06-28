@@ -196,6 +196,7 @@ export default {
     "session_claim.error.not_representative": "Ви не є представником цього майданчика",
     "session_claim.error.registration_closed": "Реєстрацію на цей турнір завершено",
     "session_claim.estimated_date": "Дата",
+    "session_claim.date_range_hint": "від %from% до %to%",
     "session_claim.estimated_teams": "Орієнтовна кількість команд",
     "session_claim.my_empty": "У вас немає заявок на відіграші",
     "session_claim.my_title": "Мої заявки на відіграші",
