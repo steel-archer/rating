@@ -132,6 +132,30 @@ class ShowControllerTest extends WebTestCase
             },
         ];
 
+        yield 'show tournament with discussion link displays it' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $link = $crawler->filter('a[href="https://discuss.example.com/spring-cup"]');
+                static::assertCount(1, $link);
+            },
+        ];
+
+        yield 'show tournament without discussion link hides it' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_autumn']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $link = $crawler->filter('a[href*="discuss"]');
+                static::assertCount(0, $link);
+            },
+        ];
+
         yield 'not found for non-existent tournament' => [
             'method' => 'GET',
             'uri' => '/tournament/999999',

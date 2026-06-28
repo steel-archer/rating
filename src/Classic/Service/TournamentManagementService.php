@@ -120,6 +120,7 @@ class TournamentManagementService
         $tournament->setToursCount($dto->toursCount);
         $tournament->setQuestionsPerTour($dto->questionsPerTour);
         $tournament->setDifficulty($dto->difficulty);
+        $tournament->setDiscussionLink($dto->discussionLink);
         $tournament->setSeason($startedAt ? $this->seasonRepository->findByDate($startedAt) : null);
 
         $this->syncOfficials($tournament, $dto);

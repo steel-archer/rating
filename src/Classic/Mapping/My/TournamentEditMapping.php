@@ -32,6 +32,7 @@ final class TournamentEditMapping implements MappingInterface
             toursCount: $source->getToursCount(),
             questionsPerTour: $source->getQuestionsPerTour(),
             difficulty: $source->getDifficulty(),
+            discussionLink: $source->getDiscussionLink(),
             createdByPlayerId: $source->getCreatedBy()->getId(),
         );
     }

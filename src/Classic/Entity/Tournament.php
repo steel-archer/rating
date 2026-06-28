@@ -68,6 +68,9 @@ class Tournament
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $appealDeadline = null;
 
+    #[ORM\Column(length: 512, nullable: true)]
+    private ?string $discussionLink = null;
+
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
@@ -227,6 +230,18 @@ class Tournament
     {
         return $this->appealDeadline !== null
             && $this->appealDeadline > new DateTimeImmutable();
+    }
+
+    public function getDiscussionLink(): ?string
+    {
+        return $this->discussionLink;
+    }
+
+    public function setDiscussionLink(?string $discussionLink): static
+    {
+        $this->discussionLink = $discussionLink;
+
+        return $this;
     }
 
     public function getToursCount(): ?int

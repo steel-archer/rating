@@ -12,6 +12,7 @@ App\Classic\Entity\Tournament:
         questionsPerTour: 12
         difficulty: 3.5
         trueDl: 2.8
+        discussionLink: 'https://discuss.example.com/spring-cup'
         status: '<(App\Classic\Enum\TournamentStatus::Published)>'
     tournament_autumn:
         name: 'Осінній бриз'

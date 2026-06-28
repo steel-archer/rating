@@ -41,6 +41,7 @@ final class TournamentMapping implements MappingInterface
             questionsPerTour: $source->getQuestionsPerTour(),
             difficulty: $source->getDifficulty(),
             trueDl: $source->getTrueDl(),
+            discussionLink: $source->getDiscussionLink(),
             teamCount: $context['teamCount'] ?? 0,
             sessionCount: $context['sessionCount'] ?? 0,
             disputeCount: $context['disputeCount'] ?? 0,

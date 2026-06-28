@@ -54,7 +54,12 @@ export function transError(errorKey) {
     const key = colonIndex === -1 ? errorKey : errorKey.substring(0, colonIndex);
     const translated = trans(key);
     if (translated === key) {
-        return trans('common.error');
+        // If it looks like a translation key (e.g. "some.key.name") but wasn't found — fallback
+        if (/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(key)) {
+            return trans('common.error');
+        }
+        // Otherwise it's already a human-readable message from the backend
+        return errorKey;
     }
     if (colonIndex !== -1) {
         return translated.replace('%name%', errorKey.substring(colonIndex + 1));

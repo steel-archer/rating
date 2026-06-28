@@ -821,6 +821,100 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
+        yield 'update with valid discussion link saves it' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null,
+                    'difficulty' => null,
+                    'discussionLink' => 'https://example.com/discussion',
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_draft']->getId());
+                static::assertSame('https://example.com/discussion', $tournament->getDiscussionLink());
+            },
+        ];
+
+        yield 'update with null discussion link clears it' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null,
+                    'difficulty' => null,
+                    'discussionLink' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_draft']->getId());
+                static::assertNull($tournament->getDiscussionLink());
+            },
+        ];
+
+        yield 'update with invalid discussion link returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null,
+                    'difficulty' => null,
+                    'discussionLink' => 'not-a-valid-url',
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('tournament.error.invalid_discussion_link', $json['error']);
+            },
+        ];
+
         yield 'create adds creator as organizer' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',

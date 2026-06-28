@@ -22,6 +22,7 @@ final readonly class TournamentEditDTO
         public ?int $toursCount,
         public ?int $questionsPerTour,
         public ?float $difficulty,
+        public ?string $discussionLink,
         public int $createdByPlayerId,
     ) {
     }

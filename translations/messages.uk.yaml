@@ -359,6 +359,7 @@ town:
 tournament:
   deleted: 'Турнір видалено'
   difficulty: 'Складність'
+  discussion_link: 'Обговорення'
   document:
     error:
       invalid_type: 'Дозволені формати: PDF, DOC, DOCX, ODT'
@@ -375,6 +376,7 @@ tournament:
     end_before_start: 'Дата завершення має бути пізніше дати початку'
     end_in_past: 'Дата завершення не може бути в минулому'
     invalid_date: 'Невірний формат дати'
+    invalid_discussion_link: 'Посилання має бути коректним URL'
     results_hidden_before_end: 'Дата приховування результатів має бути пізніше дати завершення'
     registration_before_start: 'Дедлайн реєстрації не може бути раніше дати початку'
     registration_after_end: 'Дедлайн реєстрації не може бути пізніше дати завершення'
@@ -415,6 +417,7 @@ tournament:
     submission_deadline_hint: 'Представники можуть подавати склади та результати до 00:00:00 вказаної дати'
     appeal_deadline: 'Дедлайн подачі апеляцій'
     appeal_deadline_hint: 'Гравці можуть подавати апеляції до 00:00:00 вказаної дати'
+    discussion_link_hint: 'Посилання на сторінку обговорення питань турніру'
     save: 'Зберегти'
     sort: 'Сортування'
     start_datetime: 'Дата початку'

@@ -314,6 +314,7 @@ export default {
     "tournament.error.end_before_start": "Дата завершення має бути пізніше дати початку",
     "tournament.error.end_in_past": "Дата завершення не може бути в минулому",
     "tournament.error.invalid_date": "Невірний формат дати",
+    "tournament.error.invalid_discussion_link": "Посилання має бути коректним URL",
     "tournament.error.results_hidden_before_end": "Дата приховування результатів має бути пізніше дати завершення",
     "tournament.error.registration_before_start": "Дедлайн реєстрації не може бути раніше дати початку",
     "tournament.error.registration_after_end": "Дедлайн реєстрації не може бути пізніше дати завершення",

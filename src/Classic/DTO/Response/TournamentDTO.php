@@ -26,6 +26,7 @@ final readonly class TournamentDTO
         public ?int $questionsPerTour,
         public ?float $difficulty,
         public ?float $trueDl,
+        public ?string $discussionLink = null,
         public int $teamCount = 0,
         public int $sessionCount = 0,
         public int $disputeCount = 0,

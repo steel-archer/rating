@@ -60,6 +60,7 @@ function initTournamentEditForm() {
             difficulty: /** @type {HTMLInputElement} */ (form.querySelector('[name="difficulty"]')).value
                 ? parseFloat(/** @type {HTMLInputElement} */ (form.querySelector('[name="difficulty"]')).value)
                 : null,
+            discussionLink: /** @type {HTMLInputElement} */ (form.querySelector('[name="discussionLink"]')).value || null,
             organizers: getOfficialIds('organizers'),
             editors: getOfficialIds('editors'),
             gameJury: getOfficialIds('gameJury'),

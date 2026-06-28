@@ -70,6 +70,10 @@
                     <dt>{{ 'appeal.title'|trans }}</dt>
                     <dd><a href="{{ path('tournament_appeals', {id: tournament.id}) }}">{{ tournament.appealCount }}</a></dd>
                 {% endif %}
+                {% if tournament.discussionLink %}
+                    <dt>{{ 'tournament.discussion_link'|trans }}</dt>
+                    <dd><a href="{{ tournament.discussionLink }}" target="_blank" rel="noopener noreferrer">{{ tournament.discussionLink|u.truncate(60, '…') }}</a></dd>
+                {% endif %}
             </dl>
         </div>
 
