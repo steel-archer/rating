@@ -54,6 +54,9 @@ class User implements UserInterface
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $blockedReason = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $termsAcceptedAt = null;
+
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
@@ -227,6 +230,18 @@ class User implements UserInterface
     public function setBlockedReason(?string $blockedReason): static
     {
         $this->blockedReason = $blockedReason;
+
+        return $this;
+    }
+
+    public function getTermsAcceptedAt(): ?DateTimeImmutable
+    {
+        return $this->termsAcceptedAt;
+    }
+
+    public function setTermsAcceptedAt(DateTimeImmutable $termsAcceptedAt): static
+    {
+        $this->termsAcceptedAt = $termsAcceptedAt;
 
         return $this;
     }

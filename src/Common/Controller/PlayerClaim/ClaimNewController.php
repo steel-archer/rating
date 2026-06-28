@@ -10,6 +10,7 @@ use App\Common\Entity\User;
 use App\Common\Exception\PlayerClaimException;
 use App\Common\Service\PlayerClaimService;
 use App\Common\Service\UserContactsService;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -28,6 +29,7 @@ class ClaimNewController extends AbstractController
         $user = $this->getUser();
 
         $contactsService->updateFromDto($user, $dto);
+        $user->setTermsAcceptedAt(new DateTimeImmutable());
 
         try {
             $service->claimNew($dto, $user);

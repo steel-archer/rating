@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 final readonly class ExceptionSubscriber implements EventSubscriberInterface
 {
@@ -41,6 +42,14 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception instanceof HttpExceptionInterface) {
+            $previous = $exception->getPrevious();
+            if ($previous instanceof ValidationFailedException) {
+                $message = (string) $previous->getViolations()[0]->getMessage();
+                $event->setResponse(new JsonResponse(
+                    ['error' => $message],
+                    Response::HTTP_UNPROCESSABLE_ENTITY,
+                ));
+            }
             return;
         }
 

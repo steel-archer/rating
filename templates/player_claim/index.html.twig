@@ -29,6 +29,12 @@
         <p class="hint">{{ 'contact.visibility_warning'|trans }}</p>
     </div>
 
+    <label class="checkbox-label" for="claim-terms">
+        <input type="checkbox" id="claim-terms" class="checkbox-input" required>
+        <span class="checkbox-box"></span>
+        <span>{{ 'player_claim.terms_accept'|trans({'%url%': path('license')})|raw }}</span>
+    </label>
+
     <div class="cards-row">
         <div class="card">
             <h2>{{ 'player_claim.existing_title'|trans }}</h2>
@@ -74,8 +80,7 @@
                         <div class="suggest-dropdown" data-suggest-dropdown></div>
                     </div>
                 </div>
-                <button type="submit" class="search-btn">{{ 'player_claim.submit'|trans }}</button>
-                <span id="claim-new-status" class="save-status" hidden></span>
+                <button type="submit" class="search-btn" disabled>{{ 'player_claim.submit'|trans }}</button>
             </form>
         </div>
     </div>

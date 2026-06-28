@@ -1,6 +1,6 @@
 // @ts-check
 import { trans } from './trans.js';
-import { apiPost, showError } from './api.js';
+import { apiPost, transError } from './api.js';
 import { buttonAction } from './button-action.js';
 
 function initPlayerClaimNewForm() {
@@ -13,7 +13,6 @@ function initPlayerClaimNewForm() {
         event.preventDefault();
 
         const url = /** @type {string} */ (form.dataset.url);
-        const status = /** @type {HTMLElement} */ (document.getElementById('claim-new-status'));
 
         const data = {
             lastName: /** @type {HTMLInputElement} */ (form.querySelector('[name="lastName"]')).value,
@@ -21,6 +20,7 @@ function initPlayerClaimNewForm() {
             patronymic: /** @type {HTMLInputElement} */ (form.querySelector('[name="patronymic"]')).value || null,
             townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
             townName: null,
+            termsAccepted: isTermsAccepted(),
             telegram: getContactValue('telegram'),
             facebook: getContactValue('facebook'),
             phone: getContactValue('phone'),
@@ -36,11 +36,11 @@ function initPlayerClaimNewForm() {
                 if (ok) {
                     window.location.href = '/player-claim/submitted';
                 } else {
-                    showError(status, body.error);
+                    alert(transError(body.error));
                 }
             })
             .catch(() => {
-                showError(status, null);
+                alert(transError(null));
             });
     });
 }
@@ -49,6 +49,9 @@ function initPlayerClaimActions() {
     document.addEventListener('click', (event) => {
         const existingBtn = /** @type {HTMLElement} */ (event.target).closest('[data-player-claim-existing]');
         if (existingBtn) {
+            if (existingBtn.getAttribute('aria-disabled') === 'true') {
+                return;
+            }
             const playerId = parseInt(/** @type {HTMLElement} */ (existingBtn).dataset.playerClaimExisting || '');
             buttonAction(
                 '/player-claim/existing',
@@ -56,6 +59,7 @@ function initPlayerClaimActions() {
                 {
                     data: {
                         playerId,
+                        termsAccepted: isTermsAccepted(),
                         telegram: getContactValue('telegram'),
                         facebook: getContactValue('facebook'),
                         phone: getContactValue('phone'),
@@ -122,6 +126,42 @@ function getContactValue(name) {
     return input ? input.value.trim() || null : null;
 }
 
+/**
+ * @returns {boolean}
+ */
+function isTermsAccepted() {
+    const checkbox = /** @type {HTMLInputElement|null} */ (document.getElementById('claim-terms'));
+    return checkbox ? checkbox.checked : false;
+}
+
+document.addEventListener('turbo:frame-load', (event) => {
+    if (/** @type {CustomEvent} */ (event).target?.id === 'claim-search') {
+        updateClaimButtons();
+    }
+});
+
 document.addEventListener('turbo:load', () => {
     initPlayerClaimNewForm();
+    initTermsCheckbox();
 });
+
+function initTermsCheckbox() {
+    const checkbox = /** @type {HTMLInputElement|null} */ (document.getElementById('claim-terms'));
+    if (!checkbox) {
+        return;
+    }
+    checkbox.addEventListener('change', updateClaimButtons);
+    updateClaimButtons();
+}
+
+function updateClaimButtons() {
+    const accepted = isTermsAccepted();
+    const newSubmit = /** @type {HTMLButtonElement|null} */ (document.getElementById('player-claim-new-form'))?.querySelector('button[type="submit"]');
+    if (newSubmit) {
+        newSubmit.disabled = !accepted;
+    }
+    document.querySelectorAll('[data-player-claim-existing]').forEach((btn) => {
+        btn.setAttribute('aria-disabled', String(!accepted));
+        /** @type {HTMLButtonElement} */ (btn).classList.toggle('btn-disabled', !accepted);
+    });
+}

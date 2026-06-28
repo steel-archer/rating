@@ -18,7 +18,17 @@ export function apiPost(url, data) {
     }).then(response =>
         response.json()
             .then(body => ({ok: response.ok, body}))
-            .catch(() => ({ok: false, body: /** @type {Record<string, any>} */ ({error: response.status === 404 ? 'common.not_found' : 'common.error'})})),
+            .catch(() => {
+                let error;
+                if (response.status === 404) {
+                    error = 'common.not_found';
+                } else if (response.status === 422) {
+                    error = 'common.validation_error';
+                } else {
+                    error = 'common.error';
+                }
+                return {ok: false, body: /** @type {Record<string, any>} */ ({error})};
+            }),
     );
 }
 
@@ -27,23 +37,27 @@ export function apiPost(url, data) {
  * @param {string|null} errorKey
  */
 export function showError(statusEl, errorKey) {
-    statusEl.textContent = errorKey
-        ? transError(errorKey)
-        : trans('common.error');
+    statusEl.textContent = transError(errorKey);
     statusEl.className = 'save-status save-status-error';
     statusEl.hidden = false;
 }
 
 /**
- * @param {string} errorKey
+ * @param {string|null|undefined} errorKey
  * @returns {string}
  */
-function transError(errorKey) {
-    const colonIndex = errorKey.indexOf(':');
-    if (colonIndex === -1) {
-        return trans(errorKey);
+export function transError(errorKey) {
+    if (!errorKey) {
+        return trans('common.error');
     }
-    const key = errorKey.substring(0, colonIndex);
-    const param = errorKey.substring(colonIndex + 1);
-    return trans(key).replace('%name%', param);
+    const colonIndex = errorKey.indexOf(':');
+    const key = colonIndex === -1 ? errorKey : errorKey.substring(0, colonIndex);
+    const translated = trans(key);
+    if (translated === key) {
+        return trans('common.error');
+    }
+    if (colonIndex !== -1) {
+        return translated.replace('%name%', errorKey.substring(colonIndex + 1));
+    }
+    return translated;
 }

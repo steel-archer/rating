@@ -38,6 +38,9 @@ final readonly class ClaimNewRequestDTO implements HasContactFields
         #[UkrainianTownName]
         public ?string $townName = null,
 
+        #[Assert\IsTrue(message: 'player_claim.terms_required')]
+        public bool $termsAccepted = false,
+
         ?string $telegram = null,
         ?string $facebook = null,
         ?string $phone = null,

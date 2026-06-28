@@ -60,7 +60,10 @@ class ClaimExistingControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['playerId' => $objects['player_lesya']->getId()], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'playerId' => $objects['player_lesya']->getId(),
+                    'termsAccepted' => true,
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 201,
             'afterCallback' => static function (array $objects) {
@@ -82,7 +85,10 @@ class ClaimExistingControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['playerId' => 999999], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'playerId' => 999999,
+                    'termsAccepted' => true,
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
@@ -98,7 +104,10 @@ class ClaimExistingControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['playerId' => $objects['player_shevchenko']->getId()], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'playerId' => $objects['player_shevchenko']->getId(),
+                    'termsAccepted' => true,
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
@@ -114,7 +123,10 @@ class ClaimExistingControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['playerId' => $objects['player_lesya']->getId()], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'playerId' => $objects['player_lesya']->getId(),
+                    'termsAccepted' => true,
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -137,6 +149,25 @@ class ClaimExistingControllerTest extends WebTestCase
             },
         ];
 
+        yield 'terms not accepted returns 422' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/player-claim/existing',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'playerId' => $objects['player_lesya']->getId(),
+                    'termsAccepted' => false,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
         yield 'throwable returns 500' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
@@ -146,7 +177,10 @@ class ClaimExistingControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['playerId' => $objects['player_lesya']->getId()], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'playerId' => $objects['player_lesya']->getId(),
+                    'termsAccepted' => true,
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 500,
             'afterCallback' => static function () {

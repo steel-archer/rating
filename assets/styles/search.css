@@ -39,6 +39,16 @@
     opacity: 0.9;
 }
 
+.search-btn.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.search-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .suggest-wrapper {
     position: relative;
 }

@@ -66,6 +66,7 @@ class ClaimNewControllerTest extends WebTestCase
                     'firstName' => 'Гравець',
                     'patronymic' => 'Тестович',
                     'townName' => 'Київ',
+                    'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 201,
@@ -93,6 +94,7 @@ class ClaimNewControllerTest extends WebTestCase
                     'lastName' => 'Тестовий',
                     'firstName' => 'Гравець',
                     'townName' => 'Новомісто',
+                    'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 201,
@@ -185,6 +187,7 @@ class ClaimNewControllerTest extends WebTestCase
                     'lastName' => 'Тестовий',
                     'firstName' => 'Гравець',
                     'townName' => 'Київ',
+                    'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -195,6 +198,27 @@ class ClaimNewControllerTest extends WebTestCase
                 $stub = $test->createStub(PlayerClaimService::class);
                 $stub->method('claimNew')->willThrowException(new PlayerClaimException('Заявку вже подано'));
                 static::getContainer()->set(PlayerClaimService::class, $stub);
+            },
+        ];
+
+        yield 'terms not accepted returns 422' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'lastName' => 'Тестовий',
+                    'firstName' => 'Гравець',
+                    'townName' => 'Київ',
+                    'termsAccepted' => false,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
             },
         ];
 
@@ -211,6 +235,7 @@ class ClaimNewControllerTest extends WebTestCase
                     'lastName' => 'Тестовий',
                     'firstName' => 'Гравець',
                     'townName' => 'Київ',
+                    'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 500,

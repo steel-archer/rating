@@ -15,6 +15,9 @@ final readonly class ClaimExistingRequestDTO implements HasContactFields
         #[Assert\Positive]
         public int $playerId = 0,
 
+        #[Assert\IsTrue(message: 'player_claim.terms_required')]
+        public bool $termsAccepted = false,
+
         ?string $telegram = null,
         ?string $facebook = null,
         ?string $phone = null,

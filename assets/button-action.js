@@ -1,6 +1,5 @@
 // @ts-check
-import { trans } from './trans.js';
-import { apiPost } from './api.js';
+import { apiPost, transError } from './api.js';
 
 /**
  * @param {string} url
@@ -26,12 +25,12 @@ export function buttonAction(url, btn, options = {}) {
                 if (options.onError) {
                     options.onError(body);
                 } else {
-                    alert(body.error ? trans(body.error) : trans('common.error'));
+                    alert(transError(body.error));
                 }
             }
         })
         .catch(() => {
             btn.disabled = false;
-            alert(trans('common.error'));
+            alert(transError(null));
         });
 }
