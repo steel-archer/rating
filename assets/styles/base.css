@@ -212,7 +212,7 @@ a:hover {
 
 .checkbox-input:focus-visible + .checkbox-box {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 0 2px rgb(59 130 246 / 30%);
 }
 
 .btn-link {
