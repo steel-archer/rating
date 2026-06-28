@@ -64,11 +64,9 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
                 $venue->setName($name);
                 $venue->setTown($town);
                 $venue->setIsApproved(true);
-                $manager->persist($venue);
-                $this->addReference("venue_$venueIndex", $venue);
                 self::$townVenueMap[$townIndex][] = $venueIndex;
 
-                // 1-2 representatives per venue
+                // 1-2 representatives per venue; first one becomes createdBy
                 $repCount = $faker->numberBetween(1, 2);
                 $usedPlayers = [];
                 for ($r = 0; $r < $repCount; $r++) {
@@ -77,11 +75,20 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
                     } while (isset($usedPlayers[$playerIndex]));
                     $usedPlayers[$playerIndex] = true;
 
+                    $player = $this->getReference("player_$playerIndex", Player::class);
+
+                    if ($r === 0) {
+                        $venue->setCreatedBy($player);
+                    }
+
                     $representative = new VenueRepresentative();
                     $representative->setVenue($venue);
-                    $representative->setPlayer($this->getReference("player_$playerIndex", Player::class));
+                    $representative->setPlayer($player);
                     $manager->persist($representative);
                 }
+
+                $manager->persist($venue);
+                $this->addReference("venue_$venueIndex", $venue);
 
                 $venueIndex++;
             }
