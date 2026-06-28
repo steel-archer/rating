@@ -29,6 +29,11 @@ App\Common\Entity\Player:
         firstName: 'Олександр'
         patronymic: 'Петрович'
         town: '@town_kyiv'
+    player_fill_7:
+        lastName: 'Малевич'
+        firstName: 'Казимир'
+        patronymic: 'Северинович'
+        town: '@town_kyiv'
     player_extra:
         lastName: 'Сковорода'
         firstName: 'Григорій'
@@ -64,5 +69,10 @@ App\Classic\Entity\TeamPlayer:
     tp_fill_6:
         team: '@team_alpha'
         player: '@player_fill_6'
+        season: '@season_current'
+        isCaptain: false
+    tp_fill_7:
+        team: '@team_alpha'
+        player: '@player_fill_7'
         season: '@season_current'
         isCaptain: false

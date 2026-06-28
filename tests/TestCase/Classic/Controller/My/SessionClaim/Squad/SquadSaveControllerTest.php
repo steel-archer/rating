@@ -259,7 +259,7 @@ class SquadSaveControllerTest extends WebTestCase
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
             'payload' => static fn(array $objects) => [
                 'teamId' => $objects['team_alpha']->getId(),
-                'players' => array_fill(0, 9, ['id' => null, 'lastName' => 'Тест', 'firstName' => 'Тест', 'patronymic' => null, 'townId' => null]),
+                'players' => array_fill(0, 10, ['id' => null, 'lastName' => 'Тест', 'firstName' => 'Тест', 'patronymic' => null, 'townId' => null]),
                 'captainIndex' => 0,
             ],
             'expectedStatus' => 422,

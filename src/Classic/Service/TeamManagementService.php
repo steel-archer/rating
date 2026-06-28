@@ -29,7 +29,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class TeamManagementService
 {
-    private const int MAX_PLAYERS = 8;
+    public const int MAX_PLAYERS = 9;
 
     public function __construct(
         private TeamPlayerRepository $teamPlayerRepository,

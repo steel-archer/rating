@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Classic\DTO\Request\Session;
 
+use App\Classic\Service\TeamManagementService;
 use App\Common\Validator\NoHtml;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -21,7 +22,7 @@ final readonly class SquadRequestDTO
         #[NoHtml]
         public ?string $oneTimeName = null,
         /** @var list<SquadPlayerDTO> */
-        #[Assert\Count(min: 1, max: 8)]
+        #[Assert\Count(min: 1, max: TeamManagementService::MAX_PLAYERS)]
         #[Assert\Valid]
         public array $players = [],
         #[Assert\GreaterThanOrEqual(0)]

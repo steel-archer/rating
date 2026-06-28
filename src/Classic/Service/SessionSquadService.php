@@ -235,7 +235,7 @@ class SessionSquadService
             throw new LogicException('squad.error.min_players');
         }
 
-        if (count($dto->players) > 8) {
+        if (count($dto->players) > TeamManagementService::MAX_PLAYERS) {
             throw new LogicException('squad.error.max_players');
         }
 
