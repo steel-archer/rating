@@ -2,8 +2,8 @@ framework:
     rate_limiter:
         auth:
             policy: sliding_window
-            limit: 5
-            interval: '10 minutes'
+            limit: 10
+            interval: '5 minutes'
             cache_pool: cache.rate_limiter
         claim:
             policy: sliding_window
