@@ -24,6 +24,7 @@ final class TournamentAppearanceMapping implements MappingInterface
         $tournament = $session->getTournament();
         $team = $sessionTeam->getTeam();
         $resultsHidden = $tournament->areResultsHidden();
+        $maxScore = $tournament->getMaxScore();
 
         return new $destinationClass(
             tournamentId: $tournament->getId(),
@@ -33,6 +34,7 @@ final class TournamentAppearanceMapping implements MappingInterface
             teamName: $team->getName(),
             teamTownName: $team->getTown()->getName(),
             score: $resultsHidden ? null : $sessionTeam->getScore(),
+            maxScore: $resultsHidden ? null : $maxScore,
             place: $resultsHidden ? null : ($context['places'][$sessionTeam->getId()] ?? null),
             isLegionary: $source->isLegionary(),
             oneTimeName: $sessionTeam->getOneTimeName(),

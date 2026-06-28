@@ -80,9 +80,9 @@ class TournamentsControllerTest extends WebTestCase
                 // legionary marker present (Gamma appearance)
                 static::assertStringContainsString('не в складі', $allText);
 
-                // scores present
-                static::assertStringContainsString('25', $allText);
-                static::assertStringContainsString('20', $allText);
+                // scores with maxScore
+                static::assertStringContainsString('25/36', $allText);
+                static::assertStringContainsString('20/36', $allText);
 
                 // Alpha has no one-time name — displayed normally
                 static::assertStringContainsString('Альфа', $allText);

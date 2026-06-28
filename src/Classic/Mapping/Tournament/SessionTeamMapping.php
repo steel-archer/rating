@@ -29,6 +29,8 @@ final class SessionTeamMapping implements MappingInterface
     {
         $mapper = $context['mapper'];
         $team = $source->getTeam();
+        $tournament = $source->getTournamentSession()->getTournament();
+        $maxScore = $tournament->getMaxScore();
 
         $playerDTOs = array_map(
             static fn(TournamentSessionTeamPlayer $p) => $mapper->map($p, SessionTeamPlayerDTO::class, ['squadInfo' => $context['squadInfo']]),
@@ -41,6 +43,7 @@ final class SessionTeamMapping implements MappingInterface
             teamName: $team->getName(),
             teamTownName: $team->getTown()->getName(),
             score: $source->isResultsSubmitted() ? $source->getScore() : null,
+            maxScore: $source->isResultsSubmitted() ? $maxScore : null,
             place: $context['place'] ?? null,
             players: $playerDTOs,
             oneTimeName: $source->getOneTimeName(),

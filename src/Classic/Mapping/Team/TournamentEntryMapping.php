@@ -31,6 +31,7 @@ final class TournamentEntryMapping implements MappingInterface
         $session = $source->getTournamentSession();
         $tournament = $session->getTournament();
         $resultsHidden = $tournament->areResultsHidden();
+        $maxScore = $tournament->getMaxScore();
 
         $players = array_map(
             static fn(TournamentSessionTeamPlayer $a) => $mapper->map($a, TournamentPlayerDTO::class, ['squadInfo' => $context['squadInfo']]),
@@ -42,6 +43,7 @@ final class TournamentEntryMapping implements MappingInterface
             tournamentName: $tournament->getName(),
             playedAt: $session->getPlayedAt(),
             score: $resultsHidden ? null : $source->getScore(),
+            maxScore: $resultsHidden ? null : $maxScore,
             place: $resultsHidden ? null : ($context['place'] ?? null),
             players: $players,
             oneTimeName: $source->getOneTimeName(),

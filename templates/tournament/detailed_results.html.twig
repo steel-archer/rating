@@ -53,7 +53,7 @@
                                         <td class="answer-col">—</td>
                                     {% endfor %}
                                 {% endif %}
-                                <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) : '—' }}</strong></td>
+                                <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) ~ (maxScore > 0 ? '/' ~ maxScore : '') : '—' }}</strong></td>
                             </tr>
                         {% endfor %}
                     </tbody>

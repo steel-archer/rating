@@ -22,7 +22,7 @@
                         <td>{{ include('_team_name.html.twig', {teamId: appearance.teamId, teamName: appearance.teamName, oneTimeName: appearance.oneTimeName, turboFrame: true}, with_context: false) }}{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
                         <td>{{ appearance.teamTownName }}</td>
                         <td>{{ appearance.place ? (appearance.place == appearance.place|round(0) ? appearance.place|number_format(0) : appearance.place) : '—' }}</td>
-                        <td>{{ appearance.score ?? '—' }}</td>
+                        <td>{{ appearance.score is not null ? (appearance.maxScore ? appearance.score ~ '/' ~ appearance.maxScore : appearance.score) : '—' }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

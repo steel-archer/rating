@@ -22,7 +22,7 @@
                         <td class="one-time-name-hint">{% if team.oneTimeName %}<span data-tooltip="{{ 'team.base_name'|trans({'%name%': team.teamName ~ ' (' ~ team.teamTownName ~ ')'}) }}">^</span>{% endif %}</td>
                         <td>{{ include('_team_name.html.twig', {teamId: team.teamId, teamName: team.teamName, oneTimeName: team.oneTimeName, turboFrame: true}, with_context: false) }}</td>
                         <td>{{ team.teamTownName }}</td>
-                        <td>{{ team.score ?? '—' }}</td>
+                        <td>{{ team.score is not null ? (team.maxScore ? team.score ~ '/' ~ team.maxScore : team.score) : '—' }}</td>
                         <td>
                             <button type="button" class="btn-toggle-text" data-toggle-squad>{{ 'squad.show'|trans }}</button>
                             <div class="squad-list" hidden>

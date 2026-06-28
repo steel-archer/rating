@@ -16,6 +16,7 @@ final readonly class TournamentAppearanceDTO
         public string $teamName,
         public string $teamTownName,
         public ?int $score,
+        public ?int $maxScore,
         public ?float $place,
         public bool $isLegionary,
         public ?string $oneTimeName = null,

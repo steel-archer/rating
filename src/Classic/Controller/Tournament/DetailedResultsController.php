@@ -46,6 +46,7 @@ class DetailedResultsController extends AbstractController
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
             'toursCount' => $tournament->getToursCount() ?? 0,
             'questionsPerTour' => $tournament->getQuestionsPerTour() ?? 0,
+            'maxScore' => $tournament->getMaxScore() ?? 0,
             'teams' => $teams,
             'breakdown' => $breakdown,
         ]);

@@ -84,6 +84,10 @@ class DetailedResultsControllerTest extends WebTestCase
 
                 $wrongCells = $firstRow->filter('td.answer-wrong');
                 static::assertCount(1, $wrongCells);
+
+                // Total column shows score/maxScore format
+                $totalCell = $firstRow->filter('td.total-col');
+                static::assertSame('5/6', trim($totalCell->text()));
             },
         ];
 
@@ -105,6 +109,10 @@ class DetailedResultsControllerTest extends WebTestCase
 
                 $wrongCells = $rows->eq(0)->filter('td.answer-wrong');
                 static::assertCount(2, $wrongCells);
+
+                // Total column shows score/maxScore format
+                $totalCell = $rows->eq(0)->filter('td.total-col');
+                static::assertSame('4/6', trim($totalCell->text()));
             },
         ];
 

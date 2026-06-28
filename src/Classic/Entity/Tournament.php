@@ -268,6 +268,15 @@ class Tournament
         return $this;
     }
 
+    public function getMaxScore(): ?int
+    {
+        if ($this->toursCount === null || $this->questionsPerTour === null) {
+            return null;
+        }
+
+        return $this->toursCount * $this->questionsPerTour;
+    }
+
     public function getDifficulty(): ?float
     {
         return $this->difficulty;

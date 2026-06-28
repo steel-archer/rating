@@ -14,6 +14,7 @@ final readonly class SessionTeamDTO
         public string $teamName,
         public ?string $teamTownName,
         public ?int $score,
+        public ?int $maxScore,
         public ?float $place,
         /** @var list<SessionTeamPlayerDTO> */
         public array $players,

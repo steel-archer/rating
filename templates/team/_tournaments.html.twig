@@ -25,7 +25,7 @@
                             {% endfor %}
                         </td>
                         <td>{{ entry.place ? (entry.place == entry.place|round(0) ? entry.place|number_format(0) : entry.place) : '—' }}</td>
-                        <td>{{ entry.score ?? '—' }}</td>
+                        <td>{{ entry.score is not null ? (entry.maxScore ? entry.score ~ '/' ~ entry.maxScore : entry.score) : '—' }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

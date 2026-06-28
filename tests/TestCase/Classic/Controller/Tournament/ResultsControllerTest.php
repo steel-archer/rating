@@ -72,7 +72,7 @@ class ResultsControllerTest extends WebTestCase
                 // 3 teams: beta(30), alpha(25), gamma(20)
                 static::assertCount(3, $rows);
 
-                // 1st place: Beta with one-time name, score 30
+                // 1st place: Beta with one-time name, score 30/36
                 $first = $rows->eq(0);
                 $first->filter('td')->eq(0)->text()
                     |> trim(...)
@@ -83,9 +83,9 @@ class ResultsControllerTest extends WebTestCase
                 $teamCell = $first->filter('td')->eq(2);
                 static::assertStringContainsString('Зоряні Леви', $teamCell->text());
                 static::assertCount(1, $teamCell->filter('em'));
-                static::assertStringContainsString('30', $first->filter('td')->eq(4)->text());
+                static::assertSame('30/36', trim($first->filter('td')->eq(4)->text()));
 
-                // 2nd place: Alpha, score 25 (no one-time name)
+                // 2nd place: Alpha, score 25/36 (no one-time name)
                 $second = $rows->eq(1);
                 $second->filter('td')->eq(0)->text()
                     |> trim(...)
@@ -93,15 +93,15 @@ class ResultsControllerTest extends WebTestCase
                 static::assertSame('', trim($second->filter('td')->eq(1)->text()));
                 static::assertStringContainsString('Альфа', $second->filter('td')->eq(2)->text());
                 static::assertCount(0, $second->filter('td')->eq(2)->filter('em'));
-                static::assertStringContainsString('25', $second->filter('td')->eq(4)->text());
+                static::assertSame('25/36', trim($second->filter('td')->eq(4)->text()));
 
-                // 3rd place: Gamma, score 20
+                // 3rd place: Gamma, score 20/36
                 $third = $rows->eq(2);
                 $third->filter('td')->eq(0)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('3', $x));
                 static::assertStringContainsString('Гамма', $third->filter('td')->eq(2)->text());
-                static::assertStringContainsString('20', $third->filter('td')->eq(4)->text());
+                static::assertSame('20/36', trim($third->filter('td')->eq(4)->text()));
 
                 // town displayed
                 static::assertStringContainsString('Львів', $first->filter('td')->eq(3)->text());
@@ -122,7 +122,7 @@ class ResultsControllerTest extends WebTestCase
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('1', $x));
                 static::assertStringContainsString('Альфа', $rows->eq(0)->filter('td')->eq(2)->text());
-                static::assertStringContainsString('40', $rows->eq(0)->filter('td')->eq(4)->text());
+                static::assertSame('40/60', trim($rows->eq(0)->filter('td')->eq(4)->text()));
             },
         ];
 

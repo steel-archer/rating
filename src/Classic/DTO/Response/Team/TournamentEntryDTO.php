@@ -15,6 +15,7 @@ final readonly class TournamentEntryDTO
         public string $tournamentName,
         public ?DateTimeInterface $playedAt,
         public ?int $score,
+        public ?int $maxScore,
         public ?float $place,
         /** @var list<TournamentPlayerDTO> */
         public array $players = [],

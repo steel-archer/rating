@@ -69,7 +69,7 @@ class TournamentsControllerTest extends WebTestCase
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
-                // Alpha plays in spring (score 25) and autumn (score 40)
+                // Alpha plays in spring (score 25/36) and autumn (score 40/60)
                 static::assertCount(2, $rows);
 
                 $allText = $crawler->filter('table tbody')->text();
@@ -78,9 +78,9 @@ class TournamentsControllerTest extends WebTestCase
                 static::assertStringContainsString('Весняний кубок', $allText);
                 static::assertStringContainsString('Осінній бриз', $allText);
 
-                // scores
-                static::assertStringContainsString('25', $allText);
-                static::assertStringContainsString('40', $allText);
+                // scores with maxScore
+                static::assertStringContainsString('25/36', $allText);
+                static::assertStringContainsString('40/60', $allText);
 
                 // squad players displayed
                 static::assertStringContainsString('Шевченко', $allText);
