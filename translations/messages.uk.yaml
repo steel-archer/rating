@@ -178,6 +178,7 @@ moderator:
   player_claims: 'Заявки гравців'
   reject: 'Відхилити'
   reject_comment: 'Коментар'
+  reject_comment_required: 'Вкажіть причину відхилення'
   town_is_new: 'Нове місто'
   tournaments: 'Турніри'
   venues: 'Майданчики'

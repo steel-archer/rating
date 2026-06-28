@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class RejectRequestDTO
 {
     public function __construct(
+        #[Assert\NotBlank]
         #[Assert\Length(max: 1000)]
         #[NoHtml]
         public ?string $comment = null,

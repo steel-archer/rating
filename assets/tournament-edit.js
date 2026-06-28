@@ -143,7 +143,12 @@ function initTournamentActions() {
         if (rejectBtn) {
             const id = /** @type {HTMLElement} */ (rejectBtn).dataset.tournamentReject || '';
             const commentInput = /** @type {HTMLInputElement|null} */ (document.querySelector(`[data-tournament-reject-comment="${id}"]`));
-            const comment = commentInput ? commentInput.value : null;
+            const comment = commentInput ? commentInput.value.trim() : '';
+            if (!comment) {
+                alert(trans('moderator.reject_comment_required'));
+                commentInput?.focus();
+                return;
+            }
             buttonAction(
                 `/moderator/tournaments/${id}/reject`,
                 /** @type {HTMLButtonElement} */ (rejectBtn),

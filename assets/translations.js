@@ -146,6 +146,7 @@ export default {
     "moderator.player_claims": "Заявки гравців",
     "moderator.reject": "Відхилити",
     "moderator.reject_comment": "Коментар",
+    "moderator.reject_comment_required": "Вкажіть причину відхилення",
     "moderator.town_is_new": "Нове місто",
     "moderator.tournaments": "Турніри",
     "moderator.venues": "Майданчики",

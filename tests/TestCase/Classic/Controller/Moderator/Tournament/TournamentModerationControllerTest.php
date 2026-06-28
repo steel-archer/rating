@@ -116,6 +116,66 @@ class TournamentModerationControllerTest extends WebTestCase
             },
         ];
 
+        yield 'reject tournament without comment returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_pending']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentModerationClaim::class)
+                    ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
+                static::assertSame(TournamentModerationStatus::Pending, $claim->getStatus());
+            },
+        ];
+
+        yield 'reject tournament with empty comment returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_pending']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['comment' => ''], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentModerationClaim::class)
+                    ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
+                static::assertSame(TournamentModerationStatus::Pending, $claim->getStatus());
+            },
+        ];
+
+        yield 'reject tournament with whitespace-only comment returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/tournaments/' . $objects['tournament_pending']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['comment' => '   '], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentModerationClaim::class)
+                    ->findOneBy(['tournament' => $objects['tournament_pending']->getId()]);
+                static::assertSame(TournamentModerationStatus::Pending, $claim->getStatus());
+            },
+        ];
+
         yield 'approve tournament without claim returns 422' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_admin',
