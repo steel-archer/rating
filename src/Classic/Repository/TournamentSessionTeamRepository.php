@@ -87,6 +87,22 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<TournamentSessionTeam>
+     */
+    public function findBySessionOrderedByScore(TournamentSession $session): array
+    {
+        return $this->createQueryBuilder('st')
+            ->join('st.team', 'team')
+            ->join('team.town', 'town')
+            ->addSelect('team', 'town')
+            ->where('st.tournamentSession = :session')
+            ->setParameter('session', $session)
+            ->orderBy('st.score', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @throws NonUniqueResultException
      * @throws NoResultException
      */

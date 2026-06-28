@@ -32,6 +32,8 @@ common:
   name: 'Назва'
   not_found: 'Нічого не знайдено'
   place: 'Місце'
+  place_session: 'Місце на відіграші'
+  place_tournament: 'Місце в турнірі'
   result: 'Результат'
   save: 'Зберегти'
   search: 'Знайти'

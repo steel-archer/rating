@@ -101,6 +101,34 @@ tr.row-dark { background: #e8e8ed; }
     opacity: 1;
 }
 
+th [data-tooltip] {
+    cursor: help;
+    position: relative;
+}
+
+th [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    margin-top: 4px;
+    background: var(--text);
+    color: var(--surface);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-weight: normal;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s;
+    z-index: 10;
+}
+
+th [data-tooltip]:hover::after {
+    opacity: 1;
+}
+
 .table-scroll {
     overflow-x: auto;
     max-width: 100%;

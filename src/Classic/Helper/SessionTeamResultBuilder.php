@@ -40,18 +40,42 @@ class SessionTeamResultBuilder
         );
         $places = $this->sessionTeamRepository->getPlacesInTournament($sessionTeamIds);
         $squadMap = $season ? $this->teamPlayerRepository->getSquadMapBySeason($season) : [];
+        $sessionPlaces = $this->calculateSessionPlaces($sessionTeams);
 
         return array_map(
-            function (TournamentSessionTeam $st) use ($playerMap, $places, $squadMap) {
+            function (TournamentSessionTeam $st) use ($playerMap, $places, $squadMap, $sessionPlaces) {
                 $squadInfo = $squadMap[$st->getTeam()->getId()] ?? ['playerIds' => [], 'captainId' => null];
 
                 return $this->mapper->map($st, SessionTeamDTO::class, [
                     'place' => $places[$st->getId()] ?? null,
+                    'sessionPlace' => $sessionPlaces[$st->getId()] ?? null,
                     'players' => $playerMap[$st->getId()] ?? [],
                     'squadInfo' => $squadInfo,
                 ]);
             },
             $sessionTeams,
         );
+    }
+
+    /**
+     * @param list<TournamentSessionTeam> $sessionTeams
+     * @return array<int, float> sessionTeamId => place within session
+     */
+    private function calculateSessionPlaces(array $sessionTeams): array
+    {
+        $scores = array_map(
+            static fn(TournamentSessionTeam $st) => $st->getScore(),
+            $sessionTeams,
+        );
+
+        rsort($scores);
+        $ranks = FractionalRanking::rank($scores);
+
+        $result = [];
+        foreach ($sessionTeams as $sessionTeam) {
+            $result[$sessionTeam->getId()] = $ranks[$sessionTeam->getScore()] ?? 0;
+        }
+
+        return $result;
     }
 }

@@ -20,6 +20,7 @@ final class SessionTeamMapping implements MappingInterface
      * @param array{
      *     mapper: Mapper,
      *     place: float|null,
+     *     sessionPlace: float|null,
      *     players: list<TournamentSessionTeamPlayer>,
      *     squadInfo: array{playerIds: list<int>, captainId: int|null},
      * } $context
@@ -47,6 +48,7 @@ final class SessionTeamMapping implements MappingInterface
             place: $context['place'] ?? null,
             players: $playerDTOs,
             oneTimeName: $source->getOneTimeName(),
+            sessionPlace: $context['sessionPlace'] ?? null,
         );
     }
 }

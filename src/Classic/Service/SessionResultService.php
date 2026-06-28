@@ -181,10 +181,7 @@ class SessionResultService
      */
     private function buildSessionResults(TournamentSession $session): array
     {
-        $sessionTeams = $this->sessionTeamRepository->findBy(
-            ['tournamentSession' => $session],
-            ['score' => 'DESC'],
-        );
+        $sessionTeams = $this->sessionTeamRepository->findBySessionOrderedByScore($session);
 
         return $this->resultBuilder->build($sessionTeams, $session->getTournament()->getSeason());
     }

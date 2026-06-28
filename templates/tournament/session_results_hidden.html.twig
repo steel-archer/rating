@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ session.tournamentName }}: {{ session.venueName }}{% if session.playedAt %} ({{ session.playedAt|date('d.m.Y') }}){% endif %} — {{ 'nav.tournaments'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('tournament_index') }}">{{ 'nav.tournaments'|trans }}</a></span><span><a href="{{ path('tournament_show', {id: session.tournamentId}) }}">{{ session.tournamentName }}</a></span><span><a href="{{ path('tournament_sessions', {id: session.tournamentId}) }}">{{ 'tournament.sessions'|trans }}</a></span><span>{{ session.venueName }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ session.tournamentName }}: {{ session.venueName }}{% if session.playedAt %} ({{ session.playedAt|date('d.m.Y') }}){% endif %}</h1>
+
+    <div class="card">
+        <p>{{ 'tournament.results_hidden_notice'|trans({'%date%': hiddenUntil|date('d.m.Y')}) }}</p>
+    </div>
+{% endblock %}

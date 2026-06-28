@@ -157,6 +157,32 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
         return $result;
     }
 
+    /**
+     * @see SessionShowController (used via MapEntity expr)
+     *
+     * @throws NonUniqueResultException
+     */
+    public function findWithRelations(int $id): ?TournamentSession
+    {
+        return $this->createQueryBuilder('ts')
+            ->join('ts.tournament', 't')
+            ->leftJoin('t.season', 's')
+            ->join('ts.venue', 'v')
+            ->join('v.town', 'town')
+            ->join('ts.representative', 'rep')
+            ->leftJoin('rep.user', 'repUser')
+            ->leftJoin('ts.host', 'host')
+            ->leftJoin('host.user', 'hostUser')
+            ->join(SessionClaim::class, 'sc', 'WITH', 'sc.session = ts')
+            ->addSelect('t', 's', 'v', 'town', 'rep', 'repUser', 'host', 'hostUser')
+            ->where('ts.id = :id')
+            ->andWhere('sc.status = :status')
+            ->setParameter('id', $id)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function isRepresentativeOfTournament(Player $player, Tournament $tournament): bool
     {
         return (bool) $this->createQueryBuilder('ts')

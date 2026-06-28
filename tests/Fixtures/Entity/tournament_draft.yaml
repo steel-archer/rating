@@ -1,0 +1,45 @@
+App\Classic\Entity\Tournament:
+    tournament_draft:
+        name: 'Чернетка'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-05-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-05-15 00:00:00"))>'
+        toursCount: 3
+        questionsPerTour: 12
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_shevchenko'
+
+App\Classic\Entity\TournamentSession:
+    session_draft:
+        tournament: '@tournament_draft'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-05-01 19:00"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_draft_alpha:
+        tournamentSession: '@session_draft'
+        team: '@team_alpha'
+        score: 10
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    stp_draft_alpha_shevchenko:
+        tournamentSessionTeam: '@session_team_draft_alpha'
+        player: '@player_shevchenko'
+        isLegionary: false
+
+App\Classic\Entity\TeamPlayer:
+    team_player_draft_alpha_shevchenko:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+
+App\Classic\Entity\SessionClaim:
+    session_claim_draft:
+        session: '@session_draft'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-04-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-04-21"))>'

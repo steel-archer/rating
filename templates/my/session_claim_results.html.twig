@@ -39,6 +39,8 @@
                 <table class="results-breakdown" aria-label="{{ 'results.current_results'|trans }}">
                     <thead>
                         <tr>
+                            <th><span data-tooltip="{{ 'common.place_tournament'|trans }}">#Σ</span></th>
+                            <th><span data-tooltip="{{ 'common.place_session'|trans }}">#</span></th>
                             <th class="sticky-col">{{ 'common.team'|trans }}</th>
                             <th>{{ 'common.town'|trans }}</th>
                             {% for tour in 1..session.toursCount %}
@@ -54,6 +56,8 @@
                         {% for team in teams %}
                             {% set data = breakdown[team.sessionTeamId] ?? null %}
                             <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                                <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
+                                <td>{{ team.sessionPlace ? (team.sessionPlace == team.sessionPlace|round(0) ? team.sessionPlace|number_format(0) : team.sessionPlace) : '—' }}</td>
                                 <td class="sticky-col">{{ team.oneTimeName ?? team.teamName }}</td>
                                 <td>{{ team.teamTownName }}</td>
                                 {% if data %}
@@ -68,14 +72,14 @@
                                                 <td class="answer-col {{ data.answers[idx] ? 'answer-correct' : 'answer-wrong' }}">{{ data.answers[idx] }}</td>
                                             {% endif %}
                                         {% endfor %}
-                                        <td class="tour-total-col"><strong>{{ data.tourScores[tour] }}</strong></td>
+                                        <td class="tour-total-col"><strong>{{ data.tourScores[tour] }}/{{ session.questionsPerTour }}</strong></td>
                                     {% endfor %}
                                 {% else %}
                                     {% for i in 1..(session.toursCount * session.questionsPerTour + session.toursCount) %}
                                         <td class="answer-col">—</td>
                                     {% endfor %}
                                 {% endif %}
-                                <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) : '—' }}</strong></td>
+                                <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) ~ '/' ~ (session.toursCount * session.questionsPerTour) : '—' }}</strong></td>
                             </tr>
                         {% endfor %}
                     </tbody>
