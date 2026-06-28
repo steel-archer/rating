@@ -39,7 +39,7 @@ class SessionShowControllerTest extends WebTestCase
     }
 
     /**
-     * @return iterable<string, array>
+     * @return iterable<string, array{uri: string|callable, fixtures: list<string>, loginAs: string|null, expectedStatus: int, afterCallback: callable}>
      */
     public static function dataProvider(): iterable
     {
