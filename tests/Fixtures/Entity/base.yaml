@@ -9,6 +9,9 @@ App\Common\Entity\Town:
     town_lviv:
         name: 'Львів'
         country: '@country_ukraine'
+    town_online:
+        name: 'Онлайн'
+        country: '@country_ukraine'
 
 App\Common\Entity\Season:
     season_current:

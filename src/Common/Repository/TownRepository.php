@@ -18,12 +18,19 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 /** @extends ServiceEntityRepository<Town> */
 class TownRepository extends ServiceEntityRepository
 {
+    private const string ONLINE_TOWN_NAME = 'Онлайн';
+
     public function __construct(
         ManagerRegistry $registry,
         private readonly Mapper $mapper,
         private readonly TagAwareCacheInterface $cache,
     ) {
         parent::__construct($registry, Town::class);
+    }
+
+    public function findOnlineTown(): ?Town
+    {
+        return $this->findOneBy(['name' => self::ONLINE_TOWN_NAME]);
     }
 
     /**
@@ -41,7 +48,9 @@ class TownRepository extends ServiceEntityRepository
             $rows = $this->createQueryBuilder('t')
                 ->select('t.id', 't.name')
                 ->where('t.name LIKE :q')
+                ->andWhere('t.name != :online')
                 ->setParameter('q', LikeEscape::contains($query))
+                ->setParameter('online', self::ONLINE_TOWN_NAME)
                 ->orderBy('t.name')
                 ->setMaxResults(10)
                 ->getQuery()

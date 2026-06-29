@@ -18,6 +18,13 @@ App\Common\Entity\Venue:
         createdBy: '@player_franko'
         isApproved: true
         createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+    venue_online_existing:
+        name: 'Існуючий онлайн-майданчик'
+        town: '@town_online'
+        createdBy: '@player_franko'
+        isOnline: true
+        isApproved: false
+        createdAt: '<(new \DateTimeImmutable())>'
 
 App\Common\Entity\VenueRepresentative:
     rep_pending:

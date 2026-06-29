@@ -9,15 +9,29 @@ function initVenueCreateForm() {
         return;
     }
 
+    const townGroup = /** @type {HTMLElement} */ (document.getElementById('town-group'));
+    const townInput = /** @type {HTMLInputElement} */ (form.querySelector('#town'));
+    const radioButtons = form.querySelectorAll('input[name="isOnline"]');
+
+    radioButtons.forEach((radio) => {
+        radio.addEventListener('change', () => {
+            const isOnline = /** @type {HTMLInputElement} */ (form.querySelector('input[name="isOnline"]:checked')).value === '1';
+            townGroup.style.display = isOnline ? 'none' : '';
+            townInput.required = !isOnline;
+        });
+    });
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
 
         const url = /** @type {string} */ (form.dataset.url);
         const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
+        const isOnline = /** @type {HTMLInputElement} */ (form.querySelector('input[name="isOnline"]:checked')).value === '1';
 
         const data = {
             name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
-            townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
+            isOnline,
+            townId: isOnline ? null : (parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null),
         };
 
         apiPost(url, data)

@@ -46,10 +46,20 @@ final class Version20260629120003 extends AbstractMigration
         ');
 
         // classic_session_claim: drop CASCADE, remove comments
-        $this->addSql('
-            ALTER TABLE classic_session_claim
-                DROP FOREIGN KEY FK_B829D7D5613FECDF
-        ');
+        $fkName = $this->connection->fetchOne("
+            SELECT CONSTRAINT_NAME
+            FROM information_schema.TABLE_CONSTRAINTS
+            WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'classic_session_claim'
+                AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+                AND CONSTRAINT_NAME IN ('FK_B829D7D5613FECDF', 'FK_sc_session')
+            LIMIT 1
+        ");
+
+        if ($fkName !== false) {
+            $this->addSql('ALTER TABLE classic_session_claim DROP FOREIGN KEY ' . $fkName);
+        }
+
         $this->addSql('
             ALTER TABLE classic_session_claim
                 ADD CONSTRAINT FK_B829D7D5613FECDF

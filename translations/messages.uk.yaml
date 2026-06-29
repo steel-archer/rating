@@ -485,6 +485,7 @@ venue:
   error:
     duplicate: 'Майданчик з такою назвою в цьому місті вже існує'
     no_player: 'Необхідно мати привʼязаного гравця'
+    online_town_not_found: 'Системна помилка: псевдомісто «Онлайн» не знайдено'
     town_not_found: 'Місто не знайдено'
   host: 'Ведучий'
   my:
@@ -506,6 +507,9 @@ venue:
   status:
     approved: 'Схвалено'
     pending: 'На розгляді'
+  type: 'Тип майданчика'
+  type_offline: 'Офлайн'
+  type_online: 'Онлайн'
   venue: 'Майданчик'
 
 results:

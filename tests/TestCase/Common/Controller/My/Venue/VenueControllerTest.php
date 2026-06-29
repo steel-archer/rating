@@ -194,6 +194,105 @@ class VenueControllerTest extends WebTestCase
             },
         ];
 
+        yield 'create online venue' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_venue_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/venues',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Онлайн-квіз',
+                    'isOnline' => true,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
+            'afterCallback' => static function () {
+                $venue = static::getContainer()->get('doctrine')
+                    ->getRepository(Venue::class)
+                    ->findOneBy(['name' => 'Онлайн-квіз']);
+                static::assertNotNull($venue);
+                static::assertTrue($venue->isOnline());
+                static::assertSame('Онлайн', $venue->getTown()->getName());
+                static::assertFalse($venue->isApproved());
+
+                $reps = static::getContainer()->get('doctrine')
+                    ->getRepository(VenueRepresentative::class)
+                    ->findBy(['venue' => $venue]);
+                static::assertCount(1, $reps);
+            },
+        ];
+
+        yield 'create online venue ignores townId' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_venue_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/venues',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Онлайн-квіз 2',
+                    'isOnline' => true,
+                    'townId' => $objects['town_kyiv']->getId(),
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
+            'afterCallback' => static function () {
+                $venue = static::getContainer()->get('doctrine')
+                    ->getRepository(Venue::class)
+                    ->findOneBy(['name' => 'Онлайн-квіз 2']);
+                static::assertNotNull($venue);
+                static::assertTrue($venue->isOnline());
+                static::assertSame('Онлайн', $venue->getTown()->getName());
+            },
+        ];
+
+        yield 'create duplicate online venue fails' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_venue_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/venues',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Існуючий онлайн-майданчик',
+                    'isOnline' => true,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('venue.error.duplicate', $json['error']);
+            },
+        ];
+
+        yield 'create offline venue without townId fails validation' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_venue_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/venues',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Без міста',
+                    'isOnline' => false,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('venue.error.town_not_found', $json['error']);
+            },
+        ];
+
         yield 'edit page shown for approved venue' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_venue_creator',

@@ -15,7 +15,8 @@ final readonly class CreateRequestDTO
         #[NoHtml]
         public string $name = '',
 
-        #[Assert\NotNull]
+        public bool $isOnline = false,
+
         #[Assert\Positive]
         public ?int $townId = null,
     ) {

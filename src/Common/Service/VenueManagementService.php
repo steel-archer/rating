@@ -36,16 +36,25 @@ class VenueManagementService
      */
     public function create(CreateRequestDTO $dto, Player $player): Venue
     {
-        $town = $this->townRepository->find($dto->townId)
-            ?? throw new LogicException('venue.error.town_not_found');
+        if ($dto->isOnline) {
+            $town = $this->townRepository->findOnlineTown()
+                ?? throw new LogicException('venue.error.online_town_not_found');
+        } else {
+            if ($dto->townId === null) {
+                throw new LogicException('venue.error.town_not_found');
+            }
+            $town = $this->townRepository->find($dto->townId)
+                ?? throw new LogicException('venue.error.town_not_found');
+        }
 
-        if ($this->venueRepository->existsByNameAndTown($dto->name, $dto->townId)) {
+        if ($this->venueRepository->existsByNameAndTown($dto->name, $town->getId())) {
             throw new LogicException('venue.error.duplicate');
         }
 
         $venue = new Venue();
         $venue->setName($dto->name);
         $venue->setTown($town);
+        $venue->setIsOnline($dto->isOnline);
         $venue->setCreatedBy($player);
 
         $this->em->persist($venue);

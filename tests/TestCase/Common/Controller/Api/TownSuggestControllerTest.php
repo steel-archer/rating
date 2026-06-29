@@ -92,5 +92,16 @@ class TownSuggestControllerTest extends WebTestCase
             'afterCallback' => static function ($client, array $objects) {
             },
         ];
+
+        yield 'suggest excludes online pseudo-town' => [
+            'uri' => '/api/towns/suggest?q=%D0%9E%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertCount(0, $data);
+            },
+        ];
     }
 }

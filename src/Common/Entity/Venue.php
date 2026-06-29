@@ -32,6 +32,9 @@ class Venue
     private ?Player $createdBy = null;
 
     #[ORM\Column]
+    private bool $isOnline = false;
+
+    #[ORM\Column]
     private bool $isApproved = false;
 
     #[ORM\Column]
@@ -79,6 +82,18 @@ class Venue
     public function setCreatedBy(?Player $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function isOnline(): bool
+    {
+        return $this->isOnline;
+    }
+
+    public function setIsOnline(bool $isOnline): static
+    {
+        $this->isOnline = $isOnline;
 
         return $this;
     }

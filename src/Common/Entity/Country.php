@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
 #[ORM\Table(name: 'common_country')]
+#[ORM\UniqueConstraint(name: 'UQ_country_name', columns: ['name'])]
 class Country
 {
     #[ORM\Id]

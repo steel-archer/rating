@@ -20,6 +20,19 @@
                 <input type="text" id="name" name="name" required>
             </div>
             <div class="form-group">
+                <label>{{ 'venue.type'|trans }}</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="isOnline" value="0" checked>
+                        {{ 'venue.type_offline'|trans }}
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="isOnline" value="1">
+                        {{ 'venue.type_online'|trans }}
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" id="town-group">
                 <label for="town">{{ 'common.town'|trans }} *</label>
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
                     <input type="text" id="town" data-suggest-input placeholder="{{ 'common.town'|trans }}" value="{{ townName ?? '' }}" required>
