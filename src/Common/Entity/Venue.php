@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VenueRepository::class)]
+#[ORM\Table(name: 'common_venue')]
 #[ORM\UniqueConstraint(name: 'UQ_venue_name_town', columns: ['name', 'town_id'])]
 #[ORM\Index(name: 'IDX_venue_town', columns: ['town_id'])]
 #[ORM\Index(name: 'IDX_venue_created_by', columns: ['created_by_id'])]

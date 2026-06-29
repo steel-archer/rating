@@ -11,6 +11,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SessionClaimRepository::class)]
+#[ORM\Table(name: 'classic_session_claim')]
 #[ORM\UniqueConstraint(name: 'UNIQ_sc_session', columns: ['session_id'])]
 #[ORM\Index(name: 'IDX_sc_player', columns: ['player_id'])]
 #[ORM\Index(name: 'IDX_sc_created_at', columns: ['created_at'])]

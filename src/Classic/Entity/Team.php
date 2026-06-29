@@ -9,6 +9,7 @@ use App\Classic\Repository\TeamRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
+#[ORM\Table(name: 'classic_team')]
 #[ORM\Index(name: 'IDX_team_town', columns: ['town_id'])]
 class Team
 {

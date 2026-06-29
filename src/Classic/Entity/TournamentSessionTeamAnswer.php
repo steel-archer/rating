@@ -9,6 +9,7 @@ use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentSessionTeamAnswerRepository::class)]
+#[ORM\Table(name: 'classic_tournament_session_team_answer')]
 #[ORM\UniqueConstraint(name: 'UQ_session_team_question', columns: ['tournament_session_team_id', 'question_number'])]
 #[ORM\Index(name: 'IDX_tsta_session_team', columns: ['tournament_session_team_id'])]
 class TournamentSessionTeamAnswer

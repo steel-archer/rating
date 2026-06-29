@@ -127,7 +127,7 @@ class VenueModerationControllerTest extends WebTestCase
                 // venue_pending was deleted, check via direct query
                 $connection = static::getContainer()->get('doctrine')->getConnection();
                 $count = $connection->fetchOne(
-                    'SELECT COUNT(*) FROM venue WHERE name = ?',
+                    'SELECT COUNT(*) FROM common_venue WHERE name = ?',
                     ['Новий майданчик'],
                 );
                 static::assertSame(0, (int) $count);

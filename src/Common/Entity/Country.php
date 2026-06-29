@@ -8,6 +8,7 @@ use App\Common\Repository\CountryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
+#[ORM\Table(name: 'common_country')]
 class Country
 {
     #[ORM\Id]

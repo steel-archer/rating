@@ -250,8 +250,8 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
 
         $rows = $conn->fetchAllAssociative(
             'SELECT st.id, st.score, ts.tournament_id
-             FROM tournament_session_team st
-             JOIN tournament_session ts ON ts.id = st.tournament_session_id
+             FROM classic_tournament_session_team st
+             JOIN classic_tournament_session ts ON ts.id = st.tournament_session_id
              WHERE st.id IN (' . self::placeholders($sessionTeamIds) . ')',
             $sessionTeamIds,
         );
@@ -264,8 +264,8 @@ class TournamentSessionTeamRepository extends ServiceEntityRepository
         $tournamentIdsValues = array_values($tournamentIds);
         $scoreRows = $conn->fetchAllAssociative(
             'SELECT ts.tournament_id, st.score
-             FROM tournament_session_team st
-             JOIN tournament_session ts ON ts.id = st.tournament_session_id
+             FROM classic_tournament_session_team st
+             JOIN classic_tournament_session ts ON ts.id = st.tournament_session_id
              WHERE ts.tournament_id IN (' . self::placeholders($tournamentIdsValues) . ')
                AND st.results_submitted = 1
              ORDER BY ts.tournament_id, st.score DESC',

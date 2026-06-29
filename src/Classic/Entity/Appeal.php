@@ -11,6 +11,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AppealRepository::class)]
+#[ORM\Table(name: 'classic_appeal')]
 #[ORM\UniqueConstraint(name: 'UQ_appeal_answer', columns: ['tournament_session_team_answer_id'])]
 #[ORM\Index(name: 'IDX_appeal_answer', columns: ['tournament_session_team_answer_id'])]
 class Appeal

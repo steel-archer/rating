@@ -11,6 +11,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentSessionRepository::class)]
+#[ORM\Table(name: 'classic_tournament_session')]
 #[ORM\Index(name: 'IDX_ts_tournament', columns: ['tournament_id'])]
 #[ORM\Index(name: 'IDX_ts_venue', columns: ['venue_id'])]
 #[ORM\Index(name: 'IDX_ts_representative', columns: ['representative_id'])]

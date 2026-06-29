@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentModerationClaimRepository::class)]
+#[ORM\Table(name: 'classic_tournament_moderation_claim')]
 #[ORM\UniqueConstraint(name: 'UNIQ_tmc_tournament', columns: ['tournament_id'])]
 class TournamentModerationClaim
 {

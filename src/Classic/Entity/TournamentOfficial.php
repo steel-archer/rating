@@ -10,6 +10,7 @@ use App\Classic\Repository\TournamentOfficialRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentOfficialRepository::class)]
+#[ORM\Table(name: 'classic_tournament_official')]
 #[ORM\UniqueConstraint(name: 'UQ_tournament_player_role', columns: ['tournament_id', 'player_id', 'role'])]
 #[ORM\Index(name: 'IDX_to_tournament', columns: ['tournament_id'])]
 #[ORM\Index(name: 'IDX_to_player', columns: ['player_id'])]

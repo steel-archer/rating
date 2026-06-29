@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlayerRepository::class)]
+#[ORM\Table(name: 'common_player')]
 #[ORM\Index(name: 'IDX_player_town', columns: ['town_id'])]
 #[ORM\HasLifecycleCallbacks]
 class Player

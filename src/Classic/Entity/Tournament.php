@@ -12,6 +12,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
+#[ORM\Table(name: 'classic_tournament')]
 #[ORM\Index(name: 'IDX_tournament_season', columns: ['season_id'])]
 #[ORM\Index(name: 'IDX_tournament_created_by', columns: ['created_by_id'])]
 #[ORM\HasLifecycleCallbacks]

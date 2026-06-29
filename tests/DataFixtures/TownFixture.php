@@ -19,22 +19,22 @@ class TownFixture extends Fixture
         $conn = $manager->getConnection();
         foreach (
             [
-            'tournament_session_team_player',
-            'tournament_session_team',
-            'tournament_session',
-            'tournament_official',
-            'tournament',
-            'team_player',
-            'team',
-            'venue_representative',
-            'venue',
-            'player_claim',
+            'classic_tournament_session_team_player',
+            'classic_tournament_session_team',
+            'classic_tournament_session',
+            'classic_tournament_official',
+            'classic_tournament',
+            'classic_team_player',
+            'classic_team',
+            'common_venue_representative',
+            'common_venue',
+            'common_player_claim',
             ] as $table
         ) {
             $conn->executeStatement("DELETE FROM `$table`");
         }
-        $conn->executeStatement('UPDATE `user` SET player_id = NULL');
-        $conn->executeStatement('DELETE FROM player');
+        $conn->executeStatement('UPDATE common_user SET player_id = NULL');
+        $conn->executeStatement('DELETE FROM common_player');
 
         $towns = $manager->getRepository(Town::class)->findBy([], ['name' => 'ASC']);
         self::$townCount = count($towns);

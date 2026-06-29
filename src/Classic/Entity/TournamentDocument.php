@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentDocumentRepository::class)]
+#[ORM\Table(name: 'classic_tournament_document')]
 #[ORM\Index(name: 'IDX_td_tournament', columns: ['tournament_id'])]
 class TournamentDocument
 {

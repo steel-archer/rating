@@ -8,6 +8,7 @@ use App\Common\Repository\TownRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TownRepository::class)]
+#[ORM\Table(name: 'common_town')]
 #[ORM\Index(name: 'IDX_town_country', columns: ['country_id'])]
 #[ORM\UniqueConstraint(name: 'UQ_town_name_country', columns: ['name', 'country_id'])]
 class Town
