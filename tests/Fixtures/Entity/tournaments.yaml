@@ -42,6 +42,7 @@ App\Classic\Entity\TournamentSession:
         representative: '@player_shevchenko'
         host: '@player_lesya'
         playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
+        isOnline: true
     session_spring_lviv:
         tournament: '@tournament_spring'
         venue: '@venue_lviv'

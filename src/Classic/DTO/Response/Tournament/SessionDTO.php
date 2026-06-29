@@ -21,6 +21,7 @@ final readonly class SessionDTO
         public ?int $hostId,
         public ?string $hostName,
         public bool $hostHasUser,
+        public bool $isOnline = false,
     ) {
     }
 }

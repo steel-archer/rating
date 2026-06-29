@@ -47,6 +47,20 @@ App\Classic\Entity\TournamentOfficial:
         player: '@player_franko'
         role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
 
+App\Common\Entity\Venue:
+    venue_online_sc:
+        name: 'Онлайн-платформа'
+        town: '@town_online'
+        isOnline: true
+        isApproved: true
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
+
+App\Common\Entity\VenueRepresentative:
+    venue_rep_online_sc:
+        venue: '@venue_online_sc'
+        player: '@player_shevchenko'
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
+
 App\Classic\Entity\TournamentSession:
     session_pending:
         tournament: '@tournament_session_test'

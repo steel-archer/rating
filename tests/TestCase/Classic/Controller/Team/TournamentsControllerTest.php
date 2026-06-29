@@ -82,6 +82,9 @@ class TournamentsControllerTest extends WebTestCase
                 static::assertStringContainsString('25/36', $allText);
                 static::assertStringContainsString('40/60', $allText);
 
+                // online indicator present (spring Kyiv session is online)
+                static::assertStringContainsString('On', $allText);
+
                 // squad players displayed
                 static::assertStringContainsString('Шевченко', $allText);
             },
@@ -135,9 +138,9 @@ class TournamentsControllerTest extends WebTestCase
                 $rows = $crawler->filter('table tbody tr');
                 static::assertCount(1, $rows);
                 $row = $rows->eq(0);
-                // place column (index 3) and score column (index 4) should be empty
-                static::assertSame('—', trim($row->filter('td')->eq(3)->text()));
+                // place column (index 4) and score column (index 5) should be empty
                 static::assertSame('—', trim($row->filter('td')->eq(4)->text()));
+                static::assertSame('—', trim($row->filter('td')->eq(5)->text()));
             },
         ];
     }

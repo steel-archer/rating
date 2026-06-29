@@ -84,6 +84,9 @@ class TournamentsControllerTest extends WebTestCase
                 static::assertStringContainsString('25/36', $allText);
                 static::assertStringContainsString('20/36', $allText);
 
+                // online indicator present (Kyiv sessions are online)
+                static::assertStringContainsString('On', $allText);
+
                 // Alpha has no one-time name — displayed normally
                 static::assertStringContainsString('Альфа', $allText);
             },
@@ -100,10 +103,10 @@ class TournamentsControllerTest extends WebTestCase
                 static::assertGreaterThanOrEqual(1, $rows->count());
 
                 // Franko plays in Beta which has one-time name
-                $hintCell = $rows->eq(0)->filter('td')->eq(2);
+                $hintCell = $rows->eq(0)->filter('td')->eq(3);
                 static::assertStringContainsString('^', $hintCell->text());
                 static::assertStringContainsString('Бета', $hintCell->filter('span')->attr('data-tooltip'));
-                $teamCell = $rows->eq(0)->filter('td')->eq(3);
+                $teamCell = $rows->eq(0)->filter('td')->eq(4);
                 static::assertStringContainsString('Зоряні Леви', $teamCell->text());
                 static::assertCount(1, $teamCell->filter('em'));
             },
@@ -157,9 +160,9 @@ class TournamentsControllerTest extends WebTestCase
                 $rows = $crawler->filter('table tbody tr');
                 static::assertCount(1, $rows);
                 $row = $rows->eq(0);
-                // place column (index 5) and score column (index 6) should be empty
-                static::assertSame('—', trim($row->filter('td')->eq(5)->text()));
+                // place column (index 6) and score column (index 7) should be empty
                 static::assertSame('—', trim($row->filter('td')->eq(6)->text()));
+                static::assertSame('—', trim($row->filter('td')->eq(7)->text()));
             },
         ];
     }

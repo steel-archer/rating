@@ -41,6 +41,7 @@ final class SessionClaimMapping implements MappingInterface
             status: $source->getStatus()->value,
             comment: $source->getComment(),
             venuePlayedSessionsCount: $context['venueSessionCounts'][$venue->getId()] ?? 0,
+            isOnline: $session->isOnline(),
         );
     }
 }

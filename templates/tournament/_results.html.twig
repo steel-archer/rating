@@ -6,6 +6,7 @@
                 <tr>
                     <th>#</th>
                     <th></th>
+                    <th></th>
                     <th>{{ 'common.team'|trans }}</th>
                     <th>{{ 'common.town'|trans }}</th>
                     <th>{{ 'common.result'|trans }}</th>
@@ -20,6 +21,7 @@
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
                         <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
                         <td class="one-time-name-hint">{% if team.oneTimeName %}<span data-tooltip="{{ 'team.base_name'|trans({'%name%': team.teamName ~ ' (' ~ team.teamTownName ~ ')'}) }}">^</span>{% endif %}</td>
+                        <td>{{ team.isOnline ? 'On' : '' }}</td>
                         <td>{{ include('_team_name.html.twig', {teamId: team.teamId, teamName: team.teamName, oneTimeName: team.oneTimeName, turboFrame: true}, with_context: false) }}</td>
                         <td>{{ team.teamTownName }}</td>
                         <td>{{ team.score is not null ? (team.maxScore ? team.score ~ '/' ~ team.maxScore : team.score) : '—' }}</td>

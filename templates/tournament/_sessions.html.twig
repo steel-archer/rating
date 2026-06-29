@@ -8,6 +8,7 @@
                     <tr>
                         <th>{{ 'venue.venue'|trans }}</th>
                         <th>{{ 'common.town'|trans }}</th>
+                        <th></th>
                         <th>{{ 'common.date'|trans }}</th>
                         <th>{{ 'venue.representative'|trans }}</th>
                         <th>{{ 'venue.host'|trans }}</th>
@@ -20,6 +21,7 @@
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                             <td><a href="{{ path('tournament_session_show', {tournamentId: tournament.id, id: s.id}) }}" data-turbo-frame="_top" data-turbo="false">{{ s.venueName }}</a></td>
                             <td>{{ s.townName }}</td>
+                            <td>{{ s.isOnline ? 'On' : '' }}</td>
                             <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>{{ include('_player_link.html.twig', {playerId: s.representativeId, playerName: s.representativeName, hasUser: s.representativeHasUser, turboFrame: true}, with_context: false) }}</td>
                             <td>

@@ -21,6 +21,8 @@ final readonly class ClaimRequestDTO
 
         #[Assert\Positive]
         public ?int $hostId = null,
+
+        public bool $isOnline = false,
     ) {
     }
 }

@@ -14,7 +14,7 @@
             <dt>{{ 'venue.venue'|trans }}</dt>
             <dd><a href="{{ path('venue_show', {id: session.venueId}) }}">{{ session.venueName }}</a></dd>
             <dt>{{ 'common.town'|trans }}</dt>
-            <dd>{{ session.townName }}</dd>
+            <dd>{{ session.townName }}{% if session.isOnline %} (онлайн){% endif %}</dd>
             {% if session.playedAt %}
                 <dt>{{ 'common.date'|trans }}</dt>
                 <dd>{{ session.playedAt|date('d.m.Y') }}</dd>

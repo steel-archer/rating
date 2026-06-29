@@ -309,5 +309,83 @@ class SubmitControllerTest extends WebTestCase
                 static::getContainer()->set(SessionClaimService::class, $stub);
             },
         ];
+
+        yield 'submit offline venue with isOnline true' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-13',
+                    'estimatedTeams' => 4,
+                    'isOnline' => true,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function () {
+                $sessions = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->findBy(['isOnline' => true]);
+                static::assertNotEmpty($sessions);
+                $session = $sessions[array_key_last($sessions)];
+                static::assertTrue($session->isOnline());
+            },
+        ];
+
+        yield 'submit online venue sets isOnline automatically' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_online_sc']->getId(),
+                    'playedAt' => '2025-06-14',
+                    'estimatedTeams' => 3,
+                    'isOnline' => false,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $sessions = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->findBy(['venue' => $objects['venue_online_sc']->getId()]);
+                static::assertNotEmpty($sessions);
+                static::assertTrue($sessions[0]->isOnline());
+            },
+        ];
+
+        yield 'submit offline venue defaults to offline session' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-15',
+                    'estimatedTeams' => 5,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $sessions = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->findBy(['venue' => $objects['venue_kyiv']->getId()]);
+                $lastSession = $sessions[array_key_last($sessions)];
+                static::assertFalse($lastSession->isOnline());
+            },
+        ];
     }
 }

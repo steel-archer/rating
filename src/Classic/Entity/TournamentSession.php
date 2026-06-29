@@ -48,6 +48,9 @@ class TournamentSession
     private ?int $estimatedTeams = null;
 
     #[ORM\Column]
+    private bool $isOnline = false;
+
+    #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
     #[ORM\Column]
@@ -138,6 +141,18 @@ class TournamentSession
     public function setEstimatedTeams(?int $estimatedTeams): static
     {
         $this->estimatedTeams = $estimatedTeams;
+
+        return $this;
+    }
+
+    public function isOnline(): bool
+    {
+        return $this->isOnline;
+    }
+
+    public function setIsOnline(bool $isOnline): static
+    {
+        $this->isOnline = $isOnline;
 
         return $this;
     }

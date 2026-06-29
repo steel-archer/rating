@@ -20,6 +20,7 @@ final readonly class TournamentAppearanceDTO
         public ?float $place,
         public bool $isLegionary,
         public ?string $oneTimeName = null,
+        public bool $isOnline = false,
     ) {
     }
 }

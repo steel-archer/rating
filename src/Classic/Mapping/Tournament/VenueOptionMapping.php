@@ -22,6 +22,7 @@ final class VenueOptionMapping implements MappingInterface
             id: $source->getId(),
             name: $source->getName(),
             townName: $source->getTown()->getName(),
+            isOnline: $source->isOnline(),
         );
     }
 }

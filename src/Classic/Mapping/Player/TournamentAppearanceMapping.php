@@ -38,6 +38,7 @@ final class TournamentAppearanceMapping implements MappingInterface
             place: $resultsHidden ? null : ($context['places'][$sessionTeam->getId()] ?? null),
             isLegionary: $source->isLegionary(),
             oneTimeName: $sessionTeam->getOneTimeName(),
+            isOnline: $session->isOnline(),
         );
     }
 }

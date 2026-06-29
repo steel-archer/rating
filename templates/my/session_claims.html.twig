@@ -30,7 +30,7 @@
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                             <td><a href="{{ path('tournament_show', {id: claim.tournamentId}) }}">{{ claim.tournamentName }}</a></td>
                             <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
-                            <td>{{ claim.townName }}</td>
+                            <td>{{ claim.townName }}{% if claim.isOnline and claim.townName != 'Онлайн' %} (онлайн){% endif %}</td>
                             <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>{{ claim.estimatedTeams ?? '—' }}</td>
                             <td>

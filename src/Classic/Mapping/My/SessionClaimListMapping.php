@@ -32,6 +32,7 @@ final class SessionClaimListMapping implements MappingInterface
             estimatedTeams: $session->getEstimatedTeams(),
             status: $source->getStatus()->value,
             comment: $source->getComment(),
+            isOnline: $session->isOnline(),
         );
     }
 }

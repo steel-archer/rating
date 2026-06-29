@@ -20,6 +20,7 @@ final readonly class SessionTeamDTO
         public array $players,
         public ?string $oneTimeName = null,
         public ?float $sessionPlace = null,
+        public bool $isOnline = false,
     ) {
         $this->baseSquadCount = count(array_filter($players, static fn(SessionTeamPlayerDTO $player) => $player->isBaseSquad));
     }

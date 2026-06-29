@@ -47,6 +47,7 @@ final class TournamentEntryMapping implements MappingInterface
             place: $resultsHidden ? null : ($context['place'] ?? null),
             players: $players,
             oneTimeName: $source->getOneTimeName(),
+            isOnline: $session->isOnline(),
         );
     }
 }

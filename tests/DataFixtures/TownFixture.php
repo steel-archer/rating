@@ -19,9 +19,14 @@ class TownFixture extends Fixture
         $conn = $manager->getConnection();
         foreach (
             [
+            'classic_appeal',
+            'classic_tournament_session_team_answer',
             'classic_tournament_session_team_player',
             'classic_tournament_session_team',
+            'classic_session_claim',
             'classic_tournament_session',
+            'classic_tournament_document',
+            'classic_tournament_moderation_claim',
             'classic_tournament_official',
             'classic_tournament',
             'classic_team_player',

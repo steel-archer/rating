@@ -38,6 +38,14 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
         'Чайна',
     ];
 
+    private const array ONLINE_VENUE_NAMES = [
+        'Discord-сервер',
+        'Zoom-кімната',
+        'Онлайн-платформа',
+        'Telegram-бот',
+        'Стрім-студія',
+    ];
+
     /** @var array<int, list<int>> town index => list of venue indices */
     public static array $townVenueMap = [];
 
@@ -48,10 +56,26 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
         $playerCount = TeamFixture::PLAYER_COUNT;
         $venueIndex = 0;
 
+        // Find the online town index
+        $onlineTownIndex = null;
+        for ($i = 0; $i < $townCount; $i++) {
+            $town = $this->getReference("town_$i", Town::class);
+            if ($town->getName() === 'Онлайн') {
+                $onlineTownIndex = $i;
+                break;
+            }
+        }
+
         for ($townIndex = 0; $townIndex < $townCount; $townIndex++) {
             $town = $this->getReference("town_$townIndex", Town::class);
-            $count = $faker->numberBetween(1, 3);
             self::$townVenueMap[$townIndex] = [];
+
+            // Skip online town in regular loop — handle it separately
+            if ($townIndex === $onlineTownIndex) {
+                continue;
+            }
+
+            $count = $faker->numberBetween(1, 3);
             $usedNames = [];
 
             for ($i = 0; $i < $count; $i++) {
@@ -86,6 +110,40 @@ class VenueFixture extends Fixture implements DependentFixtureInterface
                     $representative->setPlayer($player);
                     $manager->persist($representative);
                 }
+
+                $manager->persist($venue);
+                $this->addReference("venue_$venueIndex", $venue);
+
+                $venueIndex++;
+            }
+        }
+
+        // Create online venues
+        if ($onlineTownIndex !== null) {
+            $onlineTown = $this->getReference("town_$onlineTownIndex", Town::class);
+            $usedNames = [];
+
+            for ($i = 0; $i < 3; $i++) {
+                do {
+                    $name = $faker->randomElement(self::ONLINE_VENUE_NAMES) . ' «' . $faker->lastName() . '»';
+                } while (isset($usedNames[$name]));
+                $usedNames[$name] = true;
+
+                $venue = new Venue();
+                $venue->setName($name);
+                $venue->setTown($onlineTown);
+                $venue->setIsOnline(true);
+                $venue->setIsApproved(true);
+                self::$townVenueMap[$onlineTownIndex][] = $venueIndex;
+
+                $playerIndex = $faker->numberBetween(0, $playerCount - 1);
+                $player = $this->getReference("player_$playerIndex", Player::class);
+                $venue->setCreatedBy($player);
+
+                $representative = new VenueRepresentative();
+                $representative->setVenue($venue);
+                $representative->setPlayer($player);
+                $manager->persist($representative);
 
                 $manager->persist($venue);
                 $this->addReference("venue_$venueIndex", $venue);

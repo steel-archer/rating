@@ -158,13 +158,22 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                 }
 
                 $venueIndex = $faker->randomElement($venueIndices);
+                $venue = $this->getReference("venue_$venueIndex", Venue::class);
 
                 $session = new TournamentSession();
                 $session->setTournament($tournament);
-                $session->setVenue($this->getReference("venue_$venueIndex", Venue::class));
+                $session->setVenue($venue);
                 $session->setRepresentative($this->getReference('player_' . $faker->numberBetween(0, $playerCount - 1), Player::class));
                 $session->setHost($this->getReference('player_' . $faker->numberBetween(0, $playerCount - 1), Player::class));
                 $session->setPlayedAt(new DateTimeImmutable("2024-$month-$day 19:00"));
+
+                // Half of sessions are online: venue is online OR force online on offline venue
+                if ($venue->isOnline()) {
+                    $session->setIsOnline(true);
+                } elseif ($sessionIndex % 2 === 0) {
+                    $session->setIsOnline(true);
+                }
+
                 $manager->persist($session);
 
                 $claim = new SessionClaim();

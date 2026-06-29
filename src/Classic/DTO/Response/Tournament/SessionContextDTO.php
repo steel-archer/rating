@@ -24,6 +24,7 @@ final readonly class SessionContextDTO
         public bool $hostHasUser,
         public int $toursCount,
         public int $questionsPerTour,
+        public bool $isOnline = false,
     ) {
     }
 }

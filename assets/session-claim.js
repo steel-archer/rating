@@ -9,6 +9,23 @@ function initSessionClaimForm() {
         return;
     }
 
+    const venueSelect = /** @type {HTMLSelectElement} */ (form.querySelector('[name="venueId"]'));
+    const onlineGroup = document.getElementById('session-online-group');
+
+    if (venueSelect && onlineGroup) {
+        venueSelect.addEventListener('change', () => {
+            const selected = venueSelect.selectedOptions[0];
+            const venueIsOnline = selected?.dataset.online === '1';
+
+            if (venueIsOnline) {
+                onlineGroup.style.display = 'none';
+                /** @type {HTMLInputElement} */ (form.querySelector('input[name="isOnline"][value="1"]')).checked = true;
+            } else {
+                onlineGroup.style.display = '';
+            }
+        });
+    }
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -16,12 +33,14 @@ function initSessionClaimForm() {
         const redirect = form.dataset.redirect || null;
         const status = /** @type {HTMLElement} */ (document.getElementById('session-claim-status'));
         const hostInput = /** @type {HTMLInputElement|null} */ (form.querySelector('.officials-group[data-role="claim-host"] input[type="hidden"]'));
+        const isOnline = /** @type {HTMLInputElement} */ (form.querySelector('input[name="isOnline"]:checked')).value === '1';
 
         const data = {
             venueId: parseInt(/** @type {HTMLSelectElement} */ (form.querySelector('[name="venueId"]')).value) || null,
             playedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="playedAt"]')).value || null,
             estimatedTeams: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="estimatedTeams"]')).value) || null,
             hostId: hostInput ? parseInt(hostInput.value) || null : null,
+            isOnline,
         };
 
         status.hidden = true;

@@ -84,6 +84,7 @@ class SessionShowControllerTest extends WebTestCase
                 $card = $crawler->filter('.card dl');
                 static::assertStringContainsString('Квіз-бар Київ', $card->text());
                 static::assertStringContainsString('Київ', $card->text());
+                static::assertStringContainsString('(онлайн)', $card->text());
                 static::assertStringContainsString('01.03.2025', $card->text());
                 static::assertStringContainsString('Шевченко Тарас Григорович', $card->text());
 

@@ -149,6 +149,7 @@ class SessionClaimService
         $session->setPlayedAt($playedAt);
         $session->setEstimatedTeams($dto->estimatedTeams);
         $session->setHost($host);
+        $session->setIsOnline($venue->isOnline() || $dto->isOnline);
 
         $claim = new SessionClaim();
         $claim->setSession($session);

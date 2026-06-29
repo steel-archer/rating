@@ -26,6 +26,7 @@ final readonly class SessionClaimDTO
         public string $status,
         public ?string $comment,
         public int $venuePlayedSessionsCount = 0,
+        public bool $isOnline = false,
     ) {
     }
 }

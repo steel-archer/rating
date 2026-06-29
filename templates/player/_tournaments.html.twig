@@ -7,6 +7,7 @@
                     <th>{{ 'common.tournament'|trans }}</th>
                     <th>{{ 'common.date'|trans }}</th>
                     <th></th>
+                    <th></th>
                     <th>{{ 'common.team'|trans }}</th>
                     <th>{{ 'common.town'|trans }}</th>
                     <th>{{ 'common.place'|trans }}</th>
@@ -18,6 +19,7 @@
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                         <td><a href="{{ path('tournament_show', {id: appearance.tournamentId}) }}" data-turbo-frame="_top" data-turbo="false">{{ appearance.tournamentName }}</a></td>
                         <td>{{ appearance.playedAt ? appearance.playedAt|date('d.m.Y') : '—' }}</td>
+                        <td>{{ appearance.isOnline ? 'On' : '' }}</td>
                         <td class="one-time-name-hint">{% if appearance.oneTimeName %}<span data-tooltip="{{ 'team.base_name'|trans({'%name%': appearance.teamName ~ ' (' ~ appearance.teamTownName ~ ')'}) }}">^</span>{% endif %}</td>
                         <td>{{ include('_team_name.html.twig', {teamId: appearance.teamId, teamName: appearance.teamName, oneTimeName: appearance.oneTimeName, turboFrame: true}, with_context: false) }}{% if appearance.isLegionary %} <em>(не в складі)</em>{% endif %}</td>
                         <td>{{ appearance.teamTownName }}</td>

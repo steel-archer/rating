@@ -6,6 +6,7 @@
                 <tr>
                     <th>{{ 'common.tournament'|trans }}</th>
                     <th>{{ 'common.date'|trans }}</th>
+                    <th></th>
                     <th>{{ 'common.squad'|trans }}</th>
                     <th>{{ 'common.place'|trans }}</th>
                     <th>{{ 'common.result'|trans }}</th>
@@ -16,6 +17,7 @@
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ entry.baseSquadCount < 3 ? ' squad-weak' : '' }}">
                         <td><a href="{{ path('tournament_show', {id: entry.tournamentId}) }}" data-turbo-frame="_top" data-turbo="false">{{ entry.tournamentName }}</a></td>
                         <td>{{ entry.playedAt ? entry.playedAt|date('d.m.Y') : '—' }}</td>
+                        <td>{{ entry.isOnline ? 'On' : '' }}</td>
                         <td>
                             {% for player in entry.players %}
                                 <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">

@@ -16,6 +16,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th></th>
                             <th class="sticky-col">{{ 'common.team'|trans }}</th>
                             <th>{{ 'common.town'|trans }}</th>
                             {% for tour in 1..toursCount %}
@@ -32,6 +33,7 @@
                             {% set data = breakdown[team.sessionTeamId] ?? null %}
                             <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                                 <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
+                                <td>{{ team.isOnline ? 'On' : '' }}</td>
                                 <td class="sticky-col">{{ team.oneTimeName ?? team.teamName }}</td>
                                 <td>{{ team.teamTownName }}</td>
                                 {% if data %}

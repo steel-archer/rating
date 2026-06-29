@@ -10,6 +10,7 @@ final readonly class VenueOptionDTO
         public int $id,
         public string $name,
         public string $townName,
+        public bool $isOnline,
     ) {
     }
 }

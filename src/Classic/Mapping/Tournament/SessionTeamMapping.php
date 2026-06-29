@@ -49,6 +49,7 @@ final class SessionTeamMapping implements MappingInterface
             players: $playerDTOs,
             oneTimeName: $source->getOneTimeName(),
             sessionPlace: $context['sessionPlace'] ?? null,
+            isOnline: $source->getTournamentSession()->isOnline(),
         );
     }
 }

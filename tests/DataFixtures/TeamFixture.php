@@ -111,10 +111,21 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
             throw new RuntimeException('Need at least 2 seasons. Run migrations first.');
         }
 
-        // Build town → players map
+        // Build town → players map (exclude online pseudo-town)
         self::$townPlayers = [];
+        $realTownCount = 0;
+        for ($t = 0; $t < $townCount; $t++) {
+            $town = $this->getReference("town_$t", Town::class);
+            if ($town->getName() === 'Онлайн') {
+                continue;
+            }
+            $realTownCount++;
+        }
         for ($p = 0; $p < self::PLAYER_COUNT; $p++) {
-            self::$townPlayers[$p % $townCount][] = $p;
+            $townIdx = $p % $realTownCount;
+            // Map to actual town index, skipping online
+            $actualTownIdx = $this->getRealTownIndex($townIdx, $townCount);
+            self::$townPlayers[$actualTownIdx][] = $p;
         }
 
         $allNames = [];
@@ -134,7 +145,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
         $usedInSeason = [[], []];
 
         foreach ($teamNames as $i => $name) {
-            $townIndex = $i % $townCount;
+            $townIndex = $this->getRealTownIndex($i % $realTownCount, $townCount);
 
             $team = new Team();
             $team->setName($name);
@@ -159,8 +170,31 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
             self::$teamSquads[$i] = $basePlayers;
 
             foreach ($teamSeasons as $seasonIndex => $season) {
-                if ($seasonIndex === 0) {
+                $actualSeasonIdx = $season === $seasons[0] ? 0 : 1;
+
+                if ($seasonIndex === 0 && $actualSeasonIdx === 0) {
                     $squad = $basePlayers;
+                } elseif ($seasonIndex === 0 && $actualSeasonIdx === 1) {
+                    // Season 2 only team — use basePlayers but track in season 1
+                    $squad = [];
+                    $excluded = $usedInSeason[1];
+
+                    foreach ($basePlayers as $pi) {
+                        if (isset($excluded[$pi])) {
+                            $replacement = self::pickPlayers($faker, $townIndex, $townCount, 1, $excluded);
+                            if ($replacement !== []) {
+                                $squad[] = $replacement[0];
+                                $excluded[$replacement[0]] = true;
+                            }
+                        } else {
+                            $squad[] = $pi;
+                            $excluded[$pi] = true;
+                        }
+                    }
+
+                    foreach ($squad as $pi) {
+                        $usedInSeason[1][$pi] = true;
+                    }
                 } else {
                     // Start with basePlayers, but replace any already used in season 2
                     $squad = [];
@@ -284,5 +318,25 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [PlayerFixture::class, TownFixture::class];
+    }
+
+    /**
+     * Maps a logical index (skipping online town) to the actual town reference index.
+     */
+    private function getRealTownIndex(int $logicalIndex, int $totalTownCount): int
+    {
+        $current = 0;
+        for ($t = 0; $t < $totalTownCount; $t++) {
+            $town = $this->getReference("town_$t", Town::class);
+            if ($town->getName() === 'Онлайн') {
+                continue;
+            }
+            if ($current === $logicalIndex) {
+                return $t;
+            }
+            $current++;
+        }
+
+        return 0;
     }
 }

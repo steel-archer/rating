@@ -10,7 +10,7 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>{{ claim.townName }}</td>
+                                <td>{{ claim.townName }}{% if claim.isOnline and claim.townName != 'Онлайн' %} (онлайн){% endif %}</td>
                                 <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
                                 <td>{{ claim.estimatedTeams ?? '—' }}</td>
                                 <td class="cell-contacts">

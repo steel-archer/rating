@@ -83,18 +83,23 @@ class SessionsListControllerTest extends WebTestCase
                 static::assertContains('Львів', $townNames);
 
                 // check date
-                $dates = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(2)->text()));
+                $dates = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(3)->text()));
                 static::assertContains('01.03.2025', $dates);
 
                 // check representative names
-                $reps = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(3)->filter('a')->text()));
+                $reps = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(4)->filter('a')->text()));
                 static::assertContains('Шевченко Тарас Григорович', $reps);
                 static::assertContains('Франко Іван Якович', $reps);
 
                 // calculated team counts: Kyiv session has 2 teams, Lviv has 1
-                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(6)->text()));
+                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(7)->text()));
                 static::assertContains('2', $teamCounts);
                 static::assertContains('1', $teamCounts);
+
+                // online column: Kyiv session is online, Lviv is not
+                $onlineValues = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(2)->text()));
+                static::assertContains('On', $onlineValues);
+                static::assertContains('', $onlineValues);
             },
         ];
 

@@ -19,6 +19,7 @@ final readonly class SessionClaimListDTO
         public ?int $estimatedTeams,
         public string $status,
         public ?string $comment,
+        public bool $isOnline = false,
     ) {
     }
 }
