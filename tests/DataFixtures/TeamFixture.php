@@ -174,7 +174,7 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
 
                 if ($seasonIndex === 0 && $actualSeasonIdx === 0) {
                     $squad = $basePlayers;
-                } elseif ($seasonIndex === 0 && $actualSeasonIdx === 1) {
+                } elseif ($seasonIndex === 0) {
                     // Season 2 only team — use basePlayers but track in season 1
                     $squad = [];
                     $excluded = $usedInSeason[1];
