@@ -306,6 +306,7 @@
 | name | string(255) | — | |
 | status | enum | — | `App\Classic\Enum\TournamentStatus` |
 | format | enum | — | `App\Classic\Enum\TournamentFormat` |
+| onlineMode | enum | — | `App\Classic\Enum\TournamentOnlineMode` |
 | startedAt | DateTimeImmutable | ✓ | |
 | endedAt | DateTimeImmutable | ✓ | |
 | resultsHiddenUntil | DateTimeImmutable | ✓ | |

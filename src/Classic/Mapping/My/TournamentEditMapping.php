@@ -23,6 +23,7 @@ final class TournamentEditMapping implements MappingInterface
             name: $source->getName(),
             status: $source->getStatus()->value,
             format: $source->getFormat()->value,
+            onlineMode: $source->getOnlineMode()->value,
             startedAt: $source->getStartedAt(),
             endedAt: $source->getEndedAt(),
             resultsHiddenUntil: $source->getResultsHiddenUntil(),

@@ -13,6 +13,7 @@ final readonly class TournamentEditDTO
         public string $name,
         public string $status,
         public string $format,
+        public string $onlineMode,
         public ?DateTimeImmutable $startedAt,
         public ?DateTimeImmutable $endedAt,
         public ?DateTimeImmutable $resultsHiddenUntil,

@@ -8,6 +8,7 @@ use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentModerationClaim;
 use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentModerationStatus;
+use App\Classic\Enum\TournamentOnlineMode;
 use App\Classic\Entity\TournamentOfficial;
 use App\Classic\Enum\TournamentOfficialRole;
 use App\Classic\Enum\TournamentStatus;
@@ -1121,7 +1122,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['name' => 'Фестиваль ЩДК', 'format' => 'centralized'], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Фестиваль ЩДК', 'format' => 'centralized', 'onlineMode' => 'offline'], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 201,
             'afterCallback' => static function () {
@@ -1151,6 +1152,46 @@ class TournamentControllerTest extends WebTestCase
                     ->findOneBy(['name' => 'Синхрон ЛУК']);
                 static::assertNotNull($tournament);
                 static::assertSame(TournamentFormat::Distributed, $tournament->getFormat());
+            },
+        ];
+
+        yield 'create centralized with mixed online mode fails' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Невалідний', 'format' => 'centralized', 'onlineMode' => 'mixed'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('tournament.error.centralized_cannot_be_mixed', $json['error']);
+            },
+        ];
+
+        yield 'create centralized with online mode succeeds' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Major онлайн', 'format' => 'centralized', 'onlineMode' => 'online'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
+            'afterCallback' => static function () {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->findOneBy(['name' => 'Major онлайн']);
+                static::assertNotNull($tournament);
+                static::assertSame(TournamentFormat::Centralized, $tournament->getFormat());
+                static::assertSame(TournamentOnlineMode::Online, $tournament->getOnlineMode());
             },
         ];
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Classic\DTO\Request;
 
 use App\Classic\Enum\TournamentFormat;
+use App\Classic\Enum\TournamentOnlineMode;
 use App\Classic\Enum\TournamentPeriod;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,6 +21,8 @@ final readonly class TournamentListRequestDTO
         public ?TournamentPeriod $period = null,
 
         public ?TournamentFormat $format = null,
+
+        public ?TournamentOnlineMode $onlineMode = null,
     ) {
     }
 
@@ -32,6 +35,7 @@ final readonly class TournamentListRequestDTO
             'name' => $this->name,
             'period' => $this->period?->value,
             'format' => $this->format?->value,
+            'onlineMode' => $this->onlineMode?->value,
         ], static fn($v) => $v !== null && $v !== '');
     }
 }

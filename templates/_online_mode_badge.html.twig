@@ -1,0 +1,6 @@
+{# @var onlineMode string ('online'|'offline'|'mixed') #}
+{% if onlineMode == 'online' %}
+    <span class="online-mode-letter online-mode-online" data-tooltip="{{ 'tournament.online_mode.online'|trans }}">On</span>
+{% elseif onlineMode == 'offline' %}
+    <span class="online-mode-letter online-mode-offline" data-tooltip="{{ 'tournament.online_mode.offline'|trans }}">Off</span>
+{% endif %}

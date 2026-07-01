@@ -387,5 +387,79 @@ class SubmitControllerTest extends WebTestCase
                 static::assertFalse($lastSession->isOnline());
             },
         ];
+
+        yield 'online venue rejected for offline-only tournament' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_offline_only']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_online_sc']->getId(),
+                    'playedAt' => '2025-06-12',
+                    'estimatedTeams' => 4,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.online_venue_offline_tournament', $body['error']);
+            },
+        ];
+
+        yield 'offline venue allowed for offline-only tournament' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_offline_only']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-12',
+                    'estimatedTeams' => 4,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $sessions = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->findBy(['tournament' => $objects['tournament_offline_only']->getId()]);
+                static::assertNotEmpty($sessions);
+                static::assertFalse($sessions[0]->isOnline());
+            },
+        ];
+
+        yield 'offline venue allowed for online-only tournament with isOnline forced' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_online_only']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-12',
+                    'estimatedTeams' => 4,
+                    'isOnline' => false,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $sessions = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->findBy(['tournament' => $objects['tournament_online_only']->getId()]);
+                static::assertNotEmpty($sessions);
+                // Even though isOnline=false was sent, online-only tournament forces true
+                static::assertTrue($sessions[0]->isOnline());
+            },
+        ];
     }
 }

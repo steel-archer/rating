@@ -29,6 +29,7 @@ final class TournamentMapping implements MappingInterface
             name: $source->getName(),
             status: $source->getStatus()->value,
             format: $source->getFormat()->value,
+            onlineMode: $source->getOnlineMode()->value,
             createdById: $source->getCreatedBy()?->getId(),
             seasonName: $source->getSeason()?->getName(),
             startedAt: $source->getStartedAt(),

@@ -240,6 +240,7 @@ session_claim:
     not_pending: 'Заявка не очікує розгляду'
     not_rejected: 'Заявка не відхилена'
     not_representative: 'Ви не є представником цього майданчика'
+    online_venue_offline_tournament: 'Онлайн-майданчик не може подати заявку на строго офлайновий турнір'
     registration_closed: 'Реєстрацію на цей турнір завершено'
   estimated_date: 'Дата'
   date_range_hint: 'від %from% до %to%'
@@ -372,6 +373,15 @@ tournament:
     distributed: 'Розподілений'
     distributed_hint: 'Пакет роздається майданчикам, грається протягом певного часу (синхрон/асинхрон).'
     label: 'Формат'
+  online_mode:
+    all: 'Усі режими'
+    label: 'Онлайн-режим'
+    mixed: 'Змішаний'
+    mixed_hint: 'Допускаються як онлайн, так і офлайн відіграші.'
+    offline: 'Офлайн'
+    offline_hint: 'Тільки офлайн відіграші. Онлайн-майданчики не зможуть подати заявку.'
+    online: 'Онлайн'
+    online_hint: 'Тільки онлайн відіграші.'
   period:
     active: 'Активні'
     all: 'Усі турніри'
@@ -391,6 +401,7 @@ tournament:
   error:
     cannot_delete_published: 'Не можна видалити опублікований турнір'
     cannot_edit_started: 'Не можна редагувати турнір, який вже почався'
+    centralized_cannot_be_mixed: 'Централізований турнір не може бути змішаним'
     end_before_start: 'Дата завершення має бути пізніше дати початку'
     end_in_past: 'Дата завершення не може бути в минулому'
     invalid_date: 'Невірний формат дати'

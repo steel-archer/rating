@@ -40,6 +40,26 @@ App\Classic\Entity\Tournament:
         submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 3
         questionsPerTour: 12
+    tournament_offline_only:
+        name: 'Офлайн турнір'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        onlineMode: '<(App\Classic\Enum\TournamentOnlineMode::Offline)>'
+        startedAt: '<(new \DateTimeImmutable("2025-06-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-06-30 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        toursCount: 3
+        questionsPerTour: 12
+    tournament_online_only:
+        name: 'Онлайн турнір'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        onlineMode: '<(App\Classic\Enum\TournamentOnlineMode::Online)>'
+        startedAt: '<(new \DateTimeImmutable("2025-06-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-06-30 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        toursCount: 3
+        questionsPerTour: 12
 
 App\Classic\Entity\TournamentOfficial:
     official_org_test:

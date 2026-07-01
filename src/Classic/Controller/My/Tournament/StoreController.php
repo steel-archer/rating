@@ -8,6 +8,7 @@ use App\Common\Attribute\RateLimited;
 use App\Classic\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\Common\Entity\User;
 use App\Classic\Service\TournamentManagementService;
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -24,7 +25,11 @@ class StoreController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $tournament = $service->create($dto, $user->getPlayer());
+        try {
+            $tournament = $service->create($dto, $user->getPlayer());
+        } catch (LogicException $ex) {
+            return $this->json(['error' => $ex->getMessage()], 422);
+        }
 
         return $this->json(['success' => true, 'id' => $tournament->getId()], 201);
     }

@@ -58,6 +58,7 @@ class TournamentRepository extends ServiceEntityRepository
                 't.id',
                 't.name',
                 't.format',
+                't.onlineMode',
                 't.startedAt',
                 't.endedAt',
                 't.difficulty',
@@ -152,6 +153,11 @@ class TournamentRepository extends ServiceEntityRepository
         if ($requestDto->format !== null) {
             $qb->andWhere('t.format = :format')
                 ->setParameter('format', $requestDto->format->value);
+        }
+
+        if ($requestDto->onlineMode !== null) {
+            $qb->andWhere('t.onlineMode = :onlineMode')
+                ->setParameter('onlineMode', $requestDto->onlineMode->value);
         }
 
         return $qb;

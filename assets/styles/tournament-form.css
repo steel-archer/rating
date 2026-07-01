@@ -604,6 +604,11 @@
     margin: 0;
 }
 
+.format-option-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
 .format-option-label {
     font-size: 0.9375rem;
     font-weight: 500;
@@ -662,4 +667,19 @@
 .badge-distributed {
     background: #e0f2fe;
     color: #075985;
+}
+
+.badge-online {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-offline {
+    background: #f3f4f6;
+    color: var(--text-secondary);
+}
+
+.badge-mixed {
+    background: #fef3c7;
+    color: #92400e;
 }

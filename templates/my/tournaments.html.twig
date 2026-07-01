@@ -21,6 +21,7 @@
                 <tr>
                     <th>{{ 'common.name'|trans }}</th>
                     <th></th>
+                    <th></th>
                     <th>{{ 'common.dates'|trans }}</th>
                     <th>{{ 'tournament.my.status'|trans }}</th>
                     <th>
@@ -36,6 +37,7 @@
                     <tr>
                         <td><a href="{{ path('my_tournament_edit', {id: tournament.id}) }}">{{ tournament.name }}</a></td>
                         <td>{{ include('_format_badge.html.twig', {format: tournament.format}, with_context: false) }}</td>
+                        <td>{{ include('_online_mode_badge.html.twig', {onlineMode: tournament.onlineMode}, with_context: false) }}</td>
                         <td class="meta">
                             {% if tournament.startedAt %}
                                 {{ tournament.startedAt|date('d.m.Y') }}{% if tournament.endedAt %} — {{ tournament.endedAt|date('d.m.Y') }}{% endif %}

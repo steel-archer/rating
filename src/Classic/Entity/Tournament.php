@@ -7,6 +7,7 @@ namespace App\Classic\Entity;
 use App\Common\Entity\Player;
 use App\Common\Entity\Season;
 use App\Classic\Enum\TournamentFormat;
+use App\Classic\Enum\TournamentOnlineMode;
 use App\Classic\Enum\TournamentStatus;
 use App\Classic\Repository\TournamentRepository;
 use DateTimeImmutable;
@@ -32,6 +33,9 @@ class Tournament
 
     #[ORM\Column(length: 20, enumType: TournamentFormat::class)]
     private TournamentFormat $format = TournamentFormat::Distributed;
+
+    #[ORM\Column(length: 20, enumType: TournamentOnlineMode::class)]
+    private TournamentOnlineMode $onlineMode = TournamentOnlineMode::Mixed;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
@@ -330,6 +334,18 @@ class Tournament
     public function setFormat(TournamentFormat $format): static
     {
         $this->format = $format;
+
+        return $this;
+    }
+
+    public function getOnlineMode(): TournamentOnlineMode
+    {
+        return $this->onlineMode;
+    }
+
+    public function setOnlineMode(TournamentOnlineMode $onlineMode): static
+    {
+        $this->onlineMode = $onlineMode;
 
         return $this;
     }

@@ -12,6 +12,7 @@ final readonly class TournamentContextDTO
         public int $id,
         public string $name,
         public string $format = 'distributed',
+        public string $onlineMode = 'mixed',
         public ?DateTimeImmutable $startedAt = null,
         public ?DateTimeImmutable $endedAt = null,
     ) {

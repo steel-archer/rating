@@ -14,6 +14,7 @@ use App\Classic\Entity\SessionClaim;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentSession;
+use App\Classic\Enum\TournamentOnlineMode;
 use App\Common\Mapping\Mapper;
 use App\Common\Repository\PlayerRepository;
 use App\Classic\Repository\AppealRepository;
@@ -137,6 +138,11 @@ class SessionClaimService
             throw new LogicException('session_claim.error.not_representative');
         }
 
+        $onlineMode = $tournament->getOnlineMode();
+        if ($onlineMode === TournamentOnlineMode::Offline && $venue->isOnline()) {
+            throw new LogicException('session_claim.error.online_venue_offline_tournament');
+        }
+
         $playedAt = $dto->playedAt !== null ? new DateTimeImmutable($dto->playedAt) : null;
         $this->validateDate($tournament, $playedAt);
 
@@ -149,7 +155,13 @@ class SessionClaimService
         $session->setPlayedAt($playedAt);
         $session->setEstimatedTeams($dto->estimatedTeams);
         $session->setHost($host);
-        $session->setIsOnline($venue->isOnline() || $dto->isOnline);
+
+        $isOnline = match ($onlineMode) {
+            TournamentOnlineMode::Online => true,
+            TournamentOnlineMode::Offline => false,
+            TournamentOnlineMode::Mixed => $venue->isOnline() || $dto->isOnline,
+        };
+        $session->setIsOnline($isOnline);
 
         $claim = new SessionClaim();
         $claim->setSession($session);

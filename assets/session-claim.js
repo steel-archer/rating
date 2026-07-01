@@ -11,9 +11,24 @@ function initSessionClaimForm() {
 
     const venueSelect = /** @type {HTMLSelectElement} */ (form.querySelector('[name="venueId"]'));
     const onlineGroup = document.getElementById('session-online-group');
+    const onlineMode = form.dataset.onlineMode || 'mixed';
+
+    // For strict online/offline tournaments: auto-set isOnline and hide the group
+    if (onlineMode === 'online' || onlineMode === 'offline') {
+        const value = onlineMode === 'online' ? '1' : '0';
+        /** @type {HTMLInputElement} */ (form.querySelector(`input[name="isOnline"][value="${value}"]`)).checked = true;
+        if (onlineGroup) {
+            onlineGroup.style.display = 'none';
+        }
+    }
 
     if (venueSelect && onlineGroup) {
         venueSelect.addEventListener('change', () => {
+            // Skip venue-based isOnline logic for strict tournaments
+            if (onlineMode === 'online' || onlineMode === 'offline') {
+                return;
+            }
+
             const selected = venueSelect.selectedOptions[0];
             const venueIsOnline = selected?.dataset.online === '1';
 

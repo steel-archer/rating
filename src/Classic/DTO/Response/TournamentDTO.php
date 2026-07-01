@@ -14,6 +14,7 @@ final readonly class TournamentDTO
         public string $name,
         public string $status,
         public string $format,
+        public string $onlineMode,
         public ?int $createdById,
         public ?string $seasonName,
         public ?DateTimeInterface $startedAt,

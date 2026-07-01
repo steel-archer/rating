@@ -9,6 +9,24 @@ function initTournamentCreateForm() {
         return;
     }
 
+    const formatRadios = form.querySelectorAll('input[name="format"]');
+    const mixedRadio = /** @type {HTMLInputElement} */ (form.querySelector('input[name="onlineMode"][value="mixed"]'));
+    const offlineRadio = /** @type {HTMLInputElement} */ (form.querySelector('input[name="onlineMode"][value="offline"]'));
+
+    formatRadios.forEach((radio) => {
+        radio.addEventListener('change', () => {
+            const isCentralized = /** @type {HTMLInputElement} */ (radio).value === 'centralized';
+            mixedRadio.disabled = isCentralized;
+            if (isCentralized && mixedRadio.checked) {
+                offlineRadio.checked = true;
+            }
+            const mixedOption = mixedRadio.closest('.format-option');
+            if (mixedOption) {
+                mixedOption.classList.toggle('format-option-disabled', isCentralized);
+            }
+        });
+    });
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -17,6 +35,7 @@ function initTournamentCreateForm() {
         const data = {
             name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
             format: /** @type {HTMLInputElement} */ (form.querySelector('[name="format"]:checked')).value,
+            onlineMode: /** @type {HTMLInputElement} */ (form.querySelector('[name="onlineMode"]:checked')).value,
         };
 
         apiPost(url, data)

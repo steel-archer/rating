@@ -7,6 +7,7 @@ namespace App\Classic\Service;
 use App\Classic\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\Classic\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Classic\Enum\TournamentFormat;
+use App\Classic\Enum\TournamentOnlineMode;
 use App\Common\Entity\Player;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentOfficial;
@@ -43,9 +44,14 @@ class TournamentManagementService
 
     public function create(CreateRequestDTO $dto, Player $player): Tournament
     {
+        if ($dto->format === TournamentFormat::Centralized && $dto->onlineMode === TournamentOnlineMode::Mixed) {
+            throw new LogicException('tournament.error.centralized_cannot_be_mixed');
+        }
+
         $tournament = new Tournament();
         $tournament->setName($dto->name);
         $tournament->setFormat($dto->format);
+        $tournament->setOnlineMode($dto->onlineMode);
         $tournament->setCreatedBy($player);
 
         $this->em->persist($tournament);

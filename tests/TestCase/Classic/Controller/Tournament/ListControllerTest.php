@@ -68,19 +68,19 @@ class ListControllerTest extends WebTestCase
                 // Spring Cup first (ORDER BY startedAt DESC: 2025-03 > 2025-02 > 2024-10)
                 $firstRow = $rows->eq(0);
                 static::assertStringContainsString('Весняний кубок', $firstRow->filter('td')->eq(0)->text());
-                static::assertStringContainsString('01.03.2025', $firstRow->filter('td')->eq(2)->text());
-                static::assertStringContainsString('3.5', $firstRow->filter('td')->eq(3)->text());
-                static::assertStringContainsString('2.8', $firstRow->filter('td')->eq(4)->text());
+                static::assertStringContainsString('01.03.2025', $firstRow->filter('td')->eq(3)->text());
+                static::assertStringContainsString('3.5', $firstRow->filter('td')->eq(4)->text());
+                static::assertStringContainsString('2.8', $firstRow->filter('td')->eq(5)->text());
                 // teamCount: 3 teams (alpha, beta, gamma) across 2 sessions (calculated)
-                $firstRow->filter('td')->eq(5)->text()
+                $firstRow->filter('td')->eq(6)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('3', $x));
 
                 $thirdRow = $rows->eq(2);
                 static::assertStringContainsString('Осінній бриз', $thirdRow->filter('td')->eq(0)->text());
-                static::assertStringContainsString('4.2', $thirdRow->filter('td')->eq(3)->text());
+                static::assertStringContainsString('4.2', $thirdRow->filter('td')->eq(4)->text());
                 // teamCount: 1 team (alpha) in 1 session (calculated)
-                $thirdRow->filter('td')->eq(5)->text()
+                $thirdRow->filter('td')->eq(6)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('1', $x));
             },

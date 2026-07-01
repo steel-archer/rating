@@ -22,6 +22,7 @@ final class TournamentContextMapping implements MappingInterface
             id: $source->getId(),
             name: $source->getName(),
             format: $source->getFormat()->value,
+            onlineMode: $source->getOnlineMode()->value,
             startedAt: $source->getStartedAt(),
             endedAt: $source->getEndedAt(),
         );

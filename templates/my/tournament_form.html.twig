@@ -38,6 +38,32 @@
                     </label>
                 </div>
             </div>
+            <div class="form-group">
+                <label>{{ 'tournament.online_mode.label'|trans }} *</label>
+                <div class="format-options">
+                    <label class="format-option">
+                        <input type="radio" name="onlineMode" value="mixed" checked>
+                        <span class="format-option-label">
+                            {{ 'tournament.online_mode.mixed'|trans }}
+                            <span class="format-hint-icon" data-tooltip="{{ 'tournament.online_mode.mixed_hint'|trans }}">?</span>
+                        </span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="onlineMode" value="offline">
+                        <span class="format-option-label">
+                            {{ 'tournament.online_mode.offline'|trans }}
+                            <span class="format-hint-icon" data-tooltip="{{ 'tournament.online_mode.offline_hint'|trans }}">?</span>
+                        </span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="onlineMode" value="online">
+                        <span class="format-option-label">
+                            {{ 'tournament.online_mode.online'|trans }}
+                            <span class="format-hint-icon" data-tooltip="{{ 'tournament.online_mode.online_hint'|trans }}">?</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
             <button type="submit" class="btn">{{ 'tournament.my.create'|trans }}</button>
             <span id="save-status" class="save-status" hidden></span>
         </form>

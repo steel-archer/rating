@@ -23,7 +23,7 @@
     {% endif %}
 
     <div class="card">
-        <form id="session-claim-form" class="tournament-form" data-url="{{ path('my_session_claim_submit', {tournamentId: tournament.id}) }}" data-redirect="{{ path('my_session_claims') }}">
+        <form id="session-claim-form" class="tournament-form" data-url="{{ path('my_session_claim_submit', {tournamentId: tournament.id}) }}" data-redirect="{{ path('my_session_claims') }}" data-online-mode="{{ tournament.onlineMode }}">
             <div id="session-claim-status" class="form-error" hidden></div>
             <div class="form-group">
                 <label for="claim-venue">{{ 'venue.venue'|trans }}</label>

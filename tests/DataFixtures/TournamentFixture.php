@@ -12,6 +12,7 @@ use App\Classic\Entity\Team;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentOfficial;
 use App\Classic\Enum\TournamentFormat;
+use App\Classic\Enum\TournamentOnlineMode;
 use App\Classic\Enum\TournamentOfficialRole;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
@@ -105,6 +106,13 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $tournament->setName($name);
             $tournament->setSeason($season);
             $tournament->setFormat($isCentralized ? TournamentFormat::Centralized : TournamentFormat::Distributed);
+
+            if ($isCentralized) {
+                // Centralized cannot be mixed
+                $tournament->setOnlineMode($faker->randomElement([TournamentOnlineMode::Online, TournamentOnlineMode::Offline]));
+            } else {
+                $tournament->setOnlineMode($faker->randomElement(TournamentOnlineMode::cases()));
+            }
             $month = str_pad((string)(($i % 3) + 10), 2, '0', STR_PAD_LEFT);
             $day = str_pad((string)($faker->numberBetween(1, 28)), 2, '0', STR_PAD_LEFT);
             $startDate = (new DateTimeImmutable("2024-$month-$day"))->setTime(0, 0, 0);
@@ -177,6 +185,11 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                 $venueIndex = $faker->randomElement($venueIndices);
                 $venue = $this->getReference("venue_$venueIndex", Venue::class);
 
+                // Skip online venues for offline-only tournaments
+                if ($tournament->getOnlineMode() === TournamentOnlineMode::Offline && $venue->isOnline()) {
+                    continue;
+                }
+
                 $session = new TournamentSession();
                 $session->setTournament($tournament);
                 $session->setVenue($venue);
@@ -184,11 +197,15 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
                 $session->setHost($this->getReference('player_' . $faker->numberBetween(0, $playerCount - 1), Player::class));
                 $session->setPlayedAt(new DateTimeImmutable("2024-$month-$day 19:00"));
 
-                // Half of sessions are online: venue is online OR force online on offline venue
-                if ($venue->isOnline()) {
+                // Set isOnline based on tournament onlineMode
+                $onlineMode = $tournament->getOnlineMode();
+                if ($onlineMode === TournamentOnlineMode::Online) {
                     $session->setIsOnline(true);
-                } elseif ($sessionIndex % 2 === 0) {
-                    $session->setIsOnline(true);
+                } elseif ($onlineMode === TournamentOnlineMode::Offline) {
+                    $session->setIsOnline(false);
+                } else {
+                    // Mixed: venue is online OR randomly online for offline venues
+                    $session->setIsOnline($venue->isOnline() || $sessionIndex % 2 === 0);
                 }
 
                 $manager->persist($session);

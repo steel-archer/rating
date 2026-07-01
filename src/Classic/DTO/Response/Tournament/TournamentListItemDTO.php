@@ -12,6 +12,7 @@ final readonly class TournamentListItemDTO
         public int $id,
         public string $name,
         public string $format,
+        public string $onlineMode,
         public ?DateTimeImmutable $startedAt,
         public ?DateTimeImmutable $endedAt,
         public ?float $difficulty,
