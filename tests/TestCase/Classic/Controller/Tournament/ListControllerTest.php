@@ -63,24 +63,24 @@ class ListControllerTest extends WebTestCase
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $rows = $crawler->filter('table tbody tr');
-                static::assertCount(2, $rows);
+                static::assertCount(3, $rows);
 
-                // Spring Cup first (ORDER BY startedAt DESC: 2025-03 > 2024-10)
+                // Spring Cup first (ORDER BY startedAt DESC: 2025-03 > 2025-02 > 2024-10)
                 $firstRow = $rows->eq(0);
                 static::assertStringContainsString('Весняний кубок', $firstRow->filter('td')->eq(0)->text());
-                static::assertStringContainsString('01.03.2025', $firstRow->filter('td')->eq(1)->text());
-                static::assertStringContainsString('3.5', $firstRow->filter('td')->eq(2)->text());
-                static::assertStringContainsString('2.8', $firstRow->filter('td')->eq(3)->text());
+                static::assertStringContainsString('01.03.2025', $firstRow->filter('td')->eq(2)->text());
+                static::assertStringContainsString('3.5', $firstRow->filter('td')->eq(3)->text());
+                static::assertStringContainsString('2.8', $firstRow->filter('td')->eq(4)->text());
                 // teamCount: 3 teams (alpha, beta, gamma) across 2 sessions (calculated)
-                $firstRow->filter('td')->eq(4)->text()
+                $firstRow->filter('td')->eq(5)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('3', $x));
 
-                $secondRow = $rows->eq(1);
-                static::assertStringContainsString('Осінній бриз', $secondRow->filter('td')->eq(0)->text());
-                static::assertStringContainsString('4.2', $secondRow->filter('td')->eq(2)->text());
+                $thirdRow = $rows->eq(2);
+                static::assertStringContainsString('Осінній бриз', $thirdRow->filter('td')->eq(0)->text());
+                static::assertStringContainsString('4.2', $thirdRow->filter('td')->eq(3)->text());
                 // teamCount: 1 team (alpha) in 1 session (calculated)
-                $secondRow->filter('td')->eq(4)->text()
+                $thirdRow->filter('td')->eq(5)->text()
                     |> trim(...)
                     |> (static fn($x) => static::assertSame('1', $x));
             },
@@ -107,6 +107,35 @@ class ListControllerTest extends WebTestCase
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertCount(0, $crawler->filter('table tbody tr td a'));
+            },
+        ];
+
+        yield 'filter by format=distributed shows only distributed' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?format=distributed',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(2, $rows);
+                $allText = $crawler->filter('table tbody')->text();
+                static::assertStringContainsString('Весняний кубок', $allText);
+                static::assertStringContainsString('Осінній бриз', $allText);
+                static::assertStringNotContainsString('Фестиваль Одеса', $allText);
+            },
+        ];
+
+        yield 'filter by format=centralized shows only centralized' => [
+            'method' => 'GET',
+            'uri' => '/tournaments/list?format=centralized',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Фестиваль Одеса', $rows->eq(0)->text());
             },
         ];
 

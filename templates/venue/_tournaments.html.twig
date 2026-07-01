@@ -5,6 +5,7 @@
             <thead>
                 <tr>
                     <th>{{ 'common.tournament'|trans }}</th>
+                    <th></th>
                     <th>{{ 'common.date'|trans }}</th>
                     <th>{{ 'common.teams_count'|trans }}</th>
                 </tr>
@@ -13,6 +14,7 @@
                 {% for t in tournaments %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                         <td><a href="{{ path('tournament_show', {id: t.tournamentId}) }}" data-turbo-frame="_top" data-turbo="false">{{ t.tournamentName }}</a></td>
+                        <td>{{ include('_format_badge.html.twig', {format: t.tournamentFormat}, with_context: false) }}</td>
                         <td>{{ t.playedAt ? t.playedAt|date('d.m.Y') : '—' }}</td>
                         <td>{{ t.teamsCount }}</td>
                     </tr>

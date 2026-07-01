@@ -29,6 +29,7 @@ final class TournamentAppearanceMapping implements MappingInterface
         return new $destinationClass(
             tournamentId: $tournament->getId(),
             tournamentName: $tournament->getName(),
+            tournamentFormat: $tournament->getFormat()->value,
             playedAt: $session->getPlayedAt(),
             teamId: $team->getId(),
             teamName: $team->getName(),

@@ -13,6 +13,7 @@ final readonly class TournamentEntryDTO
     public function __construct(
         public int $tournamentId,
         public string $tournamentName,
+        public string $tournamentFormat,
         public ?DateTimeInterface $playedAt,
         public ?int $score,
         public ?int $maxScore,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Classic\DTO\Request;
 
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentPeriod;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -17,6 +18,8 @@ final readonly class TournamentListRequestDTO
         public ?string $name = null,
 
         public ?TournamentPeriod $period = null,
+
+        public ?TournamentFormat $format = null,
     ) {
     }
 
@@ -28,6 +31,7 @@ final readonly class TournamentListRequestDTO
         return array_filter([
             'name' => $this->name,
             'period' => $this->period?->value,
+            'format' => $this->format?->value,
         ], static fn($v) => $v !== null && $v !== '');
     }
 }

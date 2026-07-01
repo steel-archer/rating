@@ -6,6 +6,7 @@ namespace App\Classic\Service;
 
 use App\Classic\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\Classic\DTO\Request\Tournament\My\EditRequestDTO;
+use App\Classic\Enum\TournamentFormat;
 use App\Common\Entity\Player;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentOfficial;
@@ -44,6 +45,7 @@ class TournamentManagementService
     {
         $tournament = new Tournament();
         $tournament->setName($dto->name);
+        $tournament->setFormat($dto->format);
         $tournament->setCreatedBy($player);
 
         $this->em->persist($tournament);
@@ -67,14 +69,15 @@ class TournamentManagementService
     public function update(Tournament $tournament, EditRequestDTO $dto): void
     {
         if (
-            $tournament->getStatus() === TournamentStatus::Published
+            $tournament->getFormat() === TournamentFormat::Distributed
+            && $tournament->getStatus() === TournamentStatus::Published
             && $tournament->getStartedAt() !== null
             && $tournament->getStartedAt() <= DateTimeImmutable::createFromInterface($this->clock->now())
         ) {
             throw new LogicException('tournament.error.cannot_edit_started');
         }
 
-        $errors = $this->validator->validateEdit($dto);
+        $errors = $this->validator->validateEdit($dto, $tournament->getFormat());
         if ($errors !== []) {
             throw new LogicException(implode(' ', $errors));
         }

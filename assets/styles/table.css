@@ -198,3 +198,41 @@ tr.row-pending-add {
 tr.row-pending-add-source {
     opacity: 0.4;
 }
+
+.format-letter {
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: help;
+    position: relative;
+}
+
+.format-letter-centralized {
+    color: #166534;
+}
+
+.format-letter-distributed {
+    color: var(--text);
+}
+
+.format-letter[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--surface);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-weight: normal;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s;
+    z-index: 10;
+}
+
+.format-letter[data-tooltip]:hover::after {
+    opacity: 1;
+}

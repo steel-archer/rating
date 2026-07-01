@@ -11,6 +11,7 @@ final readonly class TournamentListItemDTO
     public function __construct(
         public int $id,
         public string $name,
+        public string $format,
         public ?DateTimeImmutable $startedAt,
         public ?DateTimeImmutable $endedAt,
         public ?float $difficulty,

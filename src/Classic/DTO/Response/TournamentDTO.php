@@ -13,6 +13,7 @@ final readonly class TournamentDTO
         public int $id,
         public string $name,
         public string $status,
+        public string $format,
         public ?int $createdById,
         public ?string $seasonName,
         public ?DateTimeInterface $startedAt,

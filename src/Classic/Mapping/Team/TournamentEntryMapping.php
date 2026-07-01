@@ -41,6 +41,7 @@ final class TournamentEntryMapping implements MappingInterface
         return new $destinationClass(
             tournamentId: $tournament->getId(),
             tournamentName: $tournament->getName(),
+            tournamentFormat: $tournament->getFormat()->value,
             playedAt: $session->getPlayedAt(),
             score: $resultsHidden ? null : $source->getScore(),
             maxScore: $resultsHidden ? null : $maxScore,

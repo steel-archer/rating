@@ -21,6 +21,7 @@ final class TournamentContextMapping implements MappingInterface
         return new $destinationClass(
             id: $source->getId(),
             name: $source->getName(),
+            format: $source->getFormat()->value,
             startedAt: $source->getStartedAt(),
             endedAt: $source->getEndedAt(),
         );

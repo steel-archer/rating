@@ -9,6 +9,7 @@
 {% block body %}
     <h1>{{ tournament.name }}</h1>
     <div class="meta">
+        <span class="badge badge-{{ tournament.format }}">{{ ('tournament.format.' ~ tournament.format)|trans }}</span>
         {% if tournament.startedAt %}<span>{{ tournament.startedAt|date('d.m.Y') }}{% if tournament.endedAt %} — {{ tournament.endedAt|date('d.m.Y') }}{% endif %}</span>{% endif %}
     </div>
 

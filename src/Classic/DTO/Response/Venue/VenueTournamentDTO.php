@@ -11,6 +11,7 @@ final readonly class VenueTournamentDTO
     public function __construct(
         public int $tournamentId,
         public string $tournamentName,
+        public string $tournamentFormat,
         public ?DateTimeImmutable $playedAt,
         public int $teamsCount,
     ) {

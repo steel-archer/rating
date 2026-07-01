@@ -57,6 +57,7 @@ class TournamentRepository extends ServiceEntityRepository
             ->select(
                 't.id',
                 't.name',
+                't.format',
                 't.startedAt',
                 't.endedAt',
                 't.difficulty',
@@ -146,6 +147,11 @@ class TournamentRepository extends ServiceEntityRepository
                     ->andWhere('(t.startedAt IS NULL OR t.startedAt > :now)')
                     ->setParameter('now', $now),
             };
+        }
+
+        if ($requestDto->format !== null) {
+            $qb->andWhere('t.format = :format')
+                ->setParameter('format', $requestDto->format->value);
         }
 
         return $qb;

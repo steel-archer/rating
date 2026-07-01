@@ -21,6 +21,7 @@ final class TournamentListItemMapping implements MappingInterface
         return new TournamentListItemDTO(
             id: $source['id'],
             name: $source['name'],
+            format: is_string($source['format']) ? $source['format'] : $source['format']->value,
             startedAt: $source['startedAt'] instanceof DateTimeImmutable ? $source['startedAt'] : null,
             endedAt: $source['endedAt'] instanceof DateTimeImmutable ? $source['endedAt'] : null,
             difficulty: $source['difficulty'] !== null ? (float) $source['difficulty'] : null,

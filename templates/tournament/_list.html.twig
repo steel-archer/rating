@@ -9,6 +9,11 @@
                     <option value="active"{{ (filters.period ?? '') == 'active' ? ' selected' : '' }}>{{ 'tournament.period.active'|trans }}</option>
                     <option value="future"{{ (filters.period ?? '') == 'future' ? ' selected' : '' }}>{{ 'tournament.period.future'|trans }}</option>
                 </select>
+                <select name="format" class="search-input" aria-label="{{ 'tournament.format.label'|trans }}">
+                    <option value="">{{ 'tournament.format.all'|trans }}</option>
+                    <option value="distributed"{{ (filters.format ?? '') == 'distributed' ? ' selected' : '' }}>{{ 'tournament.format.distributed'|trans }}</option>
+                    <option value="centralized"{{ (filters.format ?? '') == 'centralized' ? ' selected' : '' }}>{{ 'tournament.format.centralized'|trans }}</option>
+                </select>
                 <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
             </div>
         </form>
@@ -19,6 +24,7 @@
             <thead>
                 <tr>
                     <th>{{ 'common.name'|trans }}</th>
+                    <th></th>
                     <th>{{ 'common.dates'|trans }}</th>
                     <th>{{ 'tournament.difficulty'|trans }}</th>
                     <th>{{ 'tournament.true_dl'|trans }}</th>
@@ -29,13 +35,14 @@
                 {% for t in tournaments %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                         <td><a href="{{ path('tournament_show', {id: t.id}) }}" data-turbo-frame="_top" data-turbo="false">{{ t.name }}</a></td>
+                        <td>{{ include('_format_badge.html.twig', {format: t.format}, with_context: false) }}</td>
                         <td>{{ t.startedAt ? t.startedAt|date('d.m.Y') : '—' }}{% if t.endedAt %} — {{ t.endedAt|date('d.m.Y') }}{% endif %}</td>
                         <td>{{ t.difficulty ?? '—' }}</td>
                         <td>{{ t.trueDl ?? '—' }}</td>
                         <td>{{ t.teamCount }}</td>
                     </tr>
                 {% else %}
-                    <tr><td colspan="5">{{ 'common.not_found'|trans }}</td></tr>
+                    <tr><td colspan="6">{{ 'common.not_found'|trans }}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

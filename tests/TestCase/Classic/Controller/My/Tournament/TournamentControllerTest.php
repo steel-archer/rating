@@ -6,6 +6,7 @@ namespace App\Tests\TestCase\Classic\Controller\My\Tournament;
 
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentModerationClaim;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentModerationStatus;
 use App\Classic\Entity\TournamentOfficial;
 use App\Classic\Enum\TournamentOfficialRole;
@@ -134,6 +135,7 @@ class TournamentControllerTest extends WebTestCase
                     ->findOneBy(['name' => 'Новий тестовий турнір']);
                 static::assertNotNull($tournament);
                 static::assertSame(TournamentStatus::Draft, $tournament->getStatus());
+                static::assertSame(TournamentFormat::Distributed, $tournament->getFormat());
             },
         ];
 
@@ -1107,6 +1109,138 @@ class TournamentControllerTest extends WebTestCase
                     ->getRepository(TournamentOfficial::class)
                     ->findBy(['tournament' => $objects['tournament_draft']->getId()]);
                 static::assertCount(1, $officials);
+            },
+        ];
+
+        yield 'create tournament with centralized format' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Фестиваль ЩДК', 'format' => 'centralized'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
+            'afterCallback' => static function () {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->findOneBy(['name' => 'Фестиваль ЩДК']);
+                static::assertNotNull($tournament);
+                static::assertSame(TournamentFormat::Centralized, $tournament->getFormat());
+            },
+        ];
+
+        yield 'create tournament with distributed format' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client) => $client->request(
+                'POST',
+                '/my/tournaments',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Синхрон ЛУК', 'format' => 'distributed'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
+            'afterCallback' => static function () {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->findOneBy(['name' => 'Синхрон ЛУК']);
+                static::assertNotNull($tournament);
+                static::assertSame(TournamentFormat::Distributed, $tournament->getFormat());
+            },
+        ];
+
+        yield 'centralized tournament allows dates in past' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_centralized']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Централізований турнір',
+                    'startedAt' => '2024-05-01',
+                    'endedAt' => '2024-05-02',
+                    'toursCount' => 4,
+                    'questionsPerTour' => 12,
+                    'difficulty' => 5.0,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertTrue($json['success']);
+            },
+        ];
+
+        yield 'centralized tournament publish without deadlines succeeds' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_centralized']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_centralized']->getId());
+                static::assertSame(TournamentStatus::Published, $tournament->getStatus());
+            },
+        ];
+
+        yield 'centralized tournament still requires end after start' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_centralized']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Централізований турнір',
+                    'startedAt' => '2024-05-05',
+                    'endedAt' => '2024-05-01',
+                    'toursCount' => 4,
+                    'questionsPerTour' => 12,
+                    'difficulty' => 5.0,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('tournament.error.end_before_start', $json['error']);
+            },
+        ];
+
+        yield 'format cannot be changed after creation' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request('GET', '/my/tournaments/' . $objects['tournament_centralized']->getId() . '/edit'),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                // Format is displayed as badge, not as editable input
+                static::assertCount(0, $crawler->filter('input[name="format"]'));
+                static::assertCount(0, $crawler->filter('select[name="format"]'));
             },
         ];
     }

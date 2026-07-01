@@ -103,10 +103,10 @@ class TournamentsControllerTest extends WebTestCase
                 static::assertGreaterThanOrEqual(1, $rows->count());
 
                 // Franko plays in Beta which has one-time name
-                $hintCell = $rows->eq(0)->filter('td')->eq(3);
+                $hintCell = $rows->eq(0)->filter('td')->eq(4);
                 static::assertStringContainsString('^', $hintCell->text());
                 static::assertStringContainsString('Бета', $hintCell->filter('span')->attr('data-tooltip'));
-                $teamCell = $rows->eq(0)->filter('td')->eq(4);
+                $teamCell = $rows->eq(0)->filter('td')->eq(5);
                 static::assertStringContainsString('Зоряні Леви', $teamCell->text());
                 static::assertCount(1, $teamCell->filter('em'));
             },
@@ -160,9 +160,9 @@ class TournamentsControllerTest extends WebTestCase
                 $rows = $crawler->filter('table tbody tr');
                 static::assertCount(1, $rows);
                 $row = $rows->eq(0);
-                // place column (index 6) and score column (index 7) should be empty
-                static::assertSame('—', trim($row->filter('td')->eq(6)->text()));
+                // place column (index 7) and score column (index 8) should be empty
                 static::assertSame('—', trim($row->filter('td')->eq(7)->text()));
+                static::assertSame('—', trim($row->filter('td')->eq(8)->text()));
             },
         ];
     }

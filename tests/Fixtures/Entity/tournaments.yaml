@@ -24,6 +24,17 @@ App\Classic\Entity\Tournament:
         difficulty: 4.2
         trueDl: 3.1
         status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+    tournament_festival:
+        name: 'Фестиваль Одеса'
+        season: '@season_current'
+        format: '<(App\Classic\Enum\TournamentFormat::Centralized)>'
+        startedAt: '<(new \DateTimeImmutable("2025-02-15 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-02-16 00:00:00"))>'
+        toursCount: 5
+        questionsPerTour: 12
+        difficulty: 4.0
+        trueDl: 3.0
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
 
 App\Classic\Entity\TournamentOfficial:
     official_organizer:

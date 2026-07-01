@@ -138,9 +138,9 @@ class TournamentsControllerTest extends WebTestCase
                 $rows = $crawler->filter('table tbody tr');
                 static::assertCount(1, $rows);
                 $row = $rows->eq(0);
-                // place column (index 4) and score column (index 5) should be empty
-                static::assertSame('—', trim($row->filter('td')->eq(4)->text()));
+                // place column (index 5) and score column (index 6) should be empty
                 static::assertSame('—', trim($row->filter('td')->eq(5)->text()));
+                static::assertSame('—', trim($row->filter('td')->eq(6)->text()));
             },
         ];
     }

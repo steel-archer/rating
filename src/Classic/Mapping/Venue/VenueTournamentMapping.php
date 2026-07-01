@@ -21,6 +21,7 @@ final class VenueTournamentMapping implements MappingInterface
         return new VenueTournamentDTO(
             tournamentId: $source['tournamentId'],
             tournamentName: $source['tournamentName'],
+            tournamentFormat: is_string($source['tournamentFormat']) ? $source['tournamentFormat'] : $source['tournamentFormat']->value,
             playedAt: $source['playedAt'] instanceof DateTimeImmutable ? $source['playedAt'] : null,
             teamsCount: (int) $source['teamsCount'],
         );

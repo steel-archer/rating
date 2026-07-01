@@ -10,6 +10,17 @@ App\Classic\Entity\Tournament:
         name: 'Мій чернетковий турнір'
         status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
         createdBy: '@player_franko'
+    tournament_centralized:
+        name: 'Централізований турнір'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        format: '<(App\Classic\Enum\TournamentFormat::Centralized)>'
+        createdBy: '@player_franko'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("-9 days 00:00:00"))>'
+        toursCount: 4
+        questionsPerTour: 12
+        difficulty: 5.0
     tournament_approved:
         name: 'Схвалений турнір'
         status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
@@ -46,6 +57,22 @@ App\Classic\Entity\TournamentOfficial:
         tournament: '@tournament_draft'
         player: '@player_franko'
         role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_centralized_org:
+        tournament: '@tournament_centralized'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_centralized_editor:
+        tournament: '@tournament_centralized'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
+    official_centralized_game_jury:
+        tournament: '@tournament_centralized'
+        player: '@player_lesya'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
+    official_centralized_appeal_jury:
+        tournament: '@tournament_centralized'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
     official_approved_org:
         tournament: '@tournament_approved'
         player: '@player_franko'
@@ -80,6 +107,11 @@ App\Classic\Entity\TournamentOfficial:
         role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
 
 App\Classic\Entity\TournamentModerationClaim:
+    claim_centralized:
+        tournament: '@tournament_centralized'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-2 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-1 day"))>'
     claim_approved:
         tournament: '@tournament_approved'
         status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'

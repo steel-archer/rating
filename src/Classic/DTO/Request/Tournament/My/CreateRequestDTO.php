@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Classic\DTO\Request\Tournament\My;
 
+use App\Classic\Enum\TournamentFormat;
 use App\Common\Validator\NoHtml;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,6 +15,9 @@ final readonly class CreateRequestDTO
         #[Assert\Length(max: 255)]
         #[NoHtml]
         public string $name = '',
+
+        #[Assert\NotNull]
+        public TournamentFormat $format = TournamentFormat::Distributed,
     ) {
     }
 }

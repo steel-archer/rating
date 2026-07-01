@@ -21,6 +21,7 @@ final class TournamentListMapping implements MappingInterface
         return new $destinationClass(
             id: $source->getId(),
             name: $source->getName(),
+            format: $source->getFormat()->value,
             status: $source->getStatus()->value,
             startedAt: $source->getStartedAt(),
             endedAt: $source->getEndedAt(),

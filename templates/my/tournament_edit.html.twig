@@ -63,11 +63,16 @@
         {% if readonly %}
             <p class="flash flash-info">{{ 'tournament.my.readonly_notice'|trans }}</p>
         {% endif %}
-        <form id="tournament-edit-form" class="tournament-form" data-url="{{ path('my_tournament_update', {id: tournament.id}) }}">
+        <form id="tournament-edit-form" class="tournament-form" data-url="{{ path('my_tournament_update', {id: tournament.id}) }}" data-format="{{ tournament.format }}">
 
             <div class="form-group">
                 <label for="name">{{ 'common.name'|trans }} *</label>
                 <input type="text" id="name" name="name" value="{{ tournament.name }}" required {{ readonly ? 'disabled' : '' }}>
+            </div>
+            <div class="form-group">
+                <label>{{ 'tournament.format.label'|trans }}</label>
+                <span class="badge badge-{{ tournament.format }}">{{ ('tournament.format.' ~ tournament.format)|trans }}</span>
+                <span class="format-hint-icon" data-tooltip="{{ ('tournament.format.' ~ tournament.format ~ '_hint')|trans }}">?</span>
             </div>
             <div class="form-group">
                 <label for="started_at">{{ 'tournament.my.start_datetime'|trans }} <span class="required-publish">{{ 'tournament.my.required_for_publish'|trans }}</span></label>
@@ -79,6 +84,7 @@
                 <input type="date" id="ended_at" name="endedAt" value="{{ tournament.endedAt ? tournament.endedAt|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
                 <small class="hint">{{ 'tournament.my.end_time_hint'|trans }}</small>
             </div>
+            {% if tournament.format == 'distributed' %}
             <div class="form-group">
                 <label for="results_hidden_until">{{ 'tournament.my.results_hidden_until'|trans }} <span class="required-publish">{{ 'tournament.my.required_for_publish'|trans }}</span></label>
                 <input type="date" id="results_hidden_until" name="resultsHiddenUntil" value="{{ tournament.resultsHiddenUntil ? tournament.resultsHiddenUntil|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
@@ -104,6 +110,7 @@
                 <input type="date" id="appeal_deadline" name="appealDeadline" value="{{ tournament.appealDeadline ? tournament.appealDeadline|date('Y-m-d') : '' }}" {{ readonly ? 'disabled' : '' }}>
                 <small class="hint">{{ 'tournament.my.appeal_deadline_hint'|trans }}</small>
             </div>
+            {% endif %}
             <div class="form-group">
                 <label for="tours_count">{{ 'tournament.tours_count'|trans }} <span class="required-publish">{{ 'tournament.my.required_for_publish'|trans }}</span></label>
                 <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}" {{ readonly ? 'disabled' : '' }}>

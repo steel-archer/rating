@@ -17,6 +17,9 @@
     border-radius: 8px;
     outline: none;
     min-width: 180px;
+    height: 38px;
+    box-sizing: border-box;
+    background: #fff;
 }
 
 .search-input:focus {

@@ -11,6 +11,7 @@ use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Entity\Team;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentOfficial;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentOfficialRole;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
@@ -81,6 +82,9 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
         'Грізні Мамонти',
     ];
 
+    // Indices of centralized tournaments (~20%)
+    private const array CENTRALIZED_INDICES = [4, 9, 14, 19, 23];
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('uk_UA');
@@ -95,20 +99,33 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $season = $manager->getRepository(Season::class)->find($seasonId)
                 ?? throw new RuntimeException('Season not found');
 
+            $isCentralized = in_array($i, self::CENTRALIZED_INDICES, true);
+
             $tournament = new Tournament();
             $tournament->setName($name);
             $tournament->setSeason($season);
+            $tournament->setFormat($isCentralized ? TournamentFormat::Centralized : TournamentFormat::Distributed);
             $month = str_pad((string)(($i % 3) + 10), 2, '0', STR_PAD_LEFT);
             $day = str_pad((string)($faker->numberBetween(1, 28)), 2, '0', STR_PAD_LEFT);
             $startDate = (new DateTimeImmutable("2024-$month-$day"))->setTime(0, 0, 0);
-            $endDate = $startDate->modify('+' . $faker->numberBetween(7, 14) . ' days')->setTime(23, 59, 59);
+
+            if ($isCentralized) {
+                $endDate = $startDate->modify('+' . $faker->numberBetween(1, 2) . ' days')->setTime(23, 59, 59);
+            } else {
+                $endDate = $startDate->modify('+' . $faker->numberBetween(7, 14) . ' days')->setTime(23, 59, 59);
+            }
+
             $tournament->setStartedAt($startDate);
             $tournament->setEndedAt($endDate);
-            $tournament->setResultsHiddenUntil($endDate->modify('+1 day')->setTime(0, 0, 0));
-            $tournament->setRegistrationDeadline($endDate->modify('-1 day')->setTime(23, 59, 59));
-            $tournament->setDetailsHiddenUntil($endDate->modify('+3 days')->setTime(0, 0, 0));
-            $tournament->setSubmissionDeadline($endDate->modify('+2 days')->setTime(23, 59, 59));
-            $tournament->setAppealDeadline($endDate->modify('+4 days')->setTime(23, 59, 59));
+
+            if (!$isCentralized) {
+                $tournament->setResultsHiddenUntil($endDate->modify('+1 day')->setTime(0, 0, 0));
+                $tournament->setRegistrationDeadline($endDate->modify('-1 day')->setTime(23, 59, 59));
+                $tournament->setDetailsHiddenUntil($endDate->modify('+3 days')->setTime(0, 0, 0));
+                $tournament->setSubmissionDeadline($endDate->modify('+2 days')->setTime(23, 59, 59));
+                $tournament->setAppealDeadline($endDate->modify('+4 days')->setTime(23, 59, 59));
+            }
+
             $tournament->setStatus(TournamentStatus::Published);
             $tournament->setToursCount($faker->boolean(90) ? 3 : $faker->randomElement([4, 5]));
             $tournament->setQuestionsPerTour($faker->boolean(90) ? 12 : $faker->randomElement([13, 14, 15]));
@@ -141,7 +158,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             $oneTimeNameAssigned = false;
 
             // Sessions — fewer sessions, more teams per session
-            $sessionCount = $faker->numberBetween(3, min(7, $townCount));
+            $sessionCount = $isCentralized ? 1 : $faker->numberBetween(3, min(7, $townCount));
             $sessionTowns = $faker->randomElements(range(0, $townCount - 1), $sessionCount);
             $totalQuestions = $tournament->getToursCount() * $tournament->getQuestionsPerTour();
 

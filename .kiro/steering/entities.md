@@ -305,6 +305,7 @@
 | id | int | — | PK, auto |
 | name | string(255) | — | |
 | status | enum | — | `App\Classic\Enum\TournamentStatus` |
+| format | enum | — | `App\Classic\Enum\TournamentFormat` |
 | startedAt | DateTimeImmutable | ✓ | |
 | endedAt | DateTimeImmutable | ✓ | |
 | resultsHiddenUntil | DateTimeImmutable | ✓ | |

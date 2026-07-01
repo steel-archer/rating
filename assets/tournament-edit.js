@@ -14,7 +14,10 @@ function initTournamentCreateForm() {
 
         const url = /** @type {string} */ (form.dataset.url);
         const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
-        const data = { name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value };
+        const data = {
+            name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
+            format: /** @type {HTMLInputElement} */ (form.querySelector('[name="format"]:checked')).value,
+        };
 
         apiPost(url, data)
             .then(({ok, body}) => {
@@ -41,16 +44,17 @@ function initTournamentEditForm() {
 
         const url = /** @type {string} */ (form.dataset.url);
         const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
+        const format = form.dataset.format;
 
         const data = {
             name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
             startedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="startedAt"]')).value || null,
             endedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="endedAt"]')).value || null,
-            resultsHiddenUntil: /** @type {HTMLInputElement} */ (form.querySelector('[name="resultsHiddenUntil"]')).value || null,
-            registrationDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="registrationDeadline"]')).value || null,
-            detailsHiddenUntil: /** @type {HTMLInputElement} */ (form.querySelector('[name="detailsHiddenUntil"]')).value || null,
-            submissionDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="submissionDeadline"]')).value || null,
-            appealDeadline: /** @type {HTMLInputElement} */ (form.querySelector('[name="appealDeadline"]')).value || null,
+            resultsHiddenUntil: null,
+            registrationDeadline: null,
+            detailsHiddenUntil: null,
+            submissionDeadline: null,
+            appealDeadline: null,
             toursCount: /** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value
                 ? parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value)
                 : null,
@@ -66,6 +70,20 @@ function initTournamentEditForm() {
             gameJury: getOfficialIds('gameJury'),
             appealJury: getOfficialIds('appealJury'),
         };
+
+        if (format === 'distributed') {
+            const resultsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="resultsHiddenUntil"]'));
+            const registrationInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="registrationDeadline"]'));
+            const detailsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="detailsHiddenUntil"]'));
+            const submissionInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="submissionDeadline"]'));
+            const appealInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="appealDeadline"]'));
+
+            data.resultsHiddenUntil = resultsInput?.value || null;
+            data.registrationDeadline = registrationInput?.value || null;
+            data.detailsHiddenUntil = detailsInput?.value || null;
+            data.submissionDeadline = submissionInput?.value || null;
+            data.appealDeadline = appealInput?.value || null;
+        }
 
         apiPost(url, data)
             .then(({ok, body}) => {

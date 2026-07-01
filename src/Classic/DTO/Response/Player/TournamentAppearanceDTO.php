@@ -11,6 +11,7 @@ final readonly class TournamentAppearanceDTO
     public function __construct(
         public int $tournamentId,
         public string $tournamentName,
+        public string $tournamentFormat,
         public ?DateTimeInterface $playedAt,
         public int $teamId,
         public string $teamName,

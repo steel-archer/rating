@@ -9,6 +9,7 @@ use App\Classic\DTO\Response\My\TournamentDocumentDTO;
 use App\Classic\DTO\Response\My\TournamentEditDTO;
 use App\Classic\DTO\Response\My\TournamentOfficialDTO;
 use App\Classic\Entity\Tournament;
+use App\Classic\Enum\TournamentFormat;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentDocumentRepository;
 use App\Classic\Repository\TournamentModerationClaimRepository;
@@ -34,7 +35,7 @@ class EditController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $readonly = $tournament->isStarted();
+        $readonly = $tournament->isStarted() && $tournament->getFormat() === TournamentFormat::Distributed;
 
         $moderationClaim = $claimRepository->findByTournament($tournament);
         $claimDto = $moderationClaim !== null

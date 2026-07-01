@@ -19,6 +19,25 @@
                 <label for="name">{{ 'common.name'|trans }} *</label>
                 <input type="text" id="name" name="name" required>
             </div>
+            <div class="form-group">
+                <label>{{ 'tournament.format.label'|trans }} *</label>
+                <div class="format-options">
+                    <label class="format-option">
+                        <input type="radio" name="format" value="distributed" checked>
+                        <span class="format-option-label">
+                            {{ 'tournament.format.distributed'|trans }}
+                            <span class="format-hint-icon" data-tooltip="{{ 'tournament.format.distributed_hint'|trans }}">?</span>
+                        </span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="format" value="centralized">
+                        <span class="format-option-label">
+                            {{ 'tournament.format.centralized'|trans }}
+                            <span class="format-hint-icon" data-tooltip="{{ 'tournament.format.centralized_hint'|trans }}">?</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
             <button type="submit" class="btn">{{ 'tournament.my.create'|trans }}</button>
             <span id="save-status" class="save-status" hidden></span>
         </form>

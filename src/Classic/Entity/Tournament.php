@@ -6,6 +6,7 @@ namespace App\Classic\Entity;
 
 use App\Common\Entity\Player;
 use App\Common\Entity\Season;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentStatus;
 use App\Classic\Repository\TournamentRepository;
 use DateTimeImmutable;
@@ -28,6 +29,9 @@ class Tournament
 
     #[ORM\Column(length: 20, enumType: TournamentStatus::class)]
     private TournamentStatus $status = TournamentStatus::Draft;
+
+    #[ORM\Column(length: 20, enumType: TournamentFormat::class)]
+    private TournamentFormat $format = TournamentFormat::Distributed;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
@@ -175,6 +179,10 @@ class Tournament
 
     public function isRegistrationOpen(): bool
     {
+        if ($this->format === TournamentFormat::Centralized) {
+            return $this->status === TournamentStatus::Published;
+        }
+
         return $this->registrationDeadline !== null
             && $this->registrationDeadline > new DateTimeImmutable();
     }
@@ -310,6 +318,18 @@ class Tournament
     public function setStatus(TournamentStatus $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getFormat(): TournamentFormat
+    {
+        return $this->format;
+    }
+
+    public function setFormat(TournamentFormat $format): static
+    {
+        $this->format = $format;
 
         return $this;
     }

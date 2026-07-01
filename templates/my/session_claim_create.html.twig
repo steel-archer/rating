@@ -16,6 +16,12 @@
         </dl>
     </div>
 
+    {% if tournament.format == 'centralized' %}
+        <div class="flash flash-info">
+            {{ 'session_claim.centralized_warning'|trans }}
+        </div>
+    {% endif %}
+
     <div class="card">
         <form id="session-claim-form" class="tournament-form" data-url="{{ path('my_session_claim_submit', {tournamentId: tournament.id}) }}" data-redirect="{{ path('my_session_claims') }}">
             <div id="session-claim-status" class="form-error" hidden></div>

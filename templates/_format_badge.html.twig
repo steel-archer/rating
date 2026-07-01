@@ -1,0 +1,6 @@
+{# @var format string ('centralized'|'distributed') #}
+{% if format == 'centralized' %}
+    <span class="format-letter format-letter-centralized" data-tooltip="{{ 'tournament.format.centralized'|trans }}">Ц</span>
+{% else %}
+    <span class="format-letter format-letter-distributed" data-tooltip="{{ 'tournament.format.distributed'|trans }}">Р</span>
+{% endif %}
