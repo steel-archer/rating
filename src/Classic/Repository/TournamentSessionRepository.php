@@ -87,8 +87,10 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
             ->leftJoin(TournamentSessionTeam::class, 'st', 'WITH', 'st.tournamentSession = ts AND st.resultsSubmitted = true')
             ->select(
                 't.id AS tournamentId',
+                'ts.id AS sessionId',
                 't.name AS tournamentName',
                 't.format AS tournamentFormat',
+                't.onlineMode AS tournamentOnlineMode',
                 'ts.playedAt',
                 'COUNT(st.id) AS teamsCount',
             )
@@ -96,7 +98,7 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
             ->andWhere('sc.status = :status')
             ->setParameter('venue', $venue)
             ->setParameter('status', SessionClaimStatus::Approved->value)
-            ->groupBy('ts.id', 't.id', 't.name', 't.format', 'ts.playedAt')
+            ->groupBy('ts.id', 't.id', 't.name', 't.format', 't.onlineMode', 'ts.playedAt')
             ->orderBy('ts.playedAt', 'DESC')
             ->setFirstResult(($page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)

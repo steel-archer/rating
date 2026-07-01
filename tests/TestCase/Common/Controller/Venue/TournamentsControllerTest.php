@@ -80,9 +80,9 @@ class TournamentsControllerTest extends WebTestCase
 
                 // Spring session in Kyiv has 2 teams (alpha + gamma), autumn has 1 (alpha)
                 $firstRowCells = $rows->first()->filter('td');
-                static::assertSame('2', trim($firstRowCells->eq(3)->text()));
+                static::assertSame('2', trim($firstRowCells->eq(4)->text()));
                 $secondRowCells = $rows->last()->filter('td');
-                static::assertSame('1', trim($secondRowCells->eq(3)->text()));
+                static::assertSame('1', trim($secondRowCells->eq(4)->text()));
             },
         ];
 
