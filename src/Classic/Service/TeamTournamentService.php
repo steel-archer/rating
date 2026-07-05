@@ -11,6 +11,7 @@ use App\Common\Enum\CacheTag;
 use App\Classic\Helper\SessionTeamPlayerGrouper;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TeamPlayerRepository;
+use App\Classic\Repository\TeamPlayerTransferRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use Doctrine\DBAL\Exception as DbalException;
@@ -28,6 +29,7 @@ class TeamTournamentService
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private TeamPlayerRepository $teamPlayerRepository,
+        private TeamPlayerTransferRepository $transferRepository,
         private Mapper $mapper,
         private TagAwareCacheInterface $cache,
     ) {
@@ -87,41 +89,57 @@ class TeamTournamentService
             $this->sessionTeamPlayerRepository->findBySessionTeamIds($sessionTeamIds),
         );
         $places = $this->sessionTeamRepository->getPlacesInTournament($sessionTeamIds);
-        $squadInfoBySeason = $this->buildSquadInfoBySeason($team);
+
+        // Collect unique dates and seasons, batch-load transfers
+        $datesBySeason = [];
+        foreach ($sessionTeams as $st) {
+            $session = $st->getTournamentSession();
+            $season = $session->getTournament()->getSeason();
+            $playedAt = $session->getPlayedAt();
+            if ($season !== null && $playedAt !== null) {
+                $datesBySeason[$season->getId()]['season'] = $season;
+                $datesBySeason[$season->getId()]['dates'][$playedAt->format('Y-m-d')] = $playedAt;
+            }
+        }
+
+        /** @var array<int, array<string, list<int>>> seasonId => (dateKey => playerIds) */
+        $squadCache = array_map(function ($info) use ($team) {
+            return $this->transferRepository->findPlayerIdsInTeamOnDates(
+                $team,
+                $info['season'],
+                array_values($info['dates']),
+            );
+        }, $datesBySeason);
+
+        // Captain info per season (single query per season)
+        $captainCache = [];
+        foreach ($datesBySeason as $seasonId => $info) {
+            $squadMap = $this->teamPlayerRepository->getSquadMapBySeason($info['season']);
+            $captainCache[$seasonId] = $squadMap[$team->getId()]['captainId'] ?? null;
+        }
 
         return array_map(
-            function (TournamentSessionTeam $st) use ($playerMap, $places, $squadInfoBySeason) {
-                $seasonId = $st->getTournamentSession()->getTournament()->getSeason()?->getId();
+            function (TournamentSessionTeam $st) use ($playerMap, $places, $squadCache, $captainCache) {
+                $session = $st->getTournamentSession();
+                $season = $session->getTournament()->getSeason();
+                $playedAt = $session->getPlayedAt();
+
+                $playerIds = [];
+                $captainId = null;
+                if ($season !== null && $playedAt !== null) {
+                    $seasonId = $season->getId();
+                    $dateKey = $playedAt->format('Y-m-d');
+                    $playerIds = $squadCache[$seasonId][$dateKey] ?? [];
+                    $captainId = $captainCache[$seasonId] ?? null;
+                }
 
                 return $this->mapper->map($st, TournamentEntryDTO::class, [
                     'place' => $places[$st->getId()] ?? null,
                     'players' => $playerMap[$st->getId()] ?? [],
-                    'squadInfo' => $squadInfoBySeason[$seasonId] ?? ['playerIds' => [], 'captainId' => null],
+                    'squadInfo' => ['playerIds' => $playerIds, 'captainId' => $captainId],
                 ]);
             },
             $sessionTeams,
         );
-    }
-
-    /**
-     * @return array<int, array{playerIds: list<int>, captainId: int|null}> seasonId => squadInfo
-     */
-    private function buildSquadInfoBySeason(Team $team): array
-    {
-        $teamPlayers = $this->teamPlayerRepository->findByTeamWithPlayerAndSeason($team);
-        $result = [];
-
-        foreach ($teamPlayers as $tp) {
-            $seasonId = $tp->getSeason()->getId();
-            if (!isset($result[$seasonId])) {
-                $result[$seasonId] = ['playerIds' => [], 'captainId' => null];
-            }
-            $result[$seasonId]['playerIds'][] = $tp->getPlayer()->getId();
-            if ($tp->isCaptain()) {
-                $result[$seasonId]['captainId'] = $tp->getPlayer()->getId();
-            }
-        }
-
-        return $result;
     }
 }

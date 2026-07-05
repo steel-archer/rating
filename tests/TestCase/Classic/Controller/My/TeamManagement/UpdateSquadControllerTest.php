@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\TestCase\Classic\Controller\My\TeamManagement;
 
 use App\Classic\Entity\TeamPlayer;
+use App\Classic\Entity\TeamPlayerTransfer;
+use App\Classic\Enum\TeamPlayerTransferType;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -390,6 +392,75 @@ class UpdateSquadControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 static::assertError($client, 'team_management.error.player_not_in_team');
+            },
+        ];
+
+        yield 'add player creates transfer record' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_captain',
+            'action' => static fn(KernelBrowser $client, array $objects) => self::post(
+                $client,
+                [
+                    'addPlayerIds' => [$objects['player_lesya']->getId()],
+                    'removePlayerIds' => [],
+                ],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $transfer = static::getContainer()->get('doctrine')
+                    ->getRepository(TeamPlayerTransfer::class)
+                    ->findOneBy([
+                        'player' => $objects['player_lesya']->getId(),
+                        'team' => $objects['team_alpha']->getId(),
+                        'season' => $objects['season_current']->getId(),
+                        'type' => TeamPlayerTransferType::Joined,
+                    ]);
+                static::assertNotNull($transfer);
+            },
+        ];
+
+        yield 'remove player creates transfer record' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_captain',
+            'action' => static fn(KernelBrowser $client, array $objects) => self::post(
+                $client,
+                [
+                    'addPlayerIds' => [],
+                    'removePlayerIds' => [$objects['player_franko']->getId()],
+                ],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $transfer = static::getContainer()->get('doctrine')
+                    ->getRepository(TeamPlayerTransfer::class)
+                    ->findOneBy([
+                        'player' => $objects['player_franko']->getId(),
+                        'team' => $objects['team_alpha']->getId(),
+                        'season' => $objects['season_current']->getId(),
+                        'type' => TeamPlayerTransferType::Left,
+                    ]);
+                static::assertNotNull($transfer);
+            },
+        ];
+
+        yield 'max joins reached' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/team_management.yaml',
+                'Entity/team_management_max_joins.yaml',
+            ],
+            'loginAs' => 'user_captain',
+            'action' => static fn(KernelBrowser $client, array $objects) => self::post(
+                $client,
+                [
+                    'addPlayerIds' => [$objects['player_exhausted']->getId()],
+                    'removePlayerIds' => [],
+                ],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringStartsWith('team_management.error.max_joins_reached:', $json['error']);
             },
         ];
     }

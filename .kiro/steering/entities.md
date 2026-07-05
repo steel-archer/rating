@@ -292,6 +292,32 @@
 
 - **UQ_player_season**: (player_id, season_id)
 
+### TeamPlayerTransfer
+
+Запис історії переходів гравця між командами. Фіксує кожне приєднання та вихід зі складу.
+
+**Файл:** `src/Classic/Entity/TeamPlayerTransfer.php`
+
+#### Поля
+
+| Поле | Тип | Nullable | Примітка |
+|------|-----|----------|----------|
+| id | int | — | PK, auto |
+| type | enum | — | `App\Classic\Enum\TeamPlayerTransferType` (joined/left) |
+| date | DateTimeImmutable (date) | — | дата переходу |
+
+#### Зв'язки
+
+| Поле | Тип | Ціль | Nullable | Примітка |
+|------|-----|------|----------|----------|
+| player | ManyToOne | Player | — | 🔗 Common |
+| team | ManyToOne | Team | — | |
+| season | ManyToOne | Season | — | 🔗 Common |
+
+#### Індекси
+
+- **IDX_tpt_player_season_date**: (player_id, season_id, date)
+
 ### Tournament
 
 Турнір із запитань «Що? Де? Коли?». Центральна сутність модуля Classic — об'єднує сесії, команди та результати.

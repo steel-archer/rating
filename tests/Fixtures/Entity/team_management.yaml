@@ -37,3 +37,23 @@ App\Classic\Entity\TeamPlayer:
         player: '@player_kotsubynsky'
         season: '@season_current'
         isCaptain: true
+
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_captain_joined:
+        player: '@player_shevchenko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_member_joined:
+        player: '@player_franko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_other_team_joined:
+        player: '@player_kotsubynsky'
+        team: '@team_beta'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'

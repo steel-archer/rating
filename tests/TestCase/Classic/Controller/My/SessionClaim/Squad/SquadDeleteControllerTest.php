@@ -71,5 +71,20 @@ class SquadDeleteControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'delete squad with answers' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/squad.yaml',
+                'Entity/squad_with_answers.yaml',
+            ],
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-teams/' . $objects['session_team_existing']->getId() . '/delete',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertTrue($data['success']);
+            },
+        ];
     }
 }

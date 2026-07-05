@@ -8,7 +8,10 @@ use App\Common\Entity\Player;
 use App\Common\Entity\Season;
 use App\Classic\Entity\Team;
 use App\Classic\Entity\TeamPlayer;
+use App\Classic\Entity\TeamPlayerTransfer;
+use App\Classic\Enum\TeamPlayerTransferType;
 use App\Common\Entity\Town;
+use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -231,12 +234,22 @@ class TeamFixture extends Fixture implements DependentFixtureInterface
                 $captainIndex = $faker->numberBetween(0, count($squad) - 1);
 
                 foreach ($squad as $idx => $playerIndex) {
+                    $player = $this->getReference("player_$playerIndex", Player::class);
+
                     $teamPlayer = new TeamPlayer();
                     $teamPlayer->setTeam($team);
-                    $teamPlayer->setPlayer($this->getReference("player_$playerIndex", Player::class));
+                    $teamPlayer->setPlayer($player);
                     $teamPlayer->setSeason($season);
                     $teamPlayer->setIsCaptain($idx === $captainIndex);
                     $manager->persist($teamPlayer);
+
+                    $transfer = new TeamPlayerTransfer();
+                    $transfer->setPlayer($player);
+                    $transfer->setTeam($team);
+                    $transfer->setSeason($season);
+                    $transfer->setType(TeamPlayerTransferType::Joined);
+                    $transfer->setDate($season->getStartedAt() ?? new DateTimeImmutable('2025-10-01'));
+                    $manager->persist($transfer);
                 }
             }
         }

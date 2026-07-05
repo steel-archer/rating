@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\TestCase\Classic\Controller\My\TeamManagement;
 
 use App\Classic\Entity\TeamPlayer;
+use App\Classic\Entity\TeamPlayerTransfer;
+use App\Classic\Enum\TeamPlayerTransferType;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -66,6 +68,16 @@ class LeaveControllerTest extends WebTestCase
                         'season' => $objects['season_current']->getId(),
                     ]);
                 static::assertNull($entry);
+
+                $transfer = static::getContainer()->get('doctrine')
+                    ->getRepository(TeamPlayerTransfer::class)
+                    ->findOneBy([
+                        'player' => $objects['player_franko']->getId(),
+                        'team' => $objects['team_alpha']->getId(),
+                        'season' => $objects['season_current']->getId(),
+                        'type' => TeamPlayerTransferType::Left,
+                    ]);
+                static::assertNotNull($transfer);
             },
         ];
 

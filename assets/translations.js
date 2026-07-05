@@ -278,6 +278,7 @@ export default {
     "team_management.error.captain_cannot_leave": "Капітан не може піти з команди. Спочатку передайте капітанство.",
     "team_management.error.fill_all_fields": "Заповніть усі поля",
     "team_management.error.max_players": "У складі не може бути більше 9 гравців",
+    "team_management.error.max_joins_reached": "Гравець «%name%» вже вичерпав ліміт переходів у цьому сезоні",
     "team_management.error.name_taken": "Команда з такою назвою в цьому місті вже існує",
     "team_management.error.no_season": "Поточний сезон не знайдено",
     "team_management.error.not_captain": "Ви не є капітаном команди",

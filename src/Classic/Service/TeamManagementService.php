@@ -8,6 +8,9 @@ use App\Classic\DTO\Request\TeamManagement\UpdateSquadRequestDTO;
 use App\Classic\DTO\Request\TeamManagement\UpdateTeamRequestDTO;
 use App\Classic\DTO\Response\My\TeamManagementDTO;
 use App\Classic\DTO\Response\My\TeamManagementPlayerDTO;
+use App\Classic\Entity\TeamPlayerTransfer;
+use App\Classic\Enum\TeamPlayerTransferType;
+use App\Classic\Repository\TeamPlayerTransferRepository;
 use App\Common\Entity\Player;
 use App\Common\Entity\Season;
 use App\Classic\Entity\Team;
@@ -20,6 +23,7 @@ use App\Classic\Repository\TeamPlayerRepository;
 use App\Classic\Repository\TeamRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
 use App\Common\Repository\TownRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use LogicException;
@@ -30,9 +34,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class TeamManagementService
 {
     public const int MAX_PLAYERS = 9;
+    public const int MAX_JOINS_PER_SEASON = 2;
 
     public function __construct(
         private TeamPlayerRepository $teamPlayerRepository,
+        private TeamPlayerTransferRepository $transferRepository,
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private SeasonRepository $seasonRepository,
         private PlayerRepository $playerRepository,
@@ -180,10 +186,19 @@ class TeamManagementService
             throw new LogicException('team_management.error.max_players');
         }
 
+        $today = new DateTimeImmutable('today');
+
         // Remove players
         foreach ($currentPlayers as $teamPlayer) {
             if (in_array($teamPlayer->getPlayer()->getId(), $removePlayerIds, true)) {
                 $this->entityManager->remove($teamPlayer);
+                $this->recordTransfer(
+                    $teamPlayer->getPlayer(),
+                    $team,
+                    $season,
+                    TeamPlayerTransferType::Left,
+                    $today,
+                );
             }
         }
 
@@ -208,12 +223,20 @@ class TeamManagementService
                 );
             }
 
+            $joinCount = $this->transferRepository->countJoinsBySeason($player, $season);
+            if ($joinCount >= self::MAX_JOINS_PER_SEASON) {
+                throw new LogicException(
+                    'team_management.error.max_joins_reached:' . $player->getFullName(),
+                );
+            }
+
             $teamPlayer = new TeamPlayer();
             $teamPlayer->setTeam($team);
             $teamPlayer->setPlayer($player);
             $teamPlayer->setSeason($season);
 
             $this->entityManager->persist($teamPlayer);
+            $this->recordTransfer($player, $team, $season, TeamPlayerTransferType::Joined, $today);
         }
 
         // Transfer captaincy
@@ -315,6 +338,7 @@ class TeamManagementService
         $team = $targetEntry->getTeam();
 
         $this->entityManager->remove($targetEntry);
+        $this->recordTransfer($player, $team, $season, TeamPlayerTransferType::Left, new DateTimeImmutable('today'));
         $this->entityManager->flush();
 
         $this->cache->invalidateTags([
@@ -402,5 +426,22 @@ class TeamManagementService
         $players = $this->playerRepository->findByIdsWithUser($playerIds);
 
         return $this->mapper->mapMultiple($players, TeamManagementPlayerDTO::class);
+    }
+
+    private function recordTransfer(
+        Player $player,
+        Team $team,
+        Season $season,
+        TeamPlayerTransferType $type,
+        DateTimeImmutable $date,
+    ): void {
+        $transfer = new TeamPlayerTransfer();
+        $transfer->setPlayer($player);
+        $transfer->setTeam($team);
+        $transfer->setSeason($season);
+        $transfer->setType($type);
+        $transfer->setDate($date);
+
+        $this->entityManager->persist($transfer);
     }
 }

@@ -76,3 +76,47 @@ App\Classic\Entity\TeamPlayer:
         player: '@player_fill_7'
         season: '@season_current'
         isCaptain: false
+
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_fill_1:
+        player: '@player_fill_1'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_fill_2:
+        player: '@player_fill_2'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_fill_3:
+        player: '@player_fill_3'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_fill_4:
+        player: '@player_fill_4'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_fill_5:
+        player: '@player_fill_5'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_fill_6:
+        player: '@player_fill_6'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_fill_7:
+        player: '@player_fill_7'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'

@@ -7,6 +7,7 @@ namespace App\Classic\Helper;
 use App\Classic\DTO\Response\Tournament\SessionTeamDTO;
 use App\Common\Entity\Season;
 use App\Classic\Entity\TournamentSessionTeam;
+use App\Classic\Repository\TeamPlayerTransferRepository;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TeamPlayerRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
@@ -19,6 +20,7 @@ class SessionTeamResultBuilder
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private TeamPlayerRepository $teamPlayerRepository,
+        private TeamPlayerTransferRepository $transferRepository,
         private Mapper $mapper,
     ) {
     }
@@ -39,18 +41,50 @@ class SessionTeamResultBuilder
             $this->sessionTeamPlayerRepository->findBySessionTeamIds($sessionTeamIds),
         );
         $places = $this->sessionTeamRepository->getPlacesInTournament($sessionTeamIds);
-        $squadMap = $season ? $this->teamPlayerRepository->getSquadMapBySeason($season) : [];
         $sessionPlaces = $this->calculateSessionPlaces($sessionTeams);
 
+        // Captain info from current state
+        $squadMap = $season ? $this->teamPlayerRepository->getSquadMapBySeason($season) : [];
+
+        // Batch-load all transfers for the season (single query)
+        $transfers = $season ? $this->transferRepository->findAllBySeason($season) : [];
+
+        $datesByTeam = [];
+        foreach ($sessionTeams as $st) {
+            $playedAt = $st->getTournamentSession()->getPlayedAt();
+            $teamId = $st->getTeam()->getId();
+            if ($season !== null && $playedAt !== null) {
+                $datesByTeam[$teamId]['team'] = $st->getTeam();
+                $datesByTeam[$teamId]['dates'][$playedAt->format('Y-m-d')] = $playedAt;
+            }
+        }
+
+        // Deduplicate dates per team
+        foreach ($datesByTeam as $teamId => $info) {
+            $datesByTeam[$teamId]['dates'] = array_values($info['dates']);
+        }
+
+        /** @var array<int, array<string, list<int>>> teamId => (dateKey => playerIds) */
+        $squadCache = $this->transferRepository->resolveSquadFromTransfers($transfers, $datesByTeam);
+
         return array_map(
-            function (TournamentSessionTeam $st) use ($playerMap, $places, $squadMap, $sessionPlaces) {
-                $squadInfo = $squadMap[$st->getTeam()->getId()] ?? ['playerIds' => [], 'captainId' => null];
+            function (TournamentSessionTeam $st) use ($playerMap, $places, $squadMap, $sessionPlaces, $squadCache) {
+                $playedAt = $st->getTournamentSession()->getPlayedAt();
+                $teamId = $st->getTeam()->getId();
+
+                $playerIds = [];
+                if ($playedAt !== null) {
+                    $dateKey = $playedAt->format('Y-m-d');
+                    $playerIds = $squadCache[$teamId][$dateKey] ?? [];
+                }
+
+                $captainId = $squadMap[$teamId]['captainId'] ?? null;
 
                 return $this->mapper->map($st, SessionTeamDTO::class, [
                     'place' => $places[$st->getId()] ?? null,
                     'sessionPlace' => $sessionPlaces[$st->getId()] ?? null,
                     'players' => $playerMap[$st->getId()] ?? [],
-                    'squadInfo' => $squadInfo,
+                    'squadInfo' => ['playerIds' => $playerIds, 'captainId' => $captainId],
                 ]);
             },
             $sessionTeams,

@@ -17,7 +17,9 @@ use App\Common\Mapping\Mapper;
 use App\Common\Repository\PlayerRepository;
 use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TeamPlayerRepository;
+use App\Classic\Repository\TeamPlayerTransferRepository;
 use App\Classic\Repository\TeamRepository;
+use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
 use App\Common\Repository\TownRepository;
@@ -34,8 +36,10 @@ class SessionSquadService
         private TownRepository $townRepository,
         private PlayerRepository $playerRepository,
         private TeamPlayerRepository $teamPlayerRepository,
+        private TeamPlayerTransferRepository $transferRepository,
         private TournamentSessionTeamRepository $sessionTeamRepository,
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
+        private TournamentSessionTeamAnswerRepository $sessionTeamAnswerRepository,
         private SessionClaimRepository $claimRepository,
         private Mapper $mapper,
     ) {
@@ -96,8 +100,8 @@ class SessionSquadService
             $claim === null
             || $claim->getStatus() !== SessionClaimStatus::Approved
             || $session->getPlayedAt() === null
-            || $session->getPlayedAt() > new DateTimeImmutable('today')
             || !$session->getTournament()->isSubmissionOpen()
+            || $session->getPlayedAt() > new DateTimeImmutable('today')
         ) {
             throw new AccessDeniedHttpException();
         }
@@ -196,9 +200,12 @@ class SessionSquadService
             return [];
         }
 
-        $squadMap = $this->teamPlayerRepository->getSquadMapBySeason($season);
+        $playedAt = $session->getPlayedAt();
+        if ($playedAt === null) {
+            return [];
+        }
 
-        return $squadMap[$team->getId()]['playerIds'] ?? [];
+        return $this->transferRepository->findPlayerIdsInTeamOnDate($team, $season, $playedAt);
     }
 
     /**
@@ -391,6 +398,8 @@ class SessionSquadService
     {
         $session = $sessionTeam->getTournamentSession();
         $this->ensureCanManageSquad($session, $representative);
+
+        $this->sessionTeamAnswerRepository->deleteBySessionTeamIds([$sessionTeam->getId()]);
 
         $existingPlayers = $this->sessionTeamPlayerRepository->findBySessionTeamIds([$sessionTeam->getId()]);
         foreach ($existingPlayers as $existing) {

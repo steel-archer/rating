@@ -1,0 +1,32 @@
+App\Common\Entity\Player:
+    player_exhausted:
+        lastName: 'Драгоманов'
+        firstName: 'Михайло'
+        patronymic: 'Петрович'
+        town: '@town_kyiv'
+
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_exhausted_join_1:
+        player: '@player_exhausted'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-05"))>'
+    transfer_exhausted_left_1:
+        player: '@player_exhausted'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Left)>'
+        date: '<(new \DateTimeImmutable("2025-11-01"))>'
+    transfer_exhausted_join_2:
+        player: '@player_exhausted'
+        team: '@team_beta'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-11-10"))>'
+    transfer_exhausted_left_2:
+        player: '@player_exhausted'
+        team: '@team_beta'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Left)>'
+        date: '<(new \DateTimeImmutable("2025-12-01"))>'

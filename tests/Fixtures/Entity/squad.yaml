@@ -61,6 +61,20 @@ App\Classic\Entity\TeamPlayer:
         season: '@season_current'
         isCaptain: false
 
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_shevchenko_joined:
+        player: '@player_shevchenko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_franko_joined:
+        player: '@player_franko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+
 App\Classic\Entity\TournamentSessionTeam:
     session_team_existing:
         tournamentSession: '@session_squad_approved'
