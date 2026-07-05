@@ -18,6 +18,8 @@ import './contacts.js';
 import './contacts-popover.js';
 import './venue-edit.js';
 import './team-management.js';
+import './captain-claim.js';
+import './captain-claim-moderate.js';
 import './user-block.js';
 import { trans } from './trans.js';
 

@@ -37,6 +37,7 @@ common:
   result: 'Результат'
   save: 'Зберегти'
   search: 'Знайти'
+  send: 'Надіслати'
   squad: 'Склад'
   team: 'Команда'
   teams_count: 'Команд'
@@ -182,6 +183,11 @@ moderator:
   town_is_new: 'Нове місто'
   tournaments: 'Турніри'
   venues: 'Майданчики'
+  captain_claims: 'Заявки на капітанство'
+  no_captain_claims: 'Немає заявок на капітанство'
+  captain_claims_history: 'Історія'
+  status_approved: 'Схвалено'
+  status_rejected: 'Відхилено'
 
 name:
   invalid_characters: 'Дозволені лише українські літери, пробіл, апостроф та дефіс'
@@ -359,6 +365,18 @@ team_management:
   team_name: 'Назва команди'
   team_town: 'Місто базування'
   title: 'Керування командою'
+
+captain_claim:
+  submit: 'Подати заявку на капітанство'
+  comment_placeholder: 'Опишіть, чому ви хочете стати капітаном цієї команди'
+  success: 'Заявку подано. Очікуйте розгляду модератором.'
+  error:
+    already_captain: 'Ви вже є капітаном цієї команди'
+    already_has_pending: 'Ви вже маєте активну заявку на капітанство'
+    already_resolved: 'Ця заявка вже розглянута'
+    in_another_team: 'Ви в базовому складі іншої команди'
+    no_season: 'Поточний сезон не знайдено'
+    team_full: 'У складі команди вже максимальна кількість гравців'
 
 town:
   invalid_characters: 'Дозволені лише українські літери, пробіл, апостроф, дефіс, дужки, крапка та кома'

@@ -194,6 +194,30 @@
 
 ## Classic
 
+### CaptainClaim
+
+Заявка гравця на капітанство в команді. Розглядається модератором.
+
+**Файл:** `src/Classic/Entity/CaptainClaim.php`
+
+#### Поля
+
+| Поле | Тип | Nullable | Примітка |
+|------|-----|----------|----------|
+| id | int | — | PK, auto |
+| status | enum | — | `App\Classic\Enum\CaptainClaimStatus` |
+| comment | text | — | коментар гравця |
+| moderatorComment | text | ✓ | коментар модератора (обов'язковий при відмові) |
+| createdAt | DateTimeImmutable | — | |
+| resolvedAt | DateTimeImmutable | ✓ | |
+
+#### Зв'язки
+
+| Поле | Тип | Ціль | Nullable | Примітка |
+|------|-----|------|----------|----------|
+| player | ManyToOne | Player | — | 🔗 Common |
+| team | ManyToOne | Team | — | |
+
 ### Appeal
 
 Апеляція на відповідь команди в турнірній сесії. Може бути на зарахування або зняття відповіді.

@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'moderator.captain_claims'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'moderator.captain_claims'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'moderator.captain_claims'|trans }}</h1>
+
+    {% if claims is empty %}
+        <p class="empty-state">{{ 'moderator.no_captain_claims'|trans }}</p>
+    {% else %}
+        {% for claim in claims %}
+            <div class="card moderation-card">
+                <div class="moderation-card-header">
+                    <h2>
+                        <a href="{{ path('player_show', {id: claim.playerId}) }}">{{ claim.playerName }}</a>
+                        → <a href="{{ path('team_show', {id: claim.teamId}) }}">{{ claim.teamName }}</a>
+                        <span class="meta">({{ claim.teamTownName }})</span>
+                    </h2>
+                    <span class="meta">{{ claim.createdAt|date('d.m.Y H:i') }}</span>
+                </div>
+
+                <p class="moderation-comment">{{ claim.comment }}</p>
+
+                <div class="moderation-actions">
+                    {% if claim.canApprove %}
+                        <button type="button" class="btn btn-approve" data-captain-claim-approve="{{ claim.id }}">{{ 'moderator.approve'|trans }}</button>
+                    {% else %}
+                        <button type="button" class="btn btn-approve" disabled title="{{ claim.cannotApproveReason|trans }}">{{ 'moderator.approve'|trans }}</button>
+                    {% endif %}
+                    <div class="reject-form">
+                        <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-captain-claim-reject-comment="{{ claim.id }}">
+                        <button type="button" class="btn btn-reject" data-captain-claim-reject="{{ claim.id }}">{{ 'moderator.reject'|trans }}</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if resolvedClaims is not empty %}
+        <h2 style="margin-top: 2rem;">{{ 'moderator.captain_claims_history'|trans }}</h2>
+        {% for claim in resolvedClaims %}
+            <div class="card moderation-card">
+                <div class="moderation-card-header">
+                    <h3>
+                        {{ claim.playerName }}
+                        → <a href="{{ path('team_show', {id: claim.teamId}) }}">{{ claim.teamName }}</a>
+                        <span class="meta">({{ claim.teamTownName }})</span>
+                    </h3>
+                    <span class="meta">
+                        {% if claim.status == 'approved' %}
+                            <span class="status-approved">{{ 'moderator.status_approved'|trans }}</span>
+                        {% else %}
+                            <span class="status-rejected">{{ 'moderator.status_rejected'|trans }}</span>
+                        {% endif %}
+                        — {{ claim.resolvedAt|date('d.m.Y H:i') }}
+                    </span>
+                </div>
+                <p class="moderation-comment">{{ claim.comment }}</p>
+                {% if claim.moderatorComment %}
+                    <p class="moderation-comment"><strong>{{ 'moderator.reject_comment'|trans }}:</strong> {{ claim.moderatorComment }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

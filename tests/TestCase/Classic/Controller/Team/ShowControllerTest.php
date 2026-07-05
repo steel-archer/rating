@@ -101,6 +101,28 @@ class ShowControllerTest extends WebTestCase
             },
         ];
 
+        yield 'captain claim button visible for eligible player' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/team/' . $objects['team_gamma']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler) {
+                static::assertCount(1, $crawler->filter('#captain-claim-toggle'));
+            },
+        ];
+
+        yield 'captain claim button hidden for captain of another team' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/team/' . $objects['team_beta']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler) {
+                static::assertCount(0, $crawler->filter('#captain-claim-toggle'));
+            },
+        ];
+
         yield 'not found for non-existent team' => [
             'method' => 'GET',
             'uri' => '/team/999999',

@@ -7,7 +7,24 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{ team.name }} ({{ team.townName }})</h1>
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;">
+        <h1>{{ team.name }} ({{ team.townName }})</h1>
+        {% if canSubmitCaptainClaim %}
+            <button type="button" class="btn btn-muted" id="captain-claim-toggle">{{ 'captain_claim.submit'|trans }}</button>
+        {% endif %}
+    </div>
+
+    {% if canSubmitCaptainClaim %}
+        <div id="captain-claim-form" hidden style="margin-bottom: 1.5rem;">
+            <div style="margin-top: 0.75rem; display: flex; flex-direction: column; align-items: flex-end;">
+                <textarea id="captain-claim-comment" placeholder="{{ 'captain_claim.comment_placeholder'|trans }}" maxlength="1000" rows="4" style="font-family: var(--font), sans-serif; font-size: 1.0625rem; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; width: 100%; max-width: 400px; resize: vertical;"></textarea>
+                <div style="margin-top: 0.5rem;">
+                    <button type="button" class="btn btn-primary" id="captain-claim-submit" data-team-id="{{ team.id }}">{{ 'common.send'|trans }}</button>
+                </div>
+                <div id="captain-claim-status" class="save-status" hidden style="margin-top: 0.5rem;"></div>
+            </div>
+        </div>
+    {% endif %}
 
     {% if team.squads is not empty %}
         <div class="card">

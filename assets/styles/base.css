@@ -155,6 +155,16 @@ a:hover {
     opacity: 0.9;
 }
 
+.btn-muted {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+.btn-muted:hover {
+    background: #d1d5db;
+    color: #374151;
+}
+
 .form-group {
     margin-bottom: 12px;
 }

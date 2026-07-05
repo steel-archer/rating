@@ -36,6 +36,24 @@ framework:
             interval: '1 minute'
             cache_pool: cache.rate_limiter
 
+when@dev:
+    framework:
+        rate_limiter:
+            auth:
+                policy: no_limit
+            claim:
+                policy: no_limit
+            api_suggest:
+                policy: no_limit
+            mutation:
+                policy: no_limit
+            upload:
+                policy: no_limit
+            moderator:
+                policy: no_limit
+            read:
+                policy: no_limit
+
 when@test:
     framework:
         rate_limiter:

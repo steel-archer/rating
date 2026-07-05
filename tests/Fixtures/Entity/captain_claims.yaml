@@ -1,0 +1,67 @@
+App\Common\Entity\User:
+    user_cc_player:
+        email: 'cc_player@example.com'
+        googleId: 'google_cc_player'
+        roles: []
+        player: '@player_lesya'
+    user_cc_in_team:
+        email: 'cc_in_team@example.com'
+        googleId: 'google_cc_in_team'
+        roles: []
+        player: '@player_franko'
+    user_cc_captain:
+        email: 'cc_captain@example.com'
+        googleId: 'google_cc_captain'
+        roles: []
+        player: '@player_shevchenko'
+    user_cc_moderator:
+        email: 'cc_moderator@example.com'
+        googleId: 'google_cc_moderator'
+        roles: ['ROLE_MODERATOR']
+        player: null
+
+App\Classic\Entity\TeamPlayer:
+    tp_cc_captain:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    tp_cc_member:
+        team: '@team_alpha'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: false
+
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_cc_captain:
+        player: '@player_shevchenko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_cc_member:
+        player: '@player_franko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+
+App\Classic\Entity\CaptainClaim:
+    claim_pending:
+        player: '@player_kotsubynsky'
+        team: '@team_beta'
+        status: '<(App\Classic\Enum\CaptainClaimStatus::Pending)>'
+        comment: 'Хочу бути капітаном Бети'
+    claim_approved:
+        player: '@player_lesya'
+        team: '@team_gamma'
+        status: '<(App\Classic\Enum\CaptainClaimStatus::Approved)>'
+        comment: 'Хочу бути капітаном Гамми'
+        resolvedAt: '<(new \DateTimeImmutable("-1 day"))>'
+    claim_rejected:
+        player: '@player_lesya'
+        team: '@team_alpha'
+        status: '<(App\Classic\Enum\CaptainClaimStatus::Rejected)>'
+        comment: 'Хочу бути капітаном Альфи'
+        moderatorComment: 'Недостатньо досвіду'
+        resolvedAt: '<(new \DateTimeImmutable("-2 days"))>'
