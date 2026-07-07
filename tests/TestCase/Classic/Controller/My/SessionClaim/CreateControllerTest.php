@@ -86,6 +86,17 @@ class CreateControllerTest extends WebTestCase
             },
         ];
 
+        yield 'offline tournament filters online venues and still shows form' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'uri' => static fn(array $objects) => '/my/session-claims/create/' . $objects['tournament_offline_only']->getId(),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                static::assertCount(1, $crawler->filter('#session-claim-form'));
+            },
+        ];
+
         yield 'not found for non-existent tournament' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',

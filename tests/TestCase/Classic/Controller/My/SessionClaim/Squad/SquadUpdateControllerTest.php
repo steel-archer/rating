@@ -124,5 +124,24 @@ class SquadUpdateControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'error: duplicate players' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-teams/' . $objects['session_team_existing']->getId() . '/update',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_beta']->getId(),
+                'players' => [
+                    ['id' => $objects['player_lesya']->getId()],
+                    ['id' => $objects['player_lesya']->getId()],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('squad.error.duplicate_players', $data['error']);
+            },
+        ];
     }
 }

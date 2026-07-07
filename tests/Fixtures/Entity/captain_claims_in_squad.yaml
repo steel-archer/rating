@@ -1,0 +1,44 @@
+App\Common\Entity\User:
+    user_cc_insquad_player:
+        email: 'cc_insquad@example.com'
+        googleId: 'google_cc_insquad'
+        roles: []
+        player: '@player_franko'
+    user_cc_insquad_moderator:
+        email: 'cc_insquad_moderator@example.com'
+        googleId: 'google_cc_insquad_mod'
+        roles: ['ROLE_MODERATOR']
+        player: null
+
+App\Classic\Entity\TeamPlayer:
+    tp_insquad_captain:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    tp_insquad_member:
+        team: '@team_alpha'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: false
+
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_insquad_captain:
+        player: '@player_shevchenko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+    transfer_insquad_member:
+        player: '@player_franko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+
+App\Classic\Entity\CaptainClaim:
+    claim_insquad_pending:
+        player: '@player_franko'
+        team: '@team_alpha'
+        status: '<(App\Classic\Enum\CaptainClaimStatus::Pending)>'
+        comment: 'Хочу бути капітаном замість Шевченка'

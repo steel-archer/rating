@@ -1,0 +1,18 @@
+App\Common\Entity\User:
+    user_appeal_draft_player:
+        email: 'appeal_draft_player@example.com'
+        googleId: 'google_appeal_draft_player'
+        roles: []
+        player: '@player_kotsubynsky'
+
+App\Classic\Entity\Tournament:
+    tournament_appeal_draft:
+        name: 'Чернетка турніру апеляцій'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("-20 days 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        toursCount: 1
+        questionsPerTour: 3
+        createdBy: '@player_franko'

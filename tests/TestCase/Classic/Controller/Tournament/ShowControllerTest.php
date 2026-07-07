@@ -176,6 +176,16 @@ class ShowControllerTest extends WebTestCase
             },
         ];
 
+        yield 'unpublished tournament not accessible by non-owner non-moderator' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_draft']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 404,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
         yield 'service unavailable on throwable' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId(),

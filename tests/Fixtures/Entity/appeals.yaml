@@ -14,6 +14,11 @@ App\Common\Entity\User:
         googleId: 'google_appeal_other'
         roles: []
         player: '@player_lesya'
+    user_appeal_no_player:
+        email: 'appeal_no_player@example.com'
+        googleId: 'google_appeal_no_player'
+        roles: []
+        player: null
 
 App\Classic\Entity\Tournament:
     tournament_appeal:

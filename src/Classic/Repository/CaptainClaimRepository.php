@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Classic\Repository;
 
 use App\Classic\Entity\CaptainClaim;
-use App\Classic\Entity\Team;
 use App\Classic\Enum\CaptainClaimStatus;
 use App\Common\Entity\Player;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -42,18 +41,6 @@ class CaptainClaimRepository extends ServiceEntityRepository
             ->orderBy('c.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
-    }
-
-    public function hasPendingForTeam(Team $team): bool
-    {
-        return (int) $this->createQueryBuilder('c')
-            ->select('COUNT(c.id)')
-            ->where('c.team = :team')
-            ->andWhere('c.status = :status')
-            ->setParameter('team', $team)
-            ->setParameter('status', CaptainClaimStatus::Pending)
-            ->getQuery()
-            ->getSingleScalarResult() > 0;
     }
 
     /**

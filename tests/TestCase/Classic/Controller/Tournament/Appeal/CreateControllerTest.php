@@ -170,6 +170,22 @@ class CreateControllerTest extends WebTestCase
             },
         ];
 
+        yield 'answer not found for invalid question number' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_appeal_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal']->getId() . '/appeals/create',
+            'payload' => static fn(array $objects) => [
+                'questionNumber' => 999,
+                'type' => 'remove',
+                'text' => 'Неіснуюче запитання',
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('common.not_found', $body['error']);
+            },
+        ];
+
         yield 'cannot create appeal after deadline' => [
             'fixtures' => [
                 'Entity/base.yaml',
@@ -188,6 +204,38 @@ class CreateControllerTest extends WebTestCase
                     ->getRepository(Appeal::class)
                     ->findOneBy(['text' => 'Запізнілась']);
                 static::assertNull($appeal);
+            },
+        ];
+
+        yield 'not found for unpublished tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/appeals_draft.yaml',
+            ],
+            'loginAs' => 'user_appeal_draft_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal_draft']->getId() . '/appeals/create',
+            'payload' => static fn(array $objects) => [
+                'questionNumber' => 1,
+                'type' => 'remove',
+                'text' => 'Спроба на чернетці',
+            ],
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'redirect to player-claim for user without player' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_appeal_no_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal']->getId() . '/appeals/create',
+            'payload' => static fn(array $objects) => [
+                'questionNumber' => 1,
+                'type' => 'remove',
+                'text' => 'Без гравця',
+            ],
+            'expectedStatus' => 302,
+            'afterCallback' => static function (KernelBrowser $client) {
+                static::assertResponseRedirects('/player-claim');
             },
         ];
     }

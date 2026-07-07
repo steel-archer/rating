@@ -173,5 +173,19 @@ class SubmitControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'error: user without player' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_cc_moderator',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_beta']->getId(),
+                'comment' => 'Без гравця',
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('common.no_player', $json['error']);
+            },
+        ];
     }
 }

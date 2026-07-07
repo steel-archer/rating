@@ -73,5 +73,29 @@ class CreateFormControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'not found for unpublished tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/appeals_draft.yaml',
+            ],
+            'loginAs' => 'user_appeal_draft_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal_draft']->getId() . '/appeals/create',
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'access denied when appeal deadline passed' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/appeals_expired.yaml',
+            ],
+            'loginAs' => 'user_appeal_expired_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal_expired']->getId() . '/appeals/create',
+            'expectedStatus' => 403,
+            'afterCallback' => static function () {
+            },
+        ];
     }
 }

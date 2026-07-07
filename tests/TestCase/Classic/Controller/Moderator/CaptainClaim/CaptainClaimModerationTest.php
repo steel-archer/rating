@@ -184,6 +184,65 @@ class CaptainClaimModerationTest extends WebTestCase
             },
         ];
 
+        yield 'reject: already resolved fails' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_cc_moderator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/captain-claims/' . $objects['claim_approved']->getId() . '/reject',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['comment' => 'Спроба відхилити'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('captain_claim.error.already_resolved', $json['error']);
+            },
+        ];
+
+        yield 'approve: player already in squad becomes captain, old captain loses flag' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/captain_claims_in_squad.yaml',
+            ],
+            'loginAs' => 'user_cc_insquad_moderator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/captain-claims/' . $objects['claim_insquad_pending']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertTrue($json['success']);
+
+                $em = static::getContainer()->get('doctrine')->getManager();
+                $em->clear();
+
+                // Claim is approved
+                $claim = $em->getRepository(CaptainClaim::class)->find($objects['claim_insquad_pending']->getId());
+                static::assertSame(CaptainClaimStatus::Approved, $claim->getStatus());
+
+                // Franko is now captain
+                $frankoEntry = $em->getRepository(TeamPlayer::class)->findOneBy([
+                    'player' => $objects['player_franko']->getId(),
+                    'season' => $objects['season_current']->getId(),
+                ]);
+                static::assertTrue($frankoEntry->isCaptain());
+
+                // Shevchenko is no longer captain
+                $shevchenkoEntry = $em->getRepository(TeamPlayer::class)->findOneBy([
+                    'player' => $objects['player_shevchenko']->getId(),
+                    'season' => $objects['season_current']->getId(),
+                ]);
+                static::assertFalse($shevchenkoEntry->isCaptain());
+            },
+        ];
+
         yield 'approve: denied for non-moderator' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_cc_player',

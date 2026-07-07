@@ -174,22 +174,6 @@ class PlayerRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function findEmailByPlayerId(int $playerId): ?string
-    {
-        $result = $this->createQueryBuilder('p')
-            ->select('u.email')
-            ->join('p.user', 'u')
-            ->where('p.id = :id')
-            ->setParameter('id', $playerId)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        return $result['email'] ?? null;
-    }
-
-    /**
-     * @throws NonUniqueResultException
-     */
     public function findUserByPlayerId(int $playerId): ?User
     {
         $player = $this->createQueryBuilder('p')

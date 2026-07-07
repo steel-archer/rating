@@ -86,5 +86,17 @@ class ListControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'not found for unpublished tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/appeals_draft.yaml',
+            ],
+            'loginAs' => 'user_appeal_draft_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal_draft']->getId() . '/appeals',
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
     }
 }
