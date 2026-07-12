@@ -78,5 +78,12 @@ class SquadControllerTest extends WebTestCase
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_expired_approved']->getId() . '/squad',
             'expectedStatus' => 403,
         ];
+
+        yield 'squad page for centralized tournament without submission deadline' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_centralized.yaml'],
+            'loginAs' => 'user_representative_cen',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_centralized_approved']->getId() . '/squad',
+            'expectedStatus' => 200,
+        ];
     }
 }

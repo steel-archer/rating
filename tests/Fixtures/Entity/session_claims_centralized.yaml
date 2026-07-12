@@ -1,0 +1,49 @@
+App\Common\Entity\User:
+    user_representative_cen:
+        email: 'representative_cen@example.com'
+        googleId: 'google_rep_cen_123'
+        roles: []
+        player: '@player_shevchenko'
+    user_other_cen:
+        email: 'other_cen@example.com'
+        googleId: 'google_other_cen_123'
+        roles: []
+        player: '@player_lesya'
+
+App\Classic\Entity\Tournament:
+    tournament_centralized:
+        name: 'Централізований турнір'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        format: '<(App\Classic\Enum\TournamentFormat::Centralized)>'
+        startedAt: '<(new \DateTimeImmutable("-7 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+
+App\Classic\Entity\TournamentSession:
+    session_centralized_approved:
+        tournament: '@tournament_centralized'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 10
+
+App\Classic\Entity\SessionClaim:
+    claim_centralized_approved:
+        session: '@session_centralized_approved'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-10 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-9 days"))>'
+
+App\Classic\Entity\TeamPlayer:
+    team_player_shevchenko_cen:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    team_player_franko_cen:
+        team: '@team_alpha'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: false

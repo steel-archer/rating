@@ -106,5 +106,18 @@ class EditControllerTest extends WebTestCase
                 static::assertCount(1, $crawler->filter('#session-claim-edit-form'));
             },
         ];
+
+        yield 'centralized tournament shows enter results buttons' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_centralized.yaml'],
+            'loginAs' => 'user_representative_cen',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_centralized_approved']->getId() . '/edit',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                $actions = $crawler->filter('.actions-card');
+                static::assertCount(1, $actions);
+                static::assertCount(3, $actions->filter('a.btn'));
+            },
+        ];
     }
 }
