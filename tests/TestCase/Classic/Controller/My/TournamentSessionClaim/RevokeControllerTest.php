@@ -89,10 +89,10 @@ class RevokeControllerTest extends WebTestCase
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
             ),
-            'expectedStatus' => 422,
+            'expectedStatus' => 404,
             'afterCallback' => static function (KernelBrowser $client) {
                 $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
-                static::assertSame('common.error', $body['error']);
+                static::assertSame('common.not_found', $body['error']);
             },
         ];
 

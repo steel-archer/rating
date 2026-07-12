@@ -8,6 +8,7 @@ use App\Common\Attribute\RateLimited;
 use App\Classic\DTO\Request\Session\UpdateRequestDTO;
 use App\Classic\Entity\TournamentSession;
 use App\Common\Entity\User;
+use App\Classic\Security\SessionRepresentativeVoter;
 use App\Classic\Service\SessionClaimService;
 use DateMalformedStringException;
 use LogicException;
@@ -28,6 +29,8 @@ class UpdateController extends AbstractController
         #[MapRequestPayload] UpdateRequestDTO $dto,
         SessionClaimService $service,
     ): JsonResponse {
+        $this->denyAccessUnlessGranted(SessionRepresentativeVoter::MANAGE, $session);
+
         /** @var User $user */
         $user = $this->getUser();
 

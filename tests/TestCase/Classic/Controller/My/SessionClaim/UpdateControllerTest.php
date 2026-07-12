@@ -111,7 +111,7 @@ class UpdateControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode(['estimatedTeams' => 12], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 422,
+            'expectedStatus' => 403,
             'afterCallback' => static function () {
             },
         ];

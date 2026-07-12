@@ -7,6 +7,10 @@ namespace App\Common\DTO\Request\Venue;
 use App\Common\Validator\NoHtml;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[Assert\Expression(
+    'this.isOnline or this.townId !== null',
+    message: 'venue.error.town_required',
+)]
 final readonly class CreateRequestDTO
 {
     public function __construct(

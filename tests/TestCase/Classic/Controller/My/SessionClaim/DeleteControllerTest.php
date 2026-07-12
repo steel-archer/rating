@@ -81,7 +81,7 @@ class DeleteControllerTest extends WebTestCase
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
             ),
-            'expectedStatus' => 422,
+            'expectedStatus' => 403,
             'afterCallback' => static function () {
             },
         ];

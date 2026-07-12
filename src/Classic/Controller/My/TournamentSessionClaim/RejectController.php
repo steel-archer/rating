@@ -8,6 +8,7 @@ use App\Common\Attribute\RateLimited;
 use App\Classic\DTO\Request\Session\RejectRequestDTO;
 use App\Classic\Entity\TournamentSession;
 use App\Common\Entity\User;
+use App\Classic\Security\TournamentOrganizerVoter;
 use App\Classic\Service\SessionClaimService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,10 @@ class RejectController extends AbstractController
         #[MapRequestPayload] RejectRequestDTO $dto,
         SessionClaimService $service,
     ): JsonResponse {
+        if (!$this->isGranted(TournamentOrganizerVoter::EDIT, $session->getTournament())) {
+            return $this->json(['error' => 'common.not_found'], 404);
+        }
+
         /** @var User $user */
         $user = $this->getUser();
 

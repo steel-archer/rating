@@ -289,7 +289,7 @@ class VenueControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertSame('venue.error.town_not_found', $json['error']);
+                static::assertSame('venue.error.town_required', $json['error']);
             },
         ];
 

@@ -7,6 +7,7 @@ namespace App\Classic\Controller\My\SessionClaim;
 use App\Common\Attribute\RateLimited;
 use App\Classic\Entity\TournamentSession;
 use App\Common\Entity\User;
+use App\Classic\Security\SessionRepresentativeVoter;
 use App\Classic\Service\SessionClaimService;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +22,8 @@ class ResubmitController extends AbstractController
         TournamentSession $session,
         SessionClaimService $service,
     ): JsonResponse {
+        $this->denyAccessUnlessGranted(SessionRepresentativeVoter::MANAGE, $session);
+
         /** @var User $user */
         $user = $this->getUser();
 

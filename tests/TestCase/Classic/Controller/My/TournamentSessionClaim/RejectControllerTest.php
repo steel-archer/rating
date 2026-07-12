@@ -89,8 +89,10 @@ class RejectControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode(['comment' => 'test'], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 422,
-            'afterCallback' => static function () {
+            'expectedStatus' => 404,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('common.not_found', $body['error']);
             },
         ];
 
