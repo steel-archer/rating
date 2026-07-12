@@ -125,9 +125,7 @@ class SessionResultUploadService
         $questionsPerTourMap = $this->getTournamentStructure($session);
         $toursCount = count($questionsPerTourMap);
 
-        $sessionTeams = $this->sessionTeamRepository->findBy(
-            ['tournamentSession' => $session],
-        );
+        $sessionTeams = $this->sessionTeamRepository->findBySessionWithTeamAndTown($session);
 
         if ($sessionTeams === []) {
             throw new LogicException('results.error.no_teams');
