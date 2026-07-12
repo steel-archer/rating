@@ -463,6 +463,22 @@ class UpdateSquadControllerTest extends WebTestCase
                 static::assertStringStartsWith('team_management.error.max_joins_reached:', $json['error']);
             },
         ];
+
+        yield 'overlap between add and remove' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_captain',
+            'action' => static fn(KernelBrowser $client, array $objects) => self::post(
+                $client,
+                [
+                    'addPlayerIds' => [$objects['player_franko']->getId()],
+                    'removePlayerIds' => [$objects['player_franko']->getId()],
+                ],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                static::assertError($client, 'team_management.error.player_not_in_team');
+            },
+        ];
     }
 
     /**

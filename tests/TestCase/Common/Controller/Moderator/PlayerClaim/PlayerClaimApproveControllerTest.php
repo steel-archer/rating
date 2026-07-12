@@ -216,5 +216,76 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 static::getContainer()->set(PlayerClaimService::class, $stub);
             },
         ];
+
+        yield 'approve new player claim creates new town when town does not exist' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims_new_town.yaml'],
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/player-claims/' . $objects['player_claim_new_with_town_name']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (array $objects) {
+                $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
+                    ->find($objects['player_claim_new_with_town_name']->getId());
+                static::assertSame(PlayerClaimStatus::Approved, $claim->getStatus());
+                $player = $claim->getUser()->getPlayer();
+                static::assertNotNull($player);
+                static::assertSame('Нещадименко', $player->getLastName());
+                static::assertNotNull($player->getTown());
+                static::assertSame('Нове Місто', $player->getTown()->getName());
+            },
+        ];
+
+        yield 'approve new player claim with explicit town name override creates new town' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims_new_town.yaml'],
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/player-claims/' . $objects['player_claim_new_with_town_name']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => 'Зовсім Нове Місто'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (array $objects) {
+                $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
+                    ->find($objects['player_claim_new_with_town_name']->getId());
+                static::assertSame(PlayerClaimStatus::Approved, $claim->getStatus());
+                $player = $claim->getUser()->getPlayer();
+                static::assertNotNull($player);
+                static::assertNotNull($player->getTown());
+                static::assertSame('Зовсім Нове Місто', $player->getTown()->getName());
+            },
+        ];
+
+        yield 'approve new player claim with existing town name uses existing town' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims_new_town.yaml'],
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/player-claims/' . $objects['player_claim_new_with_town_name']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => 'Київ'], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (array $objects) {
+                $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
+                    ->find($objects['player_claim_new_with_town_name']->getId());
+                static::assertSame(PlayerClaimStatus::Approved, $claim->getStatus());
+                $player = $claim->getUser()->getPlayer();
+                static::assertNotNull($player);
+                static::assertNotNull($player->getTown());
+                static::assertSame('Київ', $player->getTown()->getName());
+                static::assertSame($objects['town_kyiv']->getId(), $player->getTown()->getId());
+            },
+        ];
     }
 }

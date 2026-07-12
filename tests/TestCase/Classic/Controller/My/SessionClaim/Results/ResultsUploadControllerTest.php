@@ -195,6 +195,55 @@ class ResultsUploadControllerTest extends WebTestCase
                 static::assertContains('results.error.no_teams', $body['errors']);
             },
         ];
+
+        yield 'upload corrupt xlsx file' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_results_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/upload',
+            'file' => static fn(array $objects) => self::buildCorruptXlsx(),
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertContains('results.error.invalid_file_format', $body['errors']);
+            },
+        ];
+
+        yield 'upload file too large' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_results_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/upload',
+            'file' => static fn(array $objects) => self::buildOversizedFile(),
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertNotEmpty($body['errors']);
+            },
+        ];
+
+        yield 'upload with dispute text exceeding 500 chars' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_results_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/upload',
+            'file' => static fn(array $objects) => self::buildXlsxWithLongDispute($objects),
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertContains('dispute.error.text_too_long', $body['errors']);
+            },
+        ];
+
+        yield 'upload with incomplete results for team' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_results_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/upload',
+            'file' => static fn(array $objects) => self::buildXlsxWithIncompleteResults($objects),
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertNotEmpty($body['errors']);
+                static::assertStringContainsString('results.error.incomplete_results', $body['errors'][0]);
+            },
+        ];
     }
 
     /**
@@ -373,5 +422,82 @@ class ResultsUploadControllerTest extends WebTestCase
             null,
             true,
         );
+    }
+
+    private static function buildCorruptXlsx(): UploadedFile
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_results_') . '.xlsx';
+        file_put_contents($tempFile, 'PK corrupt xlsx content that is not a valid zip');
+
+        return new UploadedFile(
+            $tempFile,
+            'results.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            null,
+            true,
+        );
+    }
+
+    private static function buildOversizedFile(): UploadedFile
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_results_') . '.xlsx';
+        // Create a file just over 5MB
+        $handle = fopen($tempFile, 'w');
+        fseek($handle, 5 * 1024 * 1024 + 1);
+        fwrite($handle, "\0");
+        fclose($handle);
+
+        return new UploadedFile(
+            $tempFile,
+            'results.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            null,
+            true,
+        );
+    }
+
+    /**
+     * @param array<string, object> $objects
+     */
+    private static function buildXlsxWithLongDispute(array $objects): UploadedFile
+    {
+        /** @var TournamentSessionTeam $teamAlpha */
+        $teamAlpha = $objects['session_team_alpha_results'];
+        /** @var TournamentSessionTeam $teamBeta */
+        $teamBeta = $objects['session_team_beta_results'];
+
+        $longText = str_repeat('а', 501);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        self::writeHeader($sheet);
+        self::fillTeamRow($sheet, 3, $teamAlpha->getId(), 1, [1, $longText, 1]);
+        self::fillTeamRow($sheet, 4, $teamBeta->getId(), 1, [0, 1, 1]);
+        self::fillTeamRow($sheet, 6, $teamAlpha->getId(), 2, [1, 1, 0]);
+        self::fillTeamRow($sheet, 7, $teamBeta->getId(), 2, [1, 0, 0]);
+
+        return self::toUploadedFile($spreadsheet);
+    }
+
+    /**
+     * @param array<string, object> $objects
+     */
+    private static function buildXlsxWithIncompleteResults(array $objects): UploadedFile
+    {
+        /** @var TournamentSessionTeam $teamAlpha */
+        $teamAlpha = $objects['session_team_alpha_results'];
+        /** @var TournamentSessionTeam $teamBeta */
+        $teamBeta = $objects['session_team_beta_results'];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        self::writeHeader($sheet);
+        // Only tour 1 for alpha, missing tour 2
+        self::fillTeamRow($sheet, 3, $teamAlpha->getId(), 1, [1, 0, 1]);
+        self::fillTeamRow($sheet, 4, $teamBeta->getId(), 1, [0, 1, 1]);
+        self::fillTeamRow($sheet, 6, $teamBeta->getId(), 2, [1, 0, 0]);
+        // Alpha is missing tour 2
+
+        return self::toUploadedFile($spreadsheet);
     }
 }

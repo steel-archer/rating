@@ -1470,5 +1470,115 @@ class TournamentControllerTest extends WebTestCase
                 static::assertCount(0, $crawler->filter('select[name="format"]'));
             },
         ];
+
+        // --- Additional TournamentValidator coverage ---
+
+        $fixturesMoreInvalid = [
+            'Entity/base.yaml',
+            'Entity/my_tournaments_more_invalid.yaml',
+        ];
+
+        yield 'publish fails with appealDeadline before submissionDeadline' => [
+            'fixtures' => $fixturesMoreInvalid,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_appeal_before_submission']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('tournament.error.appeal_deadline_before_submission', $json['error']);
+            },
+        ];
+
+        yield 'publish fails without required deadline fields' => [
+            'fixtures' => $fixturesMoreInvalid,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_missing_fields']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('tournament.publish_error.no_results_hidden_until', $json['error']);
+                static::assertStringContainsString('tournament.publish_error.no_registration_deadline', $json['error']);
+                static::assertStringContainsString('tournament.publish_error.no_details_hidden_until', $json['error']);
+                static::assertStringContainsString('tournament.publish_error.no_submission_deadline', $json['error']);
+                static::assertStringContainsString('tournament.publish_error.no_appeal_deadline', $json['error']);
+            },
+        ];
+
+        yield 'publish fails with questionsPerTourMap length mismatch' => [
+            'fixtures' => $fixturesMoreInvalid,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_map_mismatch']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('tournament.publish_error.questions_map_mismatch', $json['error']);
+            },
+        ];
+
+        yield 'publish fails when tournament spans multiple seasons' => [
+            'fixtures' => $fixturesMoreInvalid,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_spans_seasons']->getId() . '/publish',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('tournament.error.spans_multiple_seasons', $json['error']);
+            },
+        ];
+
+        yield 'update with customQuestionsPerTour map length mismatch returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => 3,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [12, 12],
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('tournament.error.questions_map_length_mismatch', $json['error']);
+            },
+        ];
     }
 }

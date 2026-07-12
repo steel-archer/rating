@@ -257,5 +257,55 @@ class CaptainClaimModerationTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'approve: team full fails' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/captain_claims_team_full.yaml',
+            ],
+            'loginAs' => 'user_cc_full_moderator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/captain-claims/' . $objects['claim_team_full']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('captain_claim.error.team_full', $json['error']);
+
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(CaptainClaim::class)
+                    ->find($objects['claim_team_full']->getId());
+                static::assertSame(CaptainClaimStatus::Pending, $claim->getStatus());
+            },
+        ];
+
+        yield 'approve: player moved to another team fails' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/captain_claims_player_moved.yaml',
+            ],
+            'loginAs' => 'user_cc_moved_moderator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/captain-claims/' . $objects['claim_player_moved']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('captain_claim.error.in_another_team', $json['error']);
+
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(CaptainClaim::class)
+                    ->find($objects['claim_player_moved']->getId());
+                static::assertSame(CaptainClaimStatus::Pending, $claim->getStatus());
+            },
+        ];
     }
 }

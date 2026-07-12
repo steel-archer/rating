@@ -1,0 +1,157 @@
+App\Common\Entity\User:
+    user_creator:
+        email: 'creator@example.com'
+        googleId: 'google_creator_123'
+        roles: []
+        player: '@player_franko'
+
+App\Common\Entity\Season:
+    season_next:
+        name: '2026-2027'
+        startedAt: '<(new \DateTimeImmutable("2026-10-01"))>'
+        endedAt: '<(new \DateTimeImmutable("2027-09-30"))>'
+
+App\Classic\Entity\Tournament:
+    tournament_appeal_before_submission:
+        name: 'Турнір appealDeadline < submissionDeadline'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+31 days 00:00:00"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+32 days 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+31 days 00:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+33 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+35 days 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+33 days 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+        difficulty: 3.5
+    tournament_missing_fields:
+        name: 'Турнір без обовʼязкових полів'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+31 days 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+        difficulty: 3.5
+    tournament_map_mismatch:
+        name: 'Турнір з невідповідністю map'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+31 days 00:00:00"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("+32 days 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+31 days 00:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("+33 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+32 days 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+34 days 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12]
+        difficulty: 3.5
+    tournament_spans_seasons:
+        name: 'Турнір через сезони'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2026-09-25 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2026-10-05 00:00:00"))>'
+        resultsHiddenUntil: '<(new \DateTimeImmutable("2026-10-06 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("2026-10-01 00:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("2026-10-07 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("2026-10-06 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("2026-10-08 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+        difficulty: 3.5
+
+App\Classic\Entity\TournamentOfficial:
+    official_appeal_sub_org:
+        tournament: '@tournament_appeal_before_submission'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_appeal_sub_editor:
+        tournament: '@tournament_appeal_before_submission'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
+    official_appeal_sub_game_jury:
+        tournament: '@tournament_appeal_before_submission'
+        player: '@player_lesya'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
+    official_appeal_sub_appeal_jury:
+        tournament: '@tournament_appeal_before_submission'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
+    official_missing_org:
+        tournament: '@tournament_missing_fields'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_missing_editor:
+        tournament: '@tournament_missing_fields'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
+    official_missing_game_jury:
+        tournament: '@tournament_missing_fields'
+        player: '@player_lesya'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
+    official_missing_appeal_jury:
+        tournament: '@tournament_missing_fields'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
+    official_map_mismatch_org:
+        tournament: '@tournament_map_mismatch'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_map_mismatch_editor:
+        tournament: '@tournament_map_mismatch'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
+    official_map_mismatch_game_jury:
+        tournament: '@tournament_map_mismatch'
+        player: '@player_lesya'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
+    official_map_mismatch_appeal_jury:
+        tournament: '@tournament_map_mismatch'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
+    official_spans_org:
+        tournament: '@tournament_spans_seasons'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_spans_editor:
+        tournament: '@tournament_spans_seasons'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
+    official_spans_game_jury:
+        tournament: '@tournament_spans_seasons'
+        player: '@player_lesya'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
+    official_spans_appeal_jury:
+        tournament: '@tournament_spans_seasons'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
+
+App\Classic\Entity\TournamentModerationClaim:
+    claim_appeal_sub:
+        tournament: '@tournament_appeal_before_submission'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+        resolvedAt: '<(new \DateTimeImmutable())>'
+    claim_missing:
+        tournament: '@tournament_missing_fields'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+        resolvedAt: '<(new \DateTimeImmutable())>'
+    claim_map_mismatch:
+        tournament: '@tournament_map_mismatch'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+        resolvedAt: '<(new \DateTimeImmutable())>'
+    claim_spans:
+        tournament: '@tournament_spans_seasons'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+        resolvedAt: '<(new \DateTimeImmutable())>'

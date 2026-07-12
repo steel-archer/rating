@@ -1,0 +1,107 @@
+App\Common\Entity\User:
+    user_cc_full_moderator:
+        email: 'cc_full_moderator@example.com'
+        googleId: 'google_cc_full_mod'
+        roles: ['ROLE_MODERATOR']
+        player: null
+
+App\Common\Entity\Player:
+    player_cc_fill_1:
+        lastName: 'Стус'
+        firstName: 'Василь'
+        patronymic: 'Семенович'
+        town: '@town_kyiv'
+    player_cc_fill_2:
+        lastName: 'Костенко'
+        firstName: 'Ліна'
+        patronymic: null
+        town: '@town_kyiv'
+    player_cc_fill_3:
+        lastName: 'Симоненко'
+        firstName: 'Василь'
+        patronymic: 'Андрійович'
+        town: '@town_kyiv'
+    player_cc_fill_4:
+        lastName: 'Тичина'
+        firstName: 'Павло'
+        patronymic: 'Григорович'
+        town: '@town_kyiv'
+    player_cc_fill_5:
+        lastName: 'Рильський'
+        firstName: 'Максим'
+        patronymic: 'Тадейович'
+        town: '@town_kyiv'
+    player_cc_fill_6:
+        lastName: 'Довженко'
+        firstName: 'Олександр'
+        patronymic: 'Петрович'
+        town: '@town_kyiv'
+    player_cc_fill_7:
+        lastName: 'Малевич'
+        firstName: 'Казимир'
+        patronymic: 'Северинович'
+        town: '@town_kyiv'
+    player_cc_fill_8:
+        lastName: 'Сковорода'
+        firstName: 'Григорій'
+        patronymic: 'Савич'
+        town: '@town_kyiv'
+    player_cc_outsider:
+        lastName: 'Драгоманов'
+        firstName: 'Михайло'
+        patronymic: 'Петрович'
+        town: '@town_kyiv'
+
+App\Classic\Entity\TeamPlayer:
+    tp_cc_full_captain:
+        team: '@team_beta'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    tp_cc_full_1:
+        team: '@team_beta'
+        player: '@player_cc_fill_1'
+        season: '@season_current'
+        isCaptain: false
+    tp_cc_full_2:
+        team: '@team_beta'
+        player: '@player_cc_fill_2'
+        season: '@season_current'
+        isCaptain: false
+    tp_cc_full_3:
+        team: '@team_beta'
+        player: '@player_cc_fill_3'
+        season: '@season_current'
+        isCaptain: false
+    tp_cc_full_4:
+        team: '@team_beta'
+        player: '@player_cc_fill_4'
+        season: '@season_current'
+        isCaptain: false
+    tp_cc_full_5:
+        team: '@team_beta'
+        player: '@player_cc_fill_5'
+        season: '@season_current'
+        isCaptain: false
+    tp_cc_full_6:
+        team: '@team_beta'
+        player: '@player_cc_fill_6'
+        season: '@season_current'
+        isCaptain: false
+    tp_cc_full_7:
+        team: '@team_beta'
+        player: '@player_cc_fill_7'
+        season: '@season_current'
+        isCaptain: false
+    tp_cc_full_8:
+        team: '@team_beta'
+        player: '@player_cc_fill_8'
+        season: '@season_current'
+        isCaptain: false
+
+App\Classic\Entity\CaptainClaim:
+    claim_team_full:
+        player: '@player_cc_outsider'
+        team: '@team_beta'
+        status: '<(App\Classic\Enum\CaptainClaimStatus::Pending)>'
+        comment: 'Хочу бути капітаном повної команди'

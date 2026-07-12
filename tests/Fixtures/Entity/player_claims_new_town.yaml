@@ -1,0 +1,17 @@
+App\Common\Entity\User:
+    user_claim_new_town:
+        email: 'claim_new_town@example.com'
+        googleId: 'google_claim_new_town'
+        roles: []
+        player: null
+
+App\Common\Entity\PlayerClaim:
+    player_claim_new_with_town_name:
+        user: '@user_claim_new_town'
+        player: null
+        lastName: 'Нещадименко'
+        firstName: 'Олексій'
+        patronymic: 'Іванович'
+        town: null
+        townName: 'Нове Місто'
+        status: 'pending'

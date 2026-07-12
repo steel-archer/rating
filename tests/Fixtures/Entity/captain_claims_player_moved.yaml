@@ -1,0 +1,28 @@
+App\Common\Entity\User:
+    user_cc_moved_moderator:
+        email: 'cc_moved_moderator@example.com'
+        googleId: 'google_cc_moved_mod'
+        roles: ['ROLE_MODERATOR']
+        player: null
+
+App\Classic\Entity\TeamPlayer:
+    tp_cc_moved_other:
+        team: '@team_alpha'
+        player: '@player_kotsubynsky'
+        season: '@season_current'
+        isCaptain: false
+
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_cc_moved:
+        player: '@player_kotsubynsky'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-15"))>'
+
+App\Classic\Entity\CaptainClaim:
+    claim_player_moved:
+        player: '@player_kotsubynsky'
+        team: '@team_beta'
+        status: '<(App\Classic\Enum\CaptainClaimStatus::Pending)>'
+        comment: 'Хочу бути капітаном Бети, але вже в Альфі'
