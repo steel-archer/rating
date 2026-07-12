@@ -44,6 +44,13 @@ class TournamentValidator
 
         $errors = $this->validateDates($startedAt, $endedAt, $format);
 
+        // Validate questionsPerTourMap consistency
+        if ($dto->customQuestionsPerTour && $dto->questionsPerTourMap !== null && $dto->toursCount !== null) {
+            if (count($dto->questionsPerTourMap) !== $dto->toursCount) {
+                $errors[] = 'tournament.error.questions_map_length_mismatch';
+            }
+        }
+
         if ($format === TournamentFormat::Distributed) {
             if ($resultsHiddenUntil !== null && $endedAt !== null && $resultsHiddenUntil < $endedAt) {
                 $errors[] = 'tournament.error.results_hidden_before_end';
@@ -135,8 +142,10 @@ class TournamentValidator
         if ($tournament->getToursCount() === null) {
             $errors[] = 'tournament.publish_error.no_tours_count';
         }
-        if ($tournament->getQuestionsPerTour() === null) {
+        if ($tournament->getQuestionsPerTourMap() === null || $tournament->getQuestionsPerTourMap() === []) {
             $errors[] = 'tournament.publish_error.no_questions_per_tour';
+        } elseif ($tournament->getToursCount() !== null && count($tournament->getQuestionsPerTourMap()) !== $tournament->getToursCount()) {
+            $errors[] = 'tournament.publish_error.questions_map_mismatch';
         }
         if ($tournament->getDifficulty() === null) {
             $errors[] = 'tournament.publish_error.no_difficulty';

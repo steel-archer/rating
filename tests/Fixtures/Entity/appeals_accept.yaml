@@ -20,7 +20,7 @@ App\Classic\Entity\Tournament:
         submissionDeadline: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
         appealDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
         toursCount: 1
-        questionsPerTour: 3
+        questionsPerTourMap: [3]
 
 App\Classic\Entity\TournamentOfficial:
     official_appeal_accept_jury:

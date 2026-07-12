@@ -40,7 +40,7 @@ final class TournamentMapping implements MappingInterface
             submissionDeadline: $source->getSubmissionDeadline(),
             appealDeadline: $source->getAppealDeadline(),
             toursCount: $source->getToursCount(),
-            questionsPerTour: $source->getQuestionsPerTour(),
+            questionsPerTourMap: $source->getQuestionsPerTourMap(),
             difficulty: $source->getDifficulty(),
             trueDl: $source->getTrueDl(),
             discussionLink: $source->getDiscussionLink(),

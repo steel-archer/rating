@@ -1,0 +1,83 @@
+App\Classic\Entity\Tournament:
+    tournament_detailed_custom:
+        name: 'Турнір з різною кількістю питань'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15 00:00:00"))>'
+        detailsHiddenUntil: '<(new \DateTimeImmutable("-1 day 00:00:00"))>'
+        toursCount: 2
+        questionsPerTourMap: [2, 3]
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+
+App\Classic\Entity\TournamentOfficial:
+    official_custom_organizer:
+        tournament: '@tournament_detailed_custom'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentSession:
+    session_custom:
+        tournament: '@tournament_detailed_custom'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_custom_alpha:
+        tournamentSession: '@session_custom'
+        team: '@team_alpha'
+        score: 4
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    # Tour 1: questions 1-2 (both correct)
+    answer_custom_alpha_1:
+        tournamentSessionTeam: '@session_team_custom_alpha'
+        questionNumber: 1
+        isCorrect: true
+    answer_custom_alpha_2:
+        tournamentSessionTeam: '@session_team_custom_alpha'
+        questionNumber: 2
+        isCorrect: true
+    # Tour 2: questions 3-5 (2 correct, 1 wrong)
+    answer_custom_alpha_3:
+        tournamentSessionTeam: '@session_team_custom_alpha'
+        questionNumber: 3
+        isCorrect: true
+    answer_custom_alpha_4:
+        tournamentSessionTeam: '@session_team_custom_alpha'
+        questionNumber: 4
+        isCorrect: true
+    answer_custom_alpha_5:
+        tournamentSessionTeam: '@session_team_custom_alpha'
+        questionNumber: 5
+        isCorrect: false
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    stp_custom_alpha_shevchenko:
+        tournamentSessionTeam: '@session_team_custom_alpha'
+        player: '@player_shevchenko'
+        isLegionary: false
+
+App\Classic\Entity\TeamPlayer:
+    team_player_custom_alpha_shevchenko:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+
+App\Classic\Entity\TeamPlayerTransfer:
+    transfer_custom_alpha_shevchenko:
+        player: '@player_shevchenko'
+        team: '@team_alpha'
+        season: '@season_current'
+        type: '<(App\Classic\Enum\TeamPlayerTransferType::Joined)>'
+        date: '<(new \DateTimeImmutable("2025-10-01"))>'
+
+App\Classic\Entity\SessionClaim:
+    session_claim_custom:
+        session: '@session_custom'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'

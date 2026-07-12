@@ -6,7 +6,7 @@ App\Classic\Entity\Tournament:
         endedAt: '<(new \DateTimeImmutable("2025-03-15 00:00:00"))>'
         resultsHiddenUntil: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
         difficulty: 3.5
         trueDl: 2.8
         status: '<(App\Classic\Enum\TournamentStatus::Published)>'

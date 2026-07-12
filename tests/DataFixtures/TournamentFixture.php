@@ -136,7 +136,8 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
 
             $tournament->setStatus(TournamentStatus::Published);
             $tournament->setToursCount($faker->boolean(90) ? 3 : $faker->randomElement([4, 5]));
-            $tournament->setQuestionsPerTour($faker->boolean(90) ? 12 : $faker->randomElement([13, 14, 15]));
+            $questionsPerTour = $faker->boolean(90) ? 12 : $faker->randomElement([13, 14, 15]);
+            $tournament->setQuestionsPerTourMap(array_fill(0, $tournament->getToursCount(), $questionsPerTour));
             $tournament->setDifficulty($faker->randomFloat(1, 2, 5));
             $tournament->setTrueDl($faker->randomFloat(2, 1.5, 4.5));
             $manager->persist($tournament);
@@ -168,7 +169,7 @@ class TournamentFixture extends Fixture implements DependentFixtureInterface
             // Sessions — fewer sessions, more teams per session
             $sessionCount = $isCentralized ? 1 : $faker->numberBetween(3, min(7, $townCount));
             $sessionTowns = $faker->randomElements(range(0, $townCount - 1), $sessionCount);
-            $totalQuestions = $tournament->getToursCount() * $tournament->getQuestionsPerTour();
+            $totalQuestions = array_sum($tournament->getQuestionsPerTourMap());
 
             // Pick a limited pool of teams for this tournament
             $teamsPerTournament = $faker->numberBetween($sessionCount * 2, $sessionCount * 10);

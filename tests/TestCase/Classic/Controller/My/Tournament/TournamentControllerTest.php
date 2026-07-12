@@ -192,7 +192,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => null,
                     'endedAt' => null,
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -216,7 +216,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['name' => 'Hack', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Hack', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
@@ -236,7 +236,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['name' => 'Hack', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Hack', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
@@ -261,7 +261,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['name' => 'Спроба', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Спроба', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -592,7 +592,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => (new DateTime('+30 days'))->format('Y-m-d'),
                     'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
                     'toursCount' => 3,
-                    'questionsPerTour' => 12,
+                    'questionsPerTour' => 12, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => 3.5,
                     'organizers' => [],
                     'editors' => [],
@@ -613,6 +613,192 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
+        yield 'update with uniform questionsPerTour saves map' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => 3,
+                    'questionsPerTour' => 12,
+                    'customQuestionsPerTour' => false,
+                    'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_draft']->getId());
+                static::assertSame([12, 12, 12], $tournament->getQuestionsPerTourMap());
+                static::assertSame(36, $tournament->getTotalQuestions());
+            },
+        ];
+
+        yield 'update with custom questionsPerTourMap saves different values per tour' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => 3,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [15, 10, 11],
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_draft']->getId());
+                static::assertSame([15, 10, 11], $tournament->getQuestionsPerTourMap());
+                static::assertSame(36, $tournament->getTotalQuestions());
+            },
+        ];
+
+        yield 'update with questionsPerTourMap value exceeding 50 returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => 2,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [51, 10],
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'update with questionsPerTourMap value less than 1 returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => 2,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [0, 10],
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'update with questionsPerTourMap length mismatch returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => 3,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [12, 10],
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('questions_map_length_mismatch', $json['error']);
+            },
+        ];
+
+        yield 'update with uniform questionsPerTour exceeding 50 returns 422' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => 3,
+                    'questionsPerTour' => 51,
+                    'customQuestionsPerTour' => false,
+                    'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
         yield 'update with dates in past returns 422' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
@@ -622,7 +808,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['name' => 'Мій чернетковий турнір', 'startedAt' => '2020-01-01', 'endedAt' => '2020-01-02', 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'Мій чернетковий турнір', 'startedAt' => '2020-01-01', 'endedAt' => '2020-01-02', 'toursCount' => null, 'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
@@ -643,7 +829,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => (new DateTime('+60 days'))->format('Y-m-d'),
                     'endedAt' => (new DateTime('+30 days'))->format('Y-m-d'),
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -670,7 +856,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => '2026-09-29',
                     'endedAt' => '2026-10-02',
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -698,7 +884,7 @@ class TournamentControllerTest extends WebTestCase
                     'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
                     'resultsHiddenUntil' => (new DateTime('+30 days'))->format('Y-m-d'),
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -726,7 +912,7 @@ class TournamentControllerTest extends WebTestCase
                     'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
                     'registrationDeadline' => (new DateTime('+29 days'))->format('Y-m-d'),
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -754,7 +940,7 @@ class TournamentControllerTest extends WebTestCase
                     'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
                     'registrationDeadline' => (new DateTime('+32 days'))->format('Y-m-d'),
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -783,7 +969,7 @@ class TournamentControllerTest extends WebTestCase
                     'resultsHiddenUntil' => (new DateTime('+33 days'))->format('Y-m-d'),
                     'detailsHiddenUntil' => (new DateTime('+32 days'))->format('Y-m-d'),
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -811,7 +997,7 @@ class TournamentControllerTest extends WebTestCase
                     'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
                     'submissionDeadline' => (new DateTime('+30 days'))->format('Y-m-d'),
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [],
                     'editors' => [],
@@ -838,7 +1024,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => null,
                     'endedAt' => null,
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'discussionLink' => 'https://example.com/discussion',
                     'organizers' => [],
@@ -870,7 +1056,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => null,
                     'endedAt' => null,
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'discussionLink' => null,
                     'organizers' => [],
@@ -902,7 +1088,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => null,
                     'endedAt' => null,
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'discussionLink' => 'not-a-valid-url',
                     'organizers' => [],
@@ -1038,7 +1224,7 @@ class TournamentControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['name' => 'x', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+                json_encode(['name' => 'x', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 500,
             'afterCallback' => static function () {
@@ -1065,7 +1251,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => null,
                     'endedAt' => null,
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [$objects['player_franko']->getId()],
                     'editors' => [$objects['player_shevchenko']->getId()],
@@ -1096,7 +1282,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => null,
                     'endedAt' => null,
                     'toursCount' => null,
-                    'questionsPerTour' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
                     'organizers' => [$objects['player_franko']->getId(), 999999],
                     'editors' => [],
@@ -1209,7 +1395,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => '2024-05-01',
                     'endedAt' => '2024-05-02',
                     'toursCount' => 4,
-                    'questionsPerTour' => 12,
+                    'questionsPerTour' => 12, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => 5.0,
                     'organizers' => [],
                     'editors' => [],
@@ -1257,7 +1443,7 @@ class TournamentControllerTest extends WebTestCase
                     'startedAt' => '2024-05-05',
                     'endedAt' => '2024-05-01',
                     'toursCount' => 4,
-                    'questionsPerTour' => 12,
+                    'questionsPerTour' => 12, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => 5.0,
                     'organizers' => [],
                     'editors' => [],

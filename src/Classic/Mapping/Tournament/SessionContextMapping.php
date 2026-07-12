@@ -38,7 +38,7 @@ final class SessionContextMapping implements MappingInterface
             hostName: $host?->getFullName(),
             hostHasUser: $host?->hasUser() ?? false,
             toursCount: $tournament->getToursCount() ?? 0,
-            questionsPerTour: $tournament->getQuestionsPerTour() ?? 0,
+            questionsPerTourMap: $tournament->getQuestionsPerTourMap() ?? [],
             isOnline: $source->isOnline(),
         );
     }

@@ -125,5 +125,40 @@ class DetailedResultsControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
+
+        yield 'custom questions per tour renders correctly' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_detailed_custom']->getId() . '/detailed',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments_detailed_custom.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $table = $crawler->filter('table.results-breakdown');
+                static::assertCount(1, $table);
+
+                $rows = $table->filter('tbody tr');
+                static::assertCount(1, $rows);
+
+                // Tour 1 has 2 questions, Tour 2 has 3 questions = 5 total answer cells
+                $answerCols = $rows->eq(0)->filter('td.answer-col');
+                static::assertCount(5, $answerCols);
+
+                // All tour 1 answers are correct (2)
+                $correctCells = $rows->eq(0)->filter('td.answer-correct');
+                static::assertCount(4, $correctCells);
+
+                // 1 wrong answer in tour 2
+                $wrongCells = $rows->eq(0)->filter('td.answer-wrong');
+                static::assertCount(1, $wrongCells);
+
+                // Total: 4/5
+                $totalCell = $rows->eq(0)->filter('td.total-col');
+                static::assertSame('4/5', trim($totalCell->text()));
+
+                // 2 tour-total columns (one per tour)
+                $tourTotals = $rows->eq(0)->filter('td.tour-total-col');
+                static::assertCount(2, $tourTotals);
+            },
+        ];
     }
 }

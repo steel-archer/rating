@@ -22,7 +22,8 @@ final readonly class TournamentEditDTO
         public ?DateTimeImmutable $submissionDeadline,
         public ?DateTimeImmutable $appealDeadline,
         public ?int $toursCount,
-        public ?int $questionsPerTour,
+        /** @var list<int>|null */
+        public ?array $questionsPerTourMap,
         public ?float $difficulty,
         public ?string $discussionLink,
         public int $createdByPlayerId,

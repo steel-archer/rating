@@ -23,7 +23,8 @@ final readonly class SessionContextDTO
         public ?string $hostName,
         public bool $hostHasUser,
         public int $toursCount,
-        public int $questionsPerTour,
+        /** @var list<int> */
+        public array $questionsPerTourMap,
         public bool $isOnline = false,
     ) {
     }

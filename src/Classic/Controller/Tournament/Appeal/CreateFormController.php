@@ -56,7 +56,7 @@ class CreateFormController extends AbstractController
             }
         }
 
-        $totalQuestions = ($tournament->getToursCount() ?? 0) * ($tournament->getQuestionsPerTour() ?? 0);
+        $totalQuestions = $tournament->getTotalQuestions() ?? 0;
 
         return $this->render('tournament/appeal_create.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),

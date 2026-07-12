@@ -127,7 +127,7 @@ class TournamentManagementService
                 : null,
         );
         $tournament->setToursCount($dto->toursCount);
-        $tournament->setQuestionsPerTour($dto->questionsPerTour);
+        $tournament->setQuestionsPerTourMap($this->buildQuestionsPerTourMap($dto));
         $tournament->setDifficulty($dto->difficulty);
         $tournament->setDiscussionLink($dto->discussionLink);
         $tournament->setSeason($startedAt ? $this->seasonRepository->findByDate($startedAt) : null);
@@ -268,5 +268,24 @@ class TournamentManagementService
                 $this->em->persist($official);
             }
         }
+    }
+
+    /**
+     * Builds the questionsPerTourMap array from the DTO.
+     * In custom mode, uses the provided map; otherwise generates a uniform array.
+     *
+     * @return list<int>|null
+     */
+    private function buildQuestionsPerTourMap(EditRequestDTO $dto): ?array
+    {
+        if ($dto->customQuestionsPerTour && $dto->questionsPerTourMap !== null) {
+            return $dto->questionsPerTourMap;
+        }
+
+        if ($dto->toursCount === null || $dto->questionsPerTour === null) {
+            return null;
+        }
+
+        return array_fill(0, $dto->toursCount, $dto->questionsPerTour);
     }
 }

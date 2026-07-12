@@ -29,7 +29,7 @@
     </div>
 
     {% if teams is not empty %}
-        {% if canViewDetails and breakdown is not empty and session.toursCount > 0 and session.questionsPerTour > 0 %}
+        {% if canViewDetails and breakdown is not empty and session.toursCount > 0 and session.questionsPerTourMap is not empty %}
             <div class="card card-wide">
                 <h2>{{ 'tournament.results'|trans }}</h2>
                 <div class="table-scroll">
@@ -40,9 +40,11 @@
                                 <th><span data-tooltip="{{ 'common.place_session'|trans }}">#</span></th>
                                 <th class="sticky-col">{{ 'common.team'|trans }}</th>
                                 <th>{{ 'common.town'|trans }}</th>
+                                {% set qNum = 0 %}
                                 {% for tour in 1..session.toursCount %}
-                                    {% for q in 1..session.questionsPerTour %}
-                                        <th class="answer-col">{{ (tour - 1) * session.questionsPerTour + q }}</th>
+                                    {% for q in 1..session.questionsPerTourMap[tour - 1] %}
+                                        {% set qNum = qNum + 1 %}
+                                        <th class="answer-col">{{ qNum }}</th>
                                     {% endfor %}
                                     <th class="tour-total-col">Σ{{ tour }}</th>
                                 {% endfor %}
@@ -58,9 +60,9 @@
                                     <td class="sticky-col">{{ include('_team_name.html.twig', {teamId: team.teamId, teamName: team.teamName, oneTimeName: team.oneTimeName, turboFrame: true}, with_context: false) }}</td>
                                     <td>{{ team.teamTownName }}</td>
                                     {% if data %}
+                                        {% set idx = 0 %}
                                         {% for tour in 0..(session.toursCount - 1) %}
-                                            {% for q in 0..(session.questionsPerTour - 1) %}
-                                                {% set idx = tour * session.questionsPerTour + q %}
+                                            {% for q in 0..(session.questionsPerTourMap[tour] - 1) %}
                                                 {% if data.answers[idx] == '?' %}
                                                     <td class="answer-col answer-dispute">?</td>
                                                 {% elseif data.answers[idx] == 'X' %}
@@ -68,15 +70,20 @@
                                                 {% else %}
                                                     <td class="answer-col {{ data.answers[idx] ? 'answer-correct' : 'answer-wrong' }}">{{ data.answers[idx] }}</td>
                                                 {% endif %}
+                                                {% set idx = idx + 1 %}
                                             {% endfor %}
-                                            <td class="tour-total-col"><strong>{{ data.tourScores[tour] }}/{{ session.questionsPerTour }}</strong></td>
+                                            <td class="tour-total-col"><strong>{{ data.tourScores[tour] }}/{{ session.questionsPerTourMap[tour] }}</strong></td>
                                         {% endfor %}
                                     {% else %}
-                                        {% for i in 1..(session.toursCount * session.questionsPerTour + session.toursCount) %}
-                                            <td class="answer-col">—</td>
+                                        {% for tour in 0..(session.toursCount - 1) %}
+                                            {% for q in 1..session.questionsPerTourMap[tour] %}
+                                                <td class="answer-col">—</td>
+                                            {% endfor %}
+                                            <td class="tour-total-col">—</td>
                                         {% endfor %}
                                     {% endif %}
-                                    <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) ~ '/' ~ (session.toursCount * session.questionsPerTour) : (team.score is not null ? team.score : '—') }}</strong></td>
+                                    {% set totalQuestions = session.questionsPerTourMap|reduce((carry, v) => carry + v, 0) %}
+                                    <td class="total-col"><strong>{{ data ? data.tourScores|reduce((carry, v) => carry + v, 0) ~ '/' ~ totalQuestions : (team.score is not null ? team.score : '—') }}</strong></td>
                                 </tr>
                             {% endfor %}
                         </tbody>

@@ -9,7 +9,8 @@ final readonly class ResultsSessionDTO
     public function __construct(
         public int $id,
         public int $toursCount,
-        public int $questionsPerTour,
+        /** @var list<int> */
+        public array $questionsPerTourMap,
     ) {
     }
 }

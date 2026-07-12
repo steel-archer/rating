@@ -45,8 +45,16 @@ final readonly class EditRequestDTO
         #[Assert\Positive]
         public ?int $toursCount = null,
 
+        public bool $customQuestionsPerTour = false,
+
         #[Assert\Positive]
+        #[Assert\LessThanOrEqual(50)]
         public ?int $questionsPerTour = null,
+
+        /** @var list<int>|null */
+        #[Assert\Count(max: 50)]
+        #[Assert\All([new Assert\Positive(), new Assert\LessThanOrEqual(50)])]
+        public ?array $questionsPerTourMap = null,
 
         #[Assert\Range(min: 1, max: 10)]
         public ?float $difficulty = null,

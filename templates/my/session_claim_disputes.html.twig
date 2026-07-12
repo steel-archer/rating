@@ -25,7 +25,7 @@
                 <label for="dispute-question">{{ 'dispute.question_number'|trans }}</label>
                 <select id="dispute-question" name="questionNumber" required>
                     <option value="">—</option>
-                    {% for q in 1..(session.toursCount * session.questionsPerTour) %}
+                    {% for q in 1..(session.questionsPerTourMap|reduce((carry, v) => carry + v, 0)) %}
                         <option value="{{ q }}">{{ q }}</option>
                     {% endfor %}
                 </select>

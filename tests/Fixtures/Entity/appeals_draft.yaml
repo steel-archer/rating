@@ -14,5 +14,5 @@ App\Classic\Entity\Tournament:
         endedAt: '<(new \DateTimeImmutable("-20 days 00:00:00"))>'
         appealDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
         toursCount: 1
-        questionsPerTour: 3
+        questionsPerTourMap: [3]
         createdBy: '@player_franko'

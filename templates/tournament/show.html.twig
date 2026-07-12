@@ -23,9 +23,14 @@
                     <dt>{{ 'tournament.tours_count'|trans }}</dt>
                     <dd>{{ tournament.toursCount }}</dd>
                 {% endif %}
-                {% if tournament.questionsPerTour %}
+                {% if tournament.questionsPerTourMap %}
                     <dt>{{ 'tournament.questions_per_tour'|trans }}</dt>
-                    <dd>{{ tournament.questionsPerTour }}</dd>
+                    {% set allSame = tournament.questionsPerTourMap|reduce((carry, v) => carry and (v == tournament.questionsPerTourMap[0]), true) %}
+                    {% if allSame %}
+                        <dd>{{ tournament.questionsPerTourMap[0] }}</dd>
+                    {% else %}
+                        <dd>{{ tournament.questionsPerTourMap|join(', ') }}</dd>
+                    {% endif %}
                 {% endif %}
                 {% if tournament.teamCount %}
                     <dt>{{ 'common.teams_count'|trans }}</dt>

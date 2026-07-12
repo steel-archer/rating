@@ -361,7 +361,7 @@
 | endedAt | DateTimeImmutable | ✓ | |
 | resultsHiddenUntil | DateTimeImmutable | ✓ | |
 | toursCount | int | ✓ | |
-| questionsPerTour | int | ✓ | |
+| questionsPerTourMap | json | ✓ | list<int>, кількість запитань по турах |
 | difficulty | float | ✓ | |
 | trueDl | float | ✓ | |
 | registrationDeadline | DateTimeImmutable | ✓ | |

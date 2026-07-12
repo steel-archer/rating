@@ -9,7 +9,7 @@ App\Classic\Entity\Tournament:
         detailsHiddenUntil: '<(new \DateTimeImmutable("2025-03-19 00:00:00"))>'
         submissionDeadline: '<(new \DateTimeImmutable("2025-03-18 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
         difficulty: 3.5
         trueDl: 2.8
         discussionLink: 'https://discuss.example.com/spring-cup'
@@ -20,7 +20,7 @@ App\Classic\Entity\Tournament:
         startedAt: '<(new \DateTimeImmutable("2024-10-10 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("2024-10-20 00:00:00"))>'
         toursCount: 4
-        questionsPerTour: 15
+        questionsPerTourMap: [15, 15, 15, 15]
         difficulty: 4.2
         trueDl: 3.1
         status: '<(App\Classic\Enum\TournamentStatus::Published)>'
@@ -31,7 +31,7 @@ App\Classic\Entity\Tournament:
         startedAt: '<(new \DateTimeImmutable("2025-02-15 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("2025-02-16 00:00:00"))>'
         toursCount: 5
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12, 12, 12]
         difficulty: 4.0
         trueDl: 3.0
         status: '<(App\Classic\Enum\TournamentStatus::Published)>'

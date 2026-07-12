@@ -19,7 +19,7 @@ App\Classic\Entity\Tournament:
         startedAt: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("-9 days 00:00:00"))>'
         toursCount: 4
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12, 12]
         difficulty: 5.0
     tournament_approved:
         name: 'Схвалений турнір'
@@ -34,7 +34,7 @@ App\Classic\Entity\Tournament:
         submissionDeadline: '<(new \DateTimeImmutable("+32 days 00:00:00"))>'
         appealDeadline: '<(new \DateTimeImmutable("+34 days 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
         difficulty: 3.5
     tournament_published:
         name: 'Опублікований турнір'
@@ -49,7 +49,7 @@ App\Classic\Entity\Tournament:
         submissionDeadline: '<(new \DateTimeImmutable("+62 days 00:00:00"))>'
         appealDeadline: '<(new \DateTimeImmutable("+64 days 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
         difficulty: 4.0
 
 App\Classic\Entity\TournamentOfficial:

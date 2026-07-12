@@ -56,8 +56,9 @@ class Tournament
     #[ORM\Column(nullable: true)]
     private ?int $toursCount = null;
 
+    /** @var list<int>|null */
     #[ORM\Column(nullable: true)]
-    private ?int $questionsPerTour = null;
+    private ?array $questionsPerTourMap = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $difficulty = null;
@@ -223,6 +224,10 @@ class Tournament
 
     public function isSubmissionOpen(): bool
     {
+        if ($this->format === TournamentFormat::Centralized) {
+            return $this->status === TournamentStatus::Published;
+        }
+
         return $this->submissionDeadline !== null
             && $this->submissionDeadline > new DateTimeImmutable();
     }
@@ -269,25 +274,39 @@ class Tournament
         return $this;
     }
 
-    public function getQuestionsPerTour(): ?int
+    /**
+     * @return list<int>|null
+     */
+    public function getQuestionsPerTourMap(): ?array
     {
-        return $this->questionsPerTour;
+        return $this->questionsPerTourMap;
     }
 
-    public function setQuestionsPerTour(?int $questionsPerTour): static
+    /**
+     * @param list<int>|null $questionsPerTourMap
+     */
+    public function setQuestionsPerTourMap(?array $questionsPerTourMap): static
     {
-        $this->questionsPerTour = $questionsPerTour;
+        $this->questionsPerTourMap = $questionsPerTourMap;
 
         return $this;
     }
 
-    public function getMaxScore(): ?int
+    /**
+     * Returns the total number of questions across all tours.
+     */
+    public function getTotalQuestions(): ?int
     {
-        if ($this->toursCount === null || $this->questionsPerTour === null) {
+        if ($this->questionsPerTourMap === null) {
             return null;
         }
 
-        return $this->toursCount * $this->questionsPerTour;
+        return array_sum($this->questionsPerTourMap);
+    }
+
+    public function getMaxScore(): ?int
+    {
+        return $this->getTotalQuestions();
     }
 
     public function getDifficulty(): ?float

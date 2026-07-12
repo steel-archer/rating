@@ -39,7 +39,7 @@ App\Classic\Entity\Tournament:
         registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
     tournament_offline_only:
         name: 'Офлайн турнір'
         status: '<(App\Classic\Enum\TournamentStatus::Published)>'
@@ -49,7 +49,7 @@ App\Classic\Entity\Tournament:
         registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
     tournament_online_only:
         name: 'Онлайн турнір'
         status: '<(App\Classic\Enum\TournamentStatus::Published)>'
@@ -59,7 +59,7 @@ App\Classic\Entity\Tournament:
         registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
 
 App\Classic\Entity\TournamentOfficial:
     official_org_test:

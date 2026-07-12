@@ -120,8 +120,25 @@
                 <input type="number" id="tours_count" name="toursCount" min="1" step="1" value="{{ tournament.toursCount }}" {{ readonly ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
+                {% set isCustom = tournament.questionsPerTourMap and not (tournament.questionsPerTourMap|reduce((carry, v) => carry and (v == tournament.questionsPerTourMap[0]), true)) %}
+                <label>
+                    <input type="checkbox" id="custom_questions_toggle" {{ isCustom ? 'checked' : '' }} {{ readonly ? 'disabled' : '' }}>
+                    {{ 'tournament.my.custom_questions_per_tour'|trans }}
+                </label>
+            </div>
+            <div class="form-group" id="uniform-questions-group" {{ isCustom ? 'hidden' : '' }}>
                 <label for="questions_per_tour">{{ 'tournament.questions_per_tour'|trans }} <span class="required-publish">{{ 'tournament.my.required_for_publish'|trans }}</span></label>
-                <input type="number" id="questions_per_tour" name="questionsPerTour" min="1" step="1" value="{{ tournament.questionsPerTour }}" {{ readonly ? 'disabled' : '' }}>
+                <input type="number" id="questions_per_tour" name="questionsPerTour" min="1" max="50" step="1" value="{{ (not isCustom and tournament.questionsPerTourMap) ? tournament.questionsPerTourMap[0] : '' }}" {{ readonly ? 'disabled' : '' }}>
+            </div>
+            <div id="custom-questions-group" {{ not isCustom ? 'hidden' : '' }}>
+                {% if isCustom and tournament.questionsPerTourMap %}
+                    {% for i in 0..(tournament.questionsPerTourMap|length - 1) %}
+                        <div class="form-group custom-tour-questions">
+                            <label>{{ 'tournament.my.questions_in_tour'|trans({'%tour%': i + 1}) }}</label>
+                            <input type="number" name="questionsPerTourMap[]" min="1" max="50" step="1" value="{{ tournament.questionsPerTourMap[i] }}" {{ readonly ? 'disabled' : '' }}>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
             <div class="form-group">
                 <label for="difficulty">{{ 'tournament.difficulty'|trans }} <span class="required-publish">{{ 'tournament.my.required_for_publish'|trans }}</span></label>

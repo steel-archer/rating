@@ -18,7 +18,7 @@ App\Classic\Entity\Tournament:
         detailsHiddenUntil: '<(new \DateTimeImmutable("+29 days 00:00:00"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
         difficulty: 3.5
 
 App\Classic\Entity\TournamentOfficial:

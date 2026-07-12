@@ -14,7 +14,7 @@ App\Classic\Entity\Tournament:
         startedAt: '<(new \DateTimeImmutable("-1 day 00:00:00"))>'
         endedAt: '<(new \DateTimeImmutable("+1 day 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
         difficulty: 3.0
 
 App\Classic\Entity\TournamentOfficial:

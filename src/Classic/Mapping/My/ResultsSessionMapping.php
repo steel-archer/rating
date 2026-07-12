@@ -23,7 +23,7 @@ final class ResultsSessionMapping implements MappingInterface
         return new $destinationClass(
             id: $source->getId(),
             toursCount: $tournament->getToursCount() ?? 0,
-            questionsPerTour: $tournament->getQuestionsPerTour() ?? 0,
+            questionsPerTourMap: $tournament->getQuestionsPerTourMap() ?? [],
         );
     }
 }

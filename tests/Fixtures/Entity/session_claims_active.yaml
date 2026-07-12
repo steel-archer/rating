@@ -19,7 +19,7 @@ App\Classic\Entity\Tournament:
         registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 3
-        questionsPerTour: 12
+        questionsPerTourMap: [12, 12, 12]
 
 App\Classic\Entity\TournamentOfficial:
     official_org_active:

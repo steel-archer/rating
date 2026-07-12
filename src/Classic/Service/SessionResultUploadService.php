@@ -39,7 +39,9 @@ class SessionResultUploadService
      */
     public function generateTemplate(TournamentSession $session): StreamedResponse
     {
-        [$toursCount, $questionsPerTour] = $this->getTournamentStructure($session);
+        $questionsPerTourMap = $this->getTournamentStructure($session);
+        $toursCount = count($questionsPerTourMap);
+        $maxQuestionsPerTour = max($questionsPerTourMap);
 
         $sessionTeams = $this->sessionTeamRepository->findBySessionWithTeamAndTown($session);
 
@@ -59,13 +61,15 @@ class SessionResultUploadService
         $sheet->setCellValue('B' . $headerRow, 'Назва');
         $sheet->setCellValue('C' . $headerRow, 'Місто');
         $sheet->setCellValue('D' . $headerRow, 'Тур');
-        for ($q = 1; $q <= $questionsPerTour; $q++) {
+        for ($q = 1; $q <= $maxQuestionsPerTour; $q++) {
             $col = $this->questionColumn($q);
             $sheet->setCellValue($col . $headerRow, $q);
         }
 
         $currentRow = $headerRow + 1;
+        $questionOffset = 0;
         for ($tour = 1; $tour <= $toursCount; $tour++) {
+            $questionsInTour = $questionsPerTourMap[$tour - 1];
             foreach ($sessionTeams as $sessionTeam) {
                 $team = $sessionTeam->getTeam();
                 $teamId = $sessionTeam->getId();
@@ -74,8 +78,8 @@ class SessionResultUploadService
                 $sheet->setCellValue('C' . $currentRow, $team->getTown()->getName());
                 $sheet->setCellValue('D' . $currentRow, $tour);
 
-                for ($q = 1; $q <= $questionsPerTour; $q++) {
-                    $questionNumber = ($tour - 1) * $questionsPerTour + $q;
+                for ($q = 1; $q <= $questionsInTour; $q++) {
+                    $questionNumber = $questionOffset + $q;
                     $col = $this->questionColumn($q);
                     $value = $answerMap[$teamId][$questionNumber] ?? 0;
                     $sheet->setCellValue($col . $currentRow, $value);
@@ -83,6 +87,7 @@ class SessionResultUploadService
 
                 $currentRow++;
             }
+            $questionOffset += $questionsInTour;
             // Empty row between tours
             $currentRow++;
         }
@@ -117,7 +122,8 @@ class SessionResultUploadService
             return $errors;
         }
 
-        [$toursCount, $questionsPerTour] = $this->getTournamentStructure($session);
+        $questionsPerTourMap = $this->getTournamentStructure($session);
+        $toursCount = count($questionsPerTourMap);
 
         $sessionTeams = $this->sessionTeamRepository->findBy(
             ['tournamentSession' => $session],
@@ -141,6 +147,12 @@ class SessionResultUploadService
         $sheet = $spreadsheet->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
 
+        // Build offset map for tour => starting question number
+        $tourOffsets = [0];
+        for ($i = 1; $i < $toursCount; $i++) {
+            $tourOffsets[$i] = $tourOffsets[$i - 1] + $questionsPerTourMap[$i - 1];
+        }
+
         $parsedResults = [];
 
         for ($row = 3; $row <= $highestRow; $row++) {
@@ -161,7 +173,10 @@ class SessionResultUploadService
                 continue;
             }
 
-            for ($q = 1; $q <= $questionsPerTour; $q++) {
+            $questionsInTour = $questionsPerTourMap[$tourNumber - 1];
+            $offset = $tourOffsets[$tourNumber - 1];
+
+            for ($q = 1; $q <= $questionsInTour; $q++) {
                 $col = $this->questionColumn($q);
                 $value = $sheet->getCell($col . $row)->getValue();
 
@@ -170,7 +185,7 @@ class SessionResultUploadService
                 }
 
                 $stringValue = trim((string) $value);
-                $questionNumber = ($tourNumber - 1) * $questionsPerTour + $q;
+                $questionNumber = $offset + $q;
 
                 if ($stringValue === '0' || $stringValue === '1') {
                     $parsedResults[$teamId][$questionNumber] = [
@@ -187,7 +202,7 @@ class SessionResultUploadService
         }
 
         // Validate all teams have results
-        $totalQuestions = $toursCount * $questionsPerTour;
+        $totalQuestions = array_sum($questionsPerTourMap);
         foreach ($sessionTeamsById as $teamId => $sessionTeam) {
             if (!isset($parsedResults[$teamId])) {
                 $teamName = $sessionTeam->getOneTimeName() ?? $sessionTeam->getTeam()->getName();
@@ -354,19 +369,23 @@ class SessionResultUploadService
         return $this->answerRepository->getAnswerMapByTeamIds($ids);
     }
 
-    /**
-     * @throws LogicException
-     */
     private function questionColumn(int $questionNumber): string
     {
-        // Questions start at column E (5th column)
-        return chr(ord('E') + $questionNumber - 1 > ord('Z')
-            ? throw new LogicException('Too many questions per tour')
-            : ord('E') + $questionNumber - 1);
+        // Questions start at column E (5th column), so question 1 = E, 2 = F, etc.
+        $colIndex = $questionNumber + 4; // 1-based: A=1, B=2, ..., E=5
+
+        $result = '';
+        while ($colIndex > 0) {
+            $colIndex--;
+            $result = chr(ord('A') + ($colIndex % 26)) . $result;
+            $colIndex = intdiv($colIndex, 26);
+        }
+
+        return $result;
     }
 
     /**
-     * @return array{int, int} [toursCount, questionsPerTour]
+     * @return list<int> questions per tour map
      *
      * @throws LogicException
      */
@@ -374,11 +393,17 @@ class SessionResultUploadService
     {
         $tournament = $session->getTournament();
 
-        $toursCount = $tournament->getToursCount()
-            ?? throw new LogicException('results.error.no_tours_count');
-        $questionsPerTour = $tournament->getQuestionsPerTour()
+        $questionsPerTourMap = $tournament->getQuestionsPerTourMap()
             ?? throw new LogicException('results.error.no_questions_per_tour');
 
-        return [$toursCount, $questionsPerTour];
+        if ($questionsPerTourMap === []) {
+            throw new LogicException('results.error.no_questions_per_tour');
+        }
+
+        if ($tournament->getToursCount() === null) {
+            throw new LogicException('results.error.no_tours_count');
+        }
+
+        return $questionsPerTourMap;
     }
 }

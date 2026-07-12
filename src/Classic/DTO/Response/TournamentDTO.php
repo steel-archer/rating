@@ -25,7 +25,8 @@ final readonly class TournamentDTO
         public ?DateTimeInterface $submissionDeadline,
         public ?DateTimeInterface $appealDeadline,
         public ?int $toursCount,
-        public ?int $questionsPerTour,
+        /** @var list<int>|null */
+        public ?array $questionsPerTourMap,
         public ?float $difficulty,
         public ?float $trueDl,
         public ?string $discussionLink = null,

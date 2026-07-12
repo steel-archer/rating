@@ -45,7 +45,7 @@ class DetailedResultsController extends AbstractController
         return $this->render('tournament/detailed_results.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
             'toursCount' => $tournament->getToursCount() ?? 0,
-            'questionsPerTour' => $tournament->getQuestionsPerTour() ?? 0,
+            'questionsPerTourMap' => $tournament->getQuestionsPerTourMap() ?? [],
             'maxScore' => $tournament->getMaxScore() ?? 0,
             'teams' => $teams,
             'breakdown' => $breakdown,

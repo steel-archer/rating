@@ -24,7 +24,7 @@ App\Classic\Entity\Tournament:
         endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
         submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
         toursCount: 1
-        questionsPerTour: 3
+        questionsPerTourMap: [3]
 
 App\Classic\Entity\TournamentOfficial:
     official_dispute_jury:

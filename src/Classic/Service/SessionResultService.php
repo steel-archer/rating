@@ -116,13 +116,19 @@ class SessionResultService
      */
     private function buildBreakdown(array $sessionTeams, Tournament $tournament): array
     {
-        $questionsPerTour = $tournament->getQuestionsPerTour() ?? 0;
-        if ($questionsPerTour === 0) {
+        $questionsPerTourMap = $tournament->getQuestionsPerTourMap();
+        if ($questionsPerTourMap === null || $questionsPerTourMap === []) {
             return [];
         }
 
         $toursCount = $tournament->getToursCount() ?? 0;
-        $totalQuestions = $toursCount * $questionsPerTour;
+        $totalQuestions = array_sum($questionsPerTourMap);
+
+        // Build offset array for quick tour index lookup
+        $tourOffsets = [0];
+        for ($i = 1; $i < $toursCount; $i++) {
+            $tourOffsets[$i] = $tourOffsets[$i - 1] + $questionsPerTourMap[$i - 1];
+        }
 
         $sessionTeamIds = array_map(static fn($st) => $st->getId(), $sessionTeams);
         if ($sessionTeamIds === []) {
@@ -162,7 +168,14 @@ class SessionResultService
                     $answersByQuestion[$qNum] = $isCorrect;
                 }
 
-                $tourIndex = (int) ceil($qNum / $questionsPerTour) - 1;
+                // Determine tour index from question number using offsets
+                $tourIndex = 0;
+                for ($t = $toursCount - 1; $t >= 0; $t--) {
+                    if ($qNum > $tourOffsets[$t]) {
+                        $tourIndex = $t;
+                        break;
+                    }
+                }
                 $tourTotals[$tourIndex] += $isCorrect;
             }
 

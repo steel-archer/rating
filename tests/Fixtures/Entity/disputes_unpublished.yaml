@@ -11,4 +11,4 @@ App\Classic\Entity\Tournament:
         status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
         season: '@season_current'
         toursCount: 1
-        questionsPerTour: 3
+        questionsPerTourMap: [3]

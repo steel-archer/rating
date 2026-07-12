@@ -58,12 +58,17 @@ function initTournamentEditForm() {
         return;
     }
 
+    initCustomQuestionsToggle(form);
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
 
         const url = /** @type {string} */ (form.dataset.url);
         const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
         const format = form.dataset.format;
+
+        const customToggle = /** @type {HTMLInputElement} */ (document.getElementById('custom_questions_toggle'));
+        const isCustom = customToggle?.checked ?? false;
 
         const data = {
             name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
@@ -77,9 +82,9 @@ function initTournamentEditForm() {
             toursCount: /** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value
                 ? parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="toursCount"]')).value)
                 : null,
-            questionsPerTour: /** @type {HTMLInputElement} */ (form.querySelector('[name="questionsPerTour"]')).value
-                ? parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="questionsPerTour"]')).value)
-                : null,
+            customQuestionsPerTour: isCustom,
+            questionsPerTour: null,
+            questionsPerTourMap: null,
             difficulty: /** @type {HTMLInputElement} */ (form.querySelector('[name="difficulty"]')).value
                 ? parseFloat(/** @type {HTMLInputElement} */ (form.querySelector('[name="difficulty"]')).value)
                 : null,
@@ -89,6 +94,16 @@ function initTournamentEditForm() {
             gameJury: getOfficialIds('gameJury'),
             appealJury: getOfficialIds('appealJury'),
         };
+
+        if (isCustom) {
+            const inputs = form.querySelectorAll('#custom-questions-group input[name="questionsPerTourMap[]"]');
+            data.questionsPerTourMap = Array.from(inputs).map(
+                input => parseInt(/** @type {HTMLInputElement} */ (input).value) || 0,
+            );
+        } else {
+            const qptInput = /** @type {HTMLInputElement} */ (form.querySelector('[name="questionsPerTour"]'));
+            data.questionsPerTour = qptInput?.value ? parseInt(qptInput.value) : null;
+        }
 
         if (format === 'distributed') {
             const resultsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="resultsHiddenUntil"]'));
@@ -116,6 +131,61 @@ function initTournamentEditForm() {
                 showError(status, null);
             });
     });
+}
+
+/**
+ * @param {HTMLFormElement} form
+ */
+function initCustomQuestionsToggle(form) {
+    const toggle = /** @type {HTMLInputElement|null} */ (document.getElementById('custom_questions_toggle'));
+    const uniformGroup = document.getElementById('uniform-questions-group');
+    const customGroup = document.getElementById('custom-questions-group');
+    const toursInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="toursCount"]'));
+
+    if (!toggle || !uniformGroup || !customGroup) {
+        return;
+    }
+
+    toggle.addEventListener('change', () => {
+        uniformGroup.hidden = toggle.checked;
+        customGroup.hidden = !toggle.checked;
+        if (toggle.checked) {
+            rebuildCustomFields(form);
+        }
+    });
+
+    toursInput?.addEventListener('change', () => {
+        if (toggle.checked) {
+            rebuildCustomFields(form);
+        }
+    });
+}
+
+/**
+ * @param {HTMLFormElement} form
+ */
+function rebuildCustomFields(form) {
+    const customGroup = /** @type {HTMLElement} */ (document.getElementById('custom-questions-group'));
+    const toursInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="toursCount"]'));
+    const toursCount = toursInput?.value ? parseInt(toursInput.value) : 0;
+
+    // Preserve existing values
+    const existingInputs = customGroup.querySelectorAll('input[name="questionsPerTourMap[]"]');
+    const existingValues = Array.from(existingInputs).map(input => /** @type {HTMLInputElement} */ (input).value);
+
+    // Get default value from uniform field
+    const uniformInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="questionsPerTour"]'));
+    const defaultValue = uniformInput?.value || '';
+
+    customGroup.innerHTML = '';
+    for (let i = 0; i < toursCount; i++) {
+        const value = existingValues[i] ?? defaultValue;
+        const div = document.createElement('div');
+        div.className = 'form-group custom-tour-questions';
+        div.innerHTML = `<label>${trans('tournament.my.questions_in_tour', {'%tour%': i + 1})}</label>`
+            + `<input type="number" name="questionsPerTourMap[]" min="1" max="50" step="1" value="${value}">`;
+        customGroup.appendChild(div);
+    }
 }
 
 /**

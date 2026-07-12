@@ -32,7 +32,7 @@ final class TournamentEditMapping implements MappingInterface
             submissionDeadline: $source->getSubmissionDeadline(),
             appealDeadline: $source->getAppealDeadline(),
             toursCount: $source->getToursCount(),
-            questionsPerTour: $source->getQuestionsPerTour(),
+            questionsPerTourMap: $source->getQuestionsPerTourMap(),
             difficulty: $source->getDifficulty(),
             discussionLink: $source->getDiscussionLink(),
             createdByPlayerId: $source->getCreatedBy()->getId(),
