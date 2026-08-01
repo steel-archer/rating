@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class LogoutController extends AbstractController
 {
-    #[Route('/logout', name: 'auth_logout')]
+    #[Route('/logout', name: 'auth_logout', methods: ['POST'])]
     public function __invoke(): never
     {
         // Handled by Symfony security

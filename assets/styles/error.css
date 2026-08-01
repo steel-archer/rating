@@ -38,3 +38,10 @@
     text-decoration: none;
     opacity: 0.9;
 }
+
+/* Logout is a form submit, so the shared link styling needs the button reset */
+button.error-link {
+    border: 0;
+    font-family: inherit;
+    cursor: pointer;
+}
