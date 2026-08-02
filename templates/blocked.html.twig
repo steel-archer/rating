@@ -7,6 +7,8 @@
         <div class="error-code">🚫</div>
         <div class="error-message">{{ 'block.page_title'|trans }}</div>
         <p class="error-hint">{{ reason }}</p>
-        <a href="{{ path('auth_logout') }}" class="error-link">{{ 'auth.logout'|trans }}</a>
+        <form action="{{ logout_path() }}" method="post" class="logout-form">
+            <button type="submit" class="error-link logout-button">{{ 'auth.logout'|trans }}</button>
+        </form>
     </div>
 {% endblock %}

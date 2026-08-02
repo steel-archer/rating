@@ -69,6 +69,24 @@ header nav a:hover {
     color: var(--text);
 }
 
+.auth .logout-form {
+    display: flex;
+}
+
+.auth .logout-button {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.auth .logout-button:hover {
+    color: var(--text);
+}
+
 .dropdown {
     position: relative;
 }

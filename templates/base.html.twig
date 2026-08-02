@@ -57,7 +57,9 @@
                     {% else %}
                         <span>{{ app.user.email }}</span>
                     {% endif %}
-                    <a href="{{ path('auth_logout') }}">{{ 'auth.logout'|trans }}</a>
+                    <form action="{{ logout_path() }}" method="post" class="logout-form">
+                        <button type="submit" class="logout-button">{{ 'auth.logout'|trans }}</button>
+                    </form>
                 {% else %}
                     <a href="{{ path('auth_google_start') }}">{{ 'auth.login'|trans }}</a>
                 {% endif %}
