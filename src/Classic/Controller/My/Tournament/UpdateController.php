@@ -7,6 +7,7 @@ namespace App\Classic\Controller\My\Tournament;
 use App\Common\Attribute\RateLimited;
 use App\Classic\DTO\Request\Tournament\My\EditRequestDTO;
 use App\Classic\Entity\Tournament;
+use App\Classic\Exception\TournamentValidationException;
 use App\Classic\Security\TournamentOrganizerVoter;
 use App\Classic\Service\TournamentManagementService;
 use DateMalformedStringException;
@@ -36,6 +37,8 @@ class UpdateController extends AbstractController
 
         try {
             $service->update($tournament, $dto);
+        } catch (TournamentValidationException $ex) {
+            return $this->json(['error' => $ex->getErrors()], 422);
         } catch (LogicException $ex) {
             return $this->json(['error' => $ex->getMessage()], 422);
         }

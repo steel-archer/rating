@@ -34,7 +34,7 @@ export function apiPost(url, data) {
 
 /**
  * @param {HTMLElement} statusEl
- * @param {string|null} errorKey
+ * @param {string|string[]|null} errorKey
  */
 export function showError(statusEl, errorKey) {
     statusEl.textContent = transError(errorKey);
@@ -43,10 +43,14 @@ export function showError(statusEl, errorKey) {
 }
 
 /**
- * @param {string|null|undefined} errorKey
+ * @param {string|string[]|null|undefined} errorKey
  * @returns {string}
  */
 export function transError(errorKey) {
+    if (Array.isArray(errorKey)) {
+        const messages = errorKey.map(transError).filter(Boolean);
+        return messages.length ? messages.join('; ') : trans('common.error');
+    }
     if (!errorKey) {
         return trans('common.error');
     }

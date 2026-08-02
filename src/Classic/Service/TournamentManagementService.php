@@ -11,6 +11,7 @@ use App\Classic\Enum\TournamentOnlineMode;
 use App\Common\Entity\Player;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentOfficial;
+use App\Classic\Exception\TournamentValidationException;
 use App\Common\Enum\CacheTag;
 use App\Classic\Enum\TournamentOfficialRole;
 use App\Classic\Enum\TournamentStatus;
@@ -85,7 +86,7 @@ class TournamentManagementService
 
         $errors = $this->validator->validateEdit($dto, $tournament->getFormat());
         if ($errors !== []) {
-            throw new LogicException(implode(' ', $errors));
+            throw new TournamentValidationException($errors);
         }
 
         $nameChanged = $tournament->getName() !== $dto->name;
@@ -156,7 +157,7 @@ class TournamentManagementService
 
         $errors = $this->validator->validatePublish($tournament);
         if ($errors !== []) {
-            throw new LogicException(implode(' ', $errors));
+            throw new TournamentValidationException($errors);
         }
 
         $tournament->setStatus(TournamentStatus::Published);

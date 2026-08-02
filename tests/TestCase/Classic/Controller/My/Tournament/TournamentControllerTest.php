@@ -437,10 +437,10 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('tournament.error.results_hidden_before_end', $json['error']);
-                static::assertStringContainsString('tournament.error.registration_after_end', $json['error']);
-                static::assertStringContainsString('tournament.error.details_hidden_before_results', $json['error']);
-                static::assertStringContainsString('tournament.error.submission_before_end', $json['error']);
+                static::assertContains('tournament.error.results_hidden_before_end', $json['error']);
+                static::assertContains('tournament.error.registration_after_end', $json['error']);
+                static::assertContains('tournament.error.details_hidden_before_results', $json['error']);
+                static::assertContains('tournament.error.submission_before_end', $json['error']);
             },
         ];
 
@@ -766,7 +766,7 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('questions_map_length_mismatch', $json['error']);
+                static::assertContains('tournament.error.questions_map_length_mismatch', $json['error']);
             },
         ];
 
@@ -1454,7 +1454,7 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('tournament.error.end_before_start', $json['error']);
+                static::assertContains('tournament.error.end_before_start', $json['error']);
             },
         ];
 
@@ -1491,7 +1491,7 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('tournament.error.appeal_deadline_before_submission', $json['error']);
+                static::assertContains('tournament.error.appeal_deadline_before_submission', $json['error']);
             },
         ];
 
@@ -1508,11 +1508,11 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('tournament.publish_error.no_results_hidden_until', $json['error']);
-                static::assertStringContainsString('tournament.publish_error.no_registration_deadline', $json['error']);
-                static::assertStringContainsString('tournament.publish_error.no_details_hidden_until', $json['error']);
-                static::assertStringContainsString('tournament.publish_error.no_submission_deadline', $json['error']);
-                static::assertStringContainsString('tournament.publish_error.no_appeal_deadline', $json['error']);
+                static::assertContains('tournament.publish_error.no_results_hidden_until', $json['error']);
+                static::assertContains('tournament.publish_error.no_registration_deadline', $json['error']);
+                static::assertContains('tournament.publish_error.no_details_hidden_until', $json['error']);
+                static::assertContains('tournament.publish_error.no_submission_deadline', $json['error']);
+                static::assertContains('tournament.publish_error.no_appeal_deadline', $json['error']);
             },
         ];
 
@@ -1529,7 +1529,7 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('tournament.publish_error.questions_map_mismatch', $json['error']);
+                static::assertContains('tournament.publish_error.questions_map_mismatch', $json['error']);
             },
         ];
 
@@ -1546,7 +1546,7 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('tournament.error.spans_multiple_seasons', $json['error']);
+                static::assertContains('tournament.error.spans_multiple_seasons', $json['error']);
             },
         ];
 
@@ -1577,7 +1577,7 @@ class TournamentControllerTest extends WebTestCase
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertStringContainsString('tournament.error.questions_map_length_mismatch', $json['error']);
+                static::assertContains('tournament.error.questions_map_length_mismatch', $json['error']);
             },
         ];
     }
