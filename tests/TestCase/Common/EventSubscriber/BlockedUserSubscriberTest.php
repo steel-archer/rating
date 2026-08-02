@@ -79,12 +79,21 @@ class BlockedUserSubscriberTest extends WebTestCase
             },
         ];
 
-        yield 'blocked user can access logout' => [
+        yield 'blocked user can log out from the blocked page' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_blocked',
-            'action' => static fn(KernelBrowser $client) => $client->request('GET', '/logout'),
+            'action' => static function (KernelBrowser $client) {
+                $crawler = $client->request('GET', '/');
+                $client->submit($crawler->filter('form.logout-form')->form());
+            },
             'expectedStatus' => 302,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client) {
+                $client->followRedirect();
+                static::assertSelectorExists('a[href="/connect/google"]');
+                static::assertStringNotContainsString(
+                    'Обліковий запис заблоковано',
+                    $client->getResponse()->getContent(),
+                );
             },
         ];
 
