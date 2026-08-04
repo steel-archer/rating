@@ -67,6 +67,16 @@ class RequestSanitizingSubscriberTest extends TestCase
             'input' => ['page' => '5', 'active' => '1'],
             'expected' => ['page' => '5', 'active' => '1'],
         ];
+
+        yield 'preserves math comparisons without matching angle brackets' => [
+            'input' => ['name' => 'Формула: a < b і b < c, отже a < c'],
+            'expected' => ['name' => 'Формула: a < b і b < c, отже a < c'],
+        ];
+
+        yield 'does not truncate an unmatched angle bracket near the end' => [
+            'input' => ['name' => 'рахунок 5 < 10'],
+            'expected' => ['name' => 'рахунок 5 < 10'],
+        ];
     }
 
     /**
