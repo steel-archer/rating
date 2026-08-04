@@ -22,10 +22,12 @@ use App\Classic\Repository\TeamRepository;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
+use App\Classic\Service\Cache\CacheInvalidator;
 use App\Common\Repository\TownRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class SessionSquadService
@@ -41,6 +43,7 @@ class SessionSquadService
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private TournamentSessionTeamAnswerRepository $sessionTeamAnswerRepository,
         private SessionClaimRepository $claimRepository,
+        private CacheInvalidator $cacheInvalidator,
         private Mapper $mapper,
     ) {
     }
@@ -109,6 +112,7 @@ class SessionSquadService
 
     /**
      * @throws AccessDeniedHttpException
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function saveSquad(TournamentSession $session, Player $representative, SquadRequestDTO $dto): void
@@ -141,6 +145,7 @@ class SessionSquadService
         }
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournamentWithParticipants($session->getTournament());
     }
 
     /**
@@ -340,6 +345,7 @@ class SessionSquadService
 
     /**
      * @throws AccessDeniedHttpException
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function updateSquad(TournamentSessionTeam $sessionTeam, Player $representative, SquadRequestDTO $dto): void
@@ -388,10 +394,12 @@ class SessionSquadService
         }
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournamentWithParticipants($session->getTournament());
     }
 
     /**
      * @throws AccessDeniedHttpException
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function deleteSquad(TournamentSessionTeam $sessionTeam, Player $representative): void
@@ -408,5 +416,6 @@ class SessionSquadService
 
         $this->em->remove($sessionTeam);
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournamentWithParticipants($session->getTournament());
     }
 }
