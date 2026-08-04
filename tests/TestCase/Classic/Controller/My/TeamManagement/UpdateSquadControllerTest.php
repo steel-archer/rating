@@ -476,7 +476,7 @@ class UpdateSquadControllerTest extends WebTestCase
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
-                static::assertError($client, 'team_management.error.player_not_in_team');
+                static::assertError($client, 'team_management.error.player_add_remove_overlap');
             },
         ];
     }
