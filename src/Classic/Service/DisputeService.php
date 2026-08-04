@@ -25,6 +25,7 @@ class DisputeService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function createDispute(
@@ -59,11 +60,13 @@ class DisputeService
         $existingAnswer->setDisputeStatus(DisputeStatus::Created);
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament($session->getTournament());
     }
 
     /**
      * @param list<int> $answerIds
      *
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function submitDisputes(TournamentSession $session, array $answerIds): void
@@ -82,6 +85,7 @@ class DisputeService
         }
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament($session->getTournament());
     }
 
     /**
@@ -124,6 +128,7 @@ class DisputeService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function rejectDispute(TournamentSessionTeamAnswer $answer, ?string $comment): void
@@ -136,5 +141,8 @@ class DisputeService
         $answer->setDisputeComment($comment);
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament(
+            $answer->getTournamentSessionTeam()->getTournamentSession()->getTournament(),
+        );
     }
 }
