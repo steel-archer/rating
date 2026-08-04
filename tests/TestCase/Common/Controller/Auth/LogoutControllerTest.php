@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Common\Controller\Auth;
 
+use App\Common\Attribute\RateLimited;
+use App\Common\Controller\Auth\LogoutController;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
+use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -17,6 +20,19 @@ class LogoutControllerTest extends WebTestCase
         'Entity/base.yaml',
         'Entity/users.yaml',
     ];
+
+    /**
+     * The `no_limit` policy configured for tests (see rate_limiter.yaml `when@test`) makes it
+     * impossible to trigger an actual 429 in an e2e test, so we assert the attribute directly,
+     * mirroring how RateLimitSubscriberTest verifies limiter wiring through the attribute.
+     */
+    public function testControllerIsRateLimited(): void
+    {
+        $attributes = (new ReflectionClass(LogoutController::class))->getAttributes(RateLimited::class);
+
+        static::assertCount(1, $attributes);
+        static::assertSame('auth', $attributes[0]->newInstance()->limiter);
+    }
 
     /**
      * @param list<string> $fixtures
