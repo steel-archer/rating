@@ -154,7 +154,7 @@ class DisputeControllerTest extends WebTestCase
             },
         ];
 
-        yield 'create dispute with empty text' => [
+        yield 'cannot create dispute with empty text' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_dispute_rep',
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute']->getId() . '/disputes/create',
@@ -163,10 +163,47 @@ class DisputeControllerTest extends WebTestCase
                 'questionNumber' => 2,
                 'text' => '',
             ],
-            'expectedStatus' => 200,
-            'afterCallback' => static function ($client) {
-                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertTrue($body['success']);
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client, array $objects) {
+                $answer = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSessionTeamAnswer::class)
+                    ->find($objects['answer_dispute_beta_2']->getId());
+                static::assertNull($answer->getDisputeStatus());
+            },
+        ];
+
+        yield 'cannot create dispute with whitespace-only text' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_dispute_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute']->getId() . '/disputes/create',
+            'payload' => static fn(array $objects) => [
+                'sessionTeamId' => $objects['session_team_dispute_beta']->getId(),
+                'questionNumber' => 2,
+                'text' => '   ',
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client, array $objects) {
+                $answer = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSessionTeamAnswer::class)
+                    ->find($objects['answer_dispute_beta_2']->getId());
+                static::assertNull($answer->getDisputeStatus());
+            },
+        ];
+
+        yield 'cannot create dispute with omitted text' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_dispute_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute']->getId() . '/disputes/create',
+            'payload' => static fn(array $objects) => [
+                'sessionTeamId' => $objects['session_team_dispute_beta']->getId(),
+                'questionNumber' => 2,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client, array $objects) {
+                $answer = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSessionTeamAnswer::class)
+                    ->find($objects['answer_dispute_beta_2']->getId());
+                static::assertNull($answer->getDisputeStatus());
             },
         ];
 
