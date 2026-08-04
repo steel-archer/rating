@@ -224,6 +224,28 @@ class CreateControllerTest extends WebTestCase
             },
         ];
 
+        yield 'create appeal on centralized tournament without appeal deadline' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_appeal_centralized_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_centralized_appeal']->getId() . '/appeals/create',
+            'payload' => static fn(array $objects) => [
+                'questionNumber' => 1,
+                'type' => 'remove',
+                'text' => 'Питання некоректне для централізованого турніру',
+            ],
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertTrue($body['success']);
+                $appeal = static::getContainer()->get('doctrine')
+                    ->getRepository(Appeal::class)
+                    ->findOneBy(['text' => 'Питання некоректне для централізованого турніру']);
+                static::assertNotNull($appeal);
+                static::assertSame(AppealType::Remove, $appeal->getType());
+                static::assertSame(AppealStatus::Pending, $appeal->getStatus());
+            },
+        ];
+
         yield 'redirect to player-claim for user without player' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_appeal_no_player',

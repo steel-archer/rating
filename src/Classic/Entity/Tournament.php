@@ -246,6 +246,10 @@ class Tournament
 
     public function isAppealOpen(): bool
     {
+        if ($this->format === TournamentFormat::Centralized) {
+            return $this->status === TournamentStatus::Published;
+        }
+
         return $this->appealDeadline !== null
             && $this->appealDeadline > new DateTimeImmutable();
     }
