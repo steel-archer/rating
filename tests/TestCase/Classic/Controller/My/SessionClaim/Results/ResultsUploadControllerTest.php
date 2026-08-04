@@ -96,6 +96,19 @@ class ResultsUploadControllerTest extends WebTestCase
             },
         ];
 
+        yield 'upload with numeric garbage value' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_results_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_results']->getId() . '/results/upload',
+            'file' => static fn(array $objects) => self::buildXlsxWithInvalidValue($objects),
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertNotEmpty($body['errors']);
+                static::assertStringContainsString('results.error.invalid_value:2', $body['errors'][0]);
+            },
+        ];
+
         yield 'upload with unknown team id' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_results_rep',
@@ -281,6 +294,27 @@ class ResultsUploadControllerTest extends WebTestCase
         $sheet = $spreadsheet->getActiveSheet();
         self::writeHeader($sheet);
         self::fillTeamRow($sheet, 3, $teamAlpha->getId(), 1, [1, 'спірна відповідь', 1]);
+        self::fillTeamRow($sheet, 4, $teamBeta->getId(), 1, [0, 1, 1]);
+        self::fillTeamRow($sheet, 6, $teamAlpha->getId(), 2, [1, 1, 0]);
+        self::fillTeamRow($sheet, 7, $teamBeta->getId(), 2, [1, 0, 0]);
+
+        return self::toUploadedFile($spreadsheet);
+    }
+
+    /**
+     * @param array<string, object> $objects
+     */
+    private static function buildXlsxWithInvalidValue(array $objects): UploadedFile
+    {
+        /** @var TournamentSessionTeam $teamAlpha */
+        $teamAlpha = $objects['session_team_alpha_results'];
+        /** @var TournamentSessionTeam $teamBeta */
+        $teamBeta = $objects['session_team_beta_results'];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        self::writeHeader($sheet);
+        self::fillTeamRow($sheet, 3, $teamAlpha->getId(), 1, [1, '2', 1]);
         self::fillTeamRow($sheet, 4, $teamBeta->getId(), 1, [0, 1, 1]);
         self::fillTeamRow($sheet, 6, $teamAlpha->getId(), 2, [1, 1, 0]);
         self::fillTeamRow($sheet, 7, $teamBeta->getId(), 2, [1, 0, 0]);

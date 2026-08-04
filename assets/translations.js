@@ -481,6 +481,7 @@ export default {
     "results.error.incomplete_results": "Неповні результати для команди «%1%»: %2% з %3% питань",
     "results.error.invalid_file_format": "Невірний формат файлу (очікується .xlsx)",
     "results.error.invalid_tour": "Невірний номер туру: %1%",
+    "results.error.invalid_value": "Невірне значення відповіді: %1%",
     "results.error.missing_team_results": "Відсутні результати для команди «%1%»",
     "results.error.no_file": "Файл не обрано",
     "results.error.no_questions_per_tour": "Кількість питань у турі не задана",
