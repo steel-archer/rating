@@ -264,7 +264,27 @@ class TournamentControllerTest extends WebTestCase
                 json_encode(['name' => 'Спроба', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('tournament.error.cannot_edit_started', $json['error']);
+            },
+        ];
+
+        yield 'update denied for started published centralized tournament' => [
+            'fixtures' => $fixturesStarted,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_started_centralized']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['name' => 'Спроба', 'startedAt' => null, 'endedAt' => null, 'toursCount' => null, 'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null, 'difficulty' => null, 'organizers' => [], 'editors' => [], 'gameJury' => [], 'appealJury' => []], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('tournament.error.cannot_edit_started', $json['error']);
             },
         ];
 

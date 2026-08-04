@@ -76,8 +76,7 @@ class TournamentManagementService
     public function update(Tournament $tournament, EditRequestDTO $dto): void
     {
         if (
-            $tournament->getFormat() === TournamentFormat::Distributed
-            && $tournament->getStatus() === TournamentStatus::Published
+            $tournament->getStatus() === TournamentStatus::Published
             && $tournament->getStartedAt() !== null
             && $tournament->getStartedAt() <= DateTimeImmutable::createFromInterface($this->clock->now())
         ) {
