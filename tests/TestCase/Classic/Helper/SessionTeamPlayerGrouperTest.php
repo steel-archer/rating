@@ -53,11 +53,11 @@ class SessionTeamPlayerGrouperTest extends TestCase
 
     private function createPlayerOnTeam(int $teamId): TournamentSessionTeamPlayer
     {
-        $team = $this->createMock(TournamentSessionTeam::class);
-        $team->expects($this->once())->method('getId')->willReturn($teamId);
+        $team = $this->createStub(TournamentSessionTeam::class);
+        $team->method('getId')->willReturn($teamId);
 
-        $player = $this->createMock(TournamentSessionTeamPlayer::class);
-        $player->expects($this->once())->method('getTournamentSessionTeam')->willReturn($team);
+        $player = $this->createStub(TournamentSessionTeamPlayer::class);
+        $player->method('getTournamentSessionTeam')->willReturn($team);
 
         return $player;
     }

@@ -58,6 +58,11 @@ class FractionalRankingTest extends TestCase
             'expectedRanks' => [30 => 1.0, 20 => 2.0, 10 => 3.5],
         ];
 
+        yield 'triple tie in the middle splits ranks correctly' => [
+            'sortedScoresDesc' => [30, 20, 20, 20, 10],
+            'expectedRanks' => [30 => 1.0, 20 => 3.0, 10 => 5.0],
+        ];
+
         yield 'all scores tied share the average rank' => [
             'sortedScoresDesc' => [10, 10, 10],
             'expectedRanks' => [10 => 2.0],

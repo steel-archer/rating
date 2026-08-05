@@ -69,7 +69,9 @@ class SessionTeamResultBuilderTest extends TestCase
         $playerOnTeamOne = $this->createMock(TournamentSessionTeamPlayer::class);
         $playerOnTeamOne->expects($this->once())->method('getTournamentSessionTeam')->willReturn($sessionTeamOne);
 
-        $season = (new Season())->setName('2025/2026');
+        $season = new Season();
+        self::setId($season, 1);
+        $season->setName('2025/2026');
 
         $sessionTeamPlayerRepository = $this->createMock(TournamentSessionTeamPlayerRepository::class);
         $sessionTeamPlayerRepository->expects($this->once())
@@ -140,6 +142,76 @@ class SessionTeamResultBuilderTest extends TestCase
         self::assertCount(2, $result);
         self::assertSame(101, $result[0]->sessionTeamId);
         self::assertSame(102, $result[1]->sessionTeamId);
+    }
+
+    public function testBuildDeduplicatesDatesWhenSameTeamPlaysTwoSessionsOnSameDay(): void
+    {
+        $playedAt = new DateTimeImmutable('2026-03-10');
+
+        $team = $this->createTeam(50);
+        $session = $this->createSession($playedAt);
+
+        // Same team, same date, two different session-teams
+        $sessionTeamA = $this->createSessionTeam(201, $team, $session, score: 25);
+        $sessionTeamB = $this->createSessionTeam(202, $team, $session, score: 25);
+        $sessionTeams = [$sessionTeamA, $sessionTeamB];
+
+        $season = new Season();
+        self::setId($season, 2);
+        $season->setName('2025/2026');
+
+        $sessionTeamPlayerRepository = $this->createMock(TournamentSessionTeamPlayerRepository::class);
+        $sessionTeamPlayerRepository->expects($this->once())
+            ->method('findBySessionTeamIds')
+            ->with([201, 202])
+            ->willReturn([]);
+
+        $sessionTeamRepository = $this->createMock(TournamentSessionTeamRepository::class);
+        $sessionTeamRepository->expects($this->once())
+            ->method('getPlacesInTournament')
+            ->with([201, 202])
+            ->willReturn([201 => 1.0, 202 => 1.0]);
+
+        $teamPlayerRepository = $this->createMock(TeamPlayerRepository::class);
+        $teamPlayerRepository->expects($this->once())
+            ->method('getSquadMapBySeason')
+            ->with($season)
+            ->willReturn([50 => ['playerIds' => [501], 'captainId' => 501]]);
+
+        $transferRepository = $this->createMock(TeamPlayerTransferRepository::class);
+        $transferRepository->expects($this->once())
+            ->method('findAllBySeason')
+            ->with($season)
+            ->willReturn([]);
+        // The key assertion: dates array should contain only ONE entry despite two session-teams
+        $transferRepository->expects($this->once())
+            ->method('resolveSquadFromTransfers')
+            ->with([], [50 => ['team' => $team, 'dates' => [$playedAt]]])
+            ->willReturn([50 => ['2026-03-10' => [501]]]);
+
+        $mapping = new RecordingSessionTeamMapping();
+        $mapper = new Mapper([$mapping]);
+
+        $builder = new SessionTeamResultBuilder(
+            $sessionTeamRepository,
+            $sessionTeamPlayerRepository,
+            $teamPlayerRepository,
+            $transferRepository,
+            $mapper,
+        );
+
+        $result = $builder->build($sessionTeams, $season);
+
+        self::assertCount(2, $result);
+        // Both session-teams get the same squad info from the deduplicated date
+        self::assertSame(
+            ['playerIds' => [501], 'captainId' => 501],
+            $mapping->calls[0]['context']['squadInfo'],
+        );
+        self::assertSame(
+            ['playerIds' => [501], 'captainId' => 501],
+            $mapping->calls[1]['context']['squadInfo'],
+        );
     }
 
     private function createTeam(int $id): Team
