@@ -190,6 +190,8 @@ class SessionResultUploadService
                         'isCorrect' => $stringValue === '1',
                         'disputeText' => null,
                     ];
+                } elseif (ctype_digit($stringValue)) {
+                    $errors[] = "results.error.invalid_value:$stringValue";
                 } else {
                     $parsedResults[$teamId][$questionNumber] = [
                         'isCorrect' => false,
