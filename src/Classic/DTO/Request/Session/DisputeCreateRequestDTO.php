@@ -17,6 +17,7 @@ final readonly class DisputeCreateRequestDTO
         #[Assert\Positive]
         public ?int $questionNumber = null,
 
+        #[Assert\NotBlank]
         #[Assert\Length(max: 500)]
         public ?string $text = null,
     ) {
