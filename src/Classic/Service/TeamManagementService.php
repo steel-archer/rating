@@ -167,7 +167,7 @@ class TeamManagementService
 
         // Validate no overlap between add and remove
         if (array_intersect($addPlayerIds, $removePlayerIds) !== []) {
-            throw new LogicException('team_management.error.player_not_in_team');
+            throw new LogicException('team_management.error.player_add_remove_overlap');
         }
 
         // Validate removals
