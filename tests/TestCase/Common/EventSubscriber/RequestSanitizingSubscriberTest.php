@@ -77,6 +77,36 @@ class RequestSanitizingSubscriberTest extends TestCase
             'input' => ['name' => 'рахунок 5 < 10'],
             'expected' => ['name' => 'рахунок 5 < 10'],
         ];
+
+        yield 'strips multiple consecutive HTML tags' => [
+            'input' => ['name' => '<b>bold</b> and <i>italic</i>'],
+            'expected' => ['name' => 'bold and italic'],
+        ];
+
+        yield 'strips self-closing tags' => [
+            'input' => ['name' => 'before<br/>after'],
+            'expected' => ['name' => 'beforeafter'],
+        ];
+
+        yield 'strips tag with attributes' => [
+            'input' => ['name' => '<img src="x" onerror="alert(1)">safe'],
+            'expected' => ['name' => 'safe'],
+        ];
+
+        yield 'strips tag-like sequences starting with a letter in angle brackets' => [
+            'input' => ['name' => 'text <Foo Bar> rest'],
+            'expected' => ['name' => 'text  rest'],
+        ];
+
+        yield 'preserves angle brackets followed by a space' => [
+            'input' => ['name' => '3 < 5 > 2'],
+            'expected' => ['name' => '3 < 5 > 2'],
+        ];
+
+        yield 'preserves angle brackets followed by a digit' => [
+            'input' => ['name' => 'x <100 and >50'],
+            'expected' => ['name' => 'x <100 and >50'],
+        ];
     }
 
     /**
