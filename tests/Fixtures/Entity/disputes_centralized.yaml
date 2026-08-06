@@ -1,0 +1,63 @@
+App\Common\Entity\User:
+    user_dispute_cen_rep:
+        email: 'dispute_cen_rep@example.com'
+        googleId: 'google_dispute_cen_rep'
+        roles: []
+        player: '@player_shevchenko'
+
+App\Classic\Entity\Tournament:
+    tournament_dispute_centralized:
+        name: 'Централізований турнір зі спірними'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        format: '<(App\Classic\Enum\TournamentFormat::Centralized)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        toursCount: 1
+        questionsPerTourMap: [3]
+
+App\Classic\Entity\TournamentOfficial:
+    official_dispute_cen_organizer:
+        tournament: '@tournament_dispute_centralized'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentSession:
+    session_dispute_centralized:
+        tournament: '@tournament_dispute_centralized'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 2
+
+App\Classic\Entity\SessionClaim:
+    claim_dispute_centralized:
+        session: '@session_dispute_centralized'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_dispute_cen_alpha:
+        tournamentSession: '@session_dispute_centralized'
+        team: '@team_alpha'
+        score: 2
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    answer_dispute_cen_alpha_1:
+        tournamentSessionTeam: '@session_team_dispute_cen_alpha'
+        questionNumber: 1
+        isCorrect: true
+    answer_dispute_cen_alpha_2:
+        tournamentSessionTeam: '@session_team_dispute_cen_alpha'
+        questionNumber: 2
+        isCorrect: false
+    answer_dispute_cen_alpha_3:
+        tournamentSessionTeam: '@session_team_dispute_cen_alpha'
+        questionNumber: 3
+        isCorrect: false
+        disputeText: 'спірна в централізованому'
+        disputeStatus: '<(App\Classic\Enum\DisputeStatus::Created)>'

@@ -7,6 +7,7 @@ namespace App\Classic\Service;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeamAnswer;
 use App\Classic\Enum\DisputeStatus;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Classic\Service\Cache\CacheInvalidator;
@@ -34,6 +35,10 @@ class DisputeService
         int $questionNumber,
         string $text,
     ): void {
+        if ($session->getTournament()->getFormat() === TournamentFormat::Centralized) {
+            throw new LogicException('dispute.error.centralized_not_allowed');
+        }
+
         $sessionTeam = $this->sessionTeamRepository->find($sessionTeamId);
         if ($sessionTeam === null || $sessionTeam->getTournamentSession()->getId() !== $session->getId()) {
             throw new LogicException('common.not_found');
@@ -71,6 +76,10 @@ class DisputeService
      */
     public function submitDisputes(TournamentSession $session, array $answerIds): void
     {
+        if ($session->getTournament()->getFormat() === TournamentFormat::Centralized) {
+            throw new LogicException('dispute.error.centralized_not_allowed');
+        }
+
         $disputes = $this->answerRepository->findDisputesBySessionAndIds($session, $answerIds);
 
         if ($disputes === []) {

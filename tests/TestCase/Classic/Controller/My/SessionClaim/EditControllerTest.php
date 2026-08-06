@@ -116,7 +116,7 @@ class EditControllerTest extends WebTestCase
                 $crawler = $client->getCrawler();
                 $actions = $crawler->filter('.actions-card');
                 static::assertCount(1, $actions);
-                static::assertCount(3, $actions->filter('a.btn'));
+                static::assertCount(2, $actions->filter('a.btn'));
             },
         ];
     }

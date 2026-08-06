@@ -69,6 +69,16 @@ class DisputeControllerTest extends WebTestCase
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute']->getId() . '/disputes',
             'expectedStatus' => 302,
         ];
+
+        yield 'centralized tournament disputes page returns 404' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/disputes_centralized.yaml',
+            ],
+            'loginAs' => 'user_dispute_cen_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute_centralized']->getId() . '/disputes',
+            'expectedStatus' => 404,
+        ];
     }
 
     /**
@@ -240,6 +250,25 @@ class DisputeControllerTest extends WebTestCase
                 static::assertSame('common.not_found', $body['error']);
             },
         ];
+
+        yield 'cannot create dispute for centralized tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/disputes_centralized.yaml',
+            ],
+            'loginAs' => 'user_dispute_cen_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute_centralized']->getId() . '/disputes/create',
+            'payload' => static fn(array $objects) => [
+                'sessionTeamId' => $objects['session_team_dispute_cen_alpha']->getId(),
+                'questionNumber' => 2,
+                'text' => 'спірна в централізованому',
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('dispute.error.centralized_not_allowed', $body['error']);
+            },
+        ];
     }
 
     public function testCreateInvalidatesTournamentCache(): void
@@ -353,6 +382,23 @@ class DisputeControllerTest extends WebTestCase
             'afterCallback' => static function ($client) {
                 $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertSame('dispute.error.nothing_to_submit', $body['error']);
+            },
+        ];
+
+        yield 'cannot submit disputes for centralized tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/disputes_centralized.yaml',
+            ],
+            'loginAs' => 'user_dispute_cen_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute_centralized']->getId() . '/disputes/submit',
+            'payload' => static fn(array $objects) => [
+                'ids' => [$objects['answer_dispute_cen_alpha_3']->getId()],
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('dispute.error.centralized_not_allowed', $body['error']);
             },
         ];
     }

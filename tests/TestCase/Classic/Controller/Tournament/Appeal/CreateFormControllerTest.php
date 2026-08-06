@@ -97,5 +97,17 @@ class CreateFormControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'not found for centralized tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/appeals_centralized.yaml',
+            ],
+            'loginAs' => 'user_appeal_cen_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal_centralized']->getId() . '/appeals/create',
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
     }
 }

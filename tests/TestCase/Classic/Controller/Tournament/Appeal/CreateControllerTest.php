@@ -238,5 +238,24 @@ class CreateControllerTest extends WebTestCase
                 static::assertResponseRedirects('/player-claim');
             },
         ];
+
+        yield 'cannot create appeal for centralized tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/appeals_centralized.yaml',
+            ],
+            'loginAs' => 'user_appeal_cen_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal_centralized']->getId() . '/appeals/create',
+            'payload' => static fn(array $objects) => [
+                'questionNumber' => 2,
+                'type' => 'accept',
+                'text' => 'Апеляція на централізований',
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('appeal.error.centralized_not_allowed', $body['error']);
+            },
+        ];
     }
 }

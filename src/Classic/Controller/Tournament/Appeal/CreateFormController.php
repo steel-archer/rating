@@ -8,6 +8,7 @@ use App\Classic\DTO\Response\Tournament\TournamentContextDTO;
 use App\Classic\Entity\Tournament;
 use App\Common\Entity\User;
 use App\Classic\Enum\DisputeStatus;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentStatus;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
@@ -27,6 +28,10 @@ class CreateFormController extends AbstractController
         Mapper $mapper,
     ): Response {
         if ($tournament->getStatus() !== TournamentStatus::Published) {
+            throw $this->createNotFoundException();
+        }
+
+        if ($tournament->getFormat() === TournamentFormat::Centralized) {
             throw $this->createNotFoundException();
         }
 

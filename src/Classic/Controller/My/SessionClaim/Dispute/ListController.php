@@ -8,6 +8,7 @@ use App\Classic\DTO\Response\My\DisputeDTO;
 use App\Classic\DTO\Response\My\ResultsSessionDTO;
 use App\Classic\DTO\Response\My\SquadSessionTeamDTO;
 use App\Classic\Entity\TournamentSession;
+use App\Classic\Enum\TournamentFormat;
 use App\Common\Entity\User;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
@@ -31,6 +32,10 @@ class ListController extends AbstractController
         $user = $this->getUser();
 
         $squadService->ensureCanManageSquad($session, $user->getPlayer());
+
+        if ($session->getTournament()->getFormat() === TournamentFormat::Centralized) {
+            throw $this->createNotFoundException();
+        }
 
         $disputes = $answerRepository->findDisputesBySession($session);
         $sessionTeams = $sessionTeamRepository->findBySessionWithTeamAndTown($session);
