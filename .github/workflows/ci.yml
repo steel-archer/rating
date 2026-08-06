@@ -140,6 +140,27 @@ jobs:
             curl -s "https://img.shields.io/badge/TwigCS-failing-red" > .github/badges/twigcs.svg
           fi
 
+      - name: Composer audit
+        id: composer_audit
+        continue-on-error: true
+        run: composer audit
+
+      - name: Symfony security check
+        id: security_check
+        continue-on-error: true
+        run: |
+          curl -sS https://get.symfony.com/cli/installer | bash
+          export PATH="$HOME/.symfony5/bin:$PATH"
+          symfony security:check
+
+      - name: Gitleaks
+        id: gitleaks
+        continue-on-error: true
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
       - name: Push badges
         if: always() && github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
@@ -168,27 +189,6 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Update badges [skip ci]"
           git push origin badges
-
-      - name: Composer audit
-        id: composer_audit
-        continue-on-error: true
-        run: composer audit
-
-      - name: Symfony security check
-        id: security_check
-        continue-on-error: true
-        run: |
-          curl -sS https://get.symfony.com/cli/installer | bash
-          export PATH="$HOME/.symfony5/bin:$PATH"
-          symfony security:check
-
-      - name: Gitleaks
-        id: gitleaks
-        continue-on-error: true
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Check results
         if: always()
