@@ -1,12 +1,12 @@
 # Сайт рейтингу українського «Що? Де? Коли?»
 
 [![CI](https://github.com/steel-archer/rating/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/steel-archer/rating/actions/workflows/ci.yml)
-![Coverage](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/coverage.svg)
-![PHPCS](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/phpcs.svg)
-![PHPStan](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/phpstan.svg)
-![ESLint](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/eslint.svg)
-![Stylelint](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/stylelint.svg)
-![TwigCS](https://raw.githubusercontent.com/steel-archer/rating/master/.github/badges/twigcs.svg)
+![Coverage](https://raw.githubusercontent.com/steel-archer/rating/badges/.github/badges/coverage.svg)
+![PHPCS](https://raw.githubusercontent.com/steel-archer/rating/badges/.github/badges/phpcs.svg)
+![PHPStan](https://raw.githubusercontent.com/steel-archer/rating/badges/.github/badges/phpstan.svg)
+![ESLint](https://raw.githubusercontent.com/steel-archer/rating/badges/.github/badges/eslint.svg)
+![Stylelint](https://raw.githubusercontent.com/steel-archer/rating/badges/.github/badges/stylelint.svg)
+![TwigCS](https://raw.githubusercontent.com/steel-archer/rating/badges/.github/badges/twigcs.svg)
 
 Вебсайт рейтингової системи інтелектуальних ігор: турніри, команди, гравці, майданчики.
 
