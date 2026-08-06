@@ -143,16 +143,28 @@ jobs:
       - name: Push badges
         if: always() && github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
+          cp .github/badges/coverage.svg /tmp/coverage.svg
+          cp .github/badges/phpcs.svg /tmp/phpcs.svg
+          cp .github/badges/phpstan.svg /tmp/phpstan.svg
+          cp .github/badges/eslint.svg /tmp/eslint.svg
+          cp .github/badges/stylelint.svg /tmp/stylelint.svg
+          cp .github/badges/twigcs.svg /tmp/twigcs.svg
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          if git fetch origin badges:badges 2>/dev/null; then
+          if git fetch --depth=1 origin badges:badges 2>/dev/null; then
             git checkout badges
           else
             git checkout --orphan badges
-            git rm -rf .
+            git rm -rf . --quiet
           fi
-          git checkout master -- .github/badges/
-          git add .github/badges/coverage.svg .github/badges/phpcs.svg .github/badges/phpstan.svg .github/badges/eslint.svg .github/badges/stylelint.svg .github/badges/twigcs.svg
+          mkdir -p .github/badges
+          cp /tmp/coverage.svg .github/badges/coverage.svg
+          cp /tmp/phpcs.svg .github/badges/phpcs.svg
+          cp /tmp/phpstan.svg .github/badges/phpstan.svg
+          cp /tmp/eslint.svg .github/badges/eslint.svg
+          cp /tmp/stylelint.svg .github/badges/stylelint.svg
+          cp /tmp/twigcs.svg .github/badges/twigcs.svg
+          git add .github/badges/
           git diff --cached --quiet && exit 0
           git commit -m "Update badges [skip ci]"
           git push origin badges
