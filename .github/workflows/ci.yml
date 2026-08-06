@@ -145,8 +145,12 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git fetch origin badges:badges 2>/dev/null || git checkout --orphan badges
-          git checkout badges
+          if git fetch origin badges:badges 2>/dev/null; then
+            git checkout badges
+          else
+            git checkout --orphan badges
+            git rm -rf .
+          fi
           git checkout master -- .github/badges/
           git add .github/badges/coverage.svg .github/badges/phpcs.svg .github/badges/phpstan.svg .github/badges/eslint.svg .github/badges/stylelint.svg .github/badges/twigcs.svg
           git diff --cached --quiet && exit 0
