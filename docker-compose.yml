@@ -1,9 +1,8 @@
 services:
   app:
-    env_file: .env.local
     build: ./docker
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
       - .:/var/www/html
     depends_on:
@@ -26,7 +25,6 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   db:
-    env_file: .env.local
     image: mysql:9.3
     ports:
       - "3306:3306"
