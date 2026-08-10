@@ -1,8 +1,12 @@
 name: CI
 
 on:
-  schedule:
-    - cron: '0 6 * * *'
+  push:
+      branches:
+          - master
+  pull_request:
+      branches:
+          - master
   workflow_dispatch:
 
 permissions:
