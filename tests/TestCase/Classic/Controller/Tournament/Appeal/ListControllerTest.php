@@ -98,5 +98,18 @@ class ListControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
+
+        yield 'centralized tournament hides create appeal button' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/appeals_centralized.yaml',
+            ],
+            'loginAs' => 'user_appeal_cen_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_appeal_centralized']->getId() . '/appeals',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                static::assertSelectorNotExists('a.btn[href*="appeals/create"]');
+            },
+        ];
     }
 }

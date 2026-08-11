@@ -1,0 +1,72 @@
+App\Common\Entity\User:
+    user_appeal_cen_player:
+        email: 'appeal_cen_player@example.com'
+        googleId: 'google_appeal_cen_player'
+        roles: []
+        player: '@player_shevchenko'
+
+App\Classic\Entity\Tournament:
+    tournament_appeal_centralized:
+        name: 'Централізований турнір з апеляціями'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        format: '<(App\Classic\Enum\TournamentFormat::Centralized)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("-20 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        toursCount: 1
+        questionsPerTourMap: [3]
+
+App\Classic\Entity\TournamentOfficial:
+    official_appeal_cen_organizer:
+        tournament: '@tournament_appeal_centralized'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentSession:
+    session_appeal_centralized:
+        tournament: '@tournament_appeal_centralized'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-25 days"))>'
+        estimatedTeams: 2
+
+App\Classic\Entity\SessionClaim:
+    claim_appeal_centralized:
+        session: '@session_appeal_centralized'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-35 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-34 days"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_appeal_cen_alpha:
+        tournamentSession: '@session_appeal_centralized'
+        team: '@team_alpha'
+        score: 2
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    session_team_player_appeal_cen_shevchenko:
+        tournamentSessionTeam: '@session_team_appeal_cen_alpha'
+        player: '@player_shevchenko'
+        isCaptain: true
+        isLegionary: false
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    answer_appeal_cen_alpha_1:
+        tournamentSessionTeam: '@session_team_appeal_cen_alpha'
+        questionNumber: 1
+        isCorrect: true
+    answer_appeal_cen_alpha_2:
+        tournamentSessionTeam: '@session_team_appeal_cen_alpha'
+        questionNumber: 2
+        isCorrect: false
+        disputeText: 'спірна відповідь'
+        disputeStatus: '<(App\Classic\Enum\DisputeStatus::Rejected)>'
+        disputeComment: 'відхилено'
+    answer_appeal_cen_alpha_3:
+        tournamentSessionTeam: '@session_team_appeal_cen_alpha'
+        questionNumber: 3
+        isCorrect: false

@@ -12,6 +12,7 @@ use App\Classic\Entity\TournamentSessionTeamAnswer;
 use App\Classic\Enum\AppealStatus;
 use App\Classic\Enum\AppealType;
 use App\Classic\Enum\DisputeStatus;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Repository\AppealRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Classic\Service\Cache\CacheInvalidator;
@@ -59,6 +60,10 @@ class AppealService
         $tournament = $answer->getTournamentSessionTeam()
             ->getTournamentSession()
             ->getTournament();
+
+        if ($tournament->getFormat() === TournamentFormat::Centralized) {
+            throw new LogicException('appeal.error.centralized_not_allowed');
+        }
 
         if (!$tournament->isAppealOpen()) {
             throw new LogicException('appeal.error.deadline_passed');

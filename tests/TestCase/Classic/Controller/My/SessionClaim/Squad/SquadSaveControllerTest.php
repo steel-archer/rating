@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\SessionClaim\Squad;
 
+use App\Classic\Entity\TournamentSession;
+use App\Classic\Service\SessionResultService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -28,12 +30,17 @@ class SquadSaveControllerTest extends WebTestCase
         callable $payload,
         int $expectedStatus,
         callable $afterCallback,
+        ?callable $beforeRequest = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
 
         if ($loginAs !== null) {
             $client->loginUser($objects[$loginAs]);
+        }
+
+        if ($beforeRequest !== null) {
+            $beforeRequest($objects);
         }
 
         $client->request(
@@ -319,6 +326,43 @@ class SquadSaveControllerTest extends WebTestCase
             'afterCallback' => static function ($client) {
                 $data = json_decode($client->getResponse()->getContent(), true);
                 static::assertStringContainsString('player_first_name_required', $data['error']);
+            },
+        ];
+
+        yield 'save squad invalidates cached session results' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => 'Нова команда',
+                'townId' => $objects['town_kyiv']->getId(),
+                'players' => [
+                    ['id' => null, 'lastName' => 'Тестенко', 'firstName' => 'Тест', 'patronymic' => null, 'townId' => null],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
+                $em = static::getContainer()->get('doctrine')->getManager();
+                $session = $em->find(TournamentSession::class, $objects['session_squad_approved']->getId());
+
+                $results = static::getContainer()->get(SessionResultService::class)->getSessionResults($session);
+                static::assertCount(2, $results);
+
+                $playerNames = array_merge(
+                    ...array_map(
+                        static fn($team) => array_map(static fn($player) => $player->playerName, $team->players),
+                        $results,
+                    ),
+                );
+                static::assertContains('Тестенко Тест', $playerNames);
+            },
+            'beforeRequest' => static function (array $objects) {
+                $results = static::getContainer()
+                    ->get(SessionResultService::class)
+                    ->getSessionResults($objects['session_squad_approved']);
+
+                static::assertCount(1, $results, 'Precondition: session should have exactly one team before the new squad is saved.');
             },
         ];
     }

@@ -8,6 +8,7 @@ use App\Classic\DTO\Response\My\AppealDTO;
 use App\Classic\DTO\Response\Tournament\TournamentContextDTO;
 use App\Classic\Entity\Tournament;
 use App\Common\Entity\User;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentStatus;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\AppealRepository;
@@ -42,7 +43,8 @@ class ListController extends AbstractController
 
         $appeals = $appealRepository->findByTournament($tournament);
 
-        $canSubmitAppeal = $tournament->isAppealOpen()
+        $canSubmitAppeal = $tournament->getFormat() !== TournamentFormat::Centralized
+            && $tournament->isAppealOpen()
             && $player !== null
             && $playerRepository->findSessionTeamIdByPlayerAndTournament($player, $tournament) !== null;
 

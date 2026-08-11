@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\Dispute;
 
+use App\Classic\Service\SessionResultService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -234,5 +235,36 @@ class DisputeJuryControllerTest extends WebTestCase
                 static::assertSame('dispute.error.already_resolved', $body['error']);
             },
         ];
+    }
+
+    public function testRejectInvalidatesTournamentCache(): void
+    {
+        $client = static::createClient();
+        $objects = self::loadFixtures(self::FIXTURES);
+
+        $tournament = $objects['tournament_dispute'];
+        $alphaTeamId = $objects['session_team_dispute_alpha']->getId();
+        $sessionResultService = static::getContainer()->get(SessionResultService::class);
+
+        // Prime the cache: question 3 for team "alpha" has a submitted (unresolved) dispute.
+        $breakdownBefore = $sessionResultService->getTournamentAnswerBreakdown($tournament);
+        static::assertSame('?', $breakdownBefore[$alphaTeamId]->answers[2]);
+
+        $client->loginUser($objects['user_dispute_jury']);
+        $client->request(
+            'POST',
+            '/my/disputes/resolve/' . $objects['answer_dispute_alpha_3']->getId(),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['action' => 'reject', 'comment' => 'відхилено'], JSON_THROW_ON_ERROR),
+        );
+
+        static::assertResponseStatusCodeSame(200);
+
+        // Rejecting resolves the dispute, so the breakdown should now show the underlying (incorrect)
+        // answer instead of the stale "under dispute" marker - proving the cache was invalidated.
+        $breakdownAfter = $sessionResultService->getTournamentAnswerBreakdown($tournament);
+        static::assertSame(0, $breakdownAfter[$alphaTeamId]->answers[2]);
     }
 }

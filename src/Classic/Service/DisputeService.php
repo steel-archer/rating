@@ -7,6 +7,7 @@ namespace App\Classic\Service;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeamAnswer;
 use App\Classic\Enum\DisputeStatus;
+use App\Classic\Enum\TournamentFormat;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Classic\Service\Cache\CacheInvalidator;
@@ -25,6 +26,7 @@ class DisputeService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function createDispute(
@@ -33,6 +35,10 @@ class DisputeService
         int $questionNumber,
         string $text,
     ): void {
+        if ($session->getTournament()->getFormat() === TournamentFormat::Centralized) {
+            throw new LogicException('dispute.error.centralized_not_allowed');
+        }
+
         $sessionTeam = $this->sessionTeamRepository->find($sessionTeamId);
         if ($sessionTeam === null || $sessionTeam->getTournamentSession()->getId() !== $session->getId()) {
             throw new LogicException('common.not_found');
@@ -59,15 +65,21 @@ class DisputeService
         $existingAnswer->setDisputeStatus(DisputeStatus::Created);
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament($session->getTournament());
     }
 
     /**
      * @param list<int> $answerIds
      *
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function submitDisputes(TournamentSession $session, array $answerIds): void
     {
+        if ($session->getTournament()->getFormat() === TournamentFormat::Centralized) {
+            throw new LogicException('dispute.error.centralized_not_allowed');
+        }
+
         $disputes = $this->answerRepository->findDisputesBySessionAndIds($session, $answerIds);
 
         if ($disputes === []) {
@@ -82,6 +94,7 @@ class DisputeService
         }
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament($session->getTournament());
     }
 
     /**
@@ -124,6 +137,7 @@ class DisputeService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function rejectDispute(TournamentSessionTeamAnswer $answer, ?string $comment): void
@@ -136,5 +150,8 @@ class DisputeService
         $answer->setDisputeComment($comment);
 
         $this->em->flush();
+        $this->cacheInvalidator->invalidateTournament(
+            $answer->getTournamentSessionTeam()->getTournamentSession()->getTournament(),
+        );
     }
 }

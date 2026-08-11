@@ -94,7 +94,9 @@
             <div class="actions-card">
                 <a href="{{ path('my_session_claim_squad', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'squad.enter_squads'|trans }}</a>
                 <a href="{{ path('my_session_claim_results', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'squad.enter_results'|trans }}</a>
-                <a href="{{ path('my_session_claim_disputes', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'dispute.enter_disputes'|trans }}</a>
+                {% if not isCentralized %}
+                    <a href="{{ path('my_session_claim_disputes', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'dispute.enter_disputes'|trans }}</a>
+                {% endif %}
             </div>
         </div>
 

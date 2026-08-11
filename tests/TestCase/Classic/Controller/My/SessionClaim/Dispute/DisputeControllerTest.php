@@ -7,9 +7,11 @@ namespace App\Tests\TestCase\Classic\Controller\My\SessionClaim\Dispute;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeamAnswer;
 use App\Classic\Enum\DisputeStatus;
+use App\Classic\Service\SessionResultService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class DisputeControllerTest extends WebTestCase
 {
@@ -66,6 +68,16 @@ class DisputeControllerTest extends WebTestCase
             'loginAs' => null,
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute']->getId() . '/disputes',
             'expectedStatus' => 302,
+        ];
+
+        yield 'centralized tournament disputes page returns 404' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/disputes_centralized.yaml',
+            ],
+            'loginAs' => 'user_dispute_cen_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute_centralized']->getId() . '/disputes',
+            'expectedStatus' => 404,
         ];
     }
 
@@ -238,6 +250,60 @@ class DisputeControllerTest extends WebTestCase
                 static::assertSame('common.not_found', $body['error']);
             },
         ];
+
+        yield 'cannot create dispute for centralized tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/disputes_centralized.yaml',
+            ],
+            'loginAs' => 'user_dispute_cen_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute_centralized']->getId() . '/disputes/create',
+            'payload' => static fn(array $objects) => [
+                'sessionTeamId' => $objects['session_team_dispute_cen_alpha']->getId(),
+                'questionNumber' => 2,
+                'text' => 'спірна в централізованому',
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('dispute.error.centralized_not_allowed', $body['error']);
+            },
+        ];
+    }
+
+    public function testCreateInvalidatesTournamentCache(): void
+    {
+        $client = static::createClient();
+        $objects = self::loadFixtures(self::FIXTURES);
+
+        $tournament = $objects['tournament_dispute'];
+        $betaTeamId = $objects['session_team_dispute_beta']->getId();
+        $sessionResultService = static::getContainer()->get(SessionResultService::class);
+
+        // Prime the cache: question 2 for team "beta" is currently a plain wrong answer, no dispute yet.
+        $breakdownBefore = $sessionResultService->getTournamentAnswerBreakdown($tournament);
+        static::assertSame(0, $breakdownBefore[$betaTeamId]->answers[1]);
+
+        $client->loginUser($objects['user_dispute_rep']);
+        $client->request(
+            'POST',
+            '/my/session-claims/' . $objects['session_dispute']->getId() . '/disputes/create',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'sessionTeamId' => $betaTeamId,
+                'questionNumber' => 2,
+                'text' => 'нова спірна',
+            ], JSON_THROW_ON_ERROR),
+        );
+
+        static::assertResponseStatusCodeSame(200);
+
+        // The tournament cache tag must have been invalidated, so the breakdown now shows the
+        // "under dispute" marker instead of the stale "incorrect answer" one.
+        $breakdownAfter = $sessionResultService->getTournamentAnswerBreakdown($tournament);
+        static::assertSame('?', $breakdownAfter[$betaTeamId]->answers[1]);
     }
 
     /**
@@ -318,6 +384,57 @@ class DisputeControllerTest extends WebTestCase
                 static::assertSame('dispute.error.nothing_to_submit', $body['error']);
             },
         ];
+
+        yield 'cannot submit disputes for centralized tournament' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/disputes_centralized.yaml',
+            ],
+            'loginAs' => 'user_dispute_cen_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_dispute_centralized']->getId() . '/disputes/submit',
+            'payload' => static fn(array $objects) => [
+                'ids' => [$objects['answer_dispute_cen_alpha_3']->getId()],
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('dispute.error.centralized_not_allowed', $body['error']);
+            },
+        ];
+    }
+
+    public function testSubmitInvalidatesTournamentCache(): void
+    {
+        $client = static::createClient();
+        $objects = self::loadFixtures(self::FIXTURES);
+
+        $tournament = $objects['tournament_dispute'];
+        $sessionResultService = static::getContainer()->get(SessionResultService::class);
+        $cache = static::getContainer()->get(TagAwareCacheInterface::class);
+        $cacheKey = 'tournament_breakdown_' . $tournament->getId();
+
+        // Prime the breakdown cache (question 3 for team "beta" has a "Created" dispute, so it
+        // already shows as "under dispute", same as it would once "Submitted").
+        $sessionResultService->getTournamentAnswerBreakdown($tournament);
+        static::assertTrue($cache->getItem($cacheKey)->isHit(), 'breakdown cache should be primed');
+
+        $client->loginUser($objects['user_dispute_rep']);
+        $client->request(
+            'POST',
+            '/my/session-claims/' . $objects['session_dispute']->getId() . '/disputes/submit',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['ids' => [$objects['answer_dispute_beta_3']->getId()]], JSON_THROW_ON_ERROR),
+        );
+
+        static::assertResponseStatusCodeSame(200);
+
+        // A Created -> Submitted transition alone would not change the "under dispute" marker in the
+        // breakdown, so the only reliable way to prove the cache was actually invalidated (rather than
+        // just coincidentally serving an unchanged stale value) is to check the underlying cache item
+        // is no longer considered a hit once the tournament tag has been busted.
+        static::assertFalse($cache->getItem($cacheKey)->isHit(), 'breakdown cache should be invalidated after submit');
     }
 
     /**

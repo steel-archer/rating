@@ -8,6 +8,7 @@ use App\Classic\DTO\Response\My\SessionClaimEditDTO;
 use App\Classic\DTO\Response\My\TournamentDocumentDTO;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Enum\SessionClaimStatus;
+use App\Classic\Enum\TournamentFormat;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TournamentDocumentRepository;
@@ -54,6 +55,7 @@ class EditController extends AbstractController
             && $session->getPlayedAt() <= new DateTimeImmutable('today')
             && $session->getTournament()->isSubmissionOpen();
 
+        $isCentralized = $session->getTournament()->getFormat() === TournamentFormat::Centralized;
         $isRegistrationOpen = $session->getTournament()->isRegistrationOpen();
         $tournamentStartedAt = $session->getTournament()->getStartedAt();
         $tournamentEndedAt = $session->getTournament()->getEndedAt();
@@ -67,6 +69,7 @@ class EditController extends AbstractController
             'claim' => $mapper->map($claim, SessionClaimEditDTO::class),
             'documents' => $documents,
             'canEnterResults' => $canEnterResults,
+            'isCentralized' => $isCentralized,
             'isRegistrationOpen' => $isRegistrationOpen,
             'tournamentStartedAt' => $tournamentStartedAt,
             'tournamentEndedAt' => $tournamentEndedAt,
