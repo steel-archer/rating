@@ -1,4 +1,4 @@
-FROM php:8.5-apache as php-base
+FROM php:8.5-apache AS php-base
 # WORKDIR /var/www/html is set in php image
 RUN apt-get update \
     && apt-get install -y libicu-dev libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
@@ -19,7 +19,7 @@ RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.c
 
 EXPOSE 8080/tcp
 
-FROM php-base as php-dev
+FROM php-base AS php-dev
 COPY --link --from=composer:2.9 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
 COPY --link \

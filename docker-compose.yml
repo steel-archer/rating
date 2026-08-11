@@ -1,6 +1,8 @@
 services:
   app:
-    build: ./docker
+    build:
+      context: ./docker
+      target: php-dev
     ports:
       - "8080:8080"
     volumes:
@@ -13,7 +15,7 @@ services:
       mailer:
         condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 10s
       timeout: 5s
       retries: 5
