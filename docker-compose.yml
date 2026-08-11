@@ -1,9 +1,10 @@
 services:
   app:
-    env_file: .env.local
-    build: ./docker
+    build:
+      context: ./docker
+      target: php-dev
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
       - .:/var/www/html
     depends_on:
@@ -14,7 +15,7 @@ services:
       mailer:
         condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,7 +27,6 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   db:
-    env_file: .env.local
     image: mysql:9.3
     ports:
       - "3306:3306"
