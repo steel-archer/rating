@@ -1,12 +1,14 @@
 services:
   app:
-    build:
-      context: ./docker
-      target: php-dev
+#    build:
+#      context: ./
+#      target: php-dev
+    #image: localhost/rating-app
+    image: ${APP_IMAGE}
     ports:
       - "8080:8080"
-    volumes:
-      - .:/var/www/html
+#    volumes:
+#      - .:/var/www/html
     depends_on:
       db:
         condition: service_healthy
@@ -21,10 +23,24 @@ services:
       retries: 5
     environment:
       TZ: Europe/Kyiv
+
       MYSQL_HOST: db
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: rating
+      MYSQL_USER: rating_user
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DATABASE_URL: mysql://rating_user:${MYSQL_PASSWORD}@db:3306/rating?charset=utf8mb4
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      APP_ENV: ${APP_ENV}
+      APP_SECRET: ${APP_SECRET}
+      APP_SHARE_DIR: var/share
+      DEFAULT_URI: ${DEFAULT_URI}
+      REDIS_URL: redis://redis:6379/1
+      REDIS_SESSION_URL: redis://redis:6379/2
+      REDIS_RATE_LIMITER_URL: redis://redis:6379/3
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      MAILER_DSN: smtp://mailer:1025
+      VAR_DUMPER_SERVER: 127.0.0.1:9912
 
   db:
     image: mysql:9.3
@@ -33,8 +49,8 @@ services:
     environment:
       TZ: Europe/Kyiv
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: rating
+      MYSQL_USER: rating_user
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
