@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG PHP_VER=8.5
 ARG COMPOSER_VER=2.9
 ARG SYMFONY_CLI_VER=v5.17
@@ -26,10 +27,11 @@ RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.c
 
 EXPOSE 8080/tcp
 
+FROM composer:${COMPOSER_VER} AS cmpsr
+
 FROM php-base AS php-dev
-ARG COMPOSER_VER
 ARG SYMFONY_CLI_VER
-COPY --link --from=composer:${COMPOSER_VER} /usr/bin/composer /usr/bin/composer
+COPY --link --from=cmpsr /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
 COPY --link \
     --from=ghcr.io/symfony-cli/symfony-cli:${SYMFONY_CLI_VER} \
@@ -42,9 +44,8 @@ RUN apt-get update \
     && rm -rf /tmp/pcov
 
 FROM php-base AS php-base-with-app-and-compose
-ARG COMPOSER_VER
 ARG APP_DIR
-COPY --link --from=composer:${COMPOSER_VER} /usr/bin/composer /usr/bin/composer
+COPY --link --from=cmpsr /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
