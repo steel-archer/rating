@@ -27,14 +27,15 @@ RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.c
 
 EXPOSE 8080/tcp
 
-FROM composer:${COMPOSER_VER} AS cmpsr
+FROM composer:${COMPOSER_VER} AS composer-pinned
+
+FROM ghcr.io/symfony-cli/symfony-cli:${SYMFONY_CLI_VER} AS symfony-cli-pinned
 
 FROM php-base AS php-dev
-ARG SYMFONY_CLI_VER
-COPY --link --from=cmpsr /usr/bin/composer /usr/bin/composer
+COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
 COPY --link \
-    --from=ghcr.io/symfony-cli/symfony-cli:${SYMFONY_CLI_VER} \
+    --from=symfony-cli-pinned \
     /usr/local/bin/symfony /usr/local/bin/symfony
 RUN apt-get update \
     && apt-get install -y git unzip curl nodejs npm mc nano \
@@ -45,7 +46,7 @@ RUN apt-get update \
 
 FROM php-base AS php-base-with-app-and-compose
 ARG APP_DIR
-COPY --link --from=cmpsr /usr/bin/composer /usr/bin/composer
+COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
