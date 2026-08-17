@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Show environment
-      - uses: hmarr/debug-action@v3
+        uses: hmarr/debug-action@v3
 
       - uses: actions/checkout@v5
         with:
