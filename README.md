@@ -56,7 +56,7 @@ GOOGLE_CLIENT_SECRET=отримайте_від_розробника
 ### 3. Запустіть проєкт
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 Перший запуск може зайняти кілька хвилин — Docker завантажує образи та створює контейнери.
@@ -121,7 +121,7 @@ docker compose down
 Запустити знову (без перезбирання):
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 ## Оновлення після git pull

@@ -24,22 +24,6 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
-    services:
-      db:
-        image: mysql:9.3
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: rating
-          MYSQL_USER: rating_user
-          MYSQL_PASSWORD: rating_pass
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - name: Show environment
         uses: hmarr/debug-action@v3
@@ -68,44 +52,19 @@ jobs:
             -t "$RATING_APP_IMAGE:${{ github.sha }}" \
             .
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.5'
-          extensions: intl, pdo_mysql, pcov
-          coverage: pcov
-
-      - name: Cache Composer
-        uses: actions/cache@v5
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Create test database
-        run: mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS rating_test; GRANT ALL ON rating_test.* TO 'rating_user'@'%';"
+      - name: Run app
+        run: |
+          docker compose -f docker-compose.yml --env-file .env.test up -d
 
       - name: PHPCS
         id: phpcs
         continue-on-error: true
-        run: vendor/bin/phpcs
+        run: docker compose exec app vendor/bin/phpcs
 
       - name: PHPStan
         id: phpstan
         continue-on-error: true
-        run: vendor/bin/phpstan analyse --memory-limit=512M
+        run: docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M
 
       - name: PHPUnit
         id: phpunit
@@ -123,17 +82,17 @@ jobs:
       - name: ESLint
         id: eslint
         continue-on-error: true
-        run: npx eslint assets/
+        run: docker compose exec app npx eslint assets/
 
       - name: Stylelint
         id: stylelint
         continue-on-error: true
-        run: npx stylelint 'assets/styles/**/*.css'
+        run: docker compose exec app npx stylelint 'assets/styles/**/*.css'
 
       - name: TwigCS
         id: twigcs
         continue-on-error: true
-        run: vendor/bin/twig-cs-fixer lint
+        run: docker compose exec app vendor/bin/twig-cs-fixer lint
 
       - name: Generate badges
         if: always()
@@ -180,15 +139,14 @@ jobs:
       - name: Composer audit
         id: composer_audit
         continue-on-error: true
-        run: composer audit
+        run: docker compose exec app composer audit
 
       - name: Symfony security check
         id: security_check
         continue-on-error: true
         run: |
-          curl -sS https://get.symfony.com/cli/installer | bash
-          export PATH="$HOME/.symfony5/bin:$PATH"
-          symfony security:check
+          docker compose exec app composer audit
+          docker compose exec app symfony security:check
 
       - name: Gitleaks
         id: gitleaks
