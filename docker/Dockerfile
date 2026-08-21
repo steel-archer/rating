@@ -1,5 +1,14 @@
-FROM php:8.5-apache AS php-base
+# syntax=docker/dockerfile:1
+ARG PHP_VER=8.5
+ARG COMPOSER_VER=2.9
+ARG SYMFONY_CLI_VER=v5.17
+ARG PHP_USER=www-data
+
 # WORKDIR /var/www/html is set in php image
+ARG APP_DIR=/var/www/html
+
+FROM php:${PHP_VER}-apache AS php-base
+ARG APP_DIR
 RUN apt-get update \
     && apt-get install -y libicu-dev libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -13,17 +22,21 @@ RUN sed -i 's/ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-available/se
     && sed -i 's/ServerSignature On/ServerSignature Off/' /etc/apache2/conf-available/security.conf
 RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf \
     && sed -i 's/:80/:8080/g' /etc/apache2/sites-available/*.conf
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+ENV APACHE_DOCUMENT_ROOT=${APP_DIR}/public
+RUN sed -ri -e "s!${APP_DIR}!\${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 
 EXPOSE 8080/tcp
 
+FROM composer:${COMPOSER_VER} AS composer-pinned
+
+FROM ghcr.io/symfony-cli/symfony-cli:${SYMFONY_CLI_VER} AS symfony-cli-pinned
+
 FROM php-base AS php-dev
-COPY --link --from=composer:2.9 /usr/bin/composer /usr/bin/composer
+COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
 COPY --link \
-    --from=ghcr.io/symfony-cli/symfony-cli:v5.17 \
+    --from=symfony-cli-pinned \
     /usr/local/bin/symfony /usr/local/bin/symfony
 RUN apt-get update \
     && apt-get install -y git unzip curl nodejs npm mc nano \
@@ -31,3 +44,92 @@ RUN apt-get update \
     && cd /tmp/pcov && phpize && ./configure && make && make install \
     && docker-php-ext-enable pcov \
     && rm -rf /tmp/pcov
+
+FROM php-base AS php-base-with-app-test
+ARG APP_DIR
+COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_PROCESS_TIMEOUT=600
+ENV APP_ENV=test
+ENV APP_DEBUG=1
+# Dummy values so cache:clear (run via post-install-cmd)
+# can resolve these env vars at build time.
+# All overridden at runtime.
+ENV APP_SECRET="build_time_dummy_secret"
+ENV DATABASE_URL="mysql://user:pass@127.0.0.1:3306/db?charset=utf8mb4"
+ENV DEFAULT_URI="http://localhost"
+ENV GOOGLE_CLIENT_ID="build_time_dummy"
+ENV GOOGLE_CLIENT_SECRET="build_time_dummy_secret"
+ENV MAILER_DSN="smtp://127.0.0.1:1025"
+ENV MESSENGER_TRANSPORT_DSN="doctrine://default?queue_name=async"
+ENV REDIS_RATE_LIMITER_URL="redis://127.0.0.1:6379"
+ENV REDIS_SESSION_URL="redis://127.0.0.1:6379"
+ENV REDIS_URL="redis://127.0.0.1:6379"
+WORKDIR ${APP_DIR}
+COPY composer.json composer.lock symfony.lock ./
+RUN composer install \
+    --no-scripts \
+    --no-autoloader \
+    --prefer-dist \
+    --no-interaction
+COPY . .
+RUN composer dump-autoload --optimize --classmap-authoritative \
+    && composer run-script post-install-cmd
+
+FROM php-dev AS rating-app-test
+ARG APP_DIR
+ARG PHP_USER
+ENV APP_ENV=test
+ENV APP_DEBUG=1
+COPY --link --from=php-base-with-app-test ${APP_DIR} ${APP_DIR}
+COPY --link docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+    && mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
+    && chown -R ${PHP_USER}:${PHP_USER} ${APP_DIR}/var
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["apache2-foreground"]
+RUN npm install
+
+FROM php-base AS php-base-with-app-no-dev
+ARG APP_DIR
+COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_PROCESS_TIMEOUT=600
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+# Dummy values so cache:clear (run via post-install-cmd)
+# can resolve these env vars at build time.
+# All overridden at runtime.
+ENV APP_SECRET="build_time_dummy_secret"
+ENV DATABASE_URL="mysql://user:pass@127.0.0.1:3306/db?charset=utf8mb4"
+ENV DEFAULT_URI="http://localhost"
+ENV GOOGLE_CLIENT_ID="build_time_dummy"
+ENV GOOGLE_CLIENT_SECRET="build_time_dummy_secret"
+ENV MAILER_DSN="smtp://127.0.0.1:1025"
+ENV MESSENGER_TRANSPORT_DSN="doctrine://default?queue_name=async"
+ENV REDIS_RATE_LIMITER_URL="redis://127.0.0.1:6379"
+ENV REDIS_SESSION_URL="redis://127.0.0.1:6379"
+ENV REDIS_URL="redis://127.0.0.1:6379"
+WORKDIR ${APP_DIR}
+COPY composer.json composer.lock symfony.lock ./
+RUN composer install \
+    --no-dev \
+    --no-scripts \
+    --no-autoloader \
+    --prefer-dist \
+    --no-interaction
+COPY . .
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev \
+    && composer run-script post-install-cmd \
+    && php bin/console asset-map:compile
+
+FROM php-base AS rating-app
+ARG APP_DIR
+ARG PHP_USER
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+COPY --link --from=php-base-with-app-no-dev ${APP_DIR} ${APP_DIR}
+COPY --link docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+    && mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
+    && chown -R ${PHP_USER}:${PHP_USER} ${APP_DIR}/var
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["apache2-foreground"]
