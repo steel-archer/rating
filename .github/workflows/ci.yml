@@ -70,14 +70,7 @@ jobs:
       - name: PHPUnit
         id: phpunit
         continue-on-error: true
-        env:
-          DATABASE_URL: mysql://rating_user:rating_pass@127.0.0.1:3306/rating?serverVersion=9.3&charset=utf8mb4
-          APP_ENV: test
-          APP_SECRET: ci_secret
-          MYSQL_USER: rating_user
-          MYSQL_PASSWORD: rating_pass
         run: |
-          php bin/console doctrine:migrations:migrate --no-interaction
           docker compose exec app php bin/phpunit --coverage-clover coverage.xml --coverage-text | tee coverage-output.txt
 
       - name: ESLint
@@ -158,7 +151,7 @@ jobs:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Log in to ghcr.io
-        # TODO: if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -166,7 +159,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images
-        # TODO: if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
           docker push --all-tags "$PHP_DEV_IMAGE"
           docker push --all-tags "$RATING_APP_TEST_IMAGE"
