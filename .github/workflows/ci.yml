@@ -54,7 +54,7 @@ jobs:
 
       - name: Run app
         run: |
-          source .env.test
+          cp .env.test .env
           docker compose -f docker-compose.yml up -d
 
       - name: PHPCS
