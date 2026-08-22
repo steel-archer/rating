@@ -1,6 +1,7 @@
 services:
   app:
     image: ${APP_IMAGE}
+    pull_policy: ${IMAGE_PULL_POLICY:-missing}
 
     ports:
       - "8080:8080"
