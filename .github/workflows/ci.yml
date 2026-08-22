@@ -56,7 +56,7 @@ jobs:
         run: |
           docker compose -f docker-compose.yml --env-file .env.test up -d
           docker ps -a
-          docker compose exec app vendor/bin/phpcs
+          docker compose --env-file .env.test exec app vendor/bin/phpcs
 
       - name: PHPCS
         id: phpcs
