@@ -62,6 +62,8 @@ RUN --mount=type=cache,target=/var/cache/apt apt-get update \
 
 FROM php-base-with-composer AS php-base-with-app-test
 ARG APP_DIR
+ENV APP_ENV=test
+ENV APP_DEBUG=1
 WORKDIR ${APP_DIR}
 COPY composer.json composer.lock symfony.lock ./
 RUN --mount=type=cache,target=/root/.composer/cache composer install \
@@ -90,6 +92,8 @@ CMD ["apache2-foreground"]
 
 FROM php-base-with-composer AS php-base-with-app-prod
 ARG APP_DIR
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
 WORKDIR ${APP_DIR}
 COPY composer.json composer.lock symfony.lock ./
 RUN --mount=type=cache,target=/root/.composer/cache composer install \
