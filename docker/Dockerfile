@@ -9,7 +9,7 @@ ARG APP_DIR=/var/www/html
 
 FROM php:${PHP_VER}-apache AS php-base
 ARG APP_DIR
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt apt-get update \
     && apt-get install -y libicu-dev libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install mysqli pdo pdo_mysql intl gd zip
@@ -32,25 +32,9 @@ FROM composer:${COMPOSER_VER} AS composer-pinned
 
 FROM ghcr.io/symfony-cli/symfony-cli:${SYMFONY_CLI_VER} AS symfony-cli-pinned
 
-FROM php-base AS php-dev
+FROM php-base AS php-base-with-composer
 COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
-COPY --link \
-    --from=symfony-cli-pinned \
-    /usr/local/bin/symfony /usr/local/bin/symfony
-RUN apt-get update \
-    && apt-get install -y git unzip curl nodejs npm mc nano \
-    && git clone --depth 1 https://github.com/krakjoe/pcov.git /tmp/pcov \
-    && cd /tmp/pcov && phpize && ./configure && make && make install \
-    && docker-php-ext-enable pcov \
-    && rm -rf /tmp/pcov
-
-FROM php-base AS php-base-with-app-test
-ARG APP_DIR
-COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
-ENV COMPOSER_PROCESS_TIMEOUT=600
-ENV APP_ENV=test
-ENV APP_DEBUG=1
 # Dummy values so cache:clear (run via post-install-cmd)
 # can resolve these env vars at build time.
 # All overridden at runtime.
@@ -64,9 +48,23 @@ ENV MESSENGER_TRANSPORT_DSN="doctrine://default?queue_name=async"
 ENV REDIS_RATE_LIMITER_URL="redis://127.0.0.1:6379"
 ENV REDIS_SESSION_URL="redis://127.0.0.1:6379"
 ENV REDIS_URL="redis://127.0.0.1:6379"
+
+FROM php-base-with-composer AS php-dev
+ENV APP_ENV=dev
+ENV APP_DEBUG=1
+COPY --link \
+    --from=symfony-cli-pinned \
+    /usr/local/bin/symfony /usr/local/bin/symfony
+RUN --mount=type=cache,target=/var/cache/apt apt-get update \
+    && apt-get install -y git unzip curl nodejs npm mc nano \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov
+
+FROM php-base-with-composer AS php-base-with-app-test
+ARG APP_DIR
 WORKDIR ${APP_DIR}
 COPY composer.json composer.lock symfony.lock ./
-RUN composer install \
+RUN --mount=type=cache,target=/root/.composer/cache composer install \
     --no-scripts \
     --no-autoloader \
     --prefer-dist \
@@ -80,37 +78,21 @@ ARG APP_DIR
 ARG PHP_USER
 ENV APP_ENV=test
 ENV APP_DEBUG=1
-COPY --link --from=php-base-with-app-test ${APP_DIR} ${APP_DIR}
 COPY --link docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh \
-    && mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
+RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY --link --from=php-base-with-app-test ${APP_DIR}/package.json ${APP_DIR}/package-lock.json ${APP_DIR}
+RUN npm install
+COPY --link --from=php-base-with-app-test ${APP_DIR} ${APP_DIR}
+RUN mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
     && chown -R ${PHP_USER}:${PHP_USER} ${APP_DIR}/var
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
-RUN npm install
 
-FROM php-base AS php-base-with-app-no-dev
+FROM php-base-with-composer AS php-base-with-app-prod
 ARG APP_DIR
-COPY --link --from=composer-pinned /usr/bin/composer /usr/bin/composer
-ENV COMPOSER_PROCESS_TIMEOUT=600
-ENV APP_ENV=prod
-ENV APP_DEBUG=0
-# Dummy values so cache:clear (run via post-install-cmd)
-# can resolve these env vars at build time.
-# All overridden at runtime.
-ENV APP_SECRET="build_time_dummy_secret"
-ENV DATABASE_URL="mysql://user:pass@127.0.0.1:3306/db?charset=utf8mb4"
-ENV DEFAULT_URI="http://localhost"
-ENV GOOGLE_CLIENT_ID="build_time_dummy"
-ENV GOOGLE_CLIENT_SECRET="build_time_dummy_secret"
-ENV MAILER_DSN="smtp://127.0.0.1:1025"
-ENV MESSENGER_TRANSPORT_DSN="doctrine://default?queue_name=async"
-ENV REDIS_RATE_LIMITER_URL="redis://127.0.0.1:6379"
-ENV REDIS_SESSION_URL="redis://127.0.0.1:6379"
-ENV REDIS_URL="redis://127.0.0.1:6379"
 WORKDIR ${APP_DIR}
 COPY composer.json composer.lock symfony.lock ./
-RUN composer install \
+RUN --mount=type=cache,target=/root/.composer/cache composer install \
     --no-dev \
     --no-scripts \
     --no-autoloader \
@@ -126,10 +108,10 @@ ARG APP_DIR
 ARG PHP_USER
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
-COPY --link --from=php-base-with-app-no-dev ${APP_DIR} ${APP_DIR}
 COPY --link docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh \
-    && mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
+RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY --link --from=php-base-with-app-prod ${APP_DIR} ${APP_DIR}
+RUN mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
     && chown -R ${PHP_USER}:${PHP_USER} ${APP_DIR}/var
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
