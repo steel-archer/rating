@@ -214,7 +214,13 @@ docker compose exec app vendor/bin/twig-cs-fixer lint
 Тести з покриттям коду:
 
 ```bash
-docker compose exec -e APP_ENV=test app php bin/phpunit --coverage-text
+./bin/test.sh --coverage-text
+```
+
+Запуск конкретного тесту:
+
+```bash
+./bin/test.sh --filter=testBlockedUser
 ```
 
 Перевірка безпеки залежностей:
