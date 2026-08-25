@@ -80,11 +80,12 @@ ARG APP_DIR
 ARG PHP_USER
 ENV APP_ENV=test
 ENV APP_DEBUG=1
+WORKDIR ${APP_DIR}
 COPY --link docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
-COPY --link --from=php-base-with-app-test ${APP_DIR}/package.json ${APP_DIR}/package-lock.json ${APP_DIR}
+COPY --from=php-base-with-app-test ${APP_DIR}/package.json ${APP_DIR}/package-lock.json ./
 RUN npm install
-COPY --link --from=php-base-with-app-test ${APP_DIR} ${APP_DIR}
+COPY --from=php-base-with-app-test ${APP_DIR} ${APP_DIR}
 RUN mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
     && chown -R ${PHP_USER}:${PHP_USER} ${APP_DIR}/var
 ENTRYPOINT ["entrypoint.sh"]
