@@ -136,7 +136,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 ## Для розробників
 
-### Встановленяя залежностей PHP (наприклад, після зміни conposer.json)
+### Встановлення залежностей PHP (наприклад, після зміни composer.json)
 
 ```bash
 docker compose exec app composer install
@@ -214,7 +214,7 @@ docker compose exec app vendor/bin/twig-cs-fixer lint
 Тести з покриттям коду:
 
 ```bash
-docker compose exec app php bin/phpunit --coverage-text
+docker compose exec -e APP_ENV=test app php bin/phpunit --coverage-text
 ```
 
 Перевірка безпеки залежностей:
