@@ -15,3 +15,4 @@
 /.twig-cs-fixer.cache
 /coverage/
 .idea/
+.kiro/settings/mcp.json
