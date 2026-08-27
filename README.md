@@ -56,10 +56,10 @@ GOOGLE_CLIENT_SECRET=отримайте_від_розробника
 ### 3. Запустіть проєкт
 
 ```bash
-docker compose up -d --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-Перший запуск може зайняти кілька хвилин — Docker завантажує та збирає образи.
+Перший запуск може зайняти кілька хвилин — Docker завантажує образи та створює контейнери.
 
 ### 4. Встановіть залежності PHP
 
@@ -121,7 +121,7 @@ docker compose down
 Запустити знову (без перезбирання):
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 ## Оновлення після git pull
@@ -136,10 +136,41 @@ docker compose up -d
 
 ## Для розробників
 
+### Встановлення залежностей PHP (наприклад, після зміни composer.json)
+
+```bash
+docker compose exec app composer install
+```
+
+### Встановлення залежностей Node.js (наприклад, після зміни package.json)
+
+```bash
+docker compose exec app npm install
+```
+
+### Генерування перекладів
+
 Після зміни файлу перекладів `translations/messages.uk.yaml` потрібно перегенерувати JS-переклади та закомітити результат:
 
 ```bash
 docker compose exec app php bin/console app:generate-translations
+```
+
+### Локальне створення образів
+Локальне створення образу для розробки з dev- і test-залежностями
+(директорії з сайтом рейтингу повинні монтуватися як зовнішні директорії):
+```bash
+docker build -f docker/Dockerfile --target php-dev --tag php-dev .
+```
+
+Локальне створення образу з тестовою версією сайту рейтингу з dev- і test-залежностями:
+```bash
+docker build -f docker/Dockerfile --target rating-app-test --tag rating-app-test .
+```
+
+Локальне створення образу з prod-версією сайту рейтингу без dev- і test-залежностей:
+```bash
+docker build -f docker/Dockerfile --target rating-app --tag rating-app .
 ```
 
 ## Якість коду
@@ -183,7 +214,13 @@ docker compose exec app vendor/bin/twig-cs-fixer lint
 Тести з покриттям коду:
 
 ```bash
-docker compose exec app php bin/phpunit --coverage-text
+./bin/test.sh --coverage-text
+```
+
+Запуск конкретного тесту:
+
+```bash
+./bin/test.sh --filter=testBlockedUser
 ```
 
 Перевірка безпеки залежностей:

@@ -4,7 +4,7 @@ parameters:
         - src
         - tests
     symfony:
-        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+        consoleApplicationLoader: tests/phpstan-console-application.php
     ignoreErrors:
         -
             identifier: arguments.count
