@@ -32,50 +32,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Build images
+        run: |
+          docker build -f docker/Dockerfile --target php-dev \
+            -t "$PHP_DEV_IMAGE:latest" \
+            -t "$PHP_DEV_IMAGE:v0.0.0-SNAPSHOT" \
+            -t "$PHP_DEV_IMAGE:${{ github.sha }}" \
+            .
 
-      - name: Build php-dev image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile
-          target: php-dev
-          load: true
-          tags: |
-            ${{ env.PHP_DEV_IMAGE }}:latest
-            ${{ env.PHP_DEV_IMAGE }}:v0.0.0-SNAPSHOT
-            ${{ env.PHP_DEV_IMAGE }}:${{ github.sha }}
-          cache-from: type=gha,scope=php-dev
-          cache-to: type=gha,mode=max,scope=php-dev
+          docker build -f docker/Dockerfile --target rating-app-test \
+            -t "$RATING_APP_TEST_IMAGE:latest" \
+            -t "$RATING_APP_TEST_IMAGE:v0.0.0-SNAPSHOT" \
+            -t "$RATING_APP_TEST_IMAGE:${{ github.sha }}" \
+            .
 
-      - name: Build rating-app-test image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile
-          target: rating-app-test
-          load: true
-          tags: |
-            ${{ env.RATING_APP_TEST_IMAGE }}:latest
-            ${{ env.RATING_APP_TEST_IMAGE }}:v0.0.0-SNAPSHOT
-            ${{ env.RATING_APP_TEST_IMAGE }}:${{ github.sha }}
-          cache-from: type=gha,scope=rating-app-test
-          cache-to: type=gha,mode=max,scope=rating-app-test
-
-      - name: Build rating-app image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile
-          target: rating-app
-          load: true
-          tags: |
-            ${{ env.RATING_APP_IMAGE }}:latest
-            ${{ env.RATING_APP_IMAGE }}:v0.0.0-SNAPSHOT
-            ${{ env.RATING_APP_IMAGE }}:${{ github.sha }}
-          cache-from: type=gha,scope=rating-app
-          cache-to: type=gha,mode=max,scope=rating-app
+          docker build -f docker/Dockerfile --target rating-app \
+            -t "$RATING_APP_IMAGE:latest" \
+            -t "$RATING_APP_IMAGE:v0.0.0-SNAPSHOT" \
+            -t "$RATING_APP_IMAGE:${{ github.sha }}" \
+            .
 
       - name: Run app
         run: |
