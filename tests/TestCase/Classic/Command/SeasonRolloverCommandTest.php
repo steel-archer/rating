@@ -48,7 +48,12 @@ class SeasonRolloverCommandTest extends KernelTestCase
     }
 
     /**
-     * @return iterable<string, array>
+     * @return iterable<string, array{
+     *     arrange: ?callable,
+     *     input: array<string, mixed>,
+     *     expectedStatus: int,
+     *     afterCallback: callable,
+     * }>
      */
     public static function dataProvider(): iterable
     {
