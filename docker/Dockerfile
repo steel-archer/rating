@@ -2,6 +2,9 @@
 ARG PHP_VER=8.5
 ARG COMPOSER_VER=2.9
 ARG SYMFONY_CLI_VER=v5.17
+ARG PIE_VER=1.4.10
+# SHA256 of pie.phar for the pinned PIE_VER (verify integrity of the download).
+ARG PIE_PHAR_SHA256=b88792235c8e80be568436d4cb043b49fd1869c89b64e83d23e2882ae19d70a8
 ARG PHP_USER=www-data
 
 # WORKDIR /var/www/html is set in php image
@@ -50,15 +53,21 @@ ENV REDIS_SESSION_URL="redis://127.0.0.1:6379"
 ENV REDIS_URL="redis://127.0.0.1:6379"
 
 FROM php-base-with-composer AS php-dev
+ARG PIE_VER
+ARG PIE_PHAR_SHA256
 ENV APP_ENV=dev
 ENV APP_DEBUG=1
 COPY --link \
     --from=symfony-cli-pinned \
     /usr/local/bin/symfony /usr/local/bin/symfony
+# Install PCOV via PIE (the official replacement for the deprecated PECL).
+# The pinned pie.phar is verified against its published SHA256 before use.
 RUN --mount=type=cache,target=/var/cache/apt apt-get update \
     && apt-get install -y git unzip curl nodejs npm mc nano \
-    && pecl install pcov \
-    && docker-php-ext-enable pcov
+    && curl -fL --output /usr/local/bin/pie "https://github.com/php/pie/releases/download/${PIE_VER}/pie.phar" \
+    && echo "${PIE_PHAR_SHA256}  /usr/local/bin/pie" | sha256sum --check --strict \
+    && chmod +x /usr/local/bin/pie \
+    && pie install pecl/pcov
 
 FROM php-base-with-composer AS php-base-with-app-test
 ARG APP_DIR
