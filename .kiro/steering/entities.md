@@ -1,3 +1,8 @@
+---
+inclusion: fileMatch
+fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
+---
+
 # Карта Doctrine-сутностей
 
 Довідкова карта всіх Doctrine-сутностей проєкту, згрупованих за модулями. Використовується як контекст для розуміння доменної моделі.
