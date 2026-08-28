@@ -22,6 +22,10 @@ services:
         arguments:
             $uploadDir: '%app.upload_dir%'
 
+    App\Common\Service\MaintenanceService:
+        arguments:
+            $cache: '@cache.app'
+
     App\Common\EventSubscriber\SecurityHeadersSubscriber:
         arguments:
             $environment: '%kernel.environment%'

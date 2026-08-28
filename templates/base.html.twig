@@ -12,6 +12,9 @@
     {% endblock %}
 </head>
 <body>
+    {% if is_granted('ROLE_MODERATOR') and is_maintenance_mode() %}
+        <div class="maintenance-banner" role="alert">{{ 'maintenance.banner'|trans }}</div>
+    {% endif %}
     <header>
         <div class="header-inner">
             <a href="{{ path('home') }}" class="logo">Rating</a>
