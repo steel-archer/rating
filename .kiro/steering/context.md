@@ -2,7 +2,7 @@
 
 ## Загальне
 
-* Писати українською.
+* ЗАВЖДИ писати українською — це стосується геть усього: відповідей у чаті, пояснень, підсумків, коментарів для користувача, назв та описів задач. Незалежно від того, якою мовою поставлене питання, відповідати українською. Виключенням є коментарі в коді та повідомлення комітів: вони мають бути англійською.
 * В кінці файлу має бути новий рядок.
 
 ## PHP: стиль коду
@@ -68,10 +68,40 @@
 
 ## PHP: інструменти
 
-* Команди мають завжди запускатися в docker container.
-* Запускати phpunit, phpcs, phpstan без grep/head/tail тощо (бо у разі помилок не доводилося робити повторний запуск, щоб дізнатися, де саме проблема).
+* Команди мають завжди запускатися в docker container (через `docker compose exec app ...`).
+* НЕ використовувати `grep`/`head`/`tail`/`less` тощо при запуску перевірок (phpunit, phpcs, phpstan, лінтери). Інакше губиться частина контексту (де саме помилка) і доводиться перезапускати команду. Запускати команду повністю і читати весь вивід.
 * Щоб з консолі виконувати SQL запити - запускати їх через `bin/console dbal:run-sql`.
-* Якщо додаємо в YAML-переклади - не забувати згенерувати й JS-переклади.
+* Якщо додаємо в YAML-переклади - не забувати згенерувати й JS-переклади (`docker compose exec app php bin/console app:generate-translations`).
+
+### Службові команди (запуск сервісів та обслуговування)
+
+* Запуск усіх сервісів (застосунок, БД, пошта):
+  `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`
+* Зупинка всіх сервісів: `docker compose down`
+* Логи застосунку: `docker compose logs app`
+* Встановлення PHP-залежностей: `docker compose exec app composer install`
+* Встановлення Node.js-залежностей: `docker compose exec app npm install`
+* Застосування міграцій:
+  `docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction`
+* Завантаження тестових даних (fixtures):
+  `docker compose exec app php -d memory_limit=512M bin/console doctrine:fixtures:load --append --no-interaction`
+* Надання прав адміністратора: `docker compose exec app php bin/console app:promote-admin your-email@gmail.com`
+* Оновлення після `git pull` (залежності + міграції + очистка кешу): `./bin/update.sh`
+* Генерування JS-перекладів: `docker compose exec app php bin/console app:generate-translations`
+
+### Команди перевірки якості (запускати повністю, без grep/head/tail)
+
+* Перевірка стилю коду (PSR-12): `docker compose exec app vendor/bin/phpcs`
+* Автовиправлення стилю: `docker compose exec app vendor/bin/phpcbf`
+* Статичний аналіз (PHPStan, рівень 6): `docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M`
+* Лінтинг JavaScript (ESLint): `docker compose exec app npx eslint assets/`
+* Лінтинг CSS (Stylelint): `docker compose exec app npx stylelint 'assets/styles/**/*.css'`
+* Лінтинг Twig-шаблонів: `docker compose exec app vendor/bin/twig-cs-fixer lint`
+* Усі тести: `./bin/test.sh`
+* Тести з покриттям коду: `./bin/test.sh --coverage-html coverage --coverage-clover var/coverage/clover.xml`
+* Запуск конкретного тесту: `./bin/test.sh --filter=testBlockedUser`
+* Перевірка безпеки залежностей: `docker compose exec app composer audit` та `docker compose exec app symfony security:check`
+* Усі перевірки якості (окрім тестів) одним скриптом: `./bin/lint.sh`
 
 ## Кешування
 
