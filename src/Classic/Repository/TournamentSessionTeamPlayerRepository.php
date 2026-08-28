@@ -194,6 +194,39 @@ class TournamentSessionTeamPlayerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Counts how many games each player played for each team within a season.
+     * A "game" is one appearance in a session squad (one STP row).
+     *
+     * @return array<int, array<int, int>> teamId => (playerId => gameCount)
+     */
+    public function countPlayerGamesByTeamForSeason(Season $season): array
+    {
+        $rows = $this->createQueryBuilder('stp')
+            ->select(
+                'IDENTITY(st.team) AS teamId',
+                'IDENTITY(stp.player) AS playerId',
+                'COUNT(stp.id) AS gameCount',
+            )
+            ->join('stp.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 'ts')
+            ->join('ts.tournament', 't')
+            ->where('t.season = :season')
+            ->setParameter('season', $season)
+            ->groupBy('teamId', 'playerId')
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $teamId = (int) $row['teamId'];
+            $playerId = (int) $row['playerId'];
+            $result[$teamId][$playerId] = (int) $row['gameCount'];
+        }
+
+        return $result;
+    }
+
     /** @param list<int> $sessionTeamIds */
     public function deleteBySessionTeamIds(array $sessionTeamIds): void
     {

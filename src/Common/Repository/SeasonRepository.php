@@ -58,4 +58,34 @@ class SeasonRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Returns the season that starts immediately after the given one, if it exists.
+     *
+     * @throws NonUniqueResultException
+     */
+    public function findNext(Season $current): ?Season
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.startedAt > :start')
+            ->setParameter('start', $current->getStartedAt())
+            ->orderBy('s.startedAt', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Returns the most recent season by start date, or null if none exist.
+     *
+     * @throws NonUniqueResultException
+     */
+    public function findLatest(): ?Season
+    {
+        return $this->createQueryBuilder('s')
+            ->orderBy('s.startedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

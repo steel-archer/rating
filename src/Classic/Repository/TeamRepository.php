@@ -42,6 +42,25 @@ class TeamRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int> $ids
+     * @return list<Team>
+     */
+    public function findByIdsWithTown(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('t')
+            ->join('t.town', 'town')
+            ->addSelect('town')
+            ->where('t.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @throws NonUniqueResultException
      */
     public function findByNameAndTown(string $name, Town $town): ?Team

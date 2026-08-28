@@ -1,0 +1,106 @@
+App\Common\Entity\Player:
+    player_extra_one:
+        lastName: 'Голобородько'
+        firstName: 'Василь'
+        town: '@town_kyiv'
+    player_extra_two:
+        lastName: 'Стус'
+        firstName: 'Василь'
+        town: '@town_kyiv'
+
+App\Classic\Entity\Tournament:
+    tournament_rollover:
+        name: 'Турнір минулого сезону'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-11-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-11-30 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+
+App\Classic\Entity\TournamentSession:
+    session_rollover:
+        tournament: '@tournament_rollover'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-11-15"))>'
+        estimatedTeams: 4
+    session_rollover_second:
+        tournament: '@tournament_rollover'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-11-22"))>'
+        estimatedTeams: 4
+
+# --- team_alpha: captain played, member played -> both carried over, captain stays
+App\Classic\Entity\TeamPlayer:
+    tp_alpha_captain:
+        team: '@team_alpha'
+        player: '@player_shevchenko'
+        season: '@season_current'
+        isCaptain: true
+    tp_alpha_member:
+        team: '@team_alpha'
+        player: '@player_franko'
+        season: '@season_current'
+        isCaptain: false
+    # --- team_beta: captain did NOT play, two members played -> captaincy reassigned
+    tp_beta_captain:
+        team: '@team_beta'
+        player: '@player_lesya'
+        season: '@season_current'
+        isCaptain: true
+    tp_beta_member_more:
+        team: '@team_beta'
+        player: '@player_extra_one'
+        season: '@season_current'
+        isCaptain: false
+    tp_beta_member_less:
+        team: '@team_beta'
+        player: '@player_extra_two'
+        season: '@season_current'
+        isCaptain: false
+    # --- team_gamma: base squad exists but nobody played -> team skipped
+    tp_gamma_captain:
+        team: '@team_gamma'
+        player: '@player_kotsubynsky'
+        season: '@season_current'
+        isCaptain: true
+
+App\Classic\Entity\TournamentSessionTeam:
+    st_alpha:
+        tournamentSession: '@session_rollover'
+        team: '@team_alpha'
+        score: 20
+    st_beta:
+        tournamentSession: '@session_rollover'
+        team: '@team_beta'
+        score: 15
+    st_beta_second:
+        tournamentSession: '@session_rollover_second'
+        team: '@team_beta'
+        score: 18
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    # team_alpha: both base-squad players played
+    stp_alpha_shevchenko:
+        tournamentSessionTeam: '@st_alpha'
+        player: '@player_shevchenko'
+        isCaptain: true
+    stp_alpha_franko:
+        tournamentSessionTeam: '@st_alpha'
+        player: '@player_franko'
+        isCaptain: false
+    # team_beta: captain lesya absent; extra_one played twice, extra_two once
+    stp_beta_extra_one_1:
+        tournamentSessionTeam: '@st_beta'
+        player: '@player_extra_one'
+        isCaptain: false
+    stp_beta_extra_two_1:
+        tournamentSessionTeam: '@st_beta'
+        player: '@player_extra_two'
+        isCaptain: false
+    stp_beta_extra_one_2:
+        tournamentSessionTeam: '@st_beta_second'
+        player: '@player_extra_one'
+        isCaptain: false
