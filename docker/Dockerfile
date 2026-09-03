@@ -138,6 +138,10 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 COPY --link --from=php-base-with-app-prod ${APP_DIR} ${APP_DIR}
 RUN printf 'opcache.enable=1\nopcache.validate_timestamps=0\nopcache.memory_consumption=128\nopcache.interned_strings_buffer=16\nopcache.max_accelerated_files=20000\n' \
         > /usr/local/etc/php/conf.d/opcache-prod.ini
+# Keep function arguments in stack traces so Sentry can show them. Pinned
+# explicitly rather than relying on the base image default, which could change.
+RUN echo 'zend.exception_ignore_args = Off' \
+        > /usr/local/etc/php/conf.d/sentry-prod.ini
 RUN mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
     ${APP_DIR}/var/uploads/tournament_documents \
     && chown -R ${PHP_USER}:${PHP_USER} ${APP_DIR}/var

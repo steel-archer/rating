@@ -30,6 +30,15 @@ when@test:
                 level: debug
 
 when@prod:
+    # Record log messages as Sentry breadcrumbs so captured exceptions carry
+    # the events that led up to them. This handler only forwards context; it
+    # never sends anything to Sentry on its own.
+    services:
+        Sentry\Monolog\BreadcrumbHandler:
+            arguments:
+                $hub: '@Sentry\State\HubInterface'
+                $level: !php/const Monolog\Level::Info
+
     monolog:
         handlers:
             main:
@@ -44,6 +53,10 @@ when@prod:
                 path: php://stderr
                 level: debug
                 formatter: monolog.formatter.json
+            sentry_breadcrumbs:
+                type: service
+                id: Sentry\Monolog\BreadcrumbHandler
+                channels: ["!event", "!doctrine"]
             console:
                 type: console
                 process_psr_3_messages: false
