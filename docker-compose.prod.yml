@@ -1,0 +1,130 @@
+# Production stack for a single server.
+#
+# Usage: docker compose -f docker-compose.prod.yml up -d
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      TZ: Europe/Kyiv
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    logging: *default-logging
+
+  app:
+    image: ${APP_IMAGE}
+    pull_policy: ${IMAGE_PULL_POLICY:-missing}
+    restart: unless-stopped
+    # No published ports: only Caddy reaches the app, over the internal network.
+    expose:
+      - "8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    environment:
+      TZ: Europe/Kyiv
+
+      APP_ENV: prod
+      APP_DEBUG: 0
+      APP_SECRET: ${APP_SECRET}
+      DEFAULT_URI: ${DEFAULT_URI}
+      # Caddy is the only thing that can reach this container, and it always
+      # sits in a private Docker subnet.
+      TRUSTED_PROXIES: private_ranges
+
+      DATABASE_URL: mysql://rating_user:${MYSQL_PASSWORD}@db:3306/rating?charset=utf8mb4
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+
+      REDIS_URL: redis://redis:6379/1
+      REDIS_SESSION_URL: redis://redis:6379/2
+      REDIS_RATE_LIMITER_URL: redis://redis:6379/3
+
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      # The app sends no mail yet; swap for a real SMTP DSN when it does.
+      MAILER_DSN: null://null
+    volumes:
+      # Only var/uploads is persisted: var/cache is baked into the image and
+      # must stay immutable per release.
+      - app_uploads:/var/www/html/var/uploads
+    logging: *default-logging
+
+  db:
+    image: mysql:9.7
+    restart: unless-stopped
+    # No published ports: reachable only from the app container.
+    expose:
+      - "3306"
+    environment:
+      TZ: Europe/Kyiv
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: rating
+      MYSQL_USER: rating_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
+      - ./docker/mysql/prod.cnf:/etc/mysql/conf.d/prod.cnf:ro
+    logging: *default-logging
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    expose:
+      - "6379"
+    # volatile-lru evicts only keys that carry a TTL (cache entries, sessions),
+    # never the keys the app stores without one.
+    command:
+      - redis-server
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - volatile-lru
+      - --save
+      - "900"
+      - "1"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis_data:/data
+    logging: *default-logging
+
+volumes:
+  db_data:
+  redis_data:
+  app_uploads:
+  caddy_data:
+  caddy_config:

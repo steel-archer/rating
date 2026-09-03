@@ -134,6 +134,12 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 Він встановить залежності, застосує міграції та очистить кеш.
 
+## Продакшн
+
+Продакшн-стек живе в `docker-compose.prod.yml`: Caddy, застосунок, MySQL і
+Redis. Збірка образу, конфігурація та розгортання описані окремо:
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ## Для розробників
 
 ### Встановлення залежностей PHP (наприклад, після зміни composer.json)
