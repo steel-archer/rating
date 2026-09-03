@@ -22,6 +22,7 @@ final readonly class BlockedUserSubscriber implements EventSubscriberInterface
         'auth_google_start',
         'auth_logout',
         'license',
+        'privacy',
     ];
 
     public function __construct(

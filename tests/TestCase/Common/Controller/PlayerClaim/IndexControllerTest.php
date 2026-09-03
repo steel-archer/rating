@@ -23,6 +23,7 @@ class IndexControllerTest extends WebTestCase
         ?string $loginAs,
         int $expectedStatus,
         ?string $expectedRedirect,
+        ?callable $afterCallback = null,
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
@@ -37,6 +38,10 @@ class IndexControllerTest extends WebTestCase
         if ($expectedRedirect !== null) {
             static::assertResponseRedirects($expectedRedirect);
         }
+
+        if ($afterCallback !== null) {
+            $afterCallback($client);
+        }
     }
 
     /**
@@ -50,14 +55,21 @@ class IndexControllerTest extends WebTestCase
             'loginAs' => null,
             'expectedStatus' => 302,
             'expectedRedirect' => null,
+            'afterCallback' => null,
         ];
 
-        yield 'regular user sees claim page' => [
+        yield 'regular user sees claim page with license and privacy links' => [
             'uri' => '/player-claim',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,
             'expectedRedirect' => null,
+            'afterCallback' => static function ($client) {
+                static::assertSelectorExists('.checkbox-label a[href="/license"]');
+                static::assertSelectorExists('.checkbox-label a[href="/privacy"]');
+                static::assertSelectorTextContains('.checkbox-label', 'умови користування сервісом');
+                static::assertSelectorTextContains('.checkbox-label', 'політикою конфіденційності');
+            },
         ];
 
         yield 'user with player redirects to home' => [
@@ -66,6 +78,7 @@ class IndexControllerTest extends WebTestCase
             'loginAs' => 'user_with_player',
             'expectedStatus' => 302,
             'expectedRedirect' => '/',
+            'afterCallback' => null,
         ];
 
         yield 'admin redirects to home' => [
@@ -74,6 +87,7 @@ class IndexControllerTest extends WebTestCase
             'loginAs' => 'user_admin',
             'expectedStatus' => 302,
             'expectedRedirect' => '/',
+            'afterCallback' => null,
         ];
 
         yield 'user with pending claim redirects to submitted' => [
@@ -82,6 +96,7 @@ class IndexControllerTest extends WebTestCase
             'loginAs' => 'user_regular',
             'expectedStatus' => 302,
             'expectedRedirect' => '/player-claim/submitted',
+            'afterCallback' => null,
         ];
     }
 }
