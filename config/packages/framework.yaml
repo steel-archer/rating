@@ -13,3 +13,16 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+
+when@prod:
+    framework:
+        # The app only ever answers through the Caddy reverse proxy, which runs
+        # in a private Docker network. Without this, Symfony sees Caddy's IP as
+        # the client (breaking rate limiting) and builds http:// URLs (breaking
+        # the Google OAuth redirect).
+        trusted_proxies: '%env(TRUSTED_PROXIES)%'
+        trusted_headers:
+            - 'x-forwarded-for'
+            - 'x-forwarded-host'
+            - 'x-forwarded-proto'
+            - 'x-forwarded-port'

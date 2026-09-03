@@ -9,5 +9,8 @@ node_modules
 .env.local
 .env.test
 docker-compose.yml
+docker-compose.dev.yml
+docker-compose.prod.yml
+.env.prod.dist
 README.md
 LICENSE

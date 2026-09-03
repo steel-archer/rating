@@ -19,7 +19,9 @@ RUN --mount=type=cache,target=/var/cache/apt apt-get update \
 RUN echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short-open-tag.ini \
     && echo 'date.timezone = Europe/Kyiv' > /usr/local/etc/php/conf.d/timezone.ini \
     && echo 'memory_limit = 256M' > /usr/local/etc/php/conf.d/memory-limit.ini \
-    && echo 'expose_php = Off' > /usr/local/etc/php/conf.d/security.ini
+    && echo 'expose_php = Off' > /usr/local/etc/php/conf.d/security.ini \
+    && printf 'upload_max_filesize = 12M\npost_max_size = 16M\n' \
+        > /usr/local/etc/php/conf.d/uploads.ini
 RUN a2enmod rewrite headers
 RUN sed -i 's/ServerTokens OS/ServerTokens Prod/' /etc/apache2/conf-available/security.conf \
     && sed -i 's/ServerSignature On/ServerSignature Off/' /etc/apache2/conf-available/security.conf
@@ -51,6 +53,7 @@ ENV MESSENGER_TRANSPORT_DSN="doctrine://default?queue_name=async"
 ENV REDIS_RATE_LIMITER_URL="redis://127.0.0.1:6379"
 ENV REDIS_SESSION_URL="redis://127.0.0.1:6379"
 ENV REDIS_URL="redis://127.0.0.1:6379"
+ENV TRUSTED_PROXIES="private_ranges"
 
 FROM php-base-with-composer AS php-dev
 ARG PIE_VER
@@ -121,10 +124,22 @@ ARG APP_DIR
 ARG PHP_USER
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
+ENV TRUSTED_PROXIES=private_ranges
+RUN printf 'ServerName localhost\n\n<IfModule mpm_prefork_module>\n\
+    StartServers            4\n\
+    MinSpareServers         4\n\
+    MaxSpareServers         10\n\
+    MaxRequestWorkers       48\n\
+    MaxConnectionsPerChild  1000\n\
+</IfModule>\n' > /etc/apache2/conf-available/mpm-tuning.conf \
+    && a2enconf mpm-tuning
 COPY --link docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 COPY --link --from=php-base-with-app-prod ${APP_DIR} ${APP_DIR}
+RUN printf 'opcache.enable=1\nopcache.validate_timestamps=0\nopcache.memory_consumption=128\nopcache.interned_strings_buffer=16\nopcache.max_accelerated_files=20000\n' \
+        > /usr/local/etc/php/conf.d/opcache-prod.ini
 RUN mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \
+    ${APP_DIR}/var/uploads/tournament_documents \
     && chown -R ${PHP_USER}:${PHP_USER} ${APP_DIR}/var
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
