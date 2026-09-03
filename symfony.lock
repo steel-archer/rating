@@ -92,6 +92,9 @@
             "bin/phpunit"
         ]
     },
+    "sentry/sentry-symfony": {
+        "version": "5.13.0"
+    },
     "squizlabs/php_codesniffer": {
         "version": "4.0",
         "recipe": {

@@ -56,9 +56,30 @@ cp .env.prod.dist .env
 | `APP_SECRET` | `openssl rand -hex 32` |
 | `MYSQL_ROOT_PASSWORD`, `MYSQL_PASSWORD` | `openssl rand -hex 32` |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google Cloud Console → Credentials → OAuth client |
+| `SENTRY_DSN` | DSN з Sentry → Project → Settings → Client Keys (DSN). Порожнє значення вимикає Sentry |
 
 Дозволений redirect URI в OAuth-клієнті має бути
 `https://<DOMAIN>/connect/google/check`.
+
+## Моніторинг помилок (Sentry)
+
+Sentry активний **лише в prod** (бандл вмикається тільки для цього середовища),
+тому в dev і test нічого не надсилається. Захоплення необроблених винятків
+виконує вбудований listener бандла; повідомлення логів рівня `INFO` і вище
+додаються до подій як breadcrumbs для контексту. Трасування продуктивності
+вимкнене (`traces_sample_rate: 0.0`), щоб уміститися в безкоштовний план —
+за потреби його можна підняти в `config/packages/sentry.yaml`.
+
+Перед надсиланням кожну подію проганяє `App\Common\Sentry\SentryEventSanitizer`
+(колбек `before_send`): він викидає cookies і query string, маскує заголовки
+автентифікації (`Authorization`, `Cookie`, CSRF) і чутливі поля тіла запиту
+(паролі, токени, а також персональні контакти — телефон, email, telegram,
+facebook). Тобто в Sentry потрапляє достатньо контексту для дебагу, але без
+секретів і персональних даних. Список полів — у константах санітайзера.
+
+Без заданого `SENTRY_DSN` SDK просто не надсилає нічого — застосунок працює
+як зазвичай. Щоб увімкнути моніторинг, створіть проєкт у Sentry, скопіюйте
+DSN у `.env` і перестворіть контейнер застосунку.
 
 `TRUSTED_PROXIES` задається у Compose-файлі, а не в `.env`: застосунок завжди
 відповідає лише через Caddy у приватній підмережі Docker. Без цієї змінної

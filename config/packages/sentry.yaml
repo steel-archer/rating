@@ -1,0 +1,16 @@
+when@prod:
+    sentry:
+        # Empty DSN disables the SDK, so a missing SENTRY_DSN is safe.
+        dsn: '%env(default::SENTRY_DSN)%'
+        options:
+            environment: '%kernel.environment%'
+            # Send request bodies and user context to help with debugging.
+            # Sensitive fields are masked by the before_send callback below.
+            send_default_pii: true
+            # Performance tracing is disabled: the free plan has a small quota
+            # and error monitoring alone covers current needs. Raise this
+            # (e.g. 0.2) later if distributed tracing becomes useful.
+            traces_sample_rate: 0.0
+            # Scrub cookies, auth headers and personal contact fields from
+            # every event before it is sent. Value is a service id.
+            before_send: 'App\Common\Sentry\SentryEventSanitizer'
