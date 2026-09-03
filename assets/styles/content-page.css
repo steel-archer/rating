@@ -1,0 +1,21 @@
+.content-page p {
+    margin-bottom: 16px;
+}
+
+.content-page h2 {
+    margin-top: 32px;
+    margin-bottom: 12px;
+}
+
+.content-page ul {
+    margin: 0 0 16px;
+    padding-left: 24px;
+}
+
+.content-page li {
+    margin-bottom: 8px;
+}
+
+.content-page li:last-child {
+    margin-bottom: 0;
+}

@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'privacy.title'|trans }} — {{ parent() }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'privacy.title'|trans }}</h1>
+    <div class="content-page">
+        <p>{{ 'privacy.intro'|trans }}</p>
+
+        <h2>1. {{ 'privacy.section.data_collected'|trans }}</h2>
+        <p>{{ 'privacy.text.data_collected_intro'|trans }}</p>
+        <ul>
+            <li>{{ 'privacy.text.data_google'|trans }}</li>
+            <li>{{ 'privacy.text.data_profile'|trans }}</li>
+            <li>{{ 'privacy.text.data_gameplay'|trans }}</li>
+            <li>{{ 'privacy.text.data_technical'|trans }}</li>
+        </ul>
+
+        <h2>2. {{ 'privacy.section.purpose'|trans }}</h2>
+        <p>{{ 'privacy.text.purpose_intro'|trans }}</p>
+        <ul>
+            <li>{{ 'privacy.text.purpose_auth'|trans }}</li>
+            <li>{{ 'privacy.text.purpose_profile'|trans }}</li>
+            <li>{{ 'privacy.text.purpose_ratings'|trans }}</li>
+            <li>{{ 'privacy.text.purpose_security'|trans }}</li>
+        </ul>
+
+        <h2>3. {{ 'privacy.section.google'|trans }}</h2>
+        <p>{{ 'privacy.text.google'|trans }}</p>
+
+        <h2>4. {{ 'privacy.section.sharing'|trans }}</h2>
+        <p>{{ 'privacy.text.sharing'|trans }}</p>
+
+        <h2>5. {{ 'privacy.section.visibility'|trans }}</h2>
+        <p>{{ 'privacy.text.visibility'|trans }}</p>
+
+        <h2>6. {{ 'privacy.section.retention'|trans }}</h2>
+        <p>{{ 'privacy.text.retention'|trans }}</p>
+
+        <h2>7. {{ 'privacy.section.rights'|trans }}</h2>
+        <p>{{ 'privacy.text.rights'|trans }}</p>
+
+        <h2>8. {{ 'privacy.section.security'|trans }}</h2>
+        <p>{{ 'privacy.text.security'|trans }}</p>
+
+        <h2>9. {{ 'privacy.section.changes'|trans }}</h2>
+        <p>{{ 'privacy.text.changes'|trans }}</p>
+
+        <p>{{ 'privacy.contact'|trans }}: <a href="mailto:rating.support@gmail.com">rating.support@gmail.com</a></p>
+    </div>
+{% endblock %}

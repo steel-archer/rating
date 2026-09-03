@@ -32,7 +32,7 @@
     <label class="checkbox-label" for="claim-terms">
         <input type="checkbox" id="claim-terms" class="checkbox-input" required>
         <span class="checkbox-box"></span>
-        <span>{{ 'player_claim.terms_accept'|trans({'%url%': path('license')})|raw }}</span>
+        <span>{{ 'player_claim.terms_accept'|trans({'%license_url%': path('license'), '%privacy_url%': path('privacy')})|raw }}</span>
     </label>
 
     <div class="cards-row">
