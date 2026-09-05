@@ -41,11 +41,7 @@ jobs:
       - name: Build images
         run: |
 
-          if [[ "$GITHUB_REF" == "refs/heads/master" && "$GITHUB_EVENT_NAME" != "pull_request" ]]; then
-            PUSH_CACHE=1
-          else
-            PUSH_CACHE=0
-          fi
+          PUSH_CACHE=1
 
           build_image() {
             local target="$1"
