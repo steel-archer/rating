@@ -94,7 +94,7 @@ ENV APP_ENV=test
 ENV APP_DEBUG=1
 COPY --link docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
-COPY --link --from=php-base-with-app-test ${APP_DIR}/package.json ${APP_DIR}/package-lock.json ${APP_DIR}
+COPY --link --from=php-base-with-app-test ${APP_DIR}/package.json ${APP_DIR}/package-lock.json ${APP_DIR}/
 RUN npm install
 COPY --link --from=php-base-with-app-test ${APP_DIR} ${APP_DIR}
 RUN mkdir -p ${APP_DIR}/var/cache ${APP_DIR}/var/log \

@@ -32,25 +32,41 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Log in to ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Set up Docker Buildx builder
+        run: docker buildx create --use --driver docker-container --name ci-builder
+
       - name: Build images
         run: |
-          docker build -f docker/Dockerfile --target php-dev \
-            -t "$PHP_DEV_IMAGE:latest" \
-            -t "$PHP_DEV_IMAGE:v0.0.0-SNAPSHOT" \
-            -t "$PHP_DEV_IMAGE:${{ github.sha }}" \
-            .
 
-          docker build -f docker/Dockerfile --target rating-app-test \
-            -t "$RATING_APP_TEST_IMAGE:latest" \
-            -t "$RATING_APP_TEST_IMAGE:v0.0.0-SNAPSHOT" \
-            -t "$RATING_APP_TEST_IMAGE:${{ github.sha }}" \
-            .
+          if [[ "$GITHUB_REF" == "refs/heads/master" && "$GITHUB_EVENT_NAME" != "pull_request" ]]; then
+            PUSH_CACHE=1
+          else
+            PUSH_CACHE=0
+          fi
 
-          docker build -f docker/Dockerfile --target rating-app \
-            -t "$RATING_APP_IMAGE:latest" \
-            -t "$RATING_APP_IMAGE:v0.0.0-SNAPSHOT" \
-            -t "$RATING_APP_IMAGE:${{ github.sha }}" \
-            .
+          build_image() {
+            local target="$1"
+            local image="$2"
+            local cache_args=(--cache-from "type=registry,ref=${image}:buildcache")
+            if [[ "$PUSH_CACHE" == "1" ]]; then
+              cache_args+=(--cache-to "type=registry,ref=${image}:buildcache,mode=max")
+            fi
+
+            docker buildx build -f docker/Dockerfile --target "$target" \
+              -t "${image}:latest" \
+              -t "${image}:v0.0.0-SNAPSHOT" \
+              -t "${image}:${GITHUB_SHA}" \
+              "${cache_args[@]}" \
+              --load \
+              .
+          }
+
+          build_image php-dev "$PHP_DEV_IMAGE"
+          build_image rating-app-test "$RATING_APP_TEST_IMAGE"
+          build_image rating-app "$RATING_APP_IMAGE"
 
       - name: Run app
         run: |
@@ -149,14 +165,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-      - name: Log in to ghcr.io
-        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images
         if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
