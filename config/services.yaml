@@ -30,6 +30,13 @@ services:
         arguments:
             $environment: '%kernel.environment%'
 
+    # Monolog handler that turns log records into Sentry breadcrumbs. Wired as
+    # the "sentry_breadcrumbs" handler in config/packages/monolog.yaml.
+    Sentry\Monolog\BreadcrumbHandler:
+        arguments:
+            $hub: '@Sentry\State\HubInterface'
+            $level: !php/const Monolog\Level::Info
+
     App\Common\EventSubscriber\RateLimitSubscriber:
         arguments:
             $rateLimiters: !service_locator

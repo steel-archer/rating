@@ -1,6 +1,15 @@
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+    handlers:
+        # Record log messages as Sentry breadcrumbs so captured exceptions carry
+        # the events that led up to them. Enabled in every environment: the
+        # handler only stores context in memory, and without a DSN nothing is
+        # ever sent, so it is inert in dev/test. Service defined in services.yaml.
+        sentry_breadcrumbs:
+            type: service
+            id: Sentry\Monolog\BreadcrumbHandler
+            channels: ["!event", "!doctrine"]
 
 when@dev:
     monolog:
