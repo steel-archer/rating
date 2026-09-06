@@ -25,4 +25,7 @@ return [
     '@hotwired/turbo' => [
         'version' => '8.0.23',
     ],
+    'es-module-shims' => [
+        'version' => '2.8.4',
+    ],
 ];
