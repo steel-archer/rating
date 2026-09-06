@@ -1,6 +1,5 @@
 // @ts-check
 import './stimulus_bootstrap.js';
-import './styles/app.css';
 import './officials-suggest.js';
 import './player-claim.js';
 import './session-claim.js';
