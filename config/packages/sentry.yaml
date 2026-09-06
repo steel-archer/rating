@@ -17,3 +17,13 @@ sentry:
         # Scrub cookies, auth headers and personal contact fields from
         # every event before it is sent. Value is a service id.
         before_send: 'App\Common\Sentry\SentryEventSanitizer'
+        # These exceptions are normal HTTP outcomes, not application faults, so
+        # they would only bury real errors in noise. NotFoundHttpException fires
+        # on every bogus URL a client requests (crawlers, stale links, probes).
+        # AccessDeniedException fires whenever an authorization check legitimately
+        # denies a request (e.g. a user without ROLE_PLAYER opening a players-only
+        # page). The match includes subclasses, so more specific variants are
+        # covered too.
+        ignore_exceptions:
+            - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
+            - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
