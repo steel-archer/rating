@@ -88,6 +88,11 @@
     color: var(--text-secondary);
 }
 
+.tournament-form .hint-warning {
+    margin-bottom: 8px;
+    color: var(--warning, #e6a700);
+}
+
 .tournament-form .btn {
     font-size: 1rem;
     padding: 10px 24px;
@@ -204,6 +209,13 @@
     font-size: 0.9375rem;
     padding: 8px 18px;
     border-radius: 8px;
+}
+
+.action-with-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-basis: 100%;
 }
 
 .btn-primary {

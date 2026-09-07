@@ -60,10 +60,9 @@ class EditControllerTest extends WebTestCase
                 static::assertSame('2025-06-01', $dateInput->attr('min'));
                 static::assertSame('2025-06-30', $dateInput->attr('max'));
 
-                $hint = $crawler->filter('#session-claim-edit-form .hint');
-                static::assertCount(1, $hint);
-                static::assertStringContainsString('01.06.2025', $hint->text());
-                static::assertStringContainsString('30.06.2025', $hint->text());
+                $hintsText = $crawler->filter('#session-claim-edit-form .hint')->text();
+                static::assertStringContainsString('01.06.2025', $hintsText);
+                static::assertStringContainsString('30.06.2025', $hintsText);
             },
         ];
 
@@ -96,7 +95,7 @@ class EditControllerTest extends WebTestCase
             },
         ];
 
-        yield 'approved claim shows documents section' => [
+        yield 'approved claim does not expose question package but notifies about host access' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_approved']->getId() . '/edit',
@@ -104,6 +103,13 @@ class EditControllerTest extends WebTestCase
             'afterCallback' => static function (KernelBrowser $client) {
                 $crawler = $client->getCrawler();
                 static::assertCount(1, $crawler->filter('#session-claim-edit-form'));
+                // The question package must not be reachable from the claim edit page anymore.
+                static::assertCount(0, $crawler->filter('a.document-link'));
+                // The representative is told the package is available to the host elsewhere.
+                static::assertStringContainsString(
+                    'Відіграші, які я веду',
+                    $crawler->filter('.flash-info')->text(),
+                );
             },
         ];
 

@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 parameters:
     app.upload_dir: '%kernel.project_dir%/var/uploads/tournament_documents'
+    # Defaults to enabled for the current alpha-testing period, so the env var
+    # is optional. Set ALPHA_TESTING_MODE=0 on an environment to hide the banner.
+    app.alpha_testing_mode_default: '1'
+    app.alpha_testing_mode: '%env(default:app.alpha_testing_mode_default:bool:ALPHA_TESTING_MODE)%'
 
 services:
     _defaults:
@@ -25,6 +29,10 @@ services:
     App\Common\Service\MaintenanceService:
         arguments:
             $cache: '@cache.app'
+
+    App\Common\Service\AlphaTestingService:
+        arguments:
+            $enabled: '%app.alpha_testing_mode%'
 
     App\Common\EventSubscriber\SecurityHeadersSubscriber:
         arguments:

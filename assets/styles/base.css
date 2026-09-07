@@ -8,6 +8,12 @@
 
 html {
     font-size: 18px;
+
+    /* Always show the vertical scrollbar so page width stays constant whether
+       or not content overflows. Unlike scrollbar-gutter this leaves no empty
+       stripe, so full-width elements (banners, header) reach the scrollbar and
+       layout stays consistent across pages. */
+    overflow-y: scroll;
 }
 
 :root {
@@ -163,6 +169,22 @@ a:hover {
 .btn-muted:hover {
     background: #d1d5db;
     color: #374151;
+}
+
+.tournament-actions {
+    margin: 16px 0 24px;
+}
+
+.tournament-actions .btn {
+    display: inline-block;
+    padding: 10px 24px;
+    font-size: 0.9375rem;
+    text-decoration: none;
+}
+
+.tournament-actions .btn:hover {
+    opacity: 0.9;
+    text-decoration: none;
 }
 
 .form-group {

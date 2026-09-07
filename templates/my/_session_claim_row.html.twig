@@ -18,11 +18,7 @@
                                     {{ include('_contacts_button.html.twig', {contacts: claim.playerContacts}, with_context: false) }}
                                 </td>
                                 <td>
-                                    {% if claim.hostId %}
-                                        {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
+                                    {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
                                 </td>
                                 {% if showActions is defined and showActions %}
                                     <td>

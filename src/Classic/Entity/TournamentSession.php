@@ -39,7 +39,8 @@ class TournamentSession
     private Player $representative;
 
     #[ORM\ManyToOne]
-    private ?Player $host = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private Player $host;
 
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $playedAt = null;
@@ -109,12 +110,12 @@ class TournamentSession
         return $this;
     }
 
-    public function getHost(): ?Player
+    public function getHost(): Player
     {
         return $this->host;
     }
 
-    public function setHost(?Player $host): static
+    public function setHost(Player $host): static
     {
         $this->host = $host;
 

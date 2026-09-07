@@ -28,6 +28,32 @@ class TournamentDocumentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @param list<int> $tournamentIds
+     * @return array<int, int> map of tournamentId => document count
+     */
+    public function countByTournamentIds(array $tournamentIds): array
+    {
+        if ($tournamentIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('d')
+            ->select('IDENTITY(d.tournament) AS tournamentId', 'COUNT(d.id) AS documentCount')
+            ->where('IDENTITY(d.tournament) IN (:tournamentIds)')
+            ->setParameter('tournamentIds', $tournamentIds)
+            ->groupBy('d.tournament')
+            ->getQuery()
+            ->getArrayResult();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[(int) $row['tournamentId']] = (int) $row['documentCount'];
+        }
+
+        return $counts;
+    }
+
     public function countByTournament(Tournament $tournament): int
     {
         return (int) $this->createQueryBuilder('d')

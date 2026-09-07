@@ -44,6 +44,7 @@ App\Classic\Entity\TournamentSession:
         tournament: '@tournament_dispute_hidden'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("-15 days"))>'
         estimatedTeams: 2
 

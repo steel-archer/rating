@@ -12,9 +12,11 @@ use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentModerationClaimRepository;
 use App\Classic\Service\TournamentDisputeAccessService;
 use App\Classic\Service\TournamentService;
+use App\Common\Repository\VenueRepresentativeRepository;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/tournament/{id}', name: 'tournament_show', requirements: ['id' => '\d+'], methods: ['GET'])]
@@ -23,12 +25,14 @@ class ShowController extends AbstractController
     /**
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
+     * @throws NotFoundHttpException
      */
     public function __invoke(
         int $id,
         TournamentService $tournamentService,
         TournamentModerationClaimRepository $claimRepository,
         TournamentDisputeAccessService $disputeAccessService,
+        VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
     ): Response {
         $tournament = $tournamentService->get($id);
@@ -50,13 +54,21 @@ class ShowController extends AbstractController
             : null;
 
         $tournamentEntity = $tournamentService->getEntity($id);
-        $canViewDisputes = $disputeAccessService->canView($tournamentEntity, $user->getPlayer());
+        $player = $user->getPlayer();
+        $canViewDisputes = $disputeAccessService->canView($tournamentEntity, $player);
+
+        // A player may register to host a session only while registration is open,
+        // and they represent at least one approved venue.
+        $canSubmitClaim = $tournamentEntity->isRegistrationOpen()
+            && $player !== null
+            && $representativeRepository->hasVenuesByPlayer($player);
 
         return $this->render('tournament/show.html.twig', [
             'tournament' => $tournament,
             'moderationClaim' => $claim !== null ? $mapper->map($claim, ModerationClaimDTO::class) : null,
             'canViewDisputes' => $canViewDisputes,
             'canViewAppeals' => $canViewDisputes,
+            'canSubmitClaim' => $canSubmitClaim,
         ]);
     }
 }

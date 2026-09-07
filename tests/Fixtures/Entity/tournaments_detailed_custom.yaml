@@ -20,6 +20,7 @@ App\Classic\Entity\TournamentSession:
         tournament: '@tournament_detailed_custom'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
 
 App\Classic\Entity\TournamentSessionTeam:

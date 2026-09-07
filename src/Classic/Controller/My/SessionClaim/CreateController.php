@@ -52,6 +52,8 @@ class CreateController extends AbstractController
         return $this->render('my/session_claim_create.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
             'venues' => $venues,
+            'defaultHostId' => $player->getId(),
+            'defaultHostName' => $player->getFullName(),
         ]);
     }
 }

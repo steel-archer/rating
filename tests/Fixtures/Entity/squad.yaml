@@ -26,12 +26,14 @@ App\Classic\Entity\TournamentSession:
         tournament: '@tournament_squad'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("-1 day"))>'
         estimatedTeams: 8
     session_squad_future:
         tournament: '@tournament_squad'
         venue: '@venue_lviv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("+7 days"))>'
         estimatedTeams: 5
 

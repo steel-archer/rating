@@ -27,15 +27,9 @@
         {% endif %}
     </div>
 
-    {% if claim.status == 'approved' and documents is defined and documents is not empty %}
-        <div class="card">
-            <h2>{{ 'tournament.document.title'|trans }}</h2>
-            {% for doc in documents %}
-                <div class="document-entry">
-                    <a href="{{ path('my_tournament_document_download', {id: doc.id}) }}" class="document-link">{{ doc.originalName }}</a>
-                    <span class="document-size">({{ (doc.size / 1024)|round(0) }} KB)</span>
-                </div>
-            {% endfor %}
+    {% if claim.status == 'approved' %}
+        <div class="flash flash-info">
+            {{ 'session_claim.host_package_notice'|trans({'%host%': claim.hostName}) }}
         </div>
     {% endif %}
 
@@ -54,17 +48,16 @@
                 <input type="number" id="edit-teams" name="estimatedTeams" min="1" value="{{ claim.estimatedTeams }}" {{ not isRegistrationOpen ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
-                <label>{{ 'venue.host'|trans }}</label>
+                <label>{{ 'venue.host'|trans }} *</label>
+                <small class="hint">{{ 'session_claim.host_hint'|trans }}</small>
                 <div class="officials-group" data-role="host" data-single>
-                    {% if claim.hostId %}
-                        <div class="official-entry">
-                            <input type="hidden" name="hostId" value="{{ claim.hostId }}">
-                            {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
-                            {% if isRegistrationOpen %}
-                                <button type="button" class="btn-remove">×</button>
-                            {% endif %}
-                        </div>
-                    {% endif %}
+                    <div class="official-entry">
+                        <input type="hidden" name="hostId" value="{{ claim.hostId }}">
+                        {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
+                        {% if isRegistrationOpen %}
+                            <button type="button" class="btn-remove">×</button>
+                        {% endif %}
+                    </div>
                 </div>
                 {% if isRegistrationOpen %}
                     <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">

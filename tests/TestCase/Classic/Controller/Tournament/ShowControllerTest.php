@@ -156,6 +156,52 @@ class ShowControllerTest extends WebTestCase
             },
         ];
 
+        yield 'venue representative sees session claim button when registration is open' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_festival']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $tournamentId = $objects['tournament_festival']->getId();
+                $button = $crawler->filter(
+                    '.tournament-actions a[href="/my/session-claims/create/' . $tournamentId . '"]',
+                );
+                static::assertCount(1, $button, 'Expected session claim button on tournament page');
+                static::assertStringContainsString('Подати заявку на відіграш', $button->text());
+            },
+        ];
+
+        yield 'non-representative does not see session claim button' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_festival']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(
+                    0,
+                    $crawler->filter('a[href*="/my/session-claims/create/"]'),
+                    'Non-representative must not see the session claim button',
+                );
+            },
+        ];
+
+        yield 'session claim button hidden when registration is closed' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(
+                    0,
+                    $crawler->filter('a[href*="/my/session-claims/create/"]'),
+                    'Session claim button must be hidden when registration is closed',
+                );
+            },
+        ];
+
         yield 'not found for non-existent tournament' => [
             'method' => 'GET',
             'uri' => '/tournament/999999',

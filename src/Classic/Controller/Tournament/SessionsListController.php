@@ -8,6 +8,7 @@ use App\Common\DTO\Request\PageRequestDTO;
 use App\Classic\DTO\Response\Tournament\SessionDTO;
 use App\Classic\DTO\Response\Tournament\TournamentContextDTO;
 use App\Classic\Entity\Tournament;
+use App\Common\Entity\User;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentSessionRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
@@ -32,10 +33,14 @@ class SessionsListController extends AbstractController
             array_map(static fn($s) => $s->getId(), $sessions),
         );
 
+        /** @var User $user */
+        $user = $this->getUser();
+
         return $this->render('tournament/_sessions.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
             'sessions' => $mapper->mapMultiple($sessions, SessionDTO::class),
             'teamCounts' => $teamCounts,
+            'currentPlayerId' => $user->getPlayer()?->getId(),
             'page' => $dto->page,
             'lastPage' => $sessionRepository->getLastPageNumberByTournament($tournament),
         ]);

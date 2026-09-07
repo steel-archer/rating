@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'hosted_session.package'|trans }}: {{ session.venueName }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_hosted_sessions') }}">{{ 'hosted_session.my_title'|trans }}</a></span><span>{{ session.venueName }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'hosted_session.package'|trans }}: {{ session.venueName }}</h1>
+
+    <div class="card">
+        <dl>
+            <dt>{{ 'common.tournament'|trans }}</dt>
+            <dd><a href="{{ path('tournament_show', {id: session.tournamentId}) }}">{{ session.tournamentName }}</a></dd>
+            <dt>{{ 'venue.venue'|trans }}</dt>
+            <dd>{{ session.venueName }} ({{ session.townName }})</dd>
+            <dt>{{ 'session_claim.estimated_date'|trans }}</dt>
+            <dd>{{ session.playedAt ? session.playedAt|date('d.m.Y') : '—' }}</dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <h2>{{ 'hosted_session.package'|trans }}</h2>
+        <p class="hint">{{ 'hosted_session.package_hint'|trans }}</p>
+        {% if session.documents is empty %}
+            <p class="empty-state">{{ 'hosted_session.no_package'|trans }}</p>
+        {% else %}
+            {% for doc in session.documents %}
+                <div class="document-entry">
+                    <a href="{{ path('my_tournament_document_download', {id: doc.id}) }}" class="document-link">{{ doc.originalName }}</a>
+                    <span class="document-size">({{ (doc.size / 1024)|round(0) }} KB)</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

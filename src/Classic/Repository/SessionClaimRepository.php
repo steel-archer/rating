@@ -43,20 +43,41 @@ class SessionClaimRepository extends ServiceEntityRepository
         return $this->findByOrganizerAndStatus($player, SessionClaimStatus::Approved, activeOnly: true);
     }
 
-    public function hasApprovedByPlayerAndTournament(Player $player, Tournament $tournament): bool
+    public function hasApprovedHostedSession(Player $host, Tournament $tournament): bool
     {
         return (bool) $this->createQueryBuilder('sc')
             ->select('1')
             ->join('sc.session', 's')
-            ->where('s.representative = :player')
+            ->where('s.host = :host')
             ->andWhere('s.tournament = :tournament')
             ->andWhere('sc.status = :status')
-            ->setParameter('player', $player)
+            ->setParameter('host', $host)
             ->setParameter('tournament', $tournament)
             ->setParameter('status', SessionClaimStatus::Approved->value)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @return list<SessionClaim>
+     */
+    public function findApprovedHostedByPlayer(Player $host): array
+    {
+        return $this->createQueryBuilder('sc')
+            ->join('sc.session', 's')
+            ->join('s.tournament', 't')
+            ->join('s.venue', 'v')
+            ->join('v.town', 'town')
+            ->addSelect('s', 't', 'v', 'town')
+            ->where('s.host = :host')
+            ->andWhere('sc.status = :status')
+            ->setParameter('host', $host)
+            ->setParameter('status', SessionClaimStatus::Approved->value)
+            ->orderBy('s.playedAt', 'DESC')
+            ->addOrderBy('t.name', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**

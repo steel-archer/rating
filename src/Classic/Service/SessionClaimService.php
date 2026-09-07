@@ -31,6 +31,7 @@ use App\Common\Service\UserContactsService;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use LogicException;
 use Psr\Cache\InvalidArgumentException;
 
@@ -124,6 +125,7 @@ class SessionClaimService
     /**
      * @throws DateMalformedStringException
      * @throws LogicException
+     * @throws NonUniqueResultException
      */
     public function submit(Tournament $tournament, Player $player, ClaimRequestDTO $dto): void
     {
@@ -146,7 +148,7 @@ class SessionClaimService
         $playedAt = $dto->playedAt !== null ? new DateTimeImmutable($dto->playedAt) : null;
         $this->validateDate($tournament, $playedAt);
 
-        $host = $dto->hostId !== null ? $this->playerRepository->find($dto->hostId) : null;
+        $host = $this->resolveHost($dto->hostId);
 
         $session = new TournamentSession();
         $session->setTournament($tournament);
@@ -175,6 +177,7 @@ class SessionClaimService
     /**
      * @throws DateMalformedStringException
      * @throws LogicException
+     * @throws NonUniqueResultException
      */
     public function update(TournamentSession $session, Player $player, UpdateRequestDTO $dto): void
     {
@@ -189,11 +192,31 @@ class SessionClaimService
 
         $session->setPlayedAt($playedAt);
         $session->setEstimatedTeams($dto->estimatedTeams);
-        $session->setHost(
-            $dto->hostId !== null ? $this->playerRepository->find($dto->hostId) : null,
-        );
+        $session->setHost($this->resolveHost($dto->hostId));
 
         $this->em->flush();
+    }
+
+    /**
+     * @throws LogicException
+     * @throws NonUniqueResultException
+     */
+    private function resolveHost(?int $hostId): Player
+    {
+        if ($hostId === null) {
+            throw new LogicException('session_claim.error.host_required');
+        }
+
+        // findWithTown eager-loads the user relation, so hasUser() is reliable
+        // (the inverse OneToOne side is not lazy-loaded via find()).
+        $host = $this->playerRepository->findWithTown($hostId)
+            ?? throw new LogicException('session_claim.error.host_not_found');
+
+        if (!$host->hasUser()) {
+            throw new LogicException('session_claim.error.host_no_account');
+        }
+
+        return $host;
     }
 
     /**

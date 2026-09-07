@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'hosted_session.my_title'|trans }} — {{ 'site.title'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'hosted_session.my_title'|trans }}</span></nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ 'hosted_session.my_title'|trans }}</h1>
+
+    {% if sessions is empty %}
+        <p class="empty-state">{{ 'hosted_session.my_empty'|trans }}</p>
+    {% else %}
+        <div class="card card-wide">
+            <table aria-label="{{ 'hosted_session.my_title'|trans }}">
+                <thead>
+                    <tr>
+                        <th>{{ 'common.tournament'|trans }}</th>
+                        <th>{{ 'venue.venue'|trans }}</th>
+                        <th>{{ 'common.town'|trans }}</th>
+                        <th>{{ 'session_claim.estimated_date'|trans }}</th>
+                        <th>{{ 'hosted_session.package'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                            <td><a href="{{ path('tournament_show', {id: session.tournamentId}) }}">{{ session.tournamentName }}</a></td>
+                            <td>{{ session.venueName }}</td>
+                            <td>{{ session.townName }}</td>
+                            <td>{{ session.playedAt ? session.playedAt|date('d.m.Y') : '—' }}</td>
+                            <td>
+                                <a href="{{ path('my_hosted_session_show', {id: session.sessionId}) }}" class="btn btn-small">{{ 'hosted_session.open_package'|trans }}{% if session.documentCount > 0 %} ({{ session.documentCount }}){% endif %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

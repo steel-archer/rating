@@ -43,7 +43,10 @@
             <h2>{{ 'tournament.my.actions'|trans }}</h2>
             <div class="actions-card">
                 {% if (not claim or claim.status not in ['pending', 'approved']) and tournament.status != 'published' %}
-                    <button type="button" class="btn btn-primary" data-tournament-submit="{{ tournament.id }}">{{ 'tournament.my.submit_moderation'|trans }}</button>
+                    <div class="action-with-hint">
+                        <button type="button" class="btn btn-primary" data-tournament-submit="{{ tournament.id }}">{{ 'tournament.my.submit_moderation'|trans }}</button>
+                        <span class="format-hint-icon" data-tooltip="{{ 'tournament.my.submit_moderation_hint'|trans }}">?</span>
+                    </div>
                 {% endif %}
 
                 {% if publishErrors is empty and tournament.status != 'published' %}
@@ -163,6 +166,9 @@
             {% for cfg in roleConfig %}
                 <div class="form-group">
                     <label>{{ cfg.label|trans }} <span class="required-publish">{{ 'tournament.my.required_for_publish'|trans }}</span></label>
+                    {% if cfg.role == 'game_jury' %}
+                        <small class="hint hint-warning">{{ 'tournament.my.game_jury_hint'|trans }}</small>
+                    {% endif %}
                     <div class="officials-group" data-role="{{ cfg.key }}">
                         {% set roleOfficials = officials|filter(o => o.role == cfg.role) %}
                         {% for official in roleOfficials %}
@@ -191,10 +197,11 @@
         </form>
     </div>
 
-    {# --- Документи --- #}
+    {# --- Пакет запитань --- #}
     <div class="card">
-        <h2>{{ 'tournament.document.title'|trans }}</h2>
+        <h2>{{ 'tournament.document.package_title'|trans }}</h2>
         <p class="hint">{{ 'tournament.document.hint'|trans }}</p>
+        <p class="hint hint-warning">{{ 'tournament.document.access_hint'|trans }}</p>
 
         <div id="documents-list" data-tournament-id="{{ tournament.id }}">
             {% for doc in documents %}

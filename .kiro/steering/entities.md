@@ -407,6 +407,26 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 |------|-----|------|----------|----------|
 | tournament | ManyToOne | Tournament | — | |
 
+### TournamentDocumentDownload
+
+Аудит-запис про завантаження пакета запитань. Один рядок на кожне завантаження документа ведучим.
+
+**Файл:** `src/Classic/Entity/TournamentDocumentDownload.php`
+
+#### Поля
+
+| Поле | Тип | Nullable | Примітка |
+|------|-----|----------|----------|
+| id | int | — | PK, auto |
+| downloadedAt | DateTimeImmutable | — | |
+
+#### Зв'язки
+
+| Поле | Тип | Ціль | Nullable | Примітка |
+|------|-----|------|----------|----------|
+| document | ManyToOne | TournamentDocument | — | |
+| player | ManyToOne | Player | — | 🔗 Common, ведучий, що завантажив |
+
 ### TournamentModerationClaim
 
 Заявка на модерацію турніру. Визначає статус перевірки турніру модератором.
@@ -480,7 +500,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | tournament | ManyToOne | Tournament | — | |
 | venue | ManyToOne | Venue | — | 🔗 Common |
 | representative | ManyToOne | Player | — | 🔗 Common |
-| host | ManyToOne | Player | ✓ | 🔗 Common |
+| host | ManyToOne | Player | — | 🔗 Common, гравець з акаунтом |
 
 ### TournamentSessionTeam
 

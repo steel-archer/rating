@@ -6,6 +6,7 @@ namespace App\Tests\TestCase\Classic\Controller\My\Tournament\Document;
 
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentDocument;
+use App\Classic\Entity\TournamentDocumentDownload;
 use App\Tests\FixturesTrait;
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -16,12 +17,6 @@ class DownloadDocumentControllerTest extends WebTestCase
 {
     use DocumentTestTrait;
     use FixturesTrait;
-
-    private const array FIXTURES = [
-        'Entity/base.yaml',
-        'Entity/users.yaml',
-        'Entity/my_tournaments.yaml',
-    ];
 
     private const array FIXTURES_WITH_SESSION = [
         'Entity/base.yaml',
@@ -49,7 +44,7 @@ class DownloadDocumentControllerTest extends WebTestCase
         $client->request('GET', '/my/tournaments/documents/' . $documentId . '/download');
 
         static::assertResponseStatusCodeSame($expectedStatus);
-        $afterCallback($client);
+        $afterCallback($client, $objects);
     }
 
     /**
@@ -57,42 +52,42 @@ class DownloadDocumentControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'download as organizer' => [
-            'fixtures' => self::FIXTURES,
-            'downloadAs' => 'user_creator',
-            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::uploadDocumentAs($client, $objects, 'user_creator', 'tournament_draft'),
+        // session_approved: host = player_shevchenko (user_representative), claim approved.
+        yield 'download as host of approved session' => [
+            'fixtures' => self::FIXTURES_WITH_SESSION,
+            'downloadAs' => 'user_representative',
+            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),
             'expectedStatus' => 200,
-            'afterCallback' => static function (KernelBrowser $client) {
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 static::assertStringContainsString(
                     'attachment',
                     $client->getResponse()->headers->get('content-disposition'),
                 );
+
+                // The download is recorded for audit.
+                $downloads = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentDocumentDownload::class)
+                    ->findAll();
+                static::assertCount(1, $downloads);
+                static::assertSame(
+                    $objects['player_shevchenko']->getId(),
+                    $downloads[0]->getPlayer()->getId(),
+                );
             },
         ];
 
-        yield 'download denied for non-authorized user' => [
-            'fixtures' => self::FIXTURES,
-            'downloadAs' => 'user_with_player',
-            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::uploadDocumentAs($client, $objects, 'user_creator', 'tournament_draft'),
+        // Organizer is no longer allowed to download the question package.
+        yield 'download denied for organizer' => [
+            'fixtures' => self::FIXTURES_WITH_SESSION,
+            'downloadAs' => 'user_organizer',
+            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
             },
         ];
 
-        yield 'download as representative with approved claim' => [
-            'fixtures' => self::FIXTURES_WITH_SESSION,
-            'downloadAs' => 'user_representative',
-            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),
-            'expectedStatus' => 200,
-            'afterCallback' => static function (KernelBrowser $client) {
-                static::assertStringContainsString(
-                    'attachment',
-                    $client->getResponse()->headers->get('content-disposition'),
-                );
-            },
-        ];
-
-        yield 'download denied for user without approved claim' => [
+        // A player who is not the host (even with other roles) has no access.
+        yield 'download denied for non-host player' => [
             'fixtures' => self::FIXTURES_WITH_SESSION,
             'downloadAs' => 'user_other',
             'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),

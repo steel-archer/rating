@@ -18,6 +18,9 @@
     {% if is_granted('ROLE_MODERATOR') and is_maintenance_mode() %}
         <div class="maintenance-banner" role="alert">{{ 'maintenance.banner'|trans }}</div>
     {% endif %}
+    {% if is_alpha_testing_mode() %}
+        <div class="alpha-testing-banner" role="alert">{{ 'alpha_testing.banner'|trans }}</div>
+    {% endif %}
     <header>
         <div class="header-inner">
             <a href="{{ path('home') }}" class="logo">Rating</a>
@@ -54,6 +57,7 @@
                                     <a href="{{ path('my_tournaments') }}">{{ 'tournament.my.title'|trans }}</a>
                                     <a href="{{ path('my_tournament_claims') }}">{{ 'session_claim.tournament_claims_title'|trans }}</a>
                                     <a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a>
+                                    <a href="{{ path('my_hosted_sessions') }}">{{ 'hosted_session.my_title'|trans }}</a>
                                     <a href="{{ path('my_disputes') }}">{{ 'dispute.jury_title'|trans }}</a>
                                     <a href="{{ path('my_appeals') }}">{{ 'appeal.jury_title'|trans }}</a>
                                     <a href="{{ path('my_venues') }}">{{ 'venue.my.title'|trans }}</a>
@@ -61,7 +65,7 @@
                             </div>
                         </div>
                     {% else %}
-                        <span>{{ app.user.email }}</span>
+                        <span><a href="mailto:{{ app.user.email }}">{{ app.user.email }}</a></span>
                     {% endif %}
                     <form action="{{ logout_path() }}" method="post" class="logout-form">
                         <button type="submit" class="logout-button">{{ 'auth.logout'|trans }}</button>

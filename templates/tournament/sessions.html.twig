@@ -14,6 +14,8 @@
     </turbo-frame>
 
     {% if canSubmitClaim %}
-        <p><a href="{{ path('my_session_claim_create', {tournamentId: tournament.id}) }}">{{ 'session_claim.submit_title'|trans }}</a></p>
+        <p class="tournament-actions">
+            <a class="btn btn-primary" href="{{ path('my_session_claim_create', {tournamentId: tournament.id}) }}">{{ 'session_claim.submit_title'|trans }}</a>
+        </p>
     {% endif %}
 {% endblock %}

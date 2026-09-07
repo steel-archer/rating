@@ -32,6 +32,7 @@ App\Classic\Entity\TournamentSession:
         tournament: '@tournament_active'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("+1 month +5 days"))>'
         estimatedTeams: 10
 

@@ -58,7 +58,7 @@ App\Classic\Entity\TournamentSession:
         tournament: '@tournament_spring'
         venue: '@venue_lviv'
         representative: '@player_franko'
-        host: null
+        host: '@player_franko'
         playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
     session_autumn_kyiv:
         tournament: '@tournament_autumn'
