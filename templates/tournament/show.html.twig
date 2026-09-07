@@ -16,6 +16,12 @@
         {% if tournament.startedAt %}<span>{{ tournament.startedAt|date('d.m.Y') }}{% if tournament.endedAt %} — {{ tournament.endedAt|date('d.m.Y') }}{% endif %}</span>{% endif %}
     </div>
 
+    {% if canSubmitClaim %}
+        <p class="tournament-actions">
+            <a class="btn btn-primary" href="{{ path('my_session_claim_create', {tournamentId: tournament.id}) }}">{{ 'session_claim.submit_title'|trans }}</a>
+        </p>
+    {% endif %}
+
     <div class="cards-row">
         <div class="card">
             <dl>
