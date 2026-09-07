@@ -1,8 +1,8 @@
-.maintenance-banner {
+.alpha-testing-banner {
     padding: 12px var(--content-padding);
-    background: #ffedd5;
-    border-bottom: 1px solid #fdba74;
-    color: #9a3412;
+    background: #fef3c7;
+    border-bottom: 1px solid #fcd34d;
+    color: #92400e;
     font-size: 0.9375rem;
     font-weight: 500;
     text-align: center;
