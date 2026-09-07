@@ -8,6 +8,12 @@
 
 html {
     font-size: 18px;
+
+    /* Always show the vertical scrollbar so page width stays constant whether
+       or not content overflows. Unlike scrollbar-gutter this leaves no empty
+       stripe, so full-width elements (banners, header) reach the scrollbar and
+       layout stays consistent across pages. */
+    overflow-y: scroll;
 }
 
 :root {
