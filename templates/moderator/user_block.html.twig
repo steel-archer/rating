@@ -14,7 +14,7 @@
     <div class="card">
         <dl>
             <dt><strong>{{ 'common.email'|trans }}</strong></dt>
-            <dd>{{ blockedUser.email }}</dd>
+            <dd><a href="mailto:{{ blockedUser.email }}">{{ blockedUser.email }}</a></dd>
             {% if blockedUser.playerId %}
                 <dt><strong>{{ 'block.player'|trans }}</strong></dt>
                 <dd><a href="{{ path('player_show', {id: blockedUser.playerId}) }}">{{ blockedUser.playerName }}</a></dd>

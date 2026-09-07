@@ -64,7 +64,7 @@
                             </div>
                         </div>
                     {% else %}
-                        <span>{{ app.user.email }}</span>
+                        <span><a href="mailto:{{ app.user.email }}">{{ app.user.email }}</a></span>
                     {% endif %}
                     <form action="{{ logout_path() }}" method="post" class="logout-form">
                         <button type="submit" class="logout-button">{{ 'auth.logout'|trans }}</button>

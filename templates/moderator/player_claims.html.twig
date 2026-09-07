@@ -29,7 +29,7 @@
             <tbody>
                 {% for claim in claims %}
                     <tr>
-                        <td>{{ claim.userEmail }}</td>
+                        <td><a href="mailto:{{ claim.userEmail }}">{{ claim.userEmail }}</a></td>
                         <td>
                             {% if claim.isNew %}
                                 {{ 'moderator.player_claim_new'|trans }}
