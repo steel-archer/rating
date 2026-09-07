@@ -443,6 +443,7 @@ export default {
     "tournament.my.start_time_hint": "Турнір починається о 00:00:00",
     "tournament.my.status": "Статус",
     "tournament.my.submit_moderation": "Подати на модерацію",
+    "tournament.my.submit_moderation_hint": "Турнір перевірить модератор сайту перед публікацією (не плутати з офіційними особами турніру).",
     "tournament.my.submitted_at": "Подано",
     "tournament.my.title": "Мої турніри",
     "tournament.my.tournament_status": "Стан",

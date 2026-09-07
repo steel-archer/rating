@@ -520,6 +520,7 @@ tournament:
     start_time_hint: 'Турнір починається о 00:00:00'
     status: 'Статус'
     submit_moderation: 'Подати на модерацію'
+    submit_moderation_hint: 'Турнір перевірить модератор сайту перед публікацією (не плутати з офіційними особами турніру).'
     submitted_at: 'Подано'
     title: 'Мої турніри'
     tournament_status: 'Стан'
