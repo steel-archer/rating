@@ -6,6 +6,7 @@ namespace App\Tests\TestCase\Classic\Controller\My\Tournament\Document;
 
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentDocument;
+use App\Classic\Entity\TournamentDocumentDownload;
 use App\Tests\FixturesTrait;
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -43,7 +44,7 @@ class DownloadDocumentControllerTest extends WebTestCase
         $client->request('GET', '/my/tournaments/documents/' . $documentId . '/download');
 
         static::assertResponseStatusCodeSame($expectedStatus);
-        $afterCallback($client);
+        $afterCallback($client, $objects);
     }
 
     /**
@@ -57,10 +58,20 @@ class DownloadDocumentControllerTest extends WebTestCase
             'downloadAs' => 'user_representative',
             'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),
             'expectedStatus' => 200,
-            'afterCallback' => static function (KernelBrowser $client) {
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
                 static::assertStringContainsString(
                     'attachment',
                     $client->getResponse()->headers->get('content-disposition'),
+                );
+
+                // The download is recorded for audit.
+                $downloads = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentDocumentDownload::class)
+                    ->findAll();
+                static::assertCount(1, $downloads);
+                static::assertSame(
+                    $objects['player_shevchenko']->getId(),
+                    $downloads[0]->getPlayer()->getId(),
                 );
             },
         ];

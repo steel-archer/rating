@@ -34,6 +34,8 @@ class DownloadDocumentController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        $service->recordDownload($document, $player);
+
         $path = $service->getFilePath($document);
 
         $response = $this->file($path, $document->getOriginalName());

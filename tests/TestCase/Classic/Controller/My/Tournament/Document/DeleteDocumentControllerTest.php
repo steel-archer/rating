@@ -6,7 +6,9 @@ namespace App\Tests\TestCase\Classic\Controller\My\Tournament\Document;
 
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentDocument;
+use App\Classic\Entity\TournamentDocumentDownload;
 use App\Classic\Enum\TournamentStatus;
+use App\Common\Entity\Player;
 use App\Tests\FixturesTrait;
 use DateTimeImmutable;
 use JsonException;
@@ -110,6 +112,51 @@ class DeleteDocumentControllerTest extends WebTestCase
                 $em->flush();
             },
         ];
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function testDeleteRemovesAuditRecords(): void
+    {
+        $client = static::createClient();
+        $objects = self::loadFixtures(self::FIXTURES);
+
+        $tournamentId = $objects['tournament_draft']->getId();
+        $documentId = self::uploadDocumentAs($client, $objects, 'user_creator', $tournamentId);
+
+        // Create an audit record for this document directly.
+        $em = static::getContainer()->get('doctrine.orm.entity_manager');
+        $document = $em->getRepository(TournamentDocument::class)->find($documentId);
+        $player = $em->getRepository(Player::class)->find($objects['player_franko']->getId());
+        $download = new TournamentDocumentDownload();
+        $download->setDocument($document);
+        $download->setPlayer($player);
+        $em->persist($download);
+        $em->flush();
+
+        static::assertCount(
+            1,
+            $em->getRepository(TournamentDocumentDownload::class)->findAll(),
+        );
+
+        $client->loginUser($objects['user_creator']);
+        $client->request('DELETE', '/my/tournaments/documents/' . $documentId);
+
+        static::assertResponseStatusCodeSame(200);
+
+        // The document and its audit records are gone.
+        static::assertNull(
+            static::getContainer()->get('doctrine')
+                ->getRepository(TournamentDocument::class)
+                ->find($documentId),
+        );
+        static::assertCount(
+            0,
+            static::getContainer()->get('doctrine')
+                ->getRepository(TournamentDocumentDownload::class)
+                ->findAll(),
+        );
     }
 
     /**

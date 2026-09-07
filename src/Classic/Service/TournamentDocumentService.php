@@ -6,7 +6,10 @@ namespace App\Classic\Service;
 
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentDocument;
+use App\Classic\Entity\TournamentDocumentDownload;
+use App\Classic\Repository\TournamentDocumentDownloadRepository;
 use App\Classic\Repository\TournamentDocumentRepository;
+use App\Common\Entity\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 use Random\RandomException;
@@ -31,10 +34,21 @@ class TournamentDocumentService
     public function __construct(
         private EntityManagerInterface $em,
         private TournamentDocumentRepository $documentRepository,
+        private TournamentDocumentDownloadRepository $downloadRepository,
         private SluggerInterface $slugger,
         private Filesystem $filesystem,
         private string $uploadDir,
     ) {
+    }
+
+    public function recordDownload(TournamentDocument $document, Player $player): void
+    {
+        $download = new TournamentDocumentDownload();
+        $download->setDocument($document);
+        $download->setPlayer($player);
+
+        $this->em->persist($download);
+        $this->em->flush();
     }
 
     /**
@@ -98,6 +112,9 @@ class TournamentDocumentService
             $this->filesystem->remove($path);
         }
 
+        // Remove audit records first to satisfy the foreign key constraint.
+        $this->downloadRepository->deleteByDocumentIds([$document->getId()]);
+
         $this->em->remove($document);
         $this->em->flush();
     }
@@ -105,6 +122,13 @@ class TournamentDocumentService
     public function deleteAllByTournament(Tournament $tournament): void
     {
         $documents = $this->documentRepository->findByTournament($tournament);
+
+        // Remove audit records first to satisfy the foreign key constraint.
+        $documentIds = array_map(
+            static fn(TournamentDocument $document) => $document->getId(),
+            $documents,
+        );
+        $this->downloadRepository->deleteByDocumentIds($documentIds);
 
         foreach ($documents as $document) {
             $path = $this->getFilePath($document);
