@@ -59,6 +59,7 @@ function initTournamentEditForm() {
     }
 
     initCustomQuestionsToggle(form);
+    initHiddenUntilDefaults(form);
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -131,6 +132,71 @@ function initTournamentEditForm() {
                 showError(status, null);
             });
     });
+}
+
+/**
+ * Prefills the "results hidden until" and "details hidden until" dates with
+ * end date + 1 day whenever the end date changes and those fields are still
+ * empty. This is a convenience for the organizer only: the fields stay
+ * editable so the dates can be extended, and empty required fields are still
+ * enforced by the backend on submit.
+ *
+ * @param {HTMLFormElement} form
+ */
+function initHiddenUntilDefaults(form) {
+    // These fields are only rendered for the distributed format.
+    if (form.dataset.format !== 'distributed') {
+        return;
+    }
+
+    const endedInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="endedAt"]'));
+    const resultsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="resultsHiddenUntil"]'));
+    const detailsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="detailsHiddenUntil"]'));
+
+    if (!endedInput || (!resultsInput && !detailsInput)) {
+        return;
+    }
+
+    endedInput.addEventListener('change', () => {
+        // Skip readonly (disabled) forms: their inputs cannot be edited anyway.
+        if (endedInput.disabled) {
+            return;
+        }
+
+        const nextDay = addOneDay(endedInput.value);
+        if (nextDay === null) {
+            return;
+        }
+
+        if (resultsInput && !resultsInput.value) {
+            resultsInput.value = nextDay;
+        }
+        if (detailsInput && !detailsInput.value) {
+            detailsInput.value = nextDay;
+        }
+    });
+}
+
+/**
+ * Returns the given YYYY-MM-DD date shifted by one day, or null when the input
+ * is empty or malformed. Uses UTC to avoid time zone drift.
+ *
+ * @param {string} value
+ * @returns {string|null}
+ */
+function addOneDay(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        return null;
+    }
+
+    const date = new Date(`${value}T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) {
+        return null;
+    }
+
+    date.setUTCDate(date.getUTCDate() + 1);
+
+    return date.toISOString().slice(0, 10);
 }
 
 /**
