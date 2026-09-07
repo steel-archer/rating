@@ -409,6 +409,7 @@ export default {
     "tournament.moderation_status.rejected": "Відхилено",
     "tournament.my.actions": "Дії",
     "tournament.my.add_official": "Додати особу",
+    "tournament.my.game_jury_hint": "Усі додані сюди особи бачитимуть спірні відповіді на всі питання гри. Враховуйте це, якщо члени ігрового журі самі грають решту турів.",
     "tournament.my.create": "Створити турнір",
     "tournament.my.delete": "Видалити",
     "tournament.my.delete_confirm": "Ви впевнені, що хочете видалити цей турнір?",

@@ -88,6 +88,11 @@
     color: var(--text-secondary);
 }
 
+.tournament-form .hint-warning {
+    margin-bottom: 8px;
+    color: var(--warning, #e6a700);
+}
+
 .tournament-form .btn {
     font-size: 1rem;
     padding: 10px 24px;

@@ -163,6 +163,9 @@
             {% for cfg in roleConfig %}
                 <div class="form-group">
                     <label>{{ cfg.label|trans }} <span class="required-publish">{{ 'tournament.my.required_for_publish'|trans }}</span></label>
+                    {% if cfg.role == 'game_jury' %}
+                        <small class="hint hint-warning">{{ 'tournament.my.game_jury_hint'|trans }}</small>
+                    {% endif %}
                     <div class="officials-group" data-role="{{ cfg.key }}">
                         {% set roleOfficials = officials|filter(o => o.role == cfg.role) %}
                         {% for official in roleOfficials %}
