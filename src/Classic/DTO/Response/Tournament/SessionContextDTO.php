@@ -19,8 +19,8 @@ final readonly class SessionContextDTO
         public int $representativeId,
         public string $representativeName,
         public bool $representativeHasUser,
-        public ?int $hostId,
-        public ?string $hostName,
+        public int $hostId,
+        public string $hostName,
         public bool $hostHasUser,
         public int $toursCount,
         /** @var list<int> */

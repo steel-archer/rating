@@ -17,12 +17,6 @@ class DownloadDocumentControllerTest extends WebTestCase
     use DocumentTestTrait;
     use FixturesTrait;
 
-    private const array FIXTURES = [
-        'Entity/base.yaml',
-        'Entity/users.yaml',
-        'Entity/my_tournaments.yaml',
-    ];
-
     private const array FIXTURES_WITH_SESSION = [
         'Entity/base.yaml',
         'Entity/session_claims.yaml',
@@ -57,29 +51,8 @@ class DownloadDocumentControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'download as organizer' => [
-            'fixtures' => self::FIXTURES,
-            'downloadAs' => 'user_creator',
-            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::uploadDocumentAs($client, $objects, 'user_creator', 'tournament_draft'),
-            'expectedStatus' => 200,
-            'afterCallback' => static function (KernelBrowser $client) {
-                static::assertStringContainsString(
-                    'attachment',
-                    $client->getResponse()->headers->get('content-disposition'),
-                );
-            },
-        ];
-
-        yield 'download denied for non-authorized user' => [
-            'fixtures' => self::FIXTURES,
-            'downloadAs' => 'user_with_player',
-            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::uploadDocumentAs($client, $objects, 'user_creator', 'tournament_draft'),
-            'expectedStatus' => 404,
-            'afterCallback' => static function () {
-            },
-        ];
-
-        yield 'download as representative with approved claim' => [
+        // session_approved: host = player_shevchenko (user_representative), claim approved.
+        yield 'download as host of approved session' => [
             'fixtures' => self::FIXTURES_WITH_SESSION,
             'downloadAs' => 'user_representative',
             'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),
@@ -92,7 +65,18 @@ class DownloadDocumentControllerTest extends WebTestCase
             },
         ];
 
-        yield 'download denied for user without approved claim' => [
+        // Organizer is no longer allowed to download the question package.
+        yield 'download denied for organizer' => [
+            'fixtures' => self::FIXTURES_WITH_SESSION,
+            'downloadAs' => 'user_organizer',
+            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        // A player who is not the host (even with other roles) has no access.
+        yield 'download denied for non-host player' => [
             'fixtures' => self::FIXTURES_WITH_SESSION,
             'downloadAs' => 'user_other',
             'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly($objects['tournament_session_test']->getId()),

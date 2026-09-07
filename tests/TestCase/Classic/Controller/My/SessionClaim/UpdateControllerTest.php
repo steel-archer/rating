@@ -67,6 +67,7 @@ class UpdateControllerTest extends WebTestCase
                 json_encode([
                     'playedAt' => '2025-06-18',
                     'estimatedTeams' => 12,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -91,6 +92,7 @@ class UpdateControllerTest extends WebTestCase
                 json_encode([
                     'playedAt' => '2025-07-15',
                     'estimatedTeams' => 12,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -109,7 +111,10 @@ class UpdateControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['estimatedTeams' => 12], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'estimatedTeams' => 12,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 403,
             'afterCallback' => static function () {
@@ -140,7 +145,7 @@ class UpdateControllerTest extends WebTestCase
             },
         ];
 
-        yield 'update clears host when hostId is null' => [
+        yield 'update without host is rejected' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
@@ -155,12 +160,30 @@ class UpdateControllerTest extends WebTestCase
                     'hostId' => null,
                 ], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 200,
-            'afterCallback' => static function (KernelBrowser $client, array $objects) {
-                $session = static::getContainer()->get('doctrine')
-                    ->getRepository(TournamentSession::class)
-                    ->find($objects['session_pending']->getId());
-                static::assertNull($session->getHost());
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'update with host without account is rejected' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['session_pending']->getId() . '/update',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'playedAt' => '2025-06-10',
+                    'estimatedTeams' => 8,
+                    'hostId' => $objects['player_no_user']->getId(),
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.host_no_account', $body['error']);
             },
         ];
 
@@ -176,6 +199,7 @@ class UpdateControllerTest extends WebTestCase
                 json_encode([
                     'playedAt' => null,
                     'estimatedTeams' => 8,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -198,6 +222,7 @@ class UpdateControllerTest extends WebTestCase
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode([
                     'estimatedTeams' => 12,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -216,7 +241,10 @@ class UpdateControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['estimatedTeams' => 8], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'estimatedTeams' => 8,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 500,
             'afterCallback' => static function (KernelBrowser $client) {

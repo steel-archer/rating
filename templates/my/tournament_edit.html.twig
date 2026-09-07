@@ -197,10 +197,11 @@
         </form>
     </div>
 
-    {# --- Документи --- #}
+    {# --- Пакет запитань --- #}
     <div class="card">
-        <h2>{{ 'tournament.document.title'|trans }}</h2>
+        <h2>{{ 'tournament.document.package_title'|trans }}</h2>
         <p class="hint">{{ 'tournament.document.hint'|trans }}</p>
+        <p class="hint hint-warning">{{ 'tournament.document.access_hint'|trans }}</p>
 
         <div id="documents-list" data-tournament-id="{{ tournament.id }}">
             {% for doc in documents %}

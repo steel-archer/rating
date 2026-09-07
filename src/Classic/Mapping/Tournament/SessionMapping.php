@@ -32,9 +32,9 @@ final class SessionMapping implements MappingInterface
             representativeId: $representative->getId(),
             representativeName: $representative->getFullName(),
             representativeHasUser: $representative->hasUser(),
-            hostId: $host?->getId(),
-            hostName: $host?->getFullName(),
-            hostHasUser: $host?->hasUser() ?? false,
+            hostId: $host->getId(),
+            hostName: $host->getFullName(),
+            hostHasUser: $host->hasUser(),
             isOnline: $source->isOnline(),
         );
     }

@@ -25,10 +25,9 @@
                             <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>{{ include('_player_link.html.twig', {playerId: s.representativeId, playerName: s.representativeName, hasUser: s.representativeHasUser, turboFrame: true}, with_context: false) }}</td>
                             <td>
-                                {% if s.hostId %}
-                                    {{ include('_player_link.html.twig', {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true}, with_context: false) }}
-                                {% else %}
-                                    —
+                                {{ include('_player_link.html.twig', {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true}, with_context: false) }}
+                                {% if currentPlayerId is defined and currentPlayerId == s.hostId %}
+                                    <a href="{{ path('my_hosted_session_show', {id: s.id}) }}" class="btn btn-small" data-turbo-frame="_top" data-turbo="false">{{ 'hosted_session.open_package'|trans }}</a>
                                 {% endif %}
                             </td>
                             <td>{{ s.estimatedTeams ?? '—' }}</td>

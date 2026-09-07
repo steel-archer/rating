@@ -21,10 +21,8 @@
             {% endif %}
             <dt>{{ 'venue.representative'|trans }}</dt>
             <dd>{{ include('_player_link.html.twig', {playerId: session.representativeId, playerName: session.representativeName, hasUser: session.representativeHasUser}, with_context: false) }}</dd>
-            {% if session.hostId %}
-                <dt>{{ 'venue.host'|trans }}</dt>
-                <dd>{{ include('_player_link.html.twig', {playerId: session.hostId, playerName: session.hostName, hasUser: session.hostHasUser}, with_context: false) }}</dd>
-            {% endif %}
+            <dt>{{ 'venue.host'|trans }}</dt>
+            <dd>{{ include('_player_link.html.twig', {playerId: session.hostId, playerName: session.hostName, hasUser: session.hostHasUser}, with_context: false) }}</dd>
         </dl>
     </div>
 

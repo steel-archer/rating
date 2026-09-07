@@ -15,6 +15,7 @@ final readonly class UpdateRequestDTO
         #[Assert\Positive]
         public ?int $estimatedTeams = null,
 
+        #[Assert\NotNull]
         #[Assert\Positive]
         public ?int $hostId = null,
     ) {

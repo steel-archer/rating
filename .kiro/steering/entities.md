@@ -480,7 +480,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | tournament | ManyToOne | Tournament | — | |
 | venue | ManyToOne | Venue | — | 🔗 Common |
 | representative | ManyToOne | Player | — | 🔗 Common |
-| host | ManyToOne | Player | ✓ | 🔗 Common |
+| host | ManyToOne | Player | — | 🔗 Common, гравець з акаунтом |
 
 ### TournamentSessionTeam
 

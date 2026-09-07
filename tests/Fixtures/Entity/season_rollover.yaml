@@ -23,12 +23,14 @@ App\Classic\Entity\TournamentSession:
         tournament: '@tournament_rollover'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-11-15"))>'
         estimatedTeams: 4
     session_rollover_second:
         tournament: '@tournament_rollover'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-11-22"))>'
         estimatedTeams: 4
 

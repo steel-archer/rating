@@ -31,9 +31,9 @@ final class SessionClaimEditMapping implements MappingInterface
             townName: $venue->getTown()->getName(),
             playedAt: $session->getPlayedAt(),
             estimatedTeams: $session->getEstimatedTeams(),
-            hostId: $host?->getId(),
-            hostName: $host?->getFullName(),
-            hostHasUser: $host?->hasUser() ?? false,
+            hostId: $host->getId(),
+            hostName: $host->getFullName(),
+            hostHasUser: $host->hasUser(),
             status: $source->getStatus()->value,
             comment: $source->getComment(),
         );

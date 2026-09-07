@@ -1,0 +1,33 @@
+App\Common\Entity\User:
+    user_host_no_approved:
+        email: 'host_no_approved@example.com'
+        googleId: 'google_host_na_123'
+        roles: []
+        player: '@player_kotsubynsky'
+
+App\Classic\Entity\Tournament:
+    tournament_host_no_approved:
+        name: 'Турнір без схваленого відіграшу ведучого'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        startedAt: '<(new \DateTimeImmutable("2025-06-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-06-30 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+
+App\Classic\Entity\TournamentSession:
+    session_host_pending:
+        tournament: '@tournament_host_no_approved'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_kotsubynsky'
+        playedAt: '<(new \DateTimeImmutable("2025-06-10 19:00"))>'
+        estimatedTeams: 8
+
+App\Classic\Entity\SessionClaim:
+    claim_host_pending:
+        session: '@session_host_pending'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'

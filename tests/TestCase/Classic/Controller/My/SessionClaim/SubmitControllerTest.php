@@ -68,6 +68,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => '2025-06-12',
                     'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -91,6 +92,7 @@ class SubmitControllerTest extends WebTestCase
                 json_encode([
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -111,6 +113,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => '2025-05-01',
                     'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -133,6 +136,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => '2025-07-15',
                     'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -155,6 +159,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => '2025-06-12',
                     'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -177,6 +182,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => (new \DateTimeImmutable('-45 days'))->format('Y-m-d'),
                     'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -195,7 +201,7 @@ class SubmitControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['venueId' => 1, 'estimatedTeams' => 6], JSON_THROW_ON_ERROR),
+                json_encode(['venueId' => 1, 'estimatedTeams' => 6, 'hostId' => 1], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
@@ -211,7 +217,11 @@ class SubmitControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['venueId' => 999999, 'estimatedTeams' => 6], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'venueId' => 999999,
+                    'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function (KernelBrowser $client) {
@@ -245,6 +255,49 @@ class SubmitControllerTest extends WebTestCase
             },
         ];
 
+        yield 'submit without host is rejected' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-12',
+                    'estimatedTeams' => 6,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'submit with host without account is rejected' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-12',
+                    'estimatedTeams' => 6,
+                    'hostId' => $objects['player_no_user']->getId(),
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.host_no_account', $body['error']);
+            },
+        ];
+
         yield 'submit without estimatedTeams' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',
@@ -257,6 +310,7 @@ class SubmitControllerTest extends WebTestCase
                 json_encode([
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => '2025-06-12',
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -295,6 +349,7 @@ class SubmitControllerTest extends WebTestCase
                 json_encode([
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'estimatedTeams' => 6,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 500,
@@ -324,6 +379,7 @@ class SubmitControllerTest extends WebTestCase
                     'playedAt' => '2025-06-13',
                     'estimatedTeams' => 4,
                     'isOnline' => true,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -351,6 +407,7 @@ class SubmitControllerTest extends WebTestCase
                     'playedAt' => '2025-06-14',
                     'estimatedTeams' => 3,
                     'isOnline' => false,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -376,6 +433,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => '2025-06-15',
                     'estimatedTeams' => 5,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -401,6 +459,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_online_sc']->getId(),
                     'playedAt' => '2025-06-12',
                     'estimatedTeams' => 4,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
@@ -423,6 +482,7 @@ class SubmitControllerTest extends WebTestCase
                     'venueId' => $objects['venue_kyiv']->getId(),
                     'playedAt' => '2025-06-12',
                     'estimatedTeams' => 4,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -449,6 +509,7 @@ class SubmitControllerTest extends WebTestCase
                     'playedAt' => '2025-06-12',
                     'estimatedTeams' => 4,
                     'isOnline' => false,
+                    'hostId' => $objects['player_shevchenko']->getId(),
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,

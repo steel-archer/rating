@@ -7,15 +7,18 @@ namespace App\Classic\Controller\My\Tournament\Document;
 use App\Classic\Entity\TournamentDocument;
 use App\Common\Entity\User;
 use App\Classic\Repository\SessionClaimRepository;
-use App\Classic\Security\TournamentOrganizerVoter;
 use App\Classic\Service\TournamentDocumentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/my/tournaments/documents/{id}/download', name: 'my_tournament_document_download', requirements: ['id' => '\d+'], methods: ['GET'])]
 class DownloadDocumentController extends AbstractController
 {
+    /**
+     * @throws NotFoundHttpException
+     */
     public function __invoke(
         TournamentDocument $document,
         SessionClaimRepository $claimRepository,
@@ -26,13 +29,8 @@ class DownloadDocumentController extends AbstractController
         $player = $user->getPlayer();
         $tournament = $document->getTournament();
 
-        $isOrganizer = $this->isGranted(TournamentOrganizerVoter::EDIT, $tournament);
-        $hasApprovedSession = $claimRepository->hasApprovedByPlayerAndTournament(
-            $player,
-            $tournament,
-        );
-
-        if (!$isOrganizer && !$hasApprovedSession) {
+        // Only a host of an approved session may access the question package.
+        if ($player === null || !$claimRepository->hasApprovedHostedSession($player, $tournament)) {
             throw $this->createNotFoundException();
         }
 

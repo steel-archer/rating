@@ -86,24 +86,28 @@ App\Classic\Entity\TournamentSession:
         tournament: '@tournament_session_test'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-10 19:00"))>'
         estimatedTeams: 8
     session_rejected:
         tournament: '@tournament_session_test'
         venue: '@venue_lviv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-15 19:00"))>'
         estimatedTeams: 5
     session_approved:
         tournament: '@tournament_session_test'
         venue: '@venue_kyiv'
         representative: '@player_shevchenko'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-20 19:00"))>'
         estimatedTeams: 10
     session_no_user:
         tournament: '@tournament_session_test'
         venue: '@venue_lviv'
         representative: '@player_no_user'
+        host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-25 19:00"))>'
         estimatedTeams: 6
 
