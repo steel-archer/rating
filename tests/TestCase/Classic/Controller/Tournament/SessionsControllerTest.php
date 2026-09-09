@@ -85,7 +85,7 @@ class SessionsControllerTest extends WebTestCase
             },
         ];
 
-        yield 'no submit link for non-representative' => [
+        yield 'no submit link but venue hint for player without approved venue' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/session_claims.yaml'],
             'loginAs' => 'user_other',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_session_test']->getId() . '/sessions',
@@ -93,6 +93,10 @@ class SessionsControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $link = $crawler->filter('a[href*="/my/session-claims/create/"]');
                 static::assertCount(0, $link);
+
+                // The player is prompted to get an approved venue instead.
+                $hint = $crawler->filter('.flash-info a[href="/my/venues"]');
+                static::assertCount(1, $hint);
             },
         ];
     }

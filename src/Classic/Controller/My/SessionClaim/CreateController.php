@@ -45,8 +45,12 @@ class CreateController extends AbstractController
             ));
         }
 
+        // Without an approved venue there is nothing to submit a claim for, so guide
+        // the player to their venues page instead of returning a bare 403.
         if ($venues === []) {
-            throw $this->createAccessDeniedException();
+            $this->addFlash('error', 'session_claim.need_approved_venue');
+
+            return $this->redirectToRoute('my_venues');
         }
 
         return $this->render('my/session_claim_create.html.twig', [

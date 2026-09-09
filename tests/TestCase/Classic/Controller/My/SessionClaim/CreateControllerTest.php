@@ -73,12 +73,20 @@ class CreateControllerTest extends WebTestCase
             },
         ];
 
-        yield 'access denied for non-representative' => [
+        yield 'redirects to venues when player has no approved venue' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_other',
             'uri' => static fn(array $objects) => '/my/session-claims/create/' . $objects['tournament_session_test']->getId(),
-            'expectedStatus' => 403,
-            'afterCallback' => static function () {
+            'expectedStatus' => 302,
+            'afterCallback' => static function (KernelBrowser $client) {
+                static::assertResponseRedirects('/my/venues');
+
+                // Follow the redirect and assert the flash is rendered to the user.
+                $crawler = $client->followRedirect();
+                static::assertStringContainsString(
+                    'затверджений майданчик',
+                    $crawler->filter('.flash-error')->text(),
+                );
             },
         ];
 

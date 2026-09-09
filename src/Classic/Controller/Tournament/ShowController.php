@@ -59,9 +59,9 @@ class ShowController extends AbstractController
 
         // A player may register to host a session only while registration is open,
         // and they represent at least one approved venue.
-        $canSubmitClaim = $tournamentEntity->isRegistrationOpen()
-            && $player !== null
-            && $representativeRepository->hasVenuesByPlayer($player);
+        $registrationOpen = $tournamentEntity->isRegistrationOpen();
+        $hasApprovedVenue = $player !== null && $representativeRepository->hasVenuesByPlayer($player);
+        $canSubmitClaim = $registrationOpen && $hasApprovedVenue;
 
         return $this->render('tournament/show.html.twig', [
             'tournament' => $tournament,
@@ -69,6 +69,8 @@ class ShowController extends AbstractController
             'canViewDisputes' => $canViewDisputes,
             'canViewAppeals' => $canViewDisputes,
             'canSubmitClaim' => $canSubmitClaim,
+            // Prompt the player to get an approved venue when that is the only thing missing.
+            'needsApprovedVenue' => $registrationOpen && $player !== null && !$hasApprovedVenue,
         ]);
     }
 }

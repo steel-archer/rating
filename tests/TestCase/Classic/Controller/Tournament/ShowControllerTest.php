@@ -172,7 +172,7 @@ class ShowControllerTest extends WebTestCase
             },
         ];
 
-        yield 'non-representative does not see session claim button' => [
+        yield 'non-representative sees approved-venue hint instead of the button' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_festival']->getId(),
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
@@ -184,6 +184,10 @@ class ShowControllerTest extends WebTestCase
                     $crawler->filter('a[href*="/my/session-claims/create/"]'),
                     'Non-representative must not see the session claim button',
                 );
+
+                // Instead of a hidden button, the player is guided to their venues.
+                $hint = $crawler->filter('.flash-info a[href="/my/venues"]');
+                static::assertCount(1, $hint, 'Expected approved-venue hint for player without a venue');
             },
         ];
 

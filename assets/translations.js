@@ -256,6 +256,8 @@ export default {
     "session_claim.host_package_notice": "Пакет запитань доступний ведучому (%host%) у розділі «Відіграші, які я веду».",
     "session_claim.my_empty": "У вас немає заявок на відіграші",
     "session_claim.my_title": "Мої заявки на відіграші",
+    "session_claim.need_approved_venue": "Щоб подати заявку на відіграш, спершу потрібно мати затверджений майданчик, представником якого ви є.",
+    "session_claim.need_approved_venue_link": "Перейти до моїх майданчиків",
     "session_claim.no_approved": "Немає схвалених заявок",
     "session_claim.no_pending": "Немає заявок на розгляд",
     "session_claim.pending_section_title": "Заявки на розгляд",
