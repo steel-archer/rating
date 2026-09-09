@@ -268,6 +268,96 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
+        yield 'rename denied for published tournament' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_published']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Нова назва опублікованого',
+                    'startedAt' => (new DateTime('+60 days'))->format('Y-m-d'),
+                    'endedAt' => (new DateTime('+61 days'))->format('Y-m-d'),
+                    'resultsHiddenUntil' => (new DateTime('+62 days'))->format('Y-m-d'),
+                    'registrationDeadline' => (new DateTime('+61 days'))->format('Y-m-d'),
+                    'detailsHiddenUntil' => (new DateTime('+63 days'))->format('Y-m-d'),
+                    'submissionDeadline' => (new DateTime('+62 days'))->format('Y-m-d'),
+                    'appealDeadline' => (new DateTime('+64 days'))->format('Y-m-d'),
+                    'toursCount' => 3,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [12, 12, 12],
+                    'difficulty' => 4.0,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertSame('tournament.error.cannot_rename_published', $body['error']);
+
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_published']->getId());
+                static::assertSame('Опублікований турнір', $tournament->getName());
+                static::assertSame(TournamentStatus::Published, $tournament->getStatus());
+            },
+        ];
+
+        yield 'edit allowed for published tournament without rename' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_published']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Опублікований турнір',
+                    'startedAt' => (new DateTime('+60 days'))->format('Y-m-d'),
+                    'endedAt' => (new DateTime('+61 days'))->format('Y-m-d'),
+                    'resultsHiddenUntil' => (new DateTime('+62 days'))->format('Y-m-d'),
+                    'registrationDeadline' => (new DateTime('+61 days'))->format('Y-m-d'),
+                    'detailsHiddenUntil' => (new DateTime('+63 days'))->format('Y-m-d'),
+                    'submissionDeadline' => (new DateTime('+62 days'))->format('Y-m-d'),
+                    'appealDeadline' => (new DateTime('+64 days'))->format('Y-m-d'),
+                    'toursCount' => 3,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [12, 12, 12],
+                    'difficulty' => 6.0,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertTrue($json['success']);
+
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->find($objects['tournament_published']->getId());
+                static::assertSame(TournamentStatus::Published, $tournament->getStatus());
+                static::assertSame(6.0, $tournament->getDifficulty());
+
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentModerationClaim::class)
+                    ->findOneBy(['tournament' => $objects['tournament_published']->getId()]);
+                static::assertNotNull($claim);
+                static::assertSame(TournamentModerationStatus::Approved, $claim->getStatus());
+            },
+        ];
+
         yield 'submit for moderation' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',

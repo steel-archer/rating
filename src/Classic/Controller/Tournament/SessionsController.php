@@ -23,11 +23,16 @@ class SessionsController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
+        $player = $user->getPlayer();
+
+        $registrationOpen = $tournament->isRegistrationOpen();
+        $hasApprovedVenue = $player !== null && $representativeRepository->hasVenuesByPlayer($player);
 
         return $this->render('tournament/sessions.html.twig', [
             'tournament' => $mapper->map($tournament, TournamentContextDTO::class),
-            'canSubmitClaim' => $tournament->isRegistrationOpen()
-                && $representativeRepository->hasVenuesByPlayer($user->getPlayer()),
+            'canSubmitClaim' => $registrationOpen && $hasApprovedVenue,
+            // Prompt the player to get an approved venue when that is the only thing missing.
+            'needsApprovedVenue' => $registrationOpen && $player !== null && !$hasApprovedVenue,
         ]);
     }
 }

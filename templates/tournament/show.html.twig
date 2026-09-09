@@ -20,6 +20,11 @@
         <p class="tournament-actions">
             <a class="btn btn-primary" href="{{ path('my_session_claim_create', {tournamentId: tournament.id}) }}">{{ 'session_claim.submit_title'|trans }}</a>
         </p>
+    {% elseif needsApprovedVenue %}
+        <div class="flash flash-info">
+            {{ 'session_claim.need_approved_venue'|trans }}
+            <a href="{{ path('my_venues') }}">{{ 'session_claim.need_approved_venue_link'|trans }}</a>
+        </div>
     {% endif %}
 
     <div class="cards-row">

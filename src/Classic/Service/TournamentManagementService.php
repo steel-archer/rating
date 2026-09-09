@@ -84,12 +84,16 @@ class TournamentManagementService
             throw new LogicException('tournament.error.cannot_edit_started');
         }
 
+        $nameChanged = $tournament->getName() !== $dto->name;
+
+        if ($nameChanged && $tournament->getStatus() === TournamentStatus::Published) {
+            throw new LogicException('tournament.error.cannot_rename_published');
+        }
+
         $errors = $this->validator->validateEdit($dto, $tournament->getFormat());
         if ($errors !== []) {
             throw new TournamentValidationException($errors);
         }
-
-        $nameChanged = $tournament->getName() !== $dto->name;
 
         $startedAt = $dto->startedAt
             ? new DateTimeImmutable($dto->startedAt)->setTime(0, 0)

@@ -65,18 +65,28 @@ class CreateControllerTest extends WebTestCase
                 static::assertStringContainsString('01.06.2025', $hintsText);
                 static::assertStringContainsString('30.06.2025', $hintsText);
 
-                // The host defaults to the current player and is pre-filled.
+                // The host is not pre-filled; the user must pick one explicitly.
+                $hostGroup = $crawler->filter('.officials-group[data-role="claim-host"]');
+                static::assertCount(1, $hostGroup);
                 $hostEntry = $crawler->filter('.officials-group[data-role="claim-host"] .official-entry');
-                static::assertCount(1, $hostEntry);
+                static::assertCount(0, $hostEntry);
             },
         ];
 
-        yield 'access denied for non-representative' => [
+        yield 'redirects to venues when player has no approved venue' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_other',
             'uri' => static fn(array $objects) => '/my/session-claims/create/' . $objects['tournament_session_test']->getId(),
-            'expectedStatus' => 403,
-            'afterCallback' => static function () {
+            'expectedStatus' => 302,
+            'afterCallback' => static function (KernelBrowser $client) {
+                static::assertResponseRedirects('/my/venues');
+
+                // Follow the redirect and assert the flash is rendered to the user.
+                $crawler = $client->followRedirect();
+                static::assertStringContainsString(
+                    'затверджений майданчик',
+                    $crawler->filter('.flash-error')->text(),
+                );
             },
         ];
 

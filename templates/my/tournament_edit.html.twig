@@ -70,7 +70,10 @@
 
             <div class="form-group">
                 <label for="name">{{ 'common.name'|trans }} *</label>
-                <input type="text" id="name" name="name" value="{{ tournament.name }}" required {{ readonly ? 'disabled' : '' }}>
+                <input type="text" id="name" name="name" value="{{ tournament.name }}" required {{ nameReadonly ? 'disabled' : '' }}>
+                {% if nameReadonly and not readonly %}
+                    <small class="hint">{{ 'tournament.my.name_readonly_hint'|trans }}</small>
+                {% endif %}
             </div>
             <div class="form-group">
                 <label>{{ 'tournament.format.label'|trans }}</label>

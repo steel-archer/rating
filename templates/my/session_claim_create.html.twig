@@ -61,13 +61,7 @@
             <div class="form-group">
                 <label>{{ 'venue.host'|trans }} *</label>
                 <small class="hint">{{ 'session_claim.host_hint'|trans }}</small>
-                <div class="officials-group" data-role="claim-host" data-single>
-                    <div class="official-entry">
-                        <input type="hidden" name="claim-host[]" value="{{ defaultHostId }}">
-                        {{ include('_player_link.html.twig', {playerId: defaultHostId, playerName: defaultHostName, hasUser: true}, with_context: false) }}
-                        <button type="button" class="btn-remove">×</button>
-                    </div>
-                </div>
+                <div class="officials-group" data-role="claim-host" data-single></div>
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
                     <input type="text" data-suggest-input placeholder="{{ 'session_claim.add_host'|trans }}">
                     <div data-suggest-dropdown hidden></div>
