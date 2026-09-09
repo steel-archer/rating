@@ -479,6 +479,7 @@ tournament:
   error:
     cannot_delete_published: 'Не можна видалити опублікований турнір'
     cannot_edit_started: 'Не можна редагувати турнір, який вже почався'
+    cannot_rename_published: 'Не можна перейменувати опублікований турнір'
     centralized_cannot_be_mixed: 'Централізований турнір не може бути змішаним'
     end_before_start: 'Дата завершення має бути пізніше дати початку'
     end_in_past: 'Дата завершення не може бути в минулому'
@@ -512,6 +513,7 @@ tournament:
     general_info: 'Основна інформація'
     last_moderation: 'Остання дія'
     moderation: 'Модерація'
+    name_readonly_hint: 'Назву опублікованого турніру змінити не можна'
     publish: 'Опублікувати'
     publish_requirements: 'Вимоги для публікації'
     readonly_notice: 'Цей турнір вже почався і не може бути відредагований'
