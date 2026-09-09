@@ -65,9 +65,11 @@ class CreateControllerTest extends WebTestCase
                 static::assertStringContainsString('01.06.2025', $hintsText);
                 static::assertStringContainsString('30.06.2025', $hintsText);
 
-                // The host defaults to the current player and is pre-filled.
+                // The host is not pre-filled; the user must pick one explicitly.
+                $hostGroup = $crawler->filter('.officials-group[data-role="claim-host"]');
+                static::assertCount(1, $hostGroup);
                 $hostEntry = $crawler->filter('.officials-group[data-role="claim-host"] .official-entry');
-                static::assertCount(1, $hostEntry);
+                static::assertCount(0, $hostEntry);
             },
         ];
 
