@@ -21,6 +21,7 @@ final class PlayerListItemMapping implements MappingInterface
             id: $source['id'],
             fullName: trim($source['fullName']),
             townName: $source['townName'],
+            countryName: $source['countryName'],
             teamId: $source['teamId'] ? (int) $source['teamId'] : null,
             teamName: $source['teamName'] ?: null,
             hasUser: (bool) $source['hasUser'],

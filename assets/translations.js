@@ -211,6 +211,8 @@ export default {
     "player.last_name": "Прізвище",
     "player.no_user": "Незареєстрований користувач",
     "player.patronymic": "По батькові",
+    "player_claim.country_not_found": "Країну не знайдено",
+    "player_claim.country_required": "Вкажіть країну",
     "player_claim.email_visibility_warning": "Цей email бачитимуть: ви, модератори сайту та організатори турнірів, на які ви подаватимете заявки на відіграш.",
     "player_claim.existing_description": "Знайдіть себе серед гравців рейтингу",
     "player_claim.existing_title": "Я вже є в рейтингу",

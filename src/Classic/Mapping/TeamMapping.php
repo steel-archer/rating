@@ -37,6 +37,7 @@ final class TeamMapping implements MappingInterface
             id: $source->getId(),
             name: $source->getName(),
             townName: $source->getTown()->getName(),
+            countryName: $source->getTown()->getCountry()->getName(),
             tournamentCount: $context['tournamentCount'] ?? 0,
             squads: $squads,
         );

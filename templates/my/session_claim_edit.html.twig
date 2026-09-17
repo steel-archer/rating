@@ -117,7 +117,7 @@
                                 <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
                                 <td class="one-time-name-hint">{% if team.oneTimeName %}<span data-tooltip="{{ 'team.base_name'|trans({'%name%': team.teamName ~ ' (' ~ team.teamTownName ~ ')'}) }}">^</span>{% endif %}</td>
                                 <td>{{ include('_team_name.html.twig', {teamId: team.teamId, teamName: team.teamName, oneTimeName: team.oneTimeName}, with_context: false) }}</td>
-                                <td>{{ team.teamTownName }}</td>
+                                <td>{{ team.teamLocation }}</td>
                                 <td>{{ team.score ?? '—' }}</td>
                                 <td>
                                     <button type="button" class="btn-toggle-text" data-toggle-squad>{{ 'squad.show'|trans }}</button>

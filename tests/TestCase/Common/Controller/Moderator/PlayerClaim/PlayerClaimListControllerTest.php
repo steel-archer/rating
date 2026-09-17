@@ -17,8 +17,7 @@ class PlayerClaimListControllerTest extends WebTestCase
      * @param list<string> $fixtures
      */
     #[DataProvider('dataProvider')]
-    public function testClaimList(
-        string $uri,
+    public function testList(
         array $fixtures,
         ?string $loginAs,
         int $expectedStatus,
@@ -31,7 +30,7 @@ class PlayerClaimListControllerTest extends WebTestCase
             $client->loginUser($objects[$loginAs]);
         }
 
-        $crawler = $client->request('GET', $uri);
+        $crawler = $client->request('GET', '/moderator/player-claims');
 
         static::assertResponseStatusCodeSame($expectedStatus);
         $afterCallback($crawler, $objects);
@@ -42,41 +41,65 @@ class PlayerClaimListControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        yield 'anonymous gets redirected' => [
-            'uri' => '/moderator/player-claims',
-            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
-            'loginAs' => null,
-            'expectedStatus' => 302,
+        $claimFixtures = ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'];
+
+        yield 'moderator sees claims with country column' => [
+            'fixtures' => $claimFixtures,
+            'loginAs' => 'user_admin',
+            'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
+                // Header contains a country column.
+                $headers = $crawler->filter('table thead th')->each(static fn(Crawler $th) => trim($th->text()));
+                static::assertContains('Країна', $headers);
+
+                // Every pending claim resolves its country (Ukraine) through town.
+                $rows = $crawler->filter('table tbody tr');
+                static::assertGreaterThanOrEqual(1, $rows->count());
+                foreach ($rows as $row) {
+                    static::assertStringContainsString('Україна', (new Crawler($row))->text());
+                }
+            },
+        ];
+
+        yield 'new claim shows country resolved from stored country relation' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims_new_town.yaml'],
+            'loginAs' => 'user_admin',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                // player_claim_new_with_town_name is linked to Ukraine via its country relation.
+                static::assertStringContainsString('Україна', $crawler->filter('table tbody')->text());
+            },
+        ];
+
+        yield 'new claim shows foreign country from the directory' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/countries_baltic.yaml',
+                'Entity/tournaments.yaml',
+                'Entity/users.yaml',
+                'Entity/player_claims_foreign_country.yaml',
+            ],
+            'loginAs' => 'user_admin',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                // player_claim_new_with_foreign_country is linked to Lithuania.
+                static::assertStringContainsString('Литва', $crawler->filter('table tbody')->text());
             },
         ];
 
         yield 'regular user gets 403' => [
-            'uri' => '/moderator/player-claims',
-            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'fixtures' => $claimFixtures,
             'loginAs' => 'user_regular',
             'expectedStatus' => 403,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
             },
         ];
 
-        yield 'moderator sees pending claims' => [
-            'uri' => '/moderator/player-claims',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
-            'loginAs' => 'user_moderator',
-            'expectedStatus' => 200,
+        yield 'anonymous gets redirected' => [
+            'fixtures' => $claimFixtures,
+            'loginAs' => null,
+            'expectedStatus' => 302,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
-                static::assertStringContainsString('Франко', $crawler->text());
-            },
-        ];
-
-        yield 'admin sees claims (role hierarchy)' => [
-            'uri' => '/moderator/player-claims',
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml', 'Entity/player_claims.yaml'],
-            'loginAs' => 'user_admin',
-            'expectedStatus' => 200,
-            'afterCallback' => static function (Crawler $crawler, array $objects) {
-                static::assertStringContainsString('Франко', $crawler->text());
             },
         ];
     }

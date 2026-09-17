@@ -12,6 +12,7 @@ use App\Common\Entity\PlayerClaim;
 use App\Common\Entity\Town;
 use App\Common\Enum\PlayerClaimStatus;
 use App\Common\Exception\PlayerClaimException;
+use App\Common\Repository\CountryRepository;
 use App\Common\Repository\PlayerClaimRepository;
 use App\Common\Repository\PlayerRepository;
 use App\Common\Repository\TownRepository;
@@ -21,14 +22,13 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PlayerClaimService
 {
-    private const string DEFAULT_COUNTRY = 'Україна';
-
     public function __construct(
         private EntityManagerInterface $em,
         private UserRepository $userRepository,
         private PlayerRepository $playerRepository,
         private PlayerClaimRepository $claimRepository,
         private TownRepository $townRepository,
+        private CountryRepository $countryRepository,
     ) {
     }
 
@@ -45,7 +45,7 @@ class PlayerClaimService
 
         if ($claim->isNew()) {
             $townName = $townName ?? $claim->getTown()?->getName() ?? $claim->getTownName();
-            $claim->setTown($this->resolveTown($townName));
+            $claim->setTown($this->resolveTown($townName, $claim));
         }
 
         $player = $claim->isNew() ? $this->createPlayer($claim) : $this->resolveExistingPlayer($claim);
@@ -111,10 +111,24 @@ class PlayerClaimService
             $claim->setTown($town);
         } elseif ($dto->townName !== null && $dto->townName !== '') {
             $claim->setTownName($dto->townName);
+            $claim->setCountry($this->resolveClaimCountry($dto->countryId));
         }
 
         $this->em->persist($claim);
         $this->em->flush();
+    }
+
+    /**
+     * @throws PlayerClaimException
+     */
+    private function resolveClaimCountry(?int $countryId): Country
+    {
+        if ($countryId === null) {
+            throw new PlayerClaimException('player_claim.country_required');
+        }
+
+        return $this->countryRepository->find($countryId)
+            ?? throw new PlayerClaimException('player_claim.country_not_found');
     }
 
     private function findPendingClaim(int $id): PlayerClaim
@@ -128,20 +142,20 @@ class PlayerClaimService
         return $claim;
     }
 
-    private function resolveTown(?string $townName): ?Town
+    private function resolveTown(?string $townName, PlayerClaim $claim): ?Town
     {
         if ($townName === null || $townName === '') {
             return null;
         }
 
-        $existing = $this->townRepository->findOneBy(['name' => $townName]);
-        if ($existing !== null) {
-            return $existing;
-        }
-
-        $country = $this->em->getRepository(Country::class)->findOneBy(['name' => self::DEFAULT_COUNTRY]);
+        $country = $this->resolveCountry($claim);
         if ($country === null) {
             return null;
+        }
+
+        $existing = $this->townRepository->findOneBy(['name' => $townName, 'country' => $country]);
+        if ($existing !== null) {
+            return $existing;
         }
 
         $town = new Town();
@@ -150,6 +164,11 @@ class PlayerClaimService
         $this->em->persist($town);
 
         return $town;
+    }
+
+    private function resolveCountry(PlayerClaim $claim): ?Country
+    {
+        return $claim->getCountry() ?? $claim->getTown()?->getCountry();
     }
 
     private function createPlayer(PlayerClaim $claim): Player

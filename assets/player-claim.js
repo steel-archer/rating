@@ -20,6 +20,7 @@ function initPlayerClaimNewForm() {
             patronymic: /** @type {HTMLInputElement} */ (form.querySelector('[name="patronymic"]')).value || null,
             townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
             townName: null,
+            countryId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="countryId"]')).value) || null,
             termsAccepted: isTermsAccepted(),
             telegram: getContactValue('telegram'),
             facebook: getContactValue('facebook'),
@@ -27,7 +28,7 @@ function initPlayerClaimNewForm() {
         };
 
         if (!data.townId) {
-            const townInput = /** @type {HTMLInputElement} */ (form.querySelector('[data-suggest-input]'));
+            const townInput = /** @type {HTMLInputElement} */ (form.querySelector('[data-suggest-town-input] [data-suggest-input]'));
             data.townName = townInput.value.trim() || null;
         }
 

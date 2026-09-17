@@ -61,7 +61,7 @@
                                 <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
                                 <td>{{ team.sessionPlace ? (team.sessionPlace == team.sessionPlace|round(0) ? team.sessionPlace|number_format(0) : team.sessionPlace) : '—' }}</td>
                                 <td class="sticky-col">{{ team.oneTimeName ?? team.teamName }}</td>
-                                <td>{{ team.teamTownName }}</td>
+                                <td>{{ team.teamLocation }}</td>
                                 {% if data %}
                                     {% set idx = 0 %}
                                     {% for tour in 0..(session.toursCount - 1) %}

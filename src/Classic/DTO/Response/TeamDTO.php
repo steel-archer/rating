@@ -12,6 +12,7 @@ final readonly class TeamDTO
         public int $id,
         public string $name,
         public string $townName,
+        public string $countryName,
         public int $tournamentCount = 0,
         /** @var list<SeasonSquadDTO> */
         public array $squads = [],

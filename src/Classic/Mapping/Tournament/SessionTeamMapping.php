@@ -8,6 +8,7 @@ use App\Classic\DTO\Response\Tournament\SessionTeamDTO;
 use App\Classic\DTO\Response\Tournament\SessionTeamPlayerDTO;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Entity\TournamentSessionTeamPlayer;
+use App\Common\Helper\TeamLocationLabel;
 use App\Common\Mapping\AsMapper;
 use App\Common\Mapping\Mapper;
 use App\Common\Mapping\MappingInterface;
@@ -43,6 +44,7 @@ final class SessionTeamMapping implements MappingInterface
             teamId: $team->getId(),
             teamName: $team->getName(),
             teamTownName: $team->getTown()->getName(),
+            teamLocation: TeamLocationLabel::format($team->getTown()->getName(), $team->getTown()->getCountry()->getName()),
             score: $source->isResultsSubmitted() ? $source->getScore() : null,
             maxScore: $source->isResultsSubmitted() ? $maxScore : null,
             place: $context['place'] ?? null,

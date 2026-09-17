@@ -5,14 +5,14 @@
                 <input type="text" name="lastName" value="{{ filters.lastName ?? '' }}" placeholder="{{ 'player.last_name'|trans }}" class="search-input">
                 <input type="text" name="firstName" value="{{ filters.firstName ?? '' }}" placeholder="{{ 'player.first_name'|trans }}" class="search-input">
                 <input type="text" name="patronymic" value="{{ filters.patronymic ?? '' }}" placeholder="{{ 'player.patronymic'|trans }}" class="search-input">
-                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
-                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
-                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
-                    <div class="suggest-dropdown" data-suggest-dropdown></div>
-                </div>
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
                     <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off">
                     <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}">
+                    <div class="suggest-dropdown" data-suggest-dropdown></div>
+                </div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId">
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
+                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
                 <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
@@ -25,6 +25,7 @@
             <thead>
                 <tr>
                     <th>{{ 'player.full_name'|trans }}</th>
+                    <th>{{ 'common.country'|trans }}</th>
                     <th>{{ 'common.town'|trans }}</th>
                     <th>{{ 'common.team'|trans }}</th>
                 </tr>
@@ -33,6 +34,7 @@
                 {% for p in players %}
                     <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
                         <td>{{ include('_player_link.html.twig', {playerId: p.id, playerName: p.fullName, hasUser: p.hasUser, turboFrame: true}, with_context: false) }}</td>
+                        <td>{{ p.countryName ?? '' }}</td>
                         <td>{{ p.townName ?? '' }}</td>
                         <td>
                             {% if p.teamId %}
@@ -41,7 +43,7 @@
                         </td>
                     </tr>
                 {% else %}
-                    <tr><td colspan="3">{{ 'common.not_found'|trans }}</td></tr>
+                    <tr><td colspan="4">{{ 'common.not_found'|trans }}</td></tr>
                 {% endfor %}
             </tbody>
         </table>

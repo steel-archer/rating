@@ -34,7 +34,8 @@ class VenueRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('v')
             ->join('v.town', 'town')
-            ->addSelect('town')
+            ->join('town.country', 'country')
+            ->addSelect('town', 'country')
             ->where('v.id = :id')
             ->andWhere('v.isApproved = true')
             ->setParameter('id', $id)

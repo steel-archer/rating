@@ -12,6 +12,9 @@ final readonly class SuggestRequestDTO
         #[Assert\NotBlank]
         #[Assert\Length(min: 2, max: 255)]
         public string $q = '',
+
+        #[Assert\Positive]
+        public ?int $countryId = null,
     ) {
     }
 }

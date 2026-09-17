@@ -17,10 +17,13 @@ class CreateController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $town = $user->getPlayer()->getTown();
+        $country = $town?->getCountry();
 
         return $this->render('my/venue/create.html.twig', [
             'townId' => $town?->getId(),
             'townName' => $town?->getName(),
+            'countryId' => $country?->getId(),
+            'countryName' => $country?->getName(),
         ]);
     }
 }

@@ -12,6 +12,7 @@ final readonly class PlayerDTO
         public int $id,
         public string $fullName,
         public ?string $townName,
+        public ?string $countryName = null,
         public bool $hasUser = false,
         public int $tournamentCount = 0,
         /** @var list<SquadDTO> */

@@ -17,7 +17,7 @@ class TownSuggestControllerTest extends WebTestCase
      */
     #[DataProvider('dataProvider')]
     public function testSuggest(
-        string $uri,
+        string|callable $uri,
         array $fixtures,
         ?string $loginAs,
         int $expectedStatus,
@@ -30,7 +30,8 @@ class TownSuggestControllerTest extends WebTestCase
             $client->loginUser($objects[$loginAs]);
         }
 
-        $client->request('GET', $uri);
+        $resolvedUri = is_callable($uri) ? $uri($objects) : $uri;
+        $client->request('GET', $resolvedUri);
 
         static::assertResponseStatusCodeSame($expectedStatus);
         $afterCallback($client, $objects);
@@ -96,6 +97,45 @@ class TownSuggestControllerTest extends WebTestCase
         yield 'suggest excludes online pseudo-town' => [
             'uri' => '/api/towns/suggest?q=%D0%9E%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertCount(0, $data);
+            },
+        ];
+
+        yield 'suggest filters towns by matching country' => [
+            'uri' => static fn(array $objects) => '/api/towns/suggest?q=%D0%9A%D0%B8%D1%97&countryId='
+                . $objects['country_ukraine']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/countries_baltic.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertCount(1, $data);
+                static::assertSame('Київ', $data[0]['name']);
+            },
+        ];
+
+        yield 'suggest returns town of the selected foreign country' => [
+            'uri' => static fn(array $objects) => '/api/towns/suggest?q=%D0%92%D1%96%D0%BB&countryId='
+                . $objects['country_lithuania']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/countries_baltic.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertCount(1, $data);
+                static::assertSame('Вільнюс', $data[0]['name']);
+            },
+        ];
+
+        yield 'suggest excludes towns of other countries' => [
+            // "Вільнюс" belongs to Lithuania, so filtering by Ukraine must not return it.
+            'uri' => static fn(array $objects) => '/api/towns/suggest?q=%D0%92%D1%96%D0%BB&countryId='
+                . $objects['country_ukraine']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/countries_baltic.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'expectedStatus' => 200,
             'afterCallback' => static function ($client, array $objects) {

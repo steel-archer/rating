@@ -22,6 +22,9 @@ final class PlayerClaimMapping implements MappingInterface
         $town = $source->getTown();
         $townName = $town?->getName() ?? $source->getTownName() ?? $player?->getTown()?->getName();
 
+        $country = $source->getCountry() ?? $town?->getCountry() ?? $player?->getTown()?->getCountry();
+        $countryName = $country?->getName();
+
         return new $destinationClass(
             id: $source->getId(),
             userEmail: $source->getUser()->getEmail(),
@@ -35,6 +38,8 @@ final class PlayerClaimMapping implements MappingInterface
             townName: $townName,
             townId: $town?->getId(),
             townIsNew: $town === null && $townName !== null,
+            countryName: $countryName,
+            countryId: $country?->getId(),
         );
     }
 }

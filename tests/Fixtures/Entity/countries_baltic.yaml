@@ -1,0 +1,25 @@
+App\Common\Entity\Country:
+    country_lithuania:
+        name: 'Литва'
+    country_latvia:
+        name: 'Латвія'
+    country_estonia:
+        name: 'Естонія'
+
+App\Common\Entity\Town:
+    town_vilnius:
+        name: 'Вільнюс'
+        country: '@country_lithuania'
+    town_riga:
+        name: 'Рига'
+        country: '@country_latvia'
+    town_tallinn:
+        name: 'Таллінн'
+        country: '@country_estonia'
+
+App\Common\Entity\Player:
+    player_baltic:
+        lastName: 'Каспаравічюс'
+        firstName: 'Йонас'
+        patronymic: null
+        town: '@town_vilnius'

@@ -8,7 +8,7 @@
 
 {% block body %}
     <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;">
-        <h1>{{ team.name }} ({{ team.townName }})</h1>
+        <h1>{{ team.name }} ({{ team.townName }}, {{ team.countryName }})</h1>
         {% if canSubmitCaptainClaim %}
             <button type="button" class="btn btn-muted" id="captain-claim-toggle">{{ 'captain_claim.submit'|trans }}</button>
         {% endif %}

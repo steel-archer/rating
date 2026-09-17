@@ -11,13 +11,17 @@ function initVenueCreateForm() {
 
     const townGroup = /** @type {HTMLElement} */ (document.getElementById('town-group'));
     const townInput = /** @type {HTMLInputElement} */ (form.querySelector('#town'));
+    const countryGroup = /** @type {HTMLElement} */ (document.getElementById('country-group'));
+    const countryInput = /** @type {HTMLInputElement} */ (form.querySelector('#country'));
     const radioButtons = form.querySelectorAll('input[name="isOnline"]');
 
     radioButtons.forEach((radio) => {
         radio.addEventListener('change', () => {
             const isOnline = /** @type {HTMLInputElement} */ (form.querySelector('input[name="isOnline"]:checked')).value === '1';
             townGroup.style.display = isOnline ? 'none' : '';
+            countryGroup.style.display = isOnline ? 'none' : '';
             townInput.required = !isOnline;
+            countryInput.required = !isOnline;
         });
     });
 

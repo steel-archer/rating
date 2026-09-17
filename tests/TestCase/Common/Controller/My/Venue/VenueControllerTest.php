@@ -86,12 +86,16 @@ class VenueControllerTest extends WebTestCase
             },
         ];
 
-        yield 'create form shown' => [
+        yield 'create form prefills player town and country' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_venue_creator',
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/venues/new'),
             'expectedStatus' => 200,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                // Defaults are taken from the creator's player (Franko -> Lviv, Ukraine).
+                static::assertSame('Львів', $crawler->filter('#town')->attr('value'));
+                static::assertSame('Україна', $crawler->filter('#country')->attr('value'));
             },
         ];
 

@@ -46,6 +46,7 @@ security:
         - { path: ^/player-claim, roles: ROLE_USER }
         - { path: ^/api/players/suggest, roles: ROLE_USER }
         - { path: ^/api/towns/suggest, roles: ROLE_USER }
+        - { path: ^/api/countries/suggest, roles: ROLE_USER }
         # Catch-all: all other routes require a linked player
         - { path: ^/, roles: ROLE_PLAYER }
 

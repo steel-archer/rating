@@ -50,6 +50,19 @@ class CountrySuggestControllerTest extends WebTestCase
             },
         ];
 
+        yield 'suggest is available to a user without a linked player' => [
+            // Country suggest is used on the player-claim page by ROLE_USER (no player yet).
+            'uri' => '/api/countries/suggest?q=%D0%A3%D0%BA%D1%80',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
+                $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertCount(1, $data);
+                static::assertSame('Україна', $data[0]['name']);
+            },
+        ];
+
         yield 'suggest returns matching countries' => [
             'uri' => '/api/countries/suggest?q=%D0%A3%D0%BA%D1%80',
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],

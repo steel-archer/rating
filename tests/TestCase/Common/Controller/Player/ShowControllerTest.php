@@ -70,8 +70,9 @@ class ShowControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 static::assertSelectorTextContains('h1', 'Шевченко Тарас Григорович');
 
-                // town in meta
+                // town and country in meta
                 static::assertStringContainsString('Київ', $crawler->filter('.meta')->text());
+                static::assertStringContainsString('Україна', $crawler->filter('.meta')->text());
 
                 // squad: team Alpha in season 2024-2025
                 $card = $crawler->filter('.card');

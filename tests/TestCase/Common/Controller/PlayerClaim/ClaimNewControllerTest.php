@@ -55,7 +55,7 @@ class ClaimNewControllerTest extends WebTestCase
         yield 'user submits new player claim' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
-            'action' => static fn(KernelBrowser $client) => $client->request(
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
                 '/player-claim/new',
                 [],
@@ -65,7 +65,7 @@ class ClaimNewControllerTest extends WebTestCase
                     'lastName' => 'Тестовий',
                     'firstName' => 'Гравець',
                     'patronymic' => 'Тестович',
-                    'townName' => 'Київ',
+                    'townId' => $objects['town_kyiv']->getId(),
                     'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
@@ -78,10 +78,39 @@ class ClaimNewControllerTest extends WebTestCase
                 static::assertSame('Гравець', $claims[0]->getFirstName());
                 static::assertSame(PlayerClaimStatus::Pending, $claims[0]->getStatus());
                 static::assertNull($claims[0]->getPlayer());
+                static::assertSame('Київ', $claims[0]->getTown()?->getName());
             },
         ];
 
-        yield 'user submits new player claim with town name' => [
+        yield 'user submits new player claim with new town and existing country' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'lastName' => 'Тестовий',
+                    'firstName' => 'Гравець',
+                    'townName' => 'Новомісто',
+                    'countryId' => $objects['country_ukraine']->getId(),
+                    'termsAccepted' => true,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 201,
+            'afterCallback' => static function (array $objects) {
+                $claims = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
+                    ->findBy(['user' => $objects['user_regular']]);
+                static::assertCount(1, $claims);
+                static::assertNull($claims[0]->getTown());
+                static::assertSame('Новомісто', $claims[0]->getTownName());
+                static::assertSame('Україна', $claims[0]->getCountry()?->getName());
+            },
+        ];
+
+        yield 'new town without country returns 422' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
             'action' => static fn(KernelBrowser $client) => $client->request(
@@ -97,13 +126,33 @@ class ClaimNewControllerTest extends WebTestCase
                     'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 201,
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'new town with unknown countryId returns 422' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_regular',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/player-claim/new',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'lastName' => 'Тестовий',
+                    'firstName' => 'Гравець',
+                    'townName' => 'Новомісто',
+                    'countryId' => $objects['country_ukraine']->getId() + 100000,
+                    'termsAccepted' => true,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
             'afterCallback' => static function (array $objects) {
                 $claims = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
                     ->findBy(['user' => $objects['user_regular']]);
-                static::assertCount(1, $claims);
-                static::assertNull($claims[0]->getTown());
-                static::assertSame('Новомісто', $claims[0]->getTownName());
+                static::assertCount(0, $claims);
             },
         ];
 
@@ -177,7 +226,7 @@ class ClaimNewControllerTest extends WebTestCase
         yield 'PlayerClaimException returns 422 with message' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
-            'action' => static fn(KernelBrowser $client) => $client->request(
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
                 '/player-claim/new',
                 [],
@@ -186,7 +235,7 @@ class ClaimNewControllerTest extends WebTestCase
                 json_encode([
                     'lastName' => 'Тестовий',
                     'firstName' => 'Гравець',
-                    'townName' => 'Київ',
+                    'townId' => $objects['town_kyiv']->getId(),
                     'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
@@ -204,7 +253,7 @@ class ClaimNewControllerTest extends WebTestCase
         yield 'terms not accepted returns 422' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
-            'action' => static fn(KernelBrowser $client) => $client->request(
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
                 '/player-claim/new',
                 [],
@@ -213,7 +262,7 @@ class ClaimNewControllerTest extends WebTestCase
                 json_encode([
                     'lastName' => 'Тестовий',
                     'firstName' => 'Гравець',
-                    'townName' => 'Київ',
+                    'townId' => $objects['town_kyiv']->getId(),
                     'termsAccepted' => false,
                 ], JSON_THROW_ON_ERROR),
             ),
@@ -225,7 +274,7 @@ class ClaimNewControllerTest extends WebTestCase
         yield 'throwable returns 500' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_regular',
-            'action' => static fn(KernelBrowser $client) => $client->request(
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
                 '/player-claim/new',
                 [],
@@ -234,7 +283,7 @@ class ClaimNewControllerTest extends WebTestCase
                 json_encode([
                     'lastName' => 'Тестовий',
                     'firstName' => 'Гравець',
-                    'townName' => 'Київ',
+                    'townId' => $objects['town_kyiv']->getId(),
                     'termsAccepted' => true,
                 ], JSON_THROW_ON_ERROR),
             ),
