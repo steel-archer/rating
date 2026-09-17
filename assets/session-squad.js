@@ -252,6 +252,8 @@ function initNewPlayerForm() {
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-last-name')).value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-first-name')).value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-patronymic')).value = '';
+        /** @type {HTMLInputElement} */ (document.getElementById('new-player-country')).value = '';
+        /** @type {HTMLInputElement} */ (document.getElementById('new-player-country-id')).value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-town')).value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-town-id')).value = '';
     });

@@ -6,6 +6,7 @@ namespace App\Classic\Mapping\Player;
 
 use App\Classic\DTO\Response\Player\TournamentAppearanceDTO;
 use App\Classic\Entity\TournamentSessionTeamPlayer;
+use App\Common\Helper\TeamLocationLabel;
 use App\Common\Mapping\AsMapper;
 use App\Common\Mapping\MappingInterface;
 
@@ -34,6 +35,7 @@ final class TournamentAppearanceMapping implements MappingInterface
             teamId: $team->getId(),
             teamName: $team->getName(),
             teamTownName: $team->getTown()->getName(),
+            teamLocation: TeamLocationLabel::format($team->getTown()->getName(), $team->getTown()->getCountry()->getName()),
             score: $resultsHidden ? null : $sessionTeam->getScore(),
             maxScore: $resultsHidden ? null : $maxScore,
             place: $resultsHidden ? null : ($context['places'][$sessionTeam->getId()] ?? null),

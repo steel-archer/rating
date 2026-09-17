@@ -11,7 +11,7 @@
 
     {% if player.townName %}
         <div class="meta">
-            <span>{{ player.townName }}</span>
+            <span>{{ player.townName }}{% if player.countryName %}, {{ player.countryName }}{% endif %}</span>
         </div>
     {% endif %}
 

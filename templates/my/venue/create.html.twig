@@ -32,9 +32,17 @@
                     </label>
                 </div>
             </div>
+            <div class="form-group" id="country-group">
+                <label for="country">{{ 'common.country'|trans }} *</label>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                    <input type="text" id="country" data-suggest-input placeholder="{{ 'common.country'|trans }}" value="{{ countryName ?? '' }}" required>
+                    <input type="hidden" id="venue-country-id" data-suggest-hidden value="{{ countryId ?? '' }}">
+                    <div data-suggest-dropdown hidden></div>
+                </div>
+            </div>
             <div class="form-group" id="town-group">
                 <label for="town">{{ 'common.town'|trans }} *</label>
-                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="venue-country-id">
                     <input type="text" id="town" data-suggest-input placeholder="{{ 'common.town'|trans }}" value="{{ townName ?? '' }}" required>
                     <input type="hidden" name="townId" data-suggest-hidden value="{{ townId ?? '' }}">
                     <div data-suggest-dropdown hidden></div>

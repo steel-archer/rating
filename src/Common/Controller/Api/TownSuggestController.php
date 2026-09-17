@@ -20,6 +20,6 @@ class TownSuggestController extends AbstractController
         #[MapQueryString] SuggestRequestDTO $requestDto,
         TownRepository $townRepository,
     ): JsonResponse {
-        return $this->json($townRepository->suggest($requestDto->q));
+        return $this->json($townRepository->suggest($requestDto->q, $requestDto->countryId));
     }
 }

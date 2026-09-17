@@ -30,8 +30,16 @@
                         <input type="text" id="team-name" name="name" value="{{ team.teamName }}" maxlength="255" required>
                     </div>
                     <div class="form-group">
+                        <label>{{ 'common.country'|trans }}</label>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                            <input type="text" data-suggest-input value="{{ team.countryName }}">
+                            <input type="hidden" data-suggest-hidden id="team-country-id">
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>{{ 'team_management.team_town'|trans }}</label>
-                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="team-country-id">
                             <input type="text" data-suggest-input value="{{ team.townName }}">
                             <input type="hidden" data-suggest-hidden id="team-town-id">
                             <div data-suggest-dropdown hidden></div>

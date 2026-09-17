@@ -47,7 +47,12 @@
                             <input type="text" name="lastName" value="" placeholder="{{ 'player.last_name'|trans }}" class="search-input">
                             <input type="text" name="firstName" value="" placeholder="{{ 'player.first_name'|trans }}" class="search-input">
                             <input type="text" name="patronymic" value="" placeholder="{{ 'player.patronymic'|trans }}" class="search-input">
-                            <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                            <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                                <input type="text" data-suggest-input value="" placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off">
+                                <input type="hidden" name="countryId" data-suggest-hidden value="">
+                                <div class="suggest-dropdown" data-suggest-dropdown></div>
+                            </div>
+                            <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId">
                                 <input type="text" data-suggest-input value="" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
                                 <input type="hidden" name="townId" data-suggest-hidden value="">
                                 <div class="suggest-dropdown" data-suggest-dropdown></div>
@@ -74,7 +79,14 @@
                     <input type="text" name="patronymic" placeholder="{{ 'player.patronymic'|trans }}" class="search-input">
                 </div>
                 <div class="form-group">
-                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}" data-suggest-country-input>
+                        <input type="text" data-suggest-input placeholder="{{ 'common.country'|trans }} *" class="search-input" autocomplete="off" required>
+                        <input type="hidden" name="countryId" data-suggest-hidden>
+                        <div class="suggest-dropdown" data-suggest-dropdown></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId" data-suggest-town-input>
                         <input type="text" data-suggest-input placeholder="{{ 'common.town'|trans }} *" class="search-input" autocomplete="off" required>
                         <input type="hidden" name="townId" data-suggest-hidden>
                         <div class="suggest-dropdown" data-suggest-dropdown></div>

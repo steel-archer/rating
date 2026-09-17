@@ -36,6 +36,7 @@ final class RecordingSessionTeamMapping implements MappingInterface
             teamId: 0,
             teamName: '',
             teamTownName: null,
+            teamLocation: null,
             score: null,
             maxScore: null,
             place: $context['place'] ?? null,

@@ -60,7 +60,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | firstName | string(255) | ✓ | |
 | lastName | string(255) | — | |
 | patronymic | string(255) | ✓ | |
-| townName | string(255) | ✓ | |
+| townName | string(255) | ✓ | назва нового міста, якого ще немає в довіднику |
 | status | enum | — | `App\Common\Enum\PlayerClaimStatus` |
 
 #### Зв'язки
@@ -70,6 +70,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | user | ManyToOne | User | — | |
 | player | ManyToOne | Player | ✓ | |
 | town | ManyToOne | Town | ✓ | |
+| country | ManyToOne | Country | ✓ | країна (з довідника) для нового міста, введеного вручну |
 
 ### Season
 

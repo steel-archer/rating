@@ -12,6 +12,7 @@ final readonly class VenueDTO
         public int $id,
         public string $name,
         public string $townName,
+        public string $countryName,
         public int $tournamentCount = 0,
         /** @var list<RepresentativeDTO> */
         public array $representatives = [],

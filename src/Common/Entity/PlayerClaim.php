@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'IDX_player_claim_user', columns: ['user_id'])]
 #[ORM\Index(name: 'IDX_player_claim_player', columns: ['player_id'])]
 #[ORM\Index(name: 'IDX_player_claim_town', columns: ['town_id'])]
+#[ORM\Index(name: 'IDX_player_claim_country', columns: ['country_id'])]
 class PlayerClaim
 {
     #[ORM\Id]
@@ -41,6 +42,9 @@ class PlayerClaim
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $townName = null;
+
+    #[ORM\ManyToOne]
+    private ?Country $country = null;
 
     #[ORM\Column(length: 20, enumType: PlayerClaimStatus::class)]
     private PlayerClaimStatus $status = PlayerClaimStatus::Pending;
@@ -130,6 +134,18 @@ class PlayerClaim
     public function setTownName(?string $townName): static
     {
         $this->townName = $townName;
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): static
+    {
+        $this->country = $country;
 
         return $this;
     }

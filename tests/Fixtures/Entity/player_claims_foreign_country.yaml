@@ -1,0 +1,18 @@
+App\Common\Entity\User:
+    user_claim_new_country:
+        email: 'claim_new_country@example.com'
+        googleId: 'google_claim_new_country'
+        roles: []
+        player: null
+
+App\Common\Entity\PlayerClaim:
+    player_claim_new_with_foreign_country:
+        user: '@user_claim_new_country'
+        player: null
+        lastName: 'Каспаравічюс'
+        firstName: 'Йонас'
+        patronymic: null
+        town: null
+        townName: 'Вільнюс'
+        country: '@country_lithuania'
+        status: 'pending'

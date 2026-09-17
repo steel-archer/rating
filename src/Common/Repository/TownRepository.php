@@ -37,24 +37,29 @@ class TownRepository extends ServiceEntityRepository
      * @return list<SuggestItemDTO>
      * @throws InvalidArgumentException
      */
-    public function suggest(string $query): array
+    public function suggest(string $query, ?int $countryId = null): array
     {
-        $cacheKey = 'town_suggest_' . md5($query);
+        $cacheKey = 'town_suggest_' . md5($query . '_' . ($countryId ?? ''));
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($query) {
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($query, $countryId) {
             $item->tag([CacheTag::Towns->value]);
             $item->expiresAfter(86400);
 
-            $rows = $this->createQueryBuilder('t')
+            $qb = $this->createQueryBuilder('t')
                 ->select('t.id', 't.name')
                 ->where('t.name LIKE :q')
                 ->andWhere('t.name != :online')
                 ->setParameter('q', LikeEscape::contains($query))
                 ->setParameter('online', self::ONLINE_TOWN_NAME)
                 ->orderBy('t.name')
-                ->setMaxResults(10)
-                ->getQuery()
-                ->getArrayResult();
+                ->setMaxResults(10);
+
+            if ($countryId !== null) {
+                $qb->andWhere('t.country = :countryId')
+                    ->setParameter('countryId', $countryId);
+            }
+
+            $rows = $qb->getQuery()->getArrayResult();
 
             return $this->mapper->mapMultiple($rows, SuggestItemDTO::class);
         });

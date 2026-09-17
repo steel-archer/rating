@@ -78,13 +78,17 @@ class ListControllerTest extends WebTestCase
                 static::assertStringContainsString('Франко', $names[2]);
                 static::assertStringContainsString('Шевченко', $names[3]);
 
+                // countries (column added before town)
+                $countries = $rows->each(fn(Crawler $row) => $row->filter('td')->eq(1)->text() |> trim(...));
+                static::assertContains('Україна', $countries);
+
                 // towns
-                $towns = $rows->each(fn(Crawler $row) => $row->filter('td')->eq(1)->text() |> trim(...));
+                $towns = $rows->each(fn(Crawler $row) => $row->filter('td')->eq(2)->text() |> trim(...));
                 static::assertContains('Київ', $towns);
                 static::assertContains('Львів', $towns);
 
                 // Shevchenko has team Alpha (captain in current season)
-                static::assertStringContainsString('Альфа', $rows->eq(3)->filter('td')->eq(2)->text());
+                static::assertStringContainsString('Альфа', $rows->eq(3)->filter('td')->eq(3)->text());
             },
         ];
 
@@ -129,11 +133,28 @@ class ListControllerTest extends WebTestCase
         yield 'list filters by countryId' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/players/list?countryId=' . $objects['country_ukraine']->getId(),
-            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'fixtures' => ['Entity/base.yaml', 'Entity/countries_baltic.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
-                static::assertCount(4, $crawler->filter('table tbody tr'));
+                // Only Ukrainian players; the Lithuanian player is filtered out.
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(4, $rows);
+                static::assertStringNotContainsString('Каспаравічюс', $rows->text());
+            },
+        ];
+
+        yield 'list filters by foreign countryId' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/players/list?countryId=' . $objects['country_lithuania']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/countries_baltic.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Каспаравічюс', $rows->eq(0)->text());
+                static::assertStringContainsString('Литва', $rows->eq(0)->filter('td')->eq(1)->text());
             },
         ];
 

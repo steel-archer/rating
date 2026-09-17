@@ -6,6 +6,7 @@ namespace App\Common\Controller\PlayerClaim;
 
 use App\Common\Attribute\RateLimited;
 use App\Common\DTO\Request\PlayerListRequestDTO;
+use App\Common\Repository\CountryRepository;
 use App\Common\Repository\PlayerRepository;
 use App\Common\Repository\TownRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,7 @@ class SearchController extends AbstractController
     public function __invoke(
         PlayerRepository $playerRepository,
         TownRepository $townRepository,
+        CountryRepository $countryRepository,
         #[MapQueryString] PlayerListRequestDTO $requestDto = new PlayerListRequestDTO(),
     ): Response {
         return $this->render('player_claim/_search_results.html.twig', [
@@ -28,6 +30,7 @@ class SearchController extends AbstractController
             'lastPage' => $playerRepository->getFreeLastPageNumber($requestDto),
             'filters' => $requestDto->getFilters(),
             'townName' => $requestDto->townId ? $townRepository->find($requestDto->townId)?->getName() : null,
+            'countryName' => $requestDto->countryId ? $countryRepository->find($requestDto->countryId)?->getName() : null,
         ]);
     }
 }

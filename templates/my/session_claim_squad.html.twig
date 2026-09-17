@@ -62,8 +62,16 @@
                         <input type="text" id="new-team-name" name="newTeamName">
                     </div>
                     <div class="form-group">
+                        <label for="new-team-country">{{ 'common.country'|trans }}</label>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                            <input type="text" id="new-team-country" data-suggest-input placeholder="{{ 'common.country'|trans }}">
+                            <input type="hidden" id="new-team-country-id" data-suggest-hidden>
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="new-team-town">{{ 'common.town'|trans }}</label>
-                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="new-team-country-id">
                             <input type="text" id="new-team-town" data-suggest-input placeholder="{{ 'common.town'|trans }}">
                             <input type="hidden" id="new-team-town-id" data-suggest-hidden>
                             <div data-suggest-dropdown hidden></div>
@@ -120,7 +128,12 @@
                         <input type="text" id="new-player-last-name" placeholder="{{ 'player.last_name'|trans }}">
                         <input type="text" id="new-player-first-name" placeholder="{{ 'player.first_name'|trans }}">
                         <input type="text" id="new-player-patronymic" placeholder="{{ 'player.patronymic'|trans }}">
-                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                            <input type="text" id="new-player-country" data-suggest-input placeholder="{{ 'common.country'|trans }}">
+                            <input type="hidden" id="new-player-country-id" data-suggest-hidden>
+                            <div data-suggest-dropdown hidden></div>
+                        </div>
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="new-player-country-id">
                             <input type="text" id="new-player-town" data-suggest-input placeholder="{{ 'common.town'|trans }}">
                             <input type="hidden" id="new-player-town-id" data-suggest-hidden>
                             <div data-suggest-dropdown hidden></div>

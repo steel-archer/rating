@@ -40,8 +40,9 @@ class PlayerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.town', 't')
+            ->leftJoin('t.country', 'c')
             ->leftJoin('p.user', 'u')
-            ->addSelect('t', 'u')
+            ->addSelect('t', 'c', 'u')
             ->where('p.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
@@ -58,6 +59,7 @@ class PlayerRepository extends ServiceEntityRepository
                 'p.id',
                 "CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) AS fullName",
                 'town.name AS townName',
+                'country.name AS countryName',
                 'CASE WHEN u.id IS NOT NULL THEN true ELSE false END AS hasUser',
             )
             ->leftJoin(User::class, 'u', 'WITH', 'u.player = p')

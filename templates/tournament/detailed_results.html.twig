@@ -37,7 +37,7 @@
                                 <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
                                 <td>{{ team.isOnline ? 'On' : '' }}</td>
                                 <td class="sticky-col">{{ team.oneTimeName ?? team.teamName }}</td>
-                                <td>{{ team.teamTownName }}</td>
+                                <td>{{ team.teamLocation }}</td>
                                 {% if data %}
                                     {% set idx = 0 %}
                                     {% for tour in 0..(toursCount - 1) %}

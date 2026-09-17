@@ -11,6 +11,7 @@ final readonly class TeamManagementDTO
         public string $teamName,
         public int $townId,
         public string $townName,
+        public string $countryName,
         public string $seasonName,
         public bool $isCaptain,
         /** @var list<TeamManagementPlayerDTO> */

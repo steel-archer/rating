@@ -20,14 +20,62 @@ function initSuggest(wrapper) {
         }
     });
 
-    initSuggestBehavior(input, dropdown, apiUrl, (item) => {
-        input.value = item.name;
-        if (hidden) {
-            hidden.value = item.id;
-            hidden.dispatchEvent(new Event('change'));
-        }
-        delete input.dataset.townIsNew;
-    });
+    const countryHidden = resolveCountryHidden(wrapper);
+    if (countryHidden) {
+        // Reset the chosen town whenever the linked country changes.
+        countryHidden.addEventListener('change', () => {
+            input.value = '';
+            if (hidden) {
+                hidden.value = '';
+            }
+        });
+    }
+
+    // A fixed country id (e.g. moderator claim row) takes precedence over a linked field.
+    const fixedCountryId = wrapper.dataset.suggestCountryId;
+    let getExtraParams;
+    if (fixedCountryId) {
+        getExtraParams = () => ({ countryId: fixedCountryId });
+    } else if (countryHidden) {
+        getExtraParams = () => ({ countryId: countryHidden.value });
+    }
+
+    initSuggestBehavior(
+        input,
+        dropdown,
+        apiUrl,
+        (item) => {
+            input.value = item.name;
+            if (hidden) {
+                hidden.value = item.id;
+                hidden.dispatchEvent(new Event('change'));
+            }
+            delete input.dataset.townIsNew;
+        },
+        getExtraParams,
+    );
+}
+
+/**
+ * Resolves the country hidden field this suggest depends on, if any.
+ * The `data-suggest-country` value is first tried as an element id (unambiguous
+ * when several country/town pairs live in one form) and then as a field name
+ * scoped to the enclosing form (used by list filters with a single pair).
+ *
+ * @param {HTMLElement} wrapper
+ * @returns {HTMLInputElement|null}
+ */
+function resolveCountryHidden(wrapper) {
+    const dependsOn = wrapper.dataset.suggestCountry;
+    if (!dependsOn) {
+        return null;
+    }
+    const byId = /** @type {HTMLInputElement|null} */ (document.getElementById(dependsOn));
+    if (byId) {
+        return byId;
+    }
+    const scope = wrapper.closest('form') ?? document;
+    return /** @type {HTMLInputElement|null} */ (scope.querySelector(`[name="${dependsOn}"]`));
 }
 
 function initAllSuggests() {

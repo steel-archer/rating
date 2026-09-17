@@ -139,6 +139,7 @@ class TeamManagementService
             teamName: $team->getName(),
             townId: $team->getTown()->getId(),
             townName: $team->getTown()->getName(),
+            countryName: $team->getTown()->getCountry()->getName(),
             seasonName: $season->getName(),
             isCaptain: $isCaptain,
             players: $playerDtos,

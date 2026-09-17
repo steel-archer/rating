@@ -3,14 +3,14 @@
         <form action="{{ path('team_list') }}" method="get">
             <div class="search-row">
                 <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="{{ 'common.name'|trans }}" class="search-input">
-                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}">
-                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
-                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
-                    <div class="suggest-dropdown" data-suggest-dropdown></div>
-                </div>
                 <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
                     <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off">
                     <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}">
+                    <div class="suggest-dropdown" data-suggest-dropdown></div>
+                </div>
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId">
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
+                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
                 <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>

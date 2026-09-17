@@ -19,6 +19,8 @@ final readonly class PlayerClaimDTO
         public ?string $townName,
         public ?int $townId,
         public bool $townIsNew,
+        public ?string $countryName,
+        public ?int $countryId,
     ) {
     }
 }

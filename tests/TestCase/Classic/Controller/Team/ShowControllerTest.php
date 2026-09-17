@@ -68,9 +68,10 @@ class ShowControllerTest extends WebTestCase
             'loginAs' => 'user_with_player',
             'expectedStatus' => 200,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
-                // name and town in h1
+                // name, town and country in h1
                 static::assertSelectorTextContains('h1', 'Альфа');
                 static::assertSelectorTextContains('h1', 'Київ');
+                static::assertSelectorTextContains('h1', 'Україна');
 
                 // squad: Shevchenko (captain) and Lesya
                 $card = $crawler->filter('.card');

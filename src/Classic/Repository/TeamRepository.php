@@ -34,7 +34,8 @@ class TeamRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('t')
             ->join('t.town', 'town')
-            ->addSelect('town')
+            ->join('town.country', 'country')
+            ->addSelect('town', 'country')
             ->where('t.id = :id')
             ->setParameter('id', $id)
             ->getQuery()

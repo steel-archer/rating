@@ -22,6 +22,7 @@
                     <th>{{ 'moderator.player_claim_user'|trans }}</th>
                     <th>{{ 'moderator.player_claim_type'|trans }}</th>
                     <th>{{ 'moderator.player_claim_details'|trans }}</th>
+                    <th>{{ 'common.country'|trans }}</th>
                     <th>{{ 'common.town'|trans }}</th>
                     <th></th>
                 </tr>
@@ -44,9 +45,10 @@
                                 {{ include('_player_link.html.twig', {playerId: claim.playerId, playerName: claim.playerName, hasUser: claim.playerHasUser}, with_context: false) }}
                             {% endif %}
                         </td>
+                        <td>{{ claim.countryName ?? '' }}</td>
                         <td>
                             {% if claim.isNew %}
-                                <div class="suggest-wrapper claim-town-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-claim-id="{{ claim.id }}">
+                                <div class="suggest-wrapper claim-town-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-claim-id="{{ claim.id }}"{% if claim.countryId %} data-suggest-country-id="{{ claim.countryId }}"{% endif %}>
                                     <input type="text"
                                            data-suggest-input
                                            class="search-input search-input-sm"

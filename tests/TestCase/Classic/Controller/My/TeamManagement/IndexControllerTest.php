@@ -59,11 +59,17 @@ class IndexControllerTest extends WebTestCase
             'loginAs' => 'user_captain',
             'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client) {
-                $text = $client->getCrawler()->text();
+                $crawler = $client->getCrawler();
+                $text = $crawler->text();
                 static::assertStringContainsString('Альфа', $text);
                 static::assertStringContainsString('Шевченко', $text);
                 static::assertStringContainsString('Франко', $text);
                 static::assertStringContainsString('Зробити капітаном', $text);
+
+                // Country field is prefilled in the edit-team form (cascades into town suggest).
+                $countryValue = $crawler->filter('#team-country-id')->closest('.suggest-wrapper')
+                    ->filter('[data-suggest-input]')->attr('value');
+                static::assertSame('Україна', $countryValue);
             },
         ];
 

@@ -238,6 +238,7 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 static::assertSame('Нещадименко', $player->getLastName());
                 static::assertNotNull($player->getTown());
                 static::assertSame('Нове Місто', $player->getTown()->getName());
+                static::assertSame('Україна', $player->getTown()->getCountry()->getName());
             },
         ];
 
@@ -285,6 +286,37 @@ class PlayerClaimApproveControllerTest extends WebTestCase
                 static::assertNotNull($player->getTown());
                 static::assertSame('Київ', $player->getTown()->getName());
                 static::assertSame($objects['town_kyiv']->getId(), $player->getTown()->getId());
+            },
+        ];
+
+        yield 'approve new player claim creates town in the selected foreign country' => [
+            'fixtures' => [
+                'Entity/base.yaml',
+                'Entity/countries_baltic.yaml',
+                'Entity/tournaments.yaml',
+                'Entity/users.yaml',
+                'Entity/player_claims_foreign_country.yaml',
+            ],
+            'loginAs' => 'user_admin',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/moderator/player-claims/' . $objects['player_claim_new_with_foreign_country']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode(['townName' => null], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (array $objects) {
+                $claim = static::getContainer()->get('doctrine')->getRepository(PlayerClaim::class)
+                    ->find($objects['player_claim_new_with_foreign_country']->getId());
+                static::assertSame(PlayerClaimStatus::Approved, $claim->getStatus());
+                $player = $claim->getUser()->getPlayer();
+                static::assertNotNull($player);
+                static::assertNotNull($player->getTown());
+                static::assertSame('Вільнюс', $player->getTown()->getName());
+                // The new town is created within the country chosen from the directory.
+                static::assertSame('Литва', $player->getTown()->getCountry()->getName());
             },
         ];
     }
