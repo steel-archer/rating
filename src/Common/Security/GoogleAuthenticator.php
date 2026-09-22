@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Common\Security;
 
 use App\Common\Entity\User;
+use App\Common\Helper\NameNormalizer;
 use App\Common\Repository\UserRepository;
 use App\Common\Validator\UkrainianNameValidator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -74,6 +75,8 @@ final class GoogleAuthenticator extends OAuth2Authenticator implements Authentic
 
     private static function filterName(?string $name): ?string
     {
+        $name = NameNormalizer::normalizeApostrophes($name);
+
         if ($name === null || !preg_match(UkrainianNameValidator::PATTERN, $name)) {
             return null;
         }

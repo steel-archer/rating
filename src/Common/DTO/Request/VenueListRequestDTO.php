@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Common\DTO\Request;
 
+use App\Common\Helper\NameNormalizer;
 use App\Common\Validator\UkrainianName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class VenueListRequestDTO
 {
+    #[Assert\Length(max: 255)]
+    #[UkrainianName]
+    public ?string $representative;
+
     public function __construct(
         #[Assert\Range(min: 1, max: 10000)]
         public int $page = 1,
@@ -22,10 +27,9 @@ final readonly class VenueListRequestDTO
         #[Assert\Positive]
         public ?int $countryId = null,
 
-        #[Assert\Length(max: 255)]
-        #[UkrainianName]
-        public ?string $representative = null,
+        ?string $representative = null,
     ) {
+        $this->representative = NameNormalizer::normalizeApostrophes($representative);
     }
 
     /**
