@@ -36,4 +36,12 @@
                                         <button type="button" class="btn btn-reject" data-session-revoke="{{ claim.sessionId }}">{{ 'session_claim.revoke'|trans }}</button>
                                     </td>
                                 {% endif %}
+                                {% if showReapprove is defined and showReapprove %}
+                                    <td>
+                                        {% if claim.comment %}
+                                            <p class="reject-comment">{{ 'session_claim.reject_reason'|trans }}: {{ claim.comment }}</p>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-approve" data-session-approve="{{ claim.sessionId }}">{{ 'moderator.approve'|trans }}</button>
+                                    </td>
+                                {% endif %}
                             </tr>

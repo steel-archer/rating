@@ -72,4 +72,37 @@
             {% endfor %}
         {% endif %}
     </div>
+
+    <h2>{{ 'session_claim.rejected_section_title'|trans }}</h2>
+
+    <div id="rejected-section">
+        {% if rejected is empty %}
+            <p class="empty-state">{{ 'session_claim.no_rejected'|trans }}</p>
+        {% else %}
+            {% for group in rejected %}
+                <div class="card card-wide" id="tournament-rejected-{{ group.tournamentId }}">
+                    <h3><a href="{{ path('tournament_show', {id: group.tournamentId}) }}">{{ group.tournamentName }}</a></h3>
+
+                    <table aria-label="{{ group.tournamentName }}">
+                        <thead>
+                            <tr>
+                                <th>{{ 'venue.venue'|trans }}</th>
+                                <th>{{ 'common.town'|trans }}</th>
+                                <th>{{ 'session_claim.estimated_date'|trans }}</th>
+                                <th>{{ 'session_claim.estimated_teams'|trans }}</th>
+                                <th>{{ 'venue.representative'|trans }}</th>
+                                <th>{{ 'venue.host'|trans }}</th>
+                                <th>{{ 'tournament.my.actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for claim in group.claims %}
+                                {{ include('my/_session_claim_row.html.twig', {claim: claim, rowIndex: loop.index, showReapprove: true}, with_context: false) }}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 {% endblock %}

@@ -43,6 +43,14 @@ class SessionClaimRepository extends ServiceEntityRepository
         return $this->findByOrganizerAndStatus($player, SessionClaimStatus::Approved, activeOnly: true);
     }
 
+    /**
+     * @return list<SessionClaim>
+     */
+    public function findRejectedByOrganizer(Player $player): array
+    {
+        return $this->findByOrganizerAndStatus($player, SessionClaimStatus::Rejected);
+    }
+
     public function hasApprovedHostedSession(Player $host, Tournament $tournament): bool
     {
         return (bool) $this->createQueryBuilder('sc')

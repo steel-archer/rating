@@ -72,6 +72,14 @@ class SessionClaimService
     }
 
     /**
+     * @return list<SessionClaimGroupDTO>
+     */
+    public function getRejectedClaimsByOrganizer(Player $player): array
+    {
+        return $this->buildClaimGroups($this->claimRepository->findRejectedByOrganizer($player));
+    }
+
+    /**
      * @param list<SessionClaim> $claims
      * @return list<SessionClaimGroupDTO>
      */
@@ -230,11 +238,14 @@ class SessionClaimService
         $claim = $this->claimRepository->findBySession($session)
             ?? throw new LogicException('session_claim.error.no_claim');
 
-        if ($claim->getStatus() !== SessionClaimStatus::Pending) {
+        // Organizers may approve a pending claim or reverse a previous rejection
+        // (the feedback: a rejected claim must not disappear and stay unfixable).
+        if (!in_array($claim->getStatus(), [SessionClaimStatus::Pending, SessionClaimStatus::Rejected], true)) {
             throw new LogicException('session_claim.error.not_pending');
         }
 
         $claim->setStatus(SessionClaimStatus::Approved);
+        $claim->setComment(null);
         $claim->setResolvedAt(new DateTimeImmutable());
 
         $this->em->flush();

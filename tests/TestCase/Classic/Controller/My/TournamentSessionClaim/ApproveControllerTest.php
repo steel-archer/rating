@@ -76,6 +76,27 @@ class ApproveControllerTest extends WebTestCase
             },
         ];
 
+        yield 'approve previously rejected claim clears comment' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_organizer',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournament-claims/' . $objects['session_rejected']->getId() . '/approve',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $claim = static::getContainer()->get('doctrine')
+                    ->getRepository(SessionClaim::class)
+                    ->findOneBy(['session' => $objects['session_rejected']->getId()]);
+                static::assertSame(SessionClaimStatus::Approved, $claim->getStatus());
+                static::assertNull($claim->getComment());
+                static::assertNotNull($claim->getResolvedAt());
+            },
+        ];
+
         yield 'approve by non-organizer' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',

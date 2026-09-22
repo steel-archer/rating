@@ -22,6 +22,7 @@ class ListController extends AbstractController
         return $this->render('my/tournament_session_claims.html.twig', [
             'grouped' => $service->getPendingClaimsByOrganizer($player),
             'active' => $service->getActiveClaimsByOrganizer($player),
+            'rejected' => $service->getRejectedClaimsByOrganizer($player),
         ]);
     }
 }
