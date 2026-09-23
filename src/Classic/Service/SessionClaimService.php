@@ -7,6 +7,7 @@ namespace App\Classic\Service;
 use App\Classic\DTO\Request\Session\ClaimRequestDTO;
 use App\Classic\DTO\Request\Session\RejectRequestDTO;
 use App\Classic\DTO\Request\Session\UpdateRequestDTO;
+use App\Classic\DTO\Response\My\OrganizerSessionClaimsDTO;
 use App\Classic\DTO\Response\My\SessionClaimGroupDTO;
 use App\Classic\DTO\Response\Tournament\SessionClaimDTO;
 use App\Common\Entity\Player;
@@ -56,19 +57,45 @@ class SessionClaimService
     }
 
     /**
-     * @return list<SessionClaimGroupDTO>
+     * Load all claims for the organizer in one query and split them into
+     * pending / approved (active tournaments only) / rejected groups in memory.
      */
-    public function getPendingClaimsByOrganizer(Player $player): array
+    public function getClaimGroupsByOrganizer(Player $player): OrganizerSessionClaimsDTO
     {
-        return $this->buildClaimGroups($this->claimRepository->findPendingByOrganizer($player));
+        $claims = $this->claimRepository->findByOrganizer($player);
+        $now = new DateTimeImmutable();
+
+        $pending = [];
+        $approved = [];
+        $rejected = [];
+        foreach ($claims as $claim) {
+            switch ($claim->getStatus()) {
+                case SessionClaimStatus::Pending:
+                    $pending[] = $claim;
+                    break;
+                case SessionClaimStatus::Approved:
+                    if ($this->isActiveTournament($claim, $now)) {
+                        $approved[] = $claim;
+                    }
+                    break;
+                case SessionClaimStatus::Rejected:
+                    $rejected[] = $claim;
+                    break;
+            }
+        }
+
+        return new OrganizerSessionClaimsDTO(
+            pending: $this->buildClaimGroups($pending),
+            approved: $this->buildClaimGroups($approved),
+            rejected: $this->buildClaimGroups($rejected),
+        );
     }
 
-    /**
-     * @return list<SessionClaimGroupDTO>
-     */
-    public function getActiveClaimsByOrganizer(Player $player): array
+    private function isActiveTournament(SessionClaim $claim, DateTimeImmutable $now): bool
     {
-        return $this->buildClaimGroups($this->claimRepository->findActiveByOrganizer($player));
+        $endedAt = $claim->getSession()->getTournament()->getEndedAt();
+
+        return $endedAt === null || $endedAt > $now;
     }
 
     /**
@@ -230,11 +257,14 @@ class SessionClaimService
         $claim = $this->claimRepository->findBySession($session)
             ?? throw new LogicException('session_claim.error.no_claim');
 
-        if ($claim->getStatus() !== SessionClaimStatus::Pending) {
+        // Organizers may approve a pending claim or reverse a previous rejection
+        // (the feedback: a rejected claim must not disappear and stay unfixable).
+        if (!in_array($claim->getStatus(), [SessionClaimStatus::Pending, SessionClaimStatus::Rejected], true)) {
             throw new LogicException('session_claim.error.not_pending');
         }
 
         $claim->setStatus(SessionClaimStatus::Approved);
+        $claim->setComment(null);
         $claim->setResolvedAt(new DateTimeImmutable());
 
         $this->em->flush();

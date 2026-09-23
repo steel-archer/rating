@@ -17,11 +17,12 @@ class ListController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $player = $user->getPlayer();
+        $claims = $service->getClaimGroupsByOrganizer($user->getPlayer());
 
         return $this->render('my/tournament_session_claims.html.twig', [
-            'grouped' => $service->getPendingClaimsByOrganizer($player),
-            'active' => $service->getActiveClaimsByOrganizer($player),
+            'grouped' => $claims->pending,
+            'active' => $claims->approved,
+            'rejected' => $claims->rejected,
         ]);
     }
 }

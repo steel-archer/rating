@@ -10,7 +10,6 @@ use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Enum\TournamentOfficialRole;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -25,22 +24,6 @@ class SessionClaimRepository extends ServiceEntityRepository
     public function findBySession(TournamentSession $session): ?SessionClaim
     {
         return $this->findOneBy(['session' => $session]);
-    }
-
-    /**
-     * @return list<SessionClaim>
-     */
-    public function findPendingByOrganizer(Player $player): array
-    {
-        return $this->findByOrganizerAndStatus($player, SessionClaimStatus::Pending);
-    }
-
-    /**
-     * @return list<SessionClaim>
-     */
-    public function findActiveByOrganizer(Player $player): array
-    {
-        return $this->findByOrganizerAndStatus($player, SessionClaimStatus::Approved, activeOnly: true);
     }
 
     public function hasApprovedHostedSession(Player $host, Tournament $tournament): bool
@@ -99,17 +82,14 @@ class SessionClaimRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{tournamentId: int, tournamentName: string, claims: list<SessionClaim>}>
-     */
-    /**
+     * Load every claim for tournaments the player organizes, in a single fetch-joined query.
+     * The caller groups the results by status in memory.
+     *
      * @return list<SessionClaim>
      */
-    private function findByOrganizerAndStatus(
-        Player $player,
-        SessionClaimStatus $status,
-        bool $activeOnly = false,
-    ): array {
-        $qb = $this->createQueryBuilder('sc')
+    public function findByOrganizer(Player $player): array
+    {
+        return $this->createQueryBuilder('sc')
             ->join('sc.session', 's')
             ->join('s.tournament', 't')
             ->join('s.venue', 'v')
@@ -121,23 +101,16 @@ class SessionClaimRepository extends ServiceEntityRepository
             ->join('sc.player', 'p')
             ->leftJoin('p.user', 'pUser')
             ->addSelect('s', 't', 'v', 'town', 'rep', 'repUser', 'host', 'hostUser', 'p', 'pUser')
-            ->where('sc.status = :status')
-            ->andWhere('t.id IN (
+            ->where('t.id IN (
                 SELECT IDENTITY(o.tournament)
                 FROM App\Classic\Entity\TournamentOfficial o
                 WHERE o.player = :player AND o.role = :role
             )')
-            ->setParameter('status', $status->value)
             ->setParameter('player', $player)
             ->setParameter('role', TournamentOfficialRole::Organizer->value)
             ->orderBy('t.name', 'ASC')
-            ->addOrderBy('sc.createdAt', 'DESC');
-
-        if ($activeOnly) {
-            $qb->andWhere('(t.endedAt IS NULL OR t.endedAt > :now)')
-                ->setParameter('now', new DateTimeImmutable());
-        }
-
-        return $qb->getQuery()->getResult();
+            ->addOrderBy('sc.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

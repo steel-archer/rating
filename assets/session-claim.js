@@ -145,7 +145,7 @@ function initSessionClaimActions() {
             buttonAction(
                 `/my/tournament-claims/${id}/reject`,
                 /** @type {HTMLButtonElement} */ (rejectBtn),
-                { data: {comment}, onSuccess: () => removeSessionClaimCard(rejectBtn) },
+                { data: {comment}, onSuccess: () => moveClaimToRejected(rejectBtn, comment) },
             );
             return;
         }
@@ -230,32 +230,29 @@ function removeApprovedClaimRow(btn) {
  * @param {Element} btn
  */
 function moveClaimToApproved(btn) {
-    const row = btn.closest('[data-session-claim-id]');
+    const row = btn.closest('tr');
     if (!row) {
         return;
     }
 
-    const pendingCard = row.closest('.card');
-    const tournamentId = pendingCard ? pendingCard.id.replace('tournament-claims-', '') : null;
+    const sourceCard = row.closest('.card');
+    const tournamentId = extractTournamentId(sourceCard);
+    const id = resolveClaimId(row);
 
-    // Remove actions column from the row
+    // Swap the actions cell for a revoke cell (matches the server-rendered approved section).
     const actionsCell = row.querySelector('td:last-child');
-    if (actionsCell && actionsCell.querySelector('.moderation-actions')) {
-        actionsCell.remove();
+    if (actionsCell) {
+        actionsCell.innerHTML = `<button type="button" class="btn btn-reject" data-session-revoke="${id}">${trans('session_claim.revoke')}</button>`;
     }
-
-    // Remove venue warning info (not relevant for approved)
     row.querySelectorAll('.venue-sessions-count, .warning-badge').forEach(el => el.remove());
     row.removeAttribute('data-venue-sessions');
     row.removeAttribute('data-session-claim-id');
 
-    // Find or create the approved card for this tournament
     const approvedSection = document.getElementById('approved-section');
     if (!approvedSection) {
         return;
     }
 
-    // Remove empty state message if present
     const emptyState = approvedSection.querySelector('.empty-state');
     if (emptyState) {
         emptyState.remove();
@@ -264,56 +261,153 @@ function moveClaimToApproved(btn) {
     const approvedCard = tournamentId ? document.getElementById(`tournament-approved-${tournamentId}`) : null;
 
     if (approvedCard) {
-        const tbody = approvedCard.querySelector('tbody');
-        if (tbody) {
-            tbody.appendChild(row);
-        }
-    } else if (pendingCard && tournamentId) {
-        // Create a new approved card cloning the structure
-        const heading = pendingCard.querySelector('h3');
-        const headingHtml = heading ? heading.outerHTML : '';
-        const tableLabel = pendingCard.querySelector('table')?.getAttribute('aria-label') || '';
+        approvedCard.querySelector('tbody')?.appendChild(row);
+    } else if (sourceCard && tournamentId) {
+        const newCard = cloneCardShell(sourceCard, `tournament-approved-${tournamentId}`, true);
+        approvedSection.appendChild(newCard);
+        newCard.querySelector('tbody')?.appendChild(row);
+    }
 
-        const newCard = document.createElement('div');
-        newCard.className = 'card card-wide';
-        newCard.id = `tournament-approved-${tournamentId}`;
-        newCard.innerHTML = `${headingHtml}
+    removeCardIfEmpty(sourceCard);
+}
+
+/**
+ * @param {Element} btn
+ * @param {string|null} comment
+ */
+function moveClaimToRejected(btn, comment) {
+    const row = btn.closest('tr');
+    if (!row) {
+        return;
+    }
+
+    const sourceCard = row.closest('.card');
+    const tournamentId = extractTournamentId(sourceCard);
+
+    // Replace the moderation actions cell with a reapprove cell showing the reason.
+    const actionsCell = row.querySelector('td:last-child');
+    if (actionsCell) {
+        const id = resolveClaimId(row);
+        const reasonHtml = comment
+            ? `<p class="reject-comment">${trans('session_claim.reject_reason')}: ${escapeHtml(comment)}</p>`
+            : '';
+        actionsCell.innerHTML = `${reasonHtml}<button type="button" class="btn btn-approve" data-session-approve="${id}">${trans('moderator.approve')}</button>`;
+    }
+    row.querySelectorAll('.venue-sessions-count, .warning-badge').forEach(el => el.remove());
+    row.removeAttribute('data-venue-sessions');
+
+    const rejectedSection = document.getElementById('rejected-section');
+    if (!rejectedSection) {
+        removeCardIfEmpty(sourceCard);
+        return;
+    }
+
+    const emptyState = rejectedSection.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+
+    const rejectedCard = tournamentId ? document.getElementById(`tournament-rejected-${tournamentId}`) : null;
+
+    if (rejectedCard) {
+        rejectedCard.querySelector('tbody')?.appendChild(row);
+    } else if (sourceCard && tournamentId) {
+        const newCard = cloneCardShell(sourceCard, `tournament-rejected-${tournamentId}`, false);
+        rejectedSection.appendChild(newCard);
+        newCard.querySelector('tbody')?.appendChild(row);
+    }
+
+    removeCardIfEmpty(sourceCard);
+}
+
+/**
+ * Resolve the session claim id from a row, regardless of which section it lives in.
+ *
+ * @param {Element} row
+ * @returns {string}
+ */
+function resolveClaimId(row) {
+    const actionBtn = row.querySelector('[data-session-approve], [data-session-reject], [data-session-revoke]');
+    if (actionBtn) {
+        const el = /** @type {HTMLElement} */ (actionBtn);
+        return el.dataset.sessionApprove || el.dataset.sessionReject || el.dataset.sessionRevoke || '';
+    }
+    return row.getAttribute('data-session-claim-id') || '';
+}
+
+/**
+ * @param {Element|null} card
+ * @returns {string|null}
+ */
+function extractTournamentId(card) {
+    if (!card) {
+        return null;
+    }
+    const match = card.id.match(/^tournament-(?:claims|approved|rejected)-(\d+)$/);
+    return match ? match[1] : null;
+}
+
+/**
+ * Clone a card's heading/table shell (empty tbody) for another section.
+ *
+ * @param {Element} sourceCard
+ * @param {string} newId
+ * @param {boolean} keepActionsColumn
+ * @returns {HTMLElement}
+ */
+function cloneCardShell(sourceCard, newId, keepActionsColumn) {
+    const heading = sourceCard.querySelector('h3');
+    const headingHtml = heading ? heading.outerHTML : '';
+    const tableLabel = sourceCard.querySelector('table')?.getAttribute('aria-label') || '';
+
+    const newCard = document.createElement('div');
+    newCard.className = 'card card-wide';
+    newCard.id = newId;
+    newCard.innerHTML = `${headingHtml}
                 <table aria-label="${tableLabel}">
                     <thead>
-                        ${getApprovedTableHeader(pendingCard)}
+                        ${cloneTableHeader(sourceCard, keepActionsColumn)}
                     </thead>
                     <tbody></tbody>
                 </table>`;
-        approvedSection.appendChild(newCard);
 
-        const tbody = newCard.querySelector('tbody');
-        if (tbody) {
-            tbody.appendChild(row);
-        }
+    return newCard;
+}
+
+/**
+ * @param {Element} sourceCard
+ * @param {boolean} keepActionsColumn
+ * @returns {string}
+ */
+function cloneTableHeader(sourceCard, keepActionsColumn) {
+    const headerRow = sourceCard.querySelector('thead tr');
+    if (!headerRow) {
+        return '';
     }
+    const clone = /** @type {HTMLElement} */ (headerRow.cloneNode(true));
+    if (!keepActionsColumn) {
+        clone.querySelector('th:last-child')?.remove();
+    }
+    return clone.outerHTML;
+}
 
-    // Remove pending card if empty
-    if (pendingCard && pendingCard.querySelectorAll('[data-session-claim-id]').length === 0) {
-        pendingCard.remove();
+/**
+ * @param {Element|null} card
+ */
+function removeCardIfEmpty(card) {
+    if (card && card.querySelectorAll('tbody tr').length === 0) {
+        card.remove();
     }
 }
 
 /**
- * @param {Element} pendingCard
+ * @param {string} value
  * @returns {string}
  */
-function getApprovedTableHeader(pendingCard) {
-    const headerRow = pendingCard.querySelector('thead tr');
-    if (!headerRow) {
-        return '';
-    }
-    // Clone header without the last column (actions)
-    const clone = /** @type {HTMLElement} */ (headerRow.cloneNode(true));
-    const lastTh = clone.querySelector('th:last-child');
-    if (lastTh) {
-        lastTh.remove();
-    }
-    return clone.outerHTML;
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value;
+    return div.innerHTML;
 }
 
 initSessionClaimActions();

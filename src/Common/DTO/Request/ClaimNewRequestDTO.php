@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Common\DTO\Request;
 
+use App\Common\Helper\NameNormalizer;
 use App\Common\Validator\UkrainianName;
 use App\Common\Validator\UkrainianTownName;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,20 +21,24 @@ final readonly class ClaimNewRequestDTO implements HasContactFields
 {
     use ContactFieldsTrait;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    #[UkrainianName]
+    public string $firstName;
+
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    #[UkrainianName]
+    public string $lastName;
+
+    #[Assert\Length(max: 255)]
+    #[UkrainianName]
+    public ?string $patronymic;
+
     public function __construct(
-        #[Assert\NotBlank]
-        #[Assert\Length(max: 255)]
-        #[UkrainianName]
-        public string $firstName = '',
-
-        #[Assert\NotBlank]
-        #[Assert\Length(max: 255)]
-        #[UkrainianName]
-        public string $lastName = '',
-
-        #[Assert\Length(max: 255)]
-        #[UkrainianName]
-        public ?string $patronymic = null,
+        string $firstName = '',
+        string $lastName = '',
+        ?string $patronymic = null,
 
         #[Assert\Positive]
         public ?int $townId = null,
@@ -52,6 +57,10 @@ final readonly class ClaimNewRequestDTO implements HasContactFields
         ?string $facebook = null,
         ?string $phone = null,
     ) {
+        $this->firstName = NameNormalizer::normalizeApostrophes($firstName) ?? '';
+        $this->lastName = NameNormalizer::normalizeApostrophes($lastName) ?? '';
+        $this->patronymic = NameNormalizer::normalizeApostrophes($patronymic);
+
         $this->telegram = $telegram;
         $this->facebook = $facebook;
         $this->phone = $phone;

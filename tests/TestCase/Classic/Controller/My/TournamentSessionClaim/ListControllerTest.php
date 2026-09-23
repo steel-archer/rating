@@ -75,6 +75,23 @@ class ListControllerTest extends WebTestCase
             },
         ];
 
+        yield 'organizer sees rejected claims with reason' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_organizer',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                static::assertStringContainsString('Відхилені заявки', $crawler->text());
+                $rejectedRows = $crawler->filter('[id^="tournament-rejected-"] tbody tr');
+                static::assertGreaterThanOrEqual(1, $rejectedRows->count());
+                static::assertStringContainsString('Дата не підходить', $crawler->text());
+                static::assertGreaterThanOrEqual(
+                    1,
+                    $crawler->filter('[id^="tournament-rejected-"] [data-session-approve]')->count(),
+                );
+            },
+        ];
+
         yield 'empty for non-organizer' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_other',
