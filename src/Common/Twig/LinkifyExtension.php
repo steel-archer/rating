@@ -16,6 +16,7 @@ class LinkifyExtension extends AbstractExtension
     {
         return [
             new TwigFilter('linkify', [LinkifyRuntime::class, 'linkify'], ['is_safe' => ['html']]),
+            new TwigFilter('safe_url', [LinkifyRuntime::class, 'safeUrl']),
         ];
     }
 }

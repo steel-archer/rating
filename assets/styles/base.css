@@ -71,6 +71,11 @@ h2 {
     margin: 0 8px;
 }
 
+/* Free-form venue description: break long URLs so they don't overflow the card or table cell. */
+.venue-description {
+    overflow-wrap: anywhere;
+}
+
 dl {
     display: grid;
     grid-template-columns: auto 1fr;

@@ -82,6 +82,10 @@ class VenueModerationControllerTest extends WebTestCase
                     0,
                     $crawler->filter('a[href="https://pending.example.com"]')->count(),
                 );
+
+                // An unsafe (javascript:) url is shown as plain text, never as a clickable link.
+                static::assertStringContainsString('javascript:alert(1)', $crawler->text());
+                static::assertCount(0, $crawler->filter('a[href^="javascript:"]'));
             },
         ];
 

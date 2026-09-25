@@ -35,7 +35,14 @@
                             <td>{{ venue.townName }}</td>
                             <td>
                                 {% if venue.url %}
-                                    <div><a href="{{ venue.url }}" target="_blank" rel="noopener noreferrer nofollow">{{ venue.url }}</a></div>
+                                    {% set safeUrl = venue.url|safe_url %}
+                                    <div>
+                                        {% if safeUrl %}
+                                            <a href="{{ safeUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ venue.url }}</a>
+                                        {% else %}
+                                            {{ venue.url }}
+                                        {% endif %}
+                                    </div>
                                 {% endif %}
                                 {% if venue.description %}
                                     <div class="venue-description">{{ venue.description|linkify }}</div>

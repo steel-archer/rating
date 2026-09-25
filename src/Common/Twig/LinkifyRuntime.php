@@ -52,4 +52,25 @@ class LinkifyRuntime implements RuntimeExtensionInterface
 
         return new Markup(nl2br($linked, false), self::CHARSET);
     }
+
+    /**
+     * Defense-in-depth for user-supplied URLs printed into a href attribute:
+     * returns the URL only when it uses http/https, otherwise an empty string.
+     * Guards against javascript:, data:, and similar schemes even if input
+     * validation is ever bypassed (import, migration, direct DB write).
+     */
+    public function safeUrl(?string $url): string
+    {
+        if ($url === null) {
+            return '';
+        }
+
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+
+        if ($scheme === null || $scheme === false) {
+            return '';
+        }
+
+        return in_array(strtolower($scheme), ['http', 'https'], true) ? $url : '';
+    }
 }
