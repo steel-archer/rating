@@ -621,6 +621,9 @@ venue:
   representative: 'Представник'
   representatives: 'Представники'
   search:
+    mode_all: 'Усі майданчики'
+    mode_offline: 'Тільки офлайн'
+    mode_online: 'Тільки онлайн'
     representative: 'ПІБ представника'
   status:
     approved: 'Схвалено'

@@ -137,6 +137,60 @@ class ListControllerTest extends WebTestCase
             },
         ];
 
+        yield 'list shows all venues including online by default' => [
+            'method' => 'GET',
+            'uri' => '/venues/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml', 'Entity/venues_online.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(3, $rows);
+                static::assertStringContainsString('Онлайн-майданчик Discord', $crawler->filter('table tbody')->text());
+            },
+        ];
+
+        yield 'offline mode excludes online venues' => [
+            'method' => 'GET',
+            'uri' => '/venues/list?mode=offline',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml', 'Entity/venues_online.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(2, $rows);
+                static::assertStringNotContainsString('Онлайн-майданчик Discord', $crawler->filter('table tbody')->text());
+            },
+        ];
+
+        yield 'online mode shows only online venues' => [
+            'method' => 'GET',
+            'uri' => '/venues/list?mode=online',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml', 'Entity/venues_online.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Онлайн-майданчик Discord', $rows->eq(0)->text());
+            },
+        ];
+
+        yield 'online mode ignores town and country filters' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/venues/list?mode=online&townId='
+                . $objects['town_kyiv']->getId()
+                . '&countryId=' . $objects['country_ukraine']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml', 'Entity/venues_online.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertStringContainsString('Онлайн-майданчик Discord', $rows->eq(0)->text());
+            },
+        ];
+
         yield 'list empty when no venues match filter' => [
             'method' => 'GET',
             'uri' => '/venues/list?name=Неіснуючий',

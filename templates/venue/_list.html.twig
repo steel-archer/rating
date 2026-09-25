@@ -1,18 +1,25 @@
 <turbo-frame id="venues-list" data-sync-url>
     <div class="card search-form">
         <form action="{{ path('venue_list') }}" method="get">
-            <div class="search-row">
+            {% set mode = filters.mode ?? 'all' %}
+            {% set onlineOnly = mode == 'online' %}
+            <div class="search-row" data-venue-search>
                 <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="{{ 'common.name'|trans }}" class="search-input">
-                <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
-                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off">
-                    <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}">
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}" data-venue-location>
+                    <input type="text" data-suggest-input value="{{ countryName ?? '' }}" placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off"{{ onlineOnly ? ' disabled' : '' }}>
+                    <input type="hidden" name="countryId" data-suggest-hidden value="{{ filters.countryId ?? '' }}"{{ onlineOnly ? ' disabled' : '' }}>
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
-                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId">
-                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off">
-                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}">
+                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId" data-venue-location>
+                    <input type="text" data-suggest-input value="{{ townName ?? '' }}" placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off"{{ onlineOnly ? ' disabled' : '' }}>
+                    <input type="hidden" name="townId" data-suggest-hidden value="{{ filters.townId ?? '' }}"{{ onlineOnly ? ' disabled' : '' }}>
                     <div class="suggest-dropdown" data-suggest-dropdown></div>
                 </div>
+                <select name="mode" class="search-input" data-venue-mode>
+                    <option value="all"{{ mode == 'all' ? ' selected' : '' }}>{{ 'venue.search.mode_all'|trans }}</option>
+                    <option value="offline"{{ mode == 'offline' ? ' selected' : '' }}>{{ 'venue.search.mode_offline'|trans }}</option>
+                    <option value="online"{{ mode == 'online' ? ' selected' : '' }}>{{ 'venue.search.mode_online'|trans }}</option>
+                </select>
                 <input type="text" name="representative" value="{{ filters.representative ?? '' }}" placeholder="{{ 'venue.search.representative'|trans }}" class="search-input">
                 <button type="submit" class="search-btn">{{ 'common.search'|trans }}</button>
             </div>

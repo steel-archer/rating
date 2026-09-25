@@ -10,6 +10,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class VenueListRequestDTO
 {
+    public const string MODE_ALL = 'all';
+    public const string MODE_OFFLINE = 'offline';
+    public const string MODE_ONLINE = 'online';
+
     #[Assert\Length(max: 255)]
     #[UkrainianName]
     public ?string $representative;
@@ -27,6 +31,9 @@ final readonly class VenueListRequestDTO
         #[Assert\Positive]
         public ?int $countryId = null,
 
+        #[Assert\Choice(choices: [self::MODE_ALL, self::MODE_OFFLINE, self::MODE_ONLINE])]
+        public string $mode = self::MODE_ALL,
+
         ?string $representative = null,
     ) {
         $this->representative = NameNormalizer::normalizeApostrophes($representative);
@@ -37,10 +44,15 @@ final readonly class VenueListRequestDTO
      */
     public function getFilters(): array
     {
+        // The "online only" mode ignores town/country filters, so they are
+        // dropped from the propagated filter set in that case.
+        $onlineOnly = $this->mode === self::MODE_ONLINE;
+
         return array_filter([
             'name' => $this->name,
-            'townId' => $this->townId,
-            'countryId' => $this->countryId,
+            'townId' => $onlineOnly ? null : $this->townId,
+            'countryId' => $onlineOnly ? null : $this->countryId,
+            'mode' => $this->mode === self::MODE_ALL ? null : $this->mode,
             'representative' => $this->representative,
         ], static fn($v) => $v !== null && $v !== '');
     }

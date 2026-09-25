@@ -26,6 +26,12 @@
     border-color: var(--accent);
 }
 
+.search-row .checkbox-label {
+    margin-bottom: 0;
+    height: 38px;
+    white-space: nowrap;
+}
+
 .search-btn {
     font-family: var(--font), sans-serif;
     font-size: 0.9375rem;

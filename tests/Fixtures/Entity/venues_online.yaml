@@ -1,0 +1,7 @@
+App\Common\Entity\Venue:
+    venue_online:
+        name: 'Онлайн-майданчик Discord'
+        town: '@town_online'
+        isApproved: true
+        isOnline: true
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
