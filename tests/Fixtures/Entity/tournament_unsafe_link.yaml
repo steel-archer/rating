@@ -1,0 +1,13 @@
+App\Classic\Entity\Tournament:
+    tournament_unsafe_link:
+        name: 'Турнір з небезпечним посиланням'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-04-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-04-15 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+        difficulty: 3.0
+        # A javascript: scheme can only reach the DB via import/migration/direct write,
+        # never through DTO validation, but the view must still refuse to render it.
+        discussionLink: 'javascript:alert(1)'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'

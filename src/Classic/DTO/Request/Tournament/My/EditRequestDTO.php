@@ -60,7 +60,7 @@ final readonly class EditRequestDTO
         public ?float $difficulty = null,
 
         #[Assert\Length(max: 512)]
-        #[Assert\Url(message: 'tournament.error.invalid_discussion_link')]
+        #[Assert\Url(message: 'tournament.error.invalid_discussion_link', protocols: ['http', 'https'])]
         public ?string $discussionLink = null,
 
         /** @var list<int> */

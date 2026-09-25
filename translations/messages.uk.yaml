@@ -448,6 +448,7 @@ tournament:
   deleted: 'Турнір видалено'
   difficulty: 'Складність'
   discussion_link: 'Обговорення'
+  discussion_link_open: 'Перейти'
   format:
     all: 'Усі формати'
     centralized: 'Централізований'
@@ -484,7 +485,6 @@ tournament:
     upload: 'Завантажити'
   error:
     cannot_delete_published: 'Не можна видалити опублікований турнір'
-    cannot_edit_started: 'Не можна редагувати турнір, який вже почався'
     cannot_rename_published: 'Не можна перейменувати опублікований турнір'
     centralized_cannot_be_mixed: 'Централізований турнір не може бути змішаним'
     end_before_start: 'Дата завершення має бути пізніше дати початку'
@@ -522,7 +522,7 @@ tournament:
     name_readonly_hint: 'Назву опублікованого турніру змінити не можна'
     publish: 'Опублікувати'
     publish_requirements: 'Вимоги для публікації'
-    readonly_notice: 'Цей турнір вже почався і не може бути відредагований'
+    readonly_notice: 'Цей турнір вже почався: змінити можна лише посилання на обговорення'
     required_for_publish: "обов'язкове для публікації"
     results_hidden_until: 'Результати приховані до'
     results_hidden_until_hint: 'Результати будуть приховані до 00:00:00 вказаної дати. За замовчуванням — наступний день після закінчення турніру, можна подовжити'
@@ -535,9 +535,11 @@ tournament:
     appeal_deadline: 'Дедлайн подачі апеляцій'
     appeal_deadline_hint: 'Гравці можуть подавати апеляції до 00:00:00 вказаної дати'
     discussion_link_hint: 'Посилання на сторінку обговорення питань турніру'
+    discussion_link_readonly_hint: 'Це поле можна змінювати навіть після початку турніру'
     custom_questions_per_tour: 'Різна кількість питань у турах'
     questions_in_tour: 'Тур %tour%'
     save: 'Зберегти'
+    save_discussion_link: 'Зберегти посилання'
     sort: 'Сортування'
     start_datetime: 'Дата початку'
     start_time_hint: 'Турнір починається о 00:00:00'
