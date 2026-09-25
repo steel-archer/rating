@@ -593,6 +593,8 @@ tournament:
   true_dl: 'True DL'
 
 venue:
+  description: 'Опис'
+  description_hint: 'Вільний текст. Посилання у тексті стануть клікабельними.'
   error:
     duplicate: 'Майданчик з такою назвою в цьому місті вже існує'
     no_player: 'Необхідно мати привʼязаного гравця'
@@ -600,6 +602,7 @@ venue:
     town_not_found: 'Місто не знайдено'
     town_required: 'Для офлайн-майданчика потрібно вказати місто'
   host: 'Ведучий'
+  info: 'Інформація'
   my:
     add_representative: 'Додати представника'
     create: 'Створити майданчик'
@@ -608,6 +611,7 @@ venue:
     edit: 'Редагування'
     empty: 'У вас ще немає майданчиків'
     info: 'Інформація'
+    representatives_after_approval: 'Представників можна додати після схвалення майданчика'
     save: 'Зберегти'
     saved: 'Зміни збережено'
     status: 'Статус'
@@ -622,6 +626,7 @@ venue:
   type: 'Тип майданчика'
   type_offline: 'Офлайн'
   type_online: 'Онлайн'
+  url: 'Посилання'
   venue: 'Майданчик'
 
 results:

@@ -27,6 +27,8 @@ final class VenueClaimMapping implements MappingInterface
             createdByPlayerId: $player?->getId(),
             createdByPlayerName: $player?->getFullName(),
             createdAt: $source->getCreatedAt(),
+            description: $source->getDescription(),
+            url: $source->getUrl(),
         );
     }
 }

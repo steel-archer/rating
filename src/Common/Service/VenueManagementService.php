@@ -55,6 +55,8 @@ class VenueManagementService
         $venue->setName($dto->name);
         $venue->setTown($town);
         $venue->setIsOnline($dto->isOnline);
+        $venue->setDescription($dto->description);
+        $venue->setUrl($dto->url);
         $venue->setCreatedBy($player);
 
         $this->em->persist($venue);
@@ -105,15 +107,18 @@ class VenueManagementService
 
     /**
      * @throws InvalidArgumentException
-     * @throws LogicException
      */
-    public function updateRepresentatives(Venue $venue, UpdateRequestDTO $dto): void
+    public function update(Venue $venue, UpdateRequestDTO $dto): void
     {
-        if (!$venue->isApproved()) {
-            throw new LogicException('Cannot edit unapproved venue');
-        }
+        $venue->setDescription($dto->description);
+        $venue->setUrl($dto->url);
 
-        $this->syncRepresentatives($venue, $dto->representatives);
+        // Representatives can only be managed once the venue is approved.
+        if ($venue->isApproved()) {
+            $this->syncRepresentatives($venue, $dto->representatives);
+        } else {
+            $this->em->flush();
+        }
 
         $this->cache->invalidateTags([CacheTag::Venues->value]);
     }

@@ -29,16 +29,15 @@ class EditController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        if (!$venue->isApproved()) {
-            return $this->redirectToRoute('my_venues');
-        }
-
         $venueDto = $mapper->map($venue, VenueEditDTO::class);
 
-        $representatives = $mapper->mapMultiple(
-            $representativeRepository->findByVenueWithPlayer($venue),
-            VenueRepresentativeDTO::class,
-        );
+        // Representatives can only be managed once the venue is approved.
+        $representatives = $venue->isApproved()
+            ? $mapper->mapMultiple(
+                $representativeRepository->findByVenueWithPlayer($venue),
+                VenueRepresentativeDTO::class,
+            )
+            : [];
 
         return $this->render('my/venue/edit.html.twig', [
             'venue' => $venueDto,

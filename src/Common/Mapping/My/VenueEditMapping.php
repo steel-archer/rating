@@ -23,6 +23,9 @@ final class VenueEditMapping implements MappingInterface
             name: $source->getName(),
             townName: $source->getTown()->getName(),
             createdByPlayerId: $source->getCreatedBy()->getId(),
+            isApproved: $source->isApproved(),
+            description: $source->getDescription(),
+            url: $source->getUrl(),
         );
     }
 }

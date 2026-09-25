@@ -22,6 +22,7 @@
                     <tr>
                         <th>{{ 'common.name'|trans }}</th>
                         <th>{{ 'common.town'|trans }}</th>
+                        <th>{{ 'venue.info'|trans }}</th>
                         <th>{{ 'venue.representative'|trans }}</th>
                         <th>{{ 'common.date'|trans }}</th>
                         <th>{{ 'tournament.my.actions'|trans }}</th>
@@ -32,6 +33,17 @@
                         <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}" data-venue-id="{{ venue.id }}">
                             <td>{{ venue.name }}</td>
                             <td>{{ venue.townName }}</td>
+                            <td>
+                                {% if venue.url %}
+                                    <div><a href="{{ venue.url }}" target="_blank" rel="noopener noreferrer nofollow">{{ venue.url }}</a></div>
+                                {% endif %}
+                                {% if venue.description %}
+                                    <div class="venue-description">{{ venue.description|linkify }}</div>
+                                {% endif %}
+                                {% if not venue.url and not venue.description %}
+                                    —
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if venue.createdByPlayerId %}
                                     {{ include('_player_link.html.twig', {playerId: venue.createdByPlayerId, playerName: venue.createdByPlayerName, hasUser: true}, with_context: false) }}

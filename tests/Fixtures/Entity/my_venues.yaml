@@ -11,6 +11,8 @@ App\Common\Entity\Venue:
         town: '@town_kyiv'
         createdBy: '@player_franko'
         isApproved: false
+        description: 'Опис на модерації https://pending.example.com/x'
+        url: 'https://pending.example.com'
         createdAt: '<(new \DateTimeImmutable())>'
     venue_approved_owned:
         name: 'Мій схвалений майданчик'
