@@ -15,6 +15,8 @@ final readonly class VenueClaimDTO
         public ?int $createdByPlayerId,
         public ?string $createdByPlayerName,
         public DateTimeImmutable $createdAt,
+        public ?string $description = null,
+        public ?string $url = null,
     ) {
     }
 }

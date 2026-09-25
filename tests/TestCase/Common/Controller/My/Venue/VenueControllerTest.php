@@ -120,6 +120,8 @@ class VenueControllerTest extends WebTestCase
                 json_encode([
                     'name' => 'Тестовий майданчик',
                     'townId' => $objects['town_kyiv']->getId(),
+                    'description' => 'Затишне місце для гри',
+                    'url' => 'https://venue.example.com',
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 201,
@@ -129,11 +131,37 @@ class VenueControllerTest extends WebTestCase
                     ->findOneBy(['name' => 'Тестовий майданчик']);
                 static::assertNotNull($venue);
                 static::assertFalse($venue->isApproved());
+                static::assertSame('Затишне місце для гри', $venue->getDescription());
+                static::assertSame('https://venue.example.com', $venue->getUrl());
 
                 $reps = static::getContainer()->get('doctrine')
                     ->getRepository(VenueRepresentative::class)
                     ->findBy(['venue' => $venue]);
                 static::assertCount(1, $reps);
+            },
+        ];
+
+        yield 'create with invalid url fails validation' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_venue_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/venues',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Майданчик з поганим лінком',
+                    'townId' => $objects['town_kyiv']->getId(),
+                    'url' => 'not-a-valid-url',
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function () {
+                $venue = static::getContainer()->get('doctrine')
+                    ->getRepository(Venue::class)
+                    ->findOneBy(['name' => 'Майданчик з поганим лінком']);
+                static::assertNull($venue);
             },
         ];
 
@@ -310,15 +338,20 @@ class VenueControllerTest extends WebTestCase
             },
         ];
 
-        yield 'edit page redirects for pending venue' => [
+        yield 'edit page shown for pending venue' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_venue_creator',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'GET',
                 '/my/venues/' . $objects['venue_pending']->getId() . '/edit',
             ),
-            'expectedStatus' => 302,
-            'afterCallback' => static function () {
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                // Description and url are editable while pending; representatives are not yet.
+                $crawler = $client->getCrawler();
+                static::assertCount(1, $crawler->filter('textarea[name="description"]'));
+                static::assertCount(1, $crawler->filter('input[name="url"]'));
+                static::assertCount(0, $crawler->filter('[data-role="representatives"]'));
             },
         ];
 
@@ -344,6 +377,8 @@ class VenueControllerTest extends WebTestCase
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
                 json_encode([
+                    'description' => 'Оновлений опис',
+                    'url' => 'https://approved.example.com',
                     'representatives' => [
                         $objects['player_franko']->getId(),
                         $objects['player_shevchenko']->getId(),
@@ -356,6 +391,12 @@ class VenueControllerTest extends WebTestCase
                     ->getRepository(VenueRepresentative::class)
                     ->findBy(['venue' => $objects['venue_approved_owned']->getId()]);
                 static::assertCount(2, $reps);
+
+                $venue = static::getContainer()->get('doctrine')
+                    ->getRepository(Venue::class)
+                    ->find($objects['venue_approved_owned']->getId());
+                static::assertSame('Оновлений опис', $venue->getDescription());
+                static::assertSame('https://approved.example.com', $venue->getUrl());
             },
         ];
 
@@ -417,7 +458,7 @@ class VenueControllerTest extends WebTestCase
             },
         ];
 
-        yield 'update pending venue returns error' => [
+        yield 'update pending venue info succeeds' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_venue_creator',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
@@ -426,10 +467,19 @@ class VenueControllerTest extends WebTestCase
                 [],
                 [],
                 ['CONTENT_TYPE' => 'application/json'],
-                json_encode(['representatives' => []], JSON_THROW_ON_ERROR),
+                json_encode([
+                    'description' => 'Опис очікуваного майданчика',
+                    'url' => 'https://pending.example.com',
+                ], JSON_THROW_ON_ERROR),
             ),
-            'expectedStatus' => 422,
-            'afterCallback' => static function () {
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $venue = static::getContainer()->get('doctrine')
+                    ->getRepository(Venue::class)
+                    ->find($objects['venue_pending']->getId());
+                static::assertSame('Опис очікуваного майданчика', $venue->getDescription());
+                static::assertSame('https://pending.example.com', $venue->getUrl());
+                static::assertFalse($venue->isApproved());
             },
         ];
 
@@ -472,7 +522,7 @@ class VenueControllerTest extends WebTestCase
             'mockSetup' => static function (self $test, KernelBrowser $client) {
                 $client->disableReboot();
                 $stub = $test->createStub(VenueManagementService::class);
-                $stub->method('updateRepresentatives')->willThrowException(new RuntimeException('unexpected'));
+                $stub->method('update')->willThrowException(new RuntimeException('unexpected'));
                 static::getContainer()->set(VenueManagementService::class, $stub);
             },
         ];

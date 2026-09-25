@@ -16,6 +16,7 @@ import './tournament-edit.js';
 import './contacts.js';
 import './contacts-popover.js';
 import './venue-edit.js';
+import './venue-search.js';
 import './team-management.js';
 import './captain-claim.js';
 import './captain-claim-moderate.js';

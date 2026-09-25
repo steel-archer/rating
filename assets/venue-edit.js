@@ -36,6 +36,8 @@ function initVenueCreateForm() {
             name: /** @type {HTMLInputElement} */ (form.querySelector('[name="name"]')).value,
             isOnline,
             townId: isOnline ? null : (parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null),
+            description: /** @type {HTMLTextAreaElement} */ (form.querySelector('[name="description"]')).value || null,
+            url: /** @type {HTMLInputElement} */ (form.querySelector('[name="url"]')).value || null,
         };
 
         apiPost(url, data)
@@ -63,11 +65,16 @@ function initVenueEditForm() {
 
         const url = /** @type {string} */ (form.dataset.url);
         const status = /** @type {HTMLElement} */ (document.getElementById('save-status'));
-        const group = /** @type {HTMLElement} */ (form.querySelector('.officials-group[data-role="representatives"]'));
+
+        const representativesGroup = /** @type {HTMLElement|null} */ (form.querySelector('.officials-group[data-role="representatives"]'));
 
         const data = {
-            representatives: Array.from(group.querySelectorAll('input[type="hidden"]'))
-                .map(input => parseInt(/** @type {HTMLInputElement} */ (input).value)),
+            description: /** @type {HTMLTextAreaElement} */ (form.querySelector('[name="description"]')).value || null,
+            url: /** @type {HTMLInputElement} */ (form.querySelector('[name="url"]')).value || null,
+            representatives: representativesGroup
+                ? Array.from(representativesGroup.querySelectorAll('input[type="hidden"]'))
+                    .map(input => parseInt(/** @type {HTMLInputElement} */ (input).value))
+                : [],
         };
 
         apiPost(url, data)

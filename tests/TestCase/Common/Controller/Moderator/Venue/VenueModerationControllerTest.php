@@ -72,8 +72,20 @@ class VenueModerationControllerTest extends WebTestCase
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/moderator/venues'),
             'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client) {
-                static::assertStringContainsString('Новий майданчик', $client->getCrawler()->text());
-                static::assertStringNotContainsString('Мій схвалений майданчик', $client->getCrawler()->text());
+                $crawler = $client->getCrawler();
+                static::assertStringContainsString('Новий майданчик', $crawler->text());
+                static::assertStringNotContainsString('Мій схвалений майданчик', $crawler->text());
+
+                // Moderator sees the venue description and url of the pending claim.
+                static::assertStringContainsString('Опис на модерації', $crawler->text());
+                static::assertGreaterThan(
+                    0,
+                    $crawler->filter('a[href="https://pending.example.com"]')->count(),
+                );
+
+                // An unsafe (javascript:) url is shown as plain text, never as a clickable link.
+                static::assertStringContainsString('javascript:alert(1)', $crawler->text());
+                static::assertCount(0, $crawler->filter('a[href^="javascript:"]'));
             },
         ];
 

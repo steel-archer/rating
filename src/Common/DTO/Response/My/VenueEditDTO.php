@@ -11,6 +11,9 @@ final readonly class VenueEditDTO
         public string $name,
         public string $townName,
         public int $createdByPlayerId,
+        public bool $isApproved,
+        public ?string $description = null,
+        public ?string $url = null,
     ) {
     }
 }

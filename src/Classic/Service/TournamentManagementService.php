@@ -75,13 +75,23 @@ class TournamentManagementService
      */
     public function update(Tournament $tournament, EditRequestDTO $dto): void
     {
+        // Once a distributed tournament has started, all fields are frozen except
+        // the discussion link, which the organizer may still add or update.
         if (
             $tournament->getFormat() === TournamentFormat::Distributed
             && $tournament->getStatus() === TournamentStatus::Published
             && $tournament->getStartedAt() !== null
             && $tournament->getStartedAt() <= DateTimeImmutable::createFromInterface($this->clock->now())
         ) {
-            throw new LogicException('tournament.error.cannot_edit_started');
+            // The discussion link is validated by the DTO (Assert\Url, Assert\Length)
+            // before it reaches the service, so no extra check is needed here.
+            $tournament->setDiscussionLink($dto->discussionLink);
+
+            $this->em->flush();
+
+            $this->cacheInvalidator->invalidateTournament($tournament);
+
+            return;
         }
 
         $nameChanged = $tournament->getName() !== $dto->name;

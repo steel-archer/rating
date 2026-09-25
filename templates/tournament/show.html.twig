@@ -91,8 +91,11 @@
                     <dd><a href="{{ path('tournament_appeals', {id: tournament.id}) }}">{{ tournament.appealCount }}</a></dd>
                 {% endif %}
                 {% if tournament.discussionLink %}
-                    <dt>{{ 'tournament.discussion_link'|trans }}</dt>
-                    <dd><a href="{{ tournament.discussionLink }}" target="_blank" rel="noopener noreferrer">{{ tournament.discussionLink|u.truncate(60, '…') }}</a></dd>
+                    {% set safeDiscussionLink = tournament.discussionLink|safe_url %}
+                    {% if safeDiscussionLink %}
+                        <dt>{{ 'tournament.discussion_link'|trans }}</dt>
+                        <dd><a href="{{ safeDiscussionLink }}" target="_blank" rel="noopener noreferrer nofollow">{{ 'tournament.discussion_link_open'|trans }}</a></dd>
+                    {% endif %}
                 {% endif %}
             </dl>
         </div>

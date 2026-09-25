@@ -10,6 +10,18 @@
     <h1>{{ venue.name }}</h1>
     <div class="meta"><span>{{ venue.townName }}, {{ venue.countryName }}</span></div>
 
+    {% set safeUrl = venue.url|safe_url %}
+    {% if safeUrl %}
+        <div class="meta"><a href="{{ safeUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ venue.url }}</a></div>
+    {% endif %}
+
+    {% if venue.description %}
+        <div class="card">
+            <h2>{{ 'venue.description'|trans }}</h2>
+            <p class="venue-description">{{ venue.description|linkify }}</p>
+        </div>
+    {% endif %}
+
     {% if venue.representatives is not empty %}
         <div class="card">
             <h2>{{ 'venue.representatives'|trans }}</h2>

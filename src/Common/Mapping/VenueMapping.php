@@ -32,6 +32,8 @@ final class VenueMapping implements MappingInterface
             name: $source->getName(),
             townName: $source->getTown()->getName(),
             countryName: $source->getTown()->getCountry()->getName(),
+            description: $source->getDescription(),
+            url: $source->getUrl(),
             tournamentCount: $context['tournamentCount'] ?? 0,
             representatives: $representatives,
         );

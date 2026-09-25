@@ -128,14 +128,24 @@ class VenueRepository extends ServiceEntityRepository
                 ->setParameter('name', LikeEscape::contains($requestDto->name));
         }
 
-        if ($requestDto->townId !== null) {
-            $qb->andWhere('town.id = :townId')
-                ->setParameter('townId', $requestDto->townId);
-        }
+        if ($requestDto->mode === VenueListRequestDTO::MODE_ONLINE) {
+            // Online venues live in the dedicated "Online" town, which is excluded
+            // from the town autocomplete, so town/country filters do not apply here.
+            $qb->andWhere('v.isOnline = true');
+        } else {
+            if ($requestDto->mode === VenueListRequestDTO::MODE_OFFLINE) {
+                $qb->andWhere('v.isOnline = false');
+            }
 
-        if ($requestDto->countryId !== null) {
-            $qb->andWhere('country.id = :countryId')
-                ->setParameter('countryId', $requestDto->countryId);
+            if ($requestDto->townId !== null) {
+                $qb->andWhere('town.id = :townId')
+                    ->setParameter('townId', $requestDto->townId);
+            }
+
+            if ($requestDto->countryId !== null) {
+                $qb->andWhere('country.id = :countryId')
+                    ->setParameter('countryId', $requestDto->countryId);
+            }
         }
 
         if ($requestDto->representative !== null && $requestDto->representative !== '') {

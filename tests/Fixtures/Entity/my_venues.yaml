@@ -11,6 +11,8 @@ App\Common\Entity\Venue:
         town: '@town_kyiv'
         createdBy: '@player_franko'
         isApproved: false
+        description: 'Опис на модерації https://pending.example.com/x'
+        url: 'https://pending.example.com'
         createdAt: '<(new \DateTimeImmutable())>'
     venue_approved_owned:
         name: 'Мій схвалений майданчик'
@@ -24,6 +26,9 @@ App\Common\Entity\Venue:
         createdBy: '@player_franko'
         isOnline: true
         isApproved: false
+        # Unsafe scheme that could only reach the DB by bypassing input validation;
+        # it must be shown to the moderator as plain text, never as a clickable link.
+        url: 'javascript:alert(1)'
         createdAt: '<(new \DateTimeImmutable())>'
 
 App\Common\Entity\VenueRepresentative:

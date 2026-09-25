@@ -141,6 +141,9 @@ class ShowControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $link = $crawler->filter('a[href="https://discuss.example.com/spring-cup"]');
                 static::assertCount(1, $link);
+                // The label is clickable; the raw URL is not printed as visible text.
+                static::assertSame('Перейти', trim($link->text()));
+                static::assertStringNotContainsString('discuss.example.com', $crawler->filter('.card dl')->text());
             },
         ];
 
@@ -153,6 +156,19 @@ class ShowControllerTest extends WebTestCase
             'afterCallback' => static function (Crawler $crawler, array $objects) {
                 $link = $crawler->filter('a[href*="discuss"]');
                 static::assertCount(0, $link);
+            },
+        ];
+
+        yield 'show tournament refuses to render an unsafe discussion link' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unsafe_link']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unsafe_link.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                // The javascript: scheme is stripped by safe_url, so no anchor is rendered for it.
+                static::assertCount(0, $crawler->filter('a[href^="javascript:"]'));
+                static::assertStringNotContainsString('javascript:alert(1)', $crawler->html());
             },
         ];
 

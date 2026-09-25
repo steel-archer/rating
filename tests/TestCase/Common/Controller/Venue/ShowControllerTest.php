@@ -75,7 +75,20 @@ class ShowControllerTest extends WebTestCase
                 static::assertStringContainsString('Україна', $crawler->filter('.meta')->text());
 
                 // representative
-                static::assertStringContainsString('Шевченко', $crawler->filter('.card')->text());
+                static::assertStringContainsString('Шевченко', $crawler->filter('.representatives-list')->text());
+
+                // url shown as a link
+                static::assertGreaterThan(
+                    0,
+                    $crawler->filter('a[href="https://kyiv.example.com"]')->count(),
+                );
+
+                // description shown, with the embedded url turned into a clickable link
+                static::assertStringContainsString('Гарне місце', $crawler->filter('.venue-description')->text());
+                static::assertGreaterThan(
+                    0,
+                    $crawler->filter('.venue-description a[href="https://kyiv.example.com/info"]')->count(),
+                );
 
                 // turbo-frame for tournaments (calculated tournamentCount > 0)
                 $frame = $crawler->filter('turbo-frame#venue-tournaments');
@@ -95,7 +108,7 @@ class ShowControllerTest extends WebTestCase
                 static::assertStringContainsString('Львів', $crawler->filter('.meta')->text());
 
                 // representative
-                static::assertStringContainsString('Франко', $crawler->filter('.card')->text());
+                static::assertStringContainsString('Франко', $crawler->filter('.representatives-list')->text());
 
                 // no turbo-frame for tournaments (tournamentCount = 0)
                 static::assertCount(0, $crawler->filter('turbo-frame#venue-tournaments'));

@@ -61,6 +61,7 @@
 
 .tournament-form input[type="text"],
 .tournament-form input[type="number"],
+.tournament-form input[type="url"],
 .tournament-form input[type="datetime-local"] {
     font-family: var(--font), sans-serif;
     font-size: 1.0625rem;

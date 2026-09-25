@@ -57,6 +57,8 @@ App\Common\Entity\Venue:
         name: 'Квіз-бар Київ'
         town: '@town_kyiv'
         isApproved: true
+        description: 'Гарне місце. Деталі: https://kyiv.example.com/info'
+        url: 'https://kyiv.example.com'
         createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
     venue_lviv:
         name: 'Арт-простір Львів'

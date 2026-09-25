@@ -29,26 +29,40 @@
     </div>
 
     <div class="card">
-        <h2>{{ 'venue.representatives'|trans }}</h2>
         <form id="venue-edit-form" class="tournament-form" data-url="{{ path('my_venue_update', {id: venue.id}) }}">
             <div class="form-group">
-                <label>{{ 'venue.my.current_representatives'|trans }}</label>
-                <div class="officials-group" data-role="representatives">
-                    {% for rep in representatives %}
-                        <div class="official-entry">
-                            <input type="hidden" name="representatives[]" value="{{ rep.playerId }}">
-                            {{ include('_player_link.html.twig', {playerId: rep.playerId, playerName: rep.playerName, hasUser: rep.hasUser}, with_context: false) }}
-                            {% if rep.playerId != venue.createdByPlayerId %}
-                                <button type="button" class="btn-remove">×</button>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
-                    <input type="text" data-suggest-input placeholder="{{ 'venue.my.add_representative'|trans }}">
-                    <div data-suggest-dropdown hidden></div>
-                </div>
+                <label for="url">{{ 'venue.url'|trans }}</label>
+                <input type="url" id="url" name="url" maxlength="255" placeholder="https://example.com" value="{{ venue.url ?? '' }}">
             </div>
+            <div class="form-group">
+                <label for="description">{{ 'venue.description'|trans }}</label>
+                <textarea id="description" name="description" rows="5" maxlength="2000">{{ venue.description ?? '' }}</textarea>
+                <small class="hint">{{ 'venue.description_hint'|trans }}</small>
+            </div>
+
+            {% if venue.isApproved %}
+                <div class="form-group">
+                    <label>{{ 'venue.my.current_representatives'|trans }}</label>
+                    <div class="officials-group" data-role="representatives">
+                        {% for rep in representatives %}
+                            <div class="official-entry">
+                                <input type="hidden" name="representatives[]" value="{{ rep.playerId }}">
+                                {{ include('_player_link.html.twig', {playerId: rep.playerId, playerName: rep.playerName, hasUser: rep.hasUser}, with_context: false) }}
+                                {% if rep.playerId != venue.createdByPlayerId %}
+                                    <button type="button" class="btn-remove">×</button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_players_suggest') }}">
+                        <input type="text" data-suggest-input placeholder="{{ 'venue.my.add_representative'|trans }}">
+                        <div data-suggest-dropdown hidden></div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="hint">{{ 'venue.my.representatives_after_approval'|trans }}</p>
+            {% endif %}
+
             <button type="submit" class="btn">{{ 'venue.my.save'|trans }}</button>
             <span id="save-status" class="save-status" hidden></span>
         </form>

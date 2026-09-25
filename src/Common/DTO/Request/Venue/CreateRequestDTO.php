@@ -23,6 +23,13 @@ final readonly class CreateRequestDTO
 
         #[Assert\Positive]
         public ?int $townId = null,
+
+        #[Assert\Length(max: 2000)]
+        public ?string $description = null,
+
+        #[Assert\Length(max: 255)]
+        #[Assert\Url(protocols: ['http', 'https'])]
+        public ?string $url = null,
     ) {
     }
 }
