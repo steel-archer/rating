@@ -20,7 +20,7 @@
                         <th>{{ 'venue.venue'|trans }}</th>
                         <th>{{ 'common.town'|trans }}</th>
                         <th>{{ 'session_claim.estimated_date'|trans }}</th>
-                        <th>{{ 'session_claim.estimated_teams'|trans }}</th>
+                        <th title="{{ 'session_claim.teams_col_hint'|trans }}">{{ 'session_claim.estimated_teams_short'|trans }}</th>
                         <th>{{ 'session_claim.announcement_link'|trans }}</th>
                         <th>{{ 'tournament.my.status'|trans }}</th>
                         <th>{{ 'tournament.my.actions'|trans }}</th>
@@ -33,7 +33,9 @@
                             <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
                             <td>{{ claim.townName }}{% if claim.isOnline and claim.townName != 'Онлайн' %} (онлайн){% endif %}</td>
                             <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td>{{ claim.estimatedTeams ?? '—' }}</td>
+                            <td title="{{ 'session_claim.teams_col_hint'|trans }}">
+                                {{ claim.actualTeams }} / {{ claim.estimatedTeams ?? '—' }}
+                            </td>
                             <td>
                                 {% set announcementUrl = claim.announcementUrl|safe_url %}
                                 {% if announcementUrl %}
@@ -49,7 +51,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{{ path('my_session_claim_edit', {id: claim.sessionId}) }}">{{ 'tournament.my.edit'|trans }}</a>
+                                <a href="{{ path('my_session_claim_edit', {id: claim.sessionId}) }}">{{ 'session_claim.edit_and_results'|trans }}</a>
                             </td>
                         </tr>
                     {% endfor %}

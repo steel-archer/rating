@@ -17,6 +17,7 @@ final readonly class SessionClaimListDTO
         public string $townName,
         public ?DateTimeImmutable $playedAt,
         public ?int $estimatedTeams,
+        public int $actualTeams,
         public string $status,
         public ?string $comment,
         public ?string $announcementUrl = null,

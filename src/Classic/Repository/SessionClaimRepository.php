@@ -8,6 +8,7 @@ use App\Common\Entity\Player;
 use App\Classic\Entity\SessionClaim;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentSession;
+use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Enum\TournamentOfficialRole;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -79,6 +80,37 @@ class SessionClaimRepository extends ServiceEntityRepository
             ->orderBy('sc.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Count teams that have submitted results, grouped by session, in a single batch query.
+     *
+     * @param list<int> $sessionIds
+     * @return array<int, int> sessionId => submitted team count
+     */
+    public function countSubmittedTeamsBySessionIds(array $sessionIds): array
+    {
+        if ($sessionIds === []) {
+            return [];
+        }
+
+        $rows = $this->getEntityManager()->createQueryBuilder()
+            ->select('IDENTITY(st.tournamentSession) AS sessionId', 'COUNT(st.id) AS teamsCount')
+            ->from(TournamentSessionTeam::class, 'st')
+            ->where('st.tournamentSession IN (:sessionIds)')
+            ->andWhere('st.resultsSubmitted = true')
+            ->setParameter('sessionIds', $sessionIds)
+            ->groupBy('st.tournamentSession')
+            ->getQuery()
+            ->getArrayResult();
+
+        $counts = [];
+
+        foreach ($rows as $row) {
+            $counts[(int) $row['sessionId']] = (int) $row['teamsCount'];
+        }
+
+        return $counts;
     }
 
     /**

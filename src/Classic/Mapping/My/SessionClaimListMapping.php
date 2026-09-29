@@ -21,6 +21,9 @@ final class SessionClaimListMapping implements MappingInterface
         $session = $source->getSession();
         $venue = $session->getVenue();
 
+        /** @var array<int, int> $actualTeamsBySession */
+        $actualTeamsBySession = $context['actualTeamsBySession'] ?? [];
+
         return new $destinationClass(
             sessionId: $session->getId(),
             tournamentId: $session->getTournament()->getId(),
@@ -30,6 +33,7 @@ final class SessionClaimListMapping implements MappingInterface
             townName: $venue->getTown()->getName(),
             playedAt: $session->getPlayedAt(),
             estimatedTeams: $session->getEstimatedTeams(),
+            actualTeams: $actualTeamsBySession[$session->getId()] ?? 0,
             status: $source->getStatus()->value,
             comment: $source->getComment(),
             announcementUrl: $session->getAnnouncementUrl(),
