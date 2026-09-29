@@ -25,6 +25,7 @@ final class HostedSessionDetailMapping implements MappingInterface
             sessionId: $source->getId(),
             tournamentId: $tournament->getId(),
             tournamentName: $tournament->getName(),
+            venueId: $venue->getId(),
             venueName: $venue->getName(),
             townName: $venue->getTown()->getName(),
             playedAt: $source->getPlayedAt(),

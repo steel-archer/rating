@@ -18,6 +18,10 @@ final readonly class UpdateRequestDTO
         #[Assert\NotNull]
         #[Assert\Positive]
         public ?int $hostId = null,
+
+        #[Assert\Length(max: 255)]
+        #[Assert\Url(message: 'session_claim.error.invalid_announcement_url', protocols: ['http', 'https'])]
+        public ?string $announcementUrl = null,
     ) {
     }
 }

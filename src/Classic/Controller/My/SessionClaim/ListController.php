@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Classic\Controller\My\SessionClaim;
 
 use App\Classic\DTO\Response\My\SessionClaimListDTO;
+use App\Classic\Entity\SessionClaim;
 use App\Common\Entity\User;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\SessionClaimRepository;
@@ -20,9 +21,19 @@ class ListController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        $sessionClaims = $claimRepository->findByPlayer($user->getPlayer());
+
+        $sessionIds = array_map(
+            static fn(SessionClaim $claim): int => $claim->getSession()->getId(),
+            $sessionClaims,
+        );
+
+        $actualTeamsBySession = $claimRepository->countSubmittedTeamsBySessionIds($sessionIds);
+
         $claims = $mapper->mapMultiple(
-            $claimRepository->findByPlayer($user->getPlayer()),
+            $sessionClaims,
             SessionClaimListDTO::class,
+            ['actualTeamsBySession' => $actualTeamsBySession],
         );
 
         return $this->render('my/session_claims.html.twig', [

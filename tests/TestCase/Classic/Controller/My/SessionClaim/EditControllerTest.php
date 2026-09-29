@@ -110,6 +110,54 @@ class EditControllerTest extends WebTestCase
                     'Відіграші, які я веду',
                     $crawler->filter('.flash-info')->text(),
                 );
+                // The results entry section is clearly labelled so it is obvious where to enter results.
+                $pageText = $crawler->text();
+                static::assertStringContainsString('Результати відіграшу', $pageText);
+                static::assertCount(1, $crawler->filter('.actions-card'));
+                // The squads already entered are listed while the submission window is open,
+                // so the representative can review and edit them.
+                static::assertStringContainsString('Внесені склади', $pageText);
+                static::assertStringContainsString('Бета', $pageText);
+                // Edit and delete controls are available for each entered squad.
+                static::assertCount(1, $crawler->filter('a[href*="/my/session-teams/"][href$="/edit"]'));
+                static::assertCount(1, $crawler->filter('[data-squad-delete]'));
+            },
+        ];
+
+        yield 'approved claim before play day shows explanation instead of results form' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_future']->getId() . '/edit',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                static::assertCount(1, $crawler->filter('#session-claim-edit-form'));
+                // Results cannot be entered yet, so the action buttons must be absent.
+                static::assertCount(0, $crawler->filter('.actions-card'));
+                // Instead the representative is told that results become editable on the play day.
+                static::assertStringContainsString('Внести результати можна буде', $crawler->text());
+                static::assertStringContainsString('Результати відіграшу', $crawler->text());
+            },
+        ];
+
+        yield 'approved claim after submission deadline warns results are closed' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_expired.yaml'],
+            'loginAs' => 'user_representative_exp',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_expired_approved']->getId() . '/edit',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                static::assertCount(1, $crawler->filter('#session-claim-edit-form'));
+                // The submission window is closed, so no results action buttons are shown.
+                static::assertCount(0, $crawler->filter('.actions-card'));
+                // The representative is warned that the submission deadline has passed.
+                static::assertStringContainsString('Термін подання результатів завершився', $crawler->filter('.flash-error')->text());
+                static::assertStringContainsString('Результати відіграшу', $crawler->text());
+                // The entered squads remain visible for reference, but as a read-only list:
+                // no edit or delete controls are shown once the window is closed.
+                static::assertStringContainsString('Бета', $crawler->text());
+                static::assertCount(0, $crawler->filter('a[href*="/my/session-teams/"][href$="/edit"]'));
+                static::assertCount(0, $crawler->filter('[data-squad-delete]'));
             },
         ];
 

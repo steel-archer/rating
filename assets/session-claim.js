@@ -56,6 +56,7 @@ function initSessionClaimForm() {
             estimatedTeams: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="estimatedTeams"]')).value) || null,
             hostId: hostInput ? parseInt(hostInput.value) || null : null,
             isOnline,
+            announcementUrl: /** @type {HTMLInputElement} */ (form.querySelector('[name="announcementUrl"]')).value || null,
         };
 
         status.hidden = true;
@@ -97,6 +98,7 @@ function initSessionClaimEditForm() {
             playedAt: /** @type {HTMLInputElement} */ (form.querySelector('[name="playedAt"]')).value || null,
             estimatedTeams: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="estimatedTeams"]')).value) || null,
             hostId: hostInput ? parseInt(hostInput.value) || null : null,
+            announcementUrl: /** @type {HTMLInputElement} */ (form.querySelector('[name="announcementUrl"]')).value || null,
         };
 
         status.hidden = true;

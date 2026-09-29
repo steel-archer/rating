@@ -76,7 +76,7 @@ class SubmitControllerTest extends WebTestCase
                 $sessions = static::getContainer()->get('doctrine')
                     ->getRepository(TournamentSession::class)
                     ->findBy(['tournament' => $objects['tournament_session_test']->getId()]);
-                static::assertCount(5, $sessions);
+                static::assertCount(6, $sessions);
             },
         ];
 
@@ -334,6 +334,57 @@ class SubmitControllerTest extends WebTestCase
             ),
             'expectedStatus' => 422,
             'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'submit with announcement url' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-16',
+                    'estimatedTeams' => 5,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                    'announcementUrl' => 'https://example.com/game',
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $sessions = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->findBy(['venue' => $objects['venue_kyiv']->getId()]);
+                $lastSession = $sessions[array_key_last($sessions)];
+                static::assertSame('https://example.com/game', $lastSession->getAnnouncementUrl());
+            },
+        ];
+
+        yield 'submit with invalid announcement url is rejected' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_session_test']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'playedAt' => '2025-06-16',
+                    'estimatedTeams' => 5,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                    'announcementUrl' => 'not-a-url',
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.invalid_announcement_url', $body['error']);
             },
         ];
 

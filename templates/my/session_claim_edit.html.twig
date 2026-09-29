@@ -48,6 +48,11 @@
                 <input type="number" id="edit-teams" name="estimatedTeams" min="1" value="{{ claim.estimatedTeams }}" {{ not isRegistrationOpen ? 'disabled' : '' }}>
             </div>
             <div class="form-group">
+                <label for="edit-announcement-url">{{ 'session_claim.announcement_url'|trans }}</label>
+                <input type="url" id="edit-announcement-url" name="announcementUrl" maxlength="255" placeholder="https://" value="{{ claim.announcementUrl }}" {{ not isRegistrationOpen ? 'disabled' : '' }}>
+                <small class="hint">{{ 'session_claim.announcement_url_hint'|trans }}</small>
+            </div>
+            <div class="form-group">
                 <label>{{ 'venue.host'|trans }} *</label>
                 <small class="hint">{{ 'session_claim.host_hint'|trans }}</small>
                 <div class="officials-group" data-role="host" data-single>
@@ -84,6 +89,8 @@
 
     {% if canEnterResults %}
         <div class="card">
+            <h2>{{ 'session_claim.results_section_title'|trans }}</h2>
+            <p class="hint mb-20">{{ 'session_claim.results_section_hint'|trans }}</p>
             <div class="actions-card">
                 <a href="{{ path('my_session_claim_squad', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'squad.enter_squads'|trans }}</a>
                 <a href="{{ path('my_session_claim_results', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'squad.enter_results'|trans }}</a>
@@ -94,51 +101,25 @@
         </div>
 
         {% if teams is not empty %}
-            <div class="card card-wide">
-                <h2>{{ 'tournament.results'|trans }}</h2>
-                <table aria-label="{{ 'tournament.results'|trans }}">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th></th>
-                            <th>{{ 'common.team'|trans }}</th>
-                            <th>{{ 'common.town'|trans }}</th>
-                            <th>{{ 'common.result'|trans }}</th>
-                            <th>
-                                {{ 'common.squad'|trans }}
-                                <button type="button" class="btn-toggle-text" data-toggle-all-squads>{{ 'squad.show_all'|trans }}</button>
-                            </th>
-                            <th>{{ 'tournament.my.actions'|trans }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for team in teams %}
-                            <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}{{ team.baseSquadCount < 3 ? ' squad-weak' : '' }}">
-                                <td>{{ team.place ? (team.place == team.place|round(0) ? team.place|number_format(0) : team.place) : '—' }}</td>
-                                <td class="one-time-name-hint">{% if team.oneTimeName %}<span data-tooltip="{{ 'team.base_name'|trans({'%name%': team.teamName ~ ' (' ~ team.teamTownName ~ ')'}) }}">^</span>{% endif %}</td>
-                                <td>{{ include('_team_name.html.twig', {teamId: team.teamId, teamName: team.teamName, oneTimeName: team.oneTimeName}, with_context: false) }}</td>
-                                <td>{{ team.teamLocation }}</td>
-                                <td>{{ team.score ?? '—' }}</td>
-                                <td>
-                                    <button type="button" class="btn-toggle-text" data-toggle-squad>{{ 'squad.show'|trans }}</button>
-                                    <div class="squad-list" hidden>
-                                        {% for player in team.players %}
-                                            <div class="{{ player.isBaseSquad ? 'player-base' : 'player-guest' }}">
-                                                {{ include('_player_link.html.twig', {playerId: player.playerId, playerName: player.playerName, hasUser: player.hasUser}, with_context: false) }}
-                                                {%- if player.isCaptain %} (к){% endif -%}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </td>
-                                <td>
-                                    <a href="{{ path('my_session_team_edit', {id: team.sessionTeamId}) }}" class="btn btn-small">{{ 'squad.edit'|trans }}</a>
-                                    <button type="button" class="btn btn-small btn-reject" data-squad-delete="{{ team.sessionTeamId }}">{{ 'squad.delete'|trans }}</button>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {{ include('my/_session_claim_squads_table.html.twig', {teams: teams, canEditSquads: canEditSquads}) }}
+        {% endif %}
+    {% elseif resultsPendingDate %}
+        <div class="card">
+            <h2>{{ 'session_claim.results_section_title'|trans }}</h2>
+            <p class="flash flash-info">{{ 'session_claim.results_pending_date'|trans({'%date%': playedAt|date('d.m.Y')}) }}</p>
+        </div>
+    {% elseif resultsClosed %}
+        <div class="card">
+            <h2>{{ 'session_claim.results_section_title'|trans }}</h2>
+            {% if submissionDeadline %}
+                <p class="flash flash-error">{{ 'session_claim.results_closed_deadline'|trans({'%date%': submissionDeadline|date('d.m.Y')}) }}</p>
+            {% else %}
+                <p class="flash flash-error">{{ 'session_claim.results_closed'|trans }}</p>
+            {% endif %}
+        </div>
+
+        {% if teams is not empty %}
+            {{ include('my/_session_claim_squads_table.html.twig', {teams: teams, canEditSquads: false}) }}
         {% endif %}
     {% endif %}
 {% endblock %}

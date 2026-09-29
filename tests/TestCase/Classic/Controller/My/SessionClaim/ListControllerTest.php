@@ -54,7 +54,16 @@ class ListControllerTest extends WebTestCase
             'afterCallback' => static function (KernelBrowser $client) {
                 $crawler = $client->getCrawler();
                 $rows = $crawler->filter('table tbody tr');
-                static::assertCount(3, $rows);
+                static::assertCount(4, $rows);
+
+                // The approved session carries an announcement URL that must be rendered as a link.
+                $announcementLinks = $crawler->filter('table tbody a[href="https://example.com/announcement"]');
+                static::assertCount(1, $announcementLinks);
+
+                // Teams column shows "actual / estimated"; no results submitted yet, so actual is 0.
+                $tableText = $crawler->filter('table tbody')->text();
+                static::assertStringContainsString('0 / 8', $tableText);
+                static::assertStringContainsString('0 / 10', $tableText);
             },
         ];
 

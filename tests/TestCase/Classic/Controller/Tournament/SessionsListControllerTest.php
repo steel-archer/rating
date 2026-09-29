@@ -92,7 +92,7 @@ class SessionsListControllerTest extends WebTestCase
                 static::assertContains('Франко Іван Якович', $reps);
 
                 // calculated team counts: Kyiv session has 2 teams, Lviv has 1
-                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(7)->text()));
+                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(8)->text()));
                 static::assertContains('2', $teamCounts);
                 static::assertContains('1', $teamCounts);
 
@@ -110,6 +110,55 @@ class SessionsListControllerTest extends WebTestCase
             'loginAs' => 'user_with_player',
             'expectedStatus' => 404,
             'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
+        yield 'organizer sees former hosts struck through with download indicator' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_hosts']->getId() . '/sessions/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml', 'Entity/session_hosts.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                // Current host (Українка Леся) is shown normally.
+                static::assertStringContainsString('Українка', $crawler->filter('.host-current')->text());
+
+                // Former host (Франко) is shown struck through.
+                $former = $crawler->filter('.host-former');
+                static::assertCount(1, $former);
+                static::assertStringContainsString('Франко', $former->text());
+
+                // The former host downloaded the package, so the indicator is shown.
+                static::assertGreaterThan(0, $crawler->filter('.host-downloaded')->count());
+            },
+        ];
+
+        yield 'moderator sees former hosts too' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_hosts']->getId() . '/sessions/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml', 'Entity/session_hosts.yaml'],
+            'loginAs' => 'user_moderator',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(1, $crawler->filter('.host-former'));
+                static::assertStringContainsString('Франко', $crawler->filter('.host-former')->text());
+            },
+        ];
+
+        yield 'outsider player sees only the current host, no former hosts' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_hosts']->getId() . '/sessions/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml', 'Entity/session_hosts.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                // No extended host column for outsiders.
+                static::assertCount(0, $crawler->filter('.host-former'));
+                static::assertCount(0, $crawler->filter('.host-downloaded'));
+
+                // The current host is still visible in the host column (6th column, index 5).
+                $hostCell = $crawler->filter('table tbody tr')->eq(0)->filter('td')->eq(5);
+                static::assertStringContainsString('Українка', $hostCell->text());
             },
         ];
     }

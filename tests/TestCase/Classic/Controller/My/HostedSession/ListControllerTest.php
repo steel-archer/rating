@@ -54,12 +54,12 @@ class ListControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
-        // session_approved: host = player_shevchenko (user_representative), claim approved.
+        // session_approved and session_future: host = player_shevchenko (user_representative), both claims approved.
         // session_pending / session_rejected also have host = shevchenko but are not approved.
         yield 'host sees only approved hosted sessions' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',
-            'expectedApprovedRows' => 1,
+            'expectedApprovedRows' => 2,
             'expectsEmptyState' => false,
         ];
 

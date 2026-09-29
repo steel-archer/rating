@@ -211,6 +211,79 @@ class UpdateControllerTest extends WebTestCase
             },
         ];
 
+        yield 'update sets announcement url' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['session_pending']->getId() . '/update',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'playedAt' => '2025-06-18',
+                    'estimatedTeams' => 12,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                    'announcementUrl' => 'https://example.com/announcement',
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $session = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->find($objects['session_pending']->getId());
+                static::assertSame('https://example.com/announcement', $session->getAnnouncementUrl());
+            },
+        ];
+
+        yield 'update clears announcement url when null' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['session_pending']->getId() . '/update',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'playedAt' => '2025-06-18',
+                    'estimatedTeams' => 12,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                    'announcementUrl' => null,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $session = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSession::class)
+                    ->find($objects['session_pending']->getId());
+                static::assertNull($session->getAnnouncementUrl());
+            },
+        ];
+
+        yield 'update with invalid announcement url is rejected' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_representative',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['session_pending']->getId() . '/update',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'playedAt' => '2025-06-18',
+                    'estimatedTeams' => 12,
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                    'announcementUrl' => 'javascript:alert(1)',
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.invalid_announcement_url', $body['error']);
+            },
+        ];
+
         yield 'registration closed' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/session_claims_expired.yaml'],
             'loginAs' => 'user_representative_exp',

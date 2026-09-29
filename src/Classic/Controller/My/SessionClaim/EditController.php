@@ -41,29 +41,57 @@ class EditController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $canEnterResults = $claim->getStatus() === SessionClaimStatus::Approved
-            && $session->getPlayedAt() !== null
-            && $session->getPlayedAt() <= new DateTimeImmutable('today')
-            && $session->getTournament()->isSubmissionOpen();
+        $today = new DateTimeImmutable('today');
+        $playedAt = $session->getPlayedAt();
+        $tournament = $session->getTournament();
+        $isApproved = $claim->getStatus() === SessionClaimStatus::Approved;
+        $isSubmissionOpen = $tournament->isSubmissionOpen();
 
-        $isCentralized = $session->getTournament()->getFormat() === TournamentFormat::Centralized;
-        $isRegistrationOpen = $session->getTournament()->isRegistrationOpen();
-        $tournamentStartedAt = $session->getTournament()->getStartedAt();
-        $tournamentEndedAt = $session->getTournament()->getEndedAt();
+        $canEnterResults = $isApproved
+            && $playedAt !== null
+            && $playedAt <= $today
+            && $isSubmissionOpen;
 
+        // Approved claim whose play day has not arrived yet: results are not editable,
+        // but the representative should be told why and when they will be able to submit.
+        $resultsPendingDate = $isApproved
+            && $playedAt !== null
+            && $playedAt > $today
+            && $isSubmissionOpen;
+
+        // Approved claim whose play day has arrived but the submission deadline has passed:
+        // results can no longer be entered, so the representative should be told the window is closed.
+        $resultsClosed = $isApproved
+            && $playedAt !== null
+            && $playedAt <= $today
+            && !$isSubmissionOpen;
+
+        $isCentralized = $tournament->getFormat() === TournamentFormat::Centralized;
+        $isRegistrationOpen = $tournament->isRegistrationOpen();
+        $tournamentStartedAt = $tournament->getStartedAt();
+        $tournamentEndedAt = $tournament->getEndedAt();
+        $submissionDeadline = $tournament->getSubmissionDeadline();
+
+        // Show the already entered squads both while the submission window is open
+        // (so they can be reviewed and edited) and after it closes (read-only view).
         $teams = [];
-        if ($canEnterResults) {
+        if ($canEnterResults || $resultsClosed) {
             $teams = $resultService->getAllSessionTeams($session);
         }
 
         return $this->render('my/session_claim_edit.html.twig', [
             'claim' => $mapper->map($claim, SessionClaimEditDTO::class),
             'canEnterResults' => $canEnterResults,
+            'resultsPendingDate' => $resultsPendingDate,
+            'resultsClosed' => $resultsClosed,
+            'playedAt' => $playedAt,
+            'submissionDeadline' => $submissionDeadline,
             'isCentralized' => $isCentralized,
             'isRegistrationOpen' => $isRegistrationOpen,
             'tournamentStartedAt' => $tournamentStartedAt,
             'tournamentEndedAt' => $tournamentEndedAt,
             'teams' => $teams,
+            'canEditSquads' => $canEnterResults,
         ]);
     }
 }

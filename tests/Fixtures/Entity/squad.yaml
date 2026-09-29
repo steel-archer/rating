@@ -51,6 +51,32 @@ App\Classic\Entity\SessionClaim:
         createdAt: '<(new \DateTimeImmutable("-5 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
 
+# Question package of the tournament plus its download audit records. Used to
+# verify the "former host who downloaded the package" squad restriction.
+App\Classic\Entity\TournamentDocument:
+    document_squad:
+        tournament: '@tournament_squad'
+        originalName: 'package.pdf'
+        storedName: 'package-abc123.pdf'
+        mimeType: 'application/pdf'
+        size: 2048
+
+# Host history: both players were once hosts of a session of this tournament.
+# player_kotsubynsky also downloaded the package (blocked from being a player);
+# player_franko was a host but never downloaded (allowed as a player).
+App\Classic\Entity\TournamentSessionHostHistory:
+    host_history_squad_kotsubynsky:
+        session: '@session_squad_approved'
+        player: '@player_kotsubynsky'
+    host_history_squad_franko:
+        session: '@session_squad_future'
+        player: '@player_franko'
+
+App\Classic\Entity\TournamentDocumentDownload:
+    download_squad_kotsubynsky:
+        document: '@document_squad'
+        player: '@player_kotsubynsky'
+
 App\Classic\Entity\TeamPlayer:
     team_player_shevchenko:
         team: '@team_alpha'

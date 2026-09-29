@@ -20,6 +20,14 @@
                                 <td>
                                     {{ include('_player_link.html.twig', {playerId: claim.hostId, playerName: claim.hostName, hasUser: claim.hostHasUser}, with_context: false) }}
                                 </td>
+                                <td>
+                                    {% set announcementUrl = claim.announcementUrl|safe_url %}
+                                    {% if announcementUrl %}
+                                        <a href="{{ announcementUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ 'session_claim.announcement_link'|trans }}</a>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
                                 {% if showActions is defined and showActions %}
                                     <td>
                                         <div class="moderation-actions">

@@ -1,0 +1,57 @@
+App\Classic\Entity\Tournament:
+    tournament_hosts:
+        name: 'Турнір з історією ведучих'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+
+# Organizer is player_shevchenko (logged in via user_with_player from users.yaml).
+App\Classic\Entity\TournamentOfficial:
+    official_hosts_organizer:
+        tournament: '@tournament_hosts'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+# Current host and representative: player_lesya. Former host: player_franko,
+# who was replaced and had downloaded the package.
+App\Classic\Entity\TournamentSession:
+    session_hosts_kyiv:
+        tournament: '@tournament_hosts'
+        venue: '@venue_kyiv'
+        representative: '@player_lesya'
+        host: '@player_lesya'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 6
+
+App\Classic\Entity\SessionClaim:
+    claim_hosts_kyiv:
+        session: '@session_hosts_kyiv'
+        player: '@player_lesya'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-4 days"))>'
+
+App\Classic\Entity\TournamentSessionHostHistory:
+    host_history_hosts_lesya:
+        session: '@session_hosts_kyiv'
+        player: '@player_lesya'
+    host_history_hosts_franko:
+        session: '@session_hosts_kyiv'
+        player: '@player_franko'
+
+App\Classic\Entity\TournamentDocument:
+    document_hosts:
+        tournament: '@tournament_hosts'
+        originalName: 'package.pdf'
+        storedName: 'package-hosts.pdf'
+        mimeType: 'application/pdf'
+        size: 1024
+
+App\Classic\Entity\TournamentDocumentDownload:
+    download_hosts_franko:
+        document: '@document_hosts'
+        player: '@player_franko'

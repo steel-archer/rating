@@ -92,13 +92,14 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
                 't.format AS tournamentFormat',
                 't.onlineMode AS tournamentOnlineMode',
                 'ts.playedAt',
+                'ts.announcementUrl',
                 'COUNT(st.id) AS teamsCount',
             )
             ->where('ts.venue = :venue')
             ->andWhere('sc.status = :status')
             ->setParameter('venue', $venue)
             ->setParameter('status', SessionClaimStatus::Approved->value)
-            ->groupBy('ts.id', 't.id', 't.name', 't.format', 't.onlineMode', 'ts.playedAt')
+            ->groupBy('ts.id', 't.id', 't.name', 't.format', 't.onlineMode', 'ts.playedAt', 'ts.announcementUrl')
             ->orderBy('ts.playedAt', 'DESC')
             ->setFirstResult(($page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)

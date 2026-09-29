@@ -38,3 +38,16 @@ App\Classic\Entity\SessionClaim:
         status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-50 days"))>'
         resolvedAt: '<(new \DateTimeImmutable("-49 days"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_expired:
+        tournamentSession: '@session_expired_approved'
+        team: '@team_beta'
+        score: 5
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    session_team_player_expired_claim:
+        tournamentSessionTeam: '@session_team_expired'
+        player: '@player_lesya'
+        isCaptain: true
+        isLegionary: false

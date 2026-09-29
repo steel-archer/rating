@@ -40,6 +40,7 @@ final class SessionClaimMapping implements MappingInterface
             hostHasUser: $host->hasUser(),
             status: $source->getStatus()->value,
             comment: $source->getComment(),
+            announcementUrl: $session->getAnnouncementUrl(),
             venuePlayedSessionsCount: $context['venueSessionCounts'][$venue->getId()] ?? 0,
             isOnline: $session->isOnline(),
         );

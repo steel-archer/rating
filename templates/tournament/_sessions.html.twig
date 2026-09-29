@@ -12,7 +12,8 @@
                         <th>{{ 'common.date'|trans }}</th>
                         <th>{{ 'venue.representative'|trans }}</th>
                         <th>{{ 'venue.host'|trans }}</th>
-                        <th>{{ 'session_claim.estimated_teams'|trans }}</th>
+                        <th>{{ 'session_claim.announcement_link'|trans }}</th>
+                        <th title="{{ 'session_claim.estimated_teams'|trans }}">{{ 'session_claim.estimated_teams_short'|trans }}</th>
                         <th>{{ 'common.teams_count'|trans }}</th>
                     </tr>
                 </thead>
@@ -25,9 +26,31 @@
                             <td>{{ s.playedAt ? s.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>{{ include('_player_link.html.twig', {playerId: s.representativeId, playerName: s.representativeName, hasUser: s.representativeHasUser, turboFrame: true}, with_context: false) }}</td>
                             <td>
-                                {{ include('_player_link.html.twig', {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true}, with_context: false) }}
-                                {% if currentPlayerId is defined and currentPlayerId == s.hostId %}
-                                    <a href="{{ path('my_hosted_session_show', {id: s.id}) }}" class="btn btn-small" data-turbo-frame="_top" data-turbo="false">{{ 'hosted_session.open_package'|trans }}</a>
+                                {% if s.hosts is not empty %}
+                                    <ul class="host-list">
+                                        {% for host in s.hosts %}
+                                            <li class="{{ host.isCurrent ? 'host-current' : 'host-former' }}">
+                                                {% if host.isCurrent %}
+                                                    {{ include('_player_link.html.twig', {playerId: host.playerId, playerName: host.playerName, hasUser: host.hasUser, turboFrame: true}, with_context: false) }}
+                                                {% else %}
+                                                    <span data-tooltip="{{ 'venue.host_former'|trans }}">{{ include('_player_link.html.twig', {playerId: host.playerId, playerName: host.playerName, hasUser: host.hasUser, turboFrame: true}, with_context: false) }}</span>
+                                                {% endif %}
+                                                {% if host.hasDownloaded %}
+                                                    <span class="host-downloaded" data-tooltip="{{ 'venue.host_downloaded'|trans }}" aria-label="{{ 'venue.host_downloaded'|trans }}">⬇</span>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {{ include('_player_link.html.twig', {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true}, with_context: false) }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set announcementUrl = s.announcementUrl|safe_url %}
+                                {% if announcementUrl %}
+                                    <a href="{{ announcementUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ 'session_claim.announcement_link'|trans }}</a>
+                                {% else %}
+                                    —
                                 {% endif %}
                             </td>
                             <td>{{ s.estimatedTeams ?? '—' }}</td>

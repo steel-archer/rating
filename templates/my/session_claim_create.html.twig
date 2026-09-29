@@ -59,6 +59,11 @@
                 <input type="number" id="claim-teams" name="estimatedTeams" min="1">
             </div>
             <div class="form-group">
+                <label for="claim-announcement-url">{{ 'session_claim.announcement_url'|trans }}</label>
+                <input type="url" id="claim-announcement-url" name="announcementUrl" maxlength="255" placeholder="https://">
+                <small class="hint">{{ 'session_claim.announcement_url_hint'|trans }}</small>
+            </div>
+            <div class="form-group">
                 <label>{{ 'venue.host'|trans }} *</label>
                 <small class="hint">{{ 'session_claim.host_hint'|trans }}</small>
                 <div class="officials-group" data-role="claim-host" data-single></div>

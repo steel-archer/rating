@@ -19,6 +19,8 @@ use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TeamPlayerRepository;
 use App\Classic\Repository\TeamPlayerTransferRepository;
 use App\Classic\Repository\TeamRepository;
+use App\Classic\Repository\TournamentDocumentDownloadRepository;
+use App\Classic\Repository\TournamentSessionHostHistoryRepository;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
@@ -43,6 +45,8 @@ class SessionSquadService
         private TournamentSessionTeamPlayerRepository $sessionTeamPlayerRepository,
         private TournamentSessionTeamAnswerRepository $sessionTeamAnswerRepository,
         private SessionClaimRepository $claimRepository,
+        private TournamentSessionHostHistoryRepository $hostHistoryRepository,
+        private TournamentDocumentDownloadRepository $documentDownloadRepository,
         private CacheInvalidator $cacheInvalidator,
         private Mapper $mapper,
     ) {
@@ -268,24 +272,51 @@ class SessionSquadService
             $existingPlayersById[$player->getId()] = $player;
         }
 
+        /*
+         * Players who have ever hosted a session of this tournament AND downloaded
+         * its package must not be entered as squad players (they could have seen
+         * the questions in advance). Both facts are resolved in two batch queries.
+         */
+        $formerHostVenues = $this->hostHistoryRepository->findHostedVenueNamesByTournament(
+            $tournament,
+            array_values($existingIds),
+        );
+        $downloadedPlayerIds = $this->documentDownloadRepository->findPlayerIdsWhoDownloadedForTournament(
+            $tournament,
+            array_values($existingIds),
+        );
+
         $players = [];
         $seenIds = [];
 
         foreach ($dto->players as $playerDto) {
             $player = $this->resolvePlayer($playerDto, $existingPlayersById);
+            $playerId = $player->getId();
 
-            if ($player->getId() !== null) {
-                if (in_array($player->getId(), $seenIds, true)) {
+            if ($playerId !== null) {
+                if (in_array($playerId, $seenIds, true)) {
                     throw new LogicException('squad.error.duplicate_players');
                 }
 
-                if (in_array($player->getId(), $usedPlayerIds, true)) {
+                if (in_array($playerId, $usedPlayerIds, true)) {
                     throw new LogicException(
                         'squad.error.player_already_played:' . $player->getFullName(),
                     );
                 }
 
-                $seenIds[] = $player->getId();
+                if (
+                    isset($formerHostVenues[$playerId])
+                    && in_array($playerId, $downloadedPlayerIds, true)
+                ) {
+                    throw new LogicException(
+                        'squad.error.player_was_host_downloaded:'
+                        . $player->getFullName()
+                        . "\x1F"
+                        . implode(', ', $formerHostVenues[$playerId]),
+                    );
+                }
+
+                $seenIds[] = $playerId;
             }
 
             $players[] = $player;

@@ -48,6 +48,9 @@ class TournamentSession
     #[ORM\Column(nullable: true)]
     private ?int $estimatedTeams = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $announcementUrl = null;
+
     #[ORM\Column]
     private bool $isOnline = false;
 
@@ -142,6 +145,18 @@ class TournamentSession
     public function setEstimatedTeams(?int $estimatedTeams): static
     {
         $this->estimatedTeams = $estimatedTeams;
+
+        return $this;
+    }
+
+    public function getAnnouncementUrl(): ?string
+    {
+        return $this->announcementUrl;
+    }
+
+    public function setAnnouncementUrl(?string $announcementUrl): static
+    {
+        $this->announcementUrl = $announcementUrl;
 
         return $this;
     }
