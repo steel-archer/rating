@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'hosted_session.package'|trans }}: {{ session.venueName }} — {{ 'site.title'|trans }}{% endblock %}
+{% block title %}{{ 'hosted_session.package'|trans }}: {{ session.tournamentName }} — {{ 'site.title'|trans }}{% endblock %}
 
 {% block breadcrumbs %}
     <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span><a href="{{ path('my_hosted_sessions') }}">{{ 'hosted_session.my_title'|trans }}</a></span><span>{{ session.venueName }}</span></nav>
 {% endblock %}
 
 {% block body %}
-    <h1>{{ 'hosted_session.package'|trans }}: {{ session.venueName }}</h1>
+    <h1>{{ 'hosted_session.package'|trans }}: {{ session.tournamentName }}</h1>
 
     <div class="card">
         <dl>
             <dt>{{ 'common.tournament'|trans }}</dt>
             <dd><a href="{{ path('tournament_show', {id: session.tournamentId}) }}">{{ session.tournamentName }}</a></dd>
             <dt>{{ 'venue.venue'|trans }}</dt>
-            <dd>{{ session.venueName }} ({{ session.townName }})</dd>
+            <dd><a href="{{ path('venue_show', {id: session.venueId}) }}">{{ session.venueName }}</a> ({{ session.townName }})</dd>
             <dt>{{ 'session_claim.estimated_date'|trans }}</dt>
             <dd>{{ session.playedAt ? session.playedAt|date('d.m.Y') : '—' }}</dd>
         </dl>

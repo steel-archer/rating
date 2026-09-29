@@ -15,6 +15,7 @@ final readonly class HostedSessionDetailDTO
         public int $sessionId,
         public int $tournamentId,
         public string $tournamentName,
+        public int $venueId,
         public string $venueName,
         public string $townName,
         public ?DateTimeImmutable $playedAt,
