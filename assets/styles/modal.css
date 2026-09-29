@@ -1,0 +1,35 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgb(0 0 0 / 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 1000;
+}
+
+.modal-dialog {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-width: 28rem;
+    width: 100%;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 20%);
+}
+
+.modal-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.125rem;
+}
+
+.modal-dialog p {
+    margin: 0 0 1.25rem;
+    color: var(--text);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}

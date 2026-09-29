@@ -66,7 +66,15 @@ export function transError(errorKey) {
         return errorKey;
     }
     if (colonIndex !== -1) {
-        return translated.replace('%name%', errorKey.substring(colonIndex + 1));
+        const param = errorKey.substring(colonIndex + 1);
+        // Some errors carry two parts (name and venues) separated by \x1F.
+        const separatorIndex = param.indexOf('\x1F');
+        if (separatorIndex !== -1) {
+            return translated
+                .replace('%name%', param.substring(0, separatorIndex))
+                .replace('%venues%', param.substring(separatorIndex + 1));
+        }
+        return translated.replace('%name%', param);
     }
     return translated;
 }

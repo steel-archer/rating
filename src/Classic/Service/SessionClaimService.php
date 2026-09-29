@@ -15,12 +15,14 @@ use App\Classic\Entity\SessionClaim;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentSession;
+use App\Classic\Entity\TournamentSessionHostHistory;
 use App\Classic\Enum\TournamentOnlineMode;
 use App\Common\Mapping\Mapper;
 use App\Common\Repository\PlayerRepository;
 use App\Classic\Repository\AppealRepository;
 use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TournamentOfficialRepository;
+use App\Classic\Repository\TournamentSessionHostHistoryRepository;
 use App\Classic\Repository\TournamentSessionRepository;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
@@ -50,6 +52,7 @@ class SessionClaimService
         private AppealRepository $appealRepository,
         private VenueRepresentativeRepository $representativeRepository,
         private TournamentOfficialRepository $officialRepository,
+        private TournamentSessionHostHistoryRepository $hostHistoryRepository,
         private CacheInvalidator $cacheInvalidator,
         private UserContactsService $contactsService,
         private Mapper $mapper,
@@ -221,7 +224,19 @@ class SessionClaimService
         $session->setPlayedAt($playedAt);
         $session->setEstimatedTeams($dto->estimatedTeams);
         $session->setAnnouncementUrl($dto->announcementUrl);
-        $session->setHost($this->resolveHost($dto->hostId));
+
+        $newHost = $this->resolveHost($dto->hostId);
+        $session->setHost($newHost);
+
+        /*
+         * If the claim is already approved, the newly assigned host gains access
+         * to the package right away, so record them in the host history too. A
+         * still-pending claim grants no access yet, hence nothing is recorded.
+         */
+        $claim = $this->claimRepository->findBySession($session);
+        if ($claim !== null && $claim->getStatus() === SessionClaimStatus::Approved) {
+            $this->recordHost($session, $newHost);
+        }
 
         $this->em->flush();
     }
@@ -268,6 +283,12 @@ class SessionClaimService
         $claim->setStatus(SessionClaimStatus::Approved);
         $claim->setComment(null);
         $claim->setResolvedAt(new DateTimeImmutable());
+
+        /*
+         * From this moment the host can download the question package, so record
+         * them in the host history (the audit trail used to block former hosts).
+         */
+        $this->recordHost($session, $session->getHost());
 
         $this->em->flush();
         $this->cacheInvalidator->invalidateTournament($session->getTournament());
@@ -381,8 +402,29 @@ class SessionClaimService
             $this->em->remove($claim);
         }
 
+        // Remove host-history rows first to satisfy the foreign key constraint.
+        $this->hostHistoryRepository->deleteBySession($session);
+
         $this->em->remove($session);
         $this->em->flush();
+    }
+
+    /**
+     * Records a host in the session host history unless already present (the
+     * unique (session, player) constraint means a player is listed once even
+     * if reassigned as host after being removed).
+     */
+    private function recordHost(TournamentSession $session, Player $host): void
+    {
+        if ($this->hostHistoryRepository->existsForSessionAndPlayer($session, $host)) {
+            return;
+        }
+
+        $entry = new TournamentSessionHostHistory();
+        $entry->setSession($session);
+        $entry->setPlayer($host);
+
+        $this->em->persist($entry);
     }
 
     /**

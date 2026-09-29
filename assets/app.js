@@ -15,6 +15,7 @@ import './sync-url.js';
 import './tournament-edit.js';
 import './contacts.js';
 import './contacts-popover.js';
+import './package-download-confirm.js';
 import './venue-edit.js';
 import './venue-search.js';
 import './team-management.js';

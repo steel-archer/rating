@@ -174,6 +174,47 @@ class SquadSaveControllerTest extends WebTestCase
             },
         ];
 
+        yield 'error: former host who downloaded the package cannot be a player' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => 'Команда підозри',
+                'townId' => $objects['town_kyiv']->getId(),
+                'players' => [
+                    ['id' => $objects['player_kotsubynsky']->getId()],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertStringStartsWith('squad.error.player_was_host_downloaded:', $data['error']);
+                // The error carries the player name and the venue where they hosted.
+                static::assertStringContainsString('Коцюбинський', $data['error']);
+                static::assertStringContainsString('Квіз-бар Київ', $data['error']);
+            },
+        ];
+
+        yield 'former host who did not download the package is allowed as a player' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => 'Команда Франка',
+                'townId' => $objects['town_kyiv']->getId(),
+                'players' => [
+                    ['id' => $objects['player_franko']->getId()],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertTrue($data['success']);
+            },
+        ];
+
         yield 'access denied for non-owner' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_other',

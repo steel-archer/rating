@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\TestCase\Classic\Controller\My\TournamentSessionClaim;
 
 use App\Classic\Entity\SessionClaim;
+use App\Classic\Entity\TournamentSessionHostHistory;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Service\SessionClaimService;
 use App\Tests\FixturesTrait;
@@ -73,6 +74,16 @@ class ApproveControllerTest extends WebTestCase
                     ->findOneBy(['session' => $objects['session_pending']->getId()]);
                 static::assertSame(SessionClaimStatus::Approved, $claim->getStatus());
                 static::assertNotNull($claim->getResolvedAt());
+
+                // Approving records the host in the host history (audit trail).
+                $history = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSessionHostHistory::class)
+                    ->findBy(['session' => $objects['session_pending']->getId()]);
+                static::assertCount(1, $history);
+                static::assertSame(
+                    $objects['player_shevchenko']->getId(),
+                    $history[0]->getPlayer()->getId(),
+                );
             },
         ];
 

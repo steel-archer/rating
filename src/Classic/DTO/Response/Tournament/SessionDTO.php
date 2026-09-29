@@ -8,6 +8,10 @@ use DateTimeImmutable;
 
 final readonly class SessionDTO
 {
+    /**
+     * @param list<SessionHostDTO> $hosts Full host history (current + former);
+     *        empty for viewers without the extended-view permission.
+     */
     public function __construct(
         public int $id,
         public int $venueId,
@@ -21,6 +25,7 @@ final readonly class SessionDTO
         public int $hostId,
         public string $hostName,
         public bool $hostHasUser,
+        public array $hosts = [],
         public ?string $announcementUrl = null,
         public bool $isOnline = false,
     ) {
