@@ -25,6 +25,7 @@ final readonly class SessionContextDTO
         public int $toursCount,
         /** @var list<int> */
         public array $questionsPerTourMap,
+        public ?string $announcementUrl = null,
         public bool $isOnline = false,
     ) {
     }

@@ -21,6 +21,7 @@
                         <th>{{ 'common.town'|trans }}</th>
                         <th>{{ 'session_claim.estimated_date'|trans }}</th>
                         <th>{{ 'session_claim.estimated_teams'|trans }}</th>
+                        <th>{{ 'session_claim.announcement_link'|trans }}</th>
                         <th>{{ 'tournament.my.status'|trans }}</th>
                         <th>{{ 'tournament.my.actions'|trans }}</th>
                     </tr>
@@ -33,6 +34,14 @@
                             <td>{{ claim.townName }}{% if claim.isOnline and claim.townName != 'Онлайн' %} (онлайн){% endif %}</td>
                             <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
                             <td>{{ claim.estimatedTeams ?? '—' }}</td>
+                            <td>
+                                {% set announcementUrl = claim.announcementUrl|safe_url %}
+                                {% if announcementUrl %}
+                                    <a href="{{ announcementUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ 'session_claim.announcement_link'|trans }}</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
                             <td>
                                 <span class="badge {% if claim.status == 'pending' %}badge-moderation-pending{% elseif claim.status == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status)|trans }}</span>
                                 {% if claim.comment %}

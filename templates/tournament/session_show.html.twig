@@ -23,6 +23,11 @@
             <dd>{{ include('_player_link.html.twig', {playerId: session.representativeId, playerName: session.representativeName, hasUser: session.representativeHasUser}, with_context: false) }}</dd>
             <dt>{{ 'venue.host'|trans }}</dt>
             <dd>{{ include('_player_link.html.twig', {playerId: session.hostId, playerName: session.hostName, hasUser: session.hostHasUser}, with_context: false) }}</dd>
+            {% set announcementUrl = session.announcementUrl|safe_url %}
+            {% if announcementUrl %}
+                <dt>{{ 'session_claim.announcement_url'|trans }}</dt>
+                <dd><a href="{{ announcementUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ session.announcementUrl }}</a></dd>
+            {% endif %}
         </dl>
     </div>
 

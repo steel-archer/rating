@@ -57,6 +57,10 @@ class ListControllerTest extends WebTestCase
                 static::assertGreaterThanOrEqual(1, $crawler->filter('[data-venue-sessions]')->count());
                 static::assertStringContainsString('зіграно ігор:', $crawler->text());
                 static::assertStringContainsString('Жодної гри!', $crawler->text());
+
+                // The pending session carries an announcement URL that the organizer must see.
+                $announcementLinks = $crawler->filter('table tbody a[href="https://example.com/pending-announcement"]');
+                static::assertGreaterThanOrEqual(1, $announcementLinks->count());
             },
         ];
 

@@ -26,6 +26,7 @@ final class VenueTournamentMapping implements MappingInterface
             tournamentOnlineMode: is_string($source['tournamentOnlineMode']) ? $source['tournamentOnlineMode'] : $source['tournamentOnlineMode']->value,
             playedAt: $source['playedAt'] instanceof DateTimeImmutable ? $source['playedAt'] : null,
             teamsCount: (int) $source['teamsCount'],
+            announcementUrl: is_string($source['announcementUrl'] ?? null) ? $source['announcementUrl'] : null,
         );
     }
 }

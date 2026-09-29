@@ -89,6 +89,7 @@ App\Classic\Entity\TournamentSession:
         host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-10 19:00"))>'
         estimatedTeams: 8
+        announcementUrl: 'https://example.com/pending-announcement'
     session_rejected:
         tournament: '@tournament_session_test'
         venue: '@venue_lviv'
@@ -103,6 +104,7 @@ App\Classic\Entity\TournamentSession:
         host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-20 19:00"))>'
         estimatedTeams: 10
+        announcementUrl: 'https://example.com/announcement'
     session_no_user:
         tournament: '@tournament_session_test'
         venue: '@venue_lviv'

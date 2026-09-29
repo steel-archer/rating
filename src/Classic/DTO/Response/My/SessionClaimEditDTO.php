@@ -22,6 +22,7 @@ final readonly class SessionClaimEditDTO
         public bool $hostHasUser,
         public string $status,
         public ?string $comment,
+        public ?string $announcementUrl = null,
     ) {
     }
 }

@@ -24,6 +24,10 @@ final readonly class ClaimRequestDTO
         public ?int $hostId = null,
 
         public bool $isOnline = false,
+
+        #[Assert\Length(max: 255)]
+        #[Assert\Url(message: 'session_claim.error.invalid_announcement_url', protocols: ['http', 'https'])]
+        public ?string $announcementUrl = null,
     ) {
     }
 }

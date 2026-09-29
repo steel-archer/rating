@@ -12,6 +12,7 @@
                         <th>{{ 'common.date'|trans }}</th>
                         <th>{{ 'venue.representative'|trans }}</th>
                         <th>{{ 'venue.host'|trans }}</th>
+                        <th>{{ 'session_claim.announcement_link'|trans }}</th>
                         <th>{{ 'session_claim.estimated_teams'|trans }}</th>
                         <th>{{ 'common.teams_count'|trans }}</th>
                     </tr>
@@ -28,6 +29,14 @@
                                 {{ include('_player_link.html.twig', {playerId: s.hostId, playerName: s.hostName, hasUser: s.hostHasUser, turboFrame: true}, with_context: false) }}
                                 {% if currentPlayerId is defined and currentPlayerId == s.hostId %}
                                     <a href="{{ path('my_hosted_session_show', {id: s.id}) }}" class="btn btn-small" data-turbo-frame="_top" data-turbo="false">{{ 'hosted_session.open_package'|trans }}</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set announcementUrl = s.announcementUrl|safe_url %}
+                                {% if announcementUrl %}
+                                    <a href="{{ announcementUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ 'session_claim.announcement_link'|trans }}</a>
+                                {% else %}
+                                    —
                                 {% endif %}
                             </td>
                             <td>{{ s.estimatedTeams ?? '—' }}</td>

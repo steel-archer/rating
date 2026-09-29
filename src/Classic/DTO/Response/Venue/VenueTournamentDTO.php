@@ -16,6 +16,7 @@ final readonly class VenueTournamentDTO
         public string $tournamentOnlineMode,
         public ?DateTimeImmutable $playedAt,
         public int $teamsCount,
+        public ?string $announcementUrl = null,
     ) {
     }
 }

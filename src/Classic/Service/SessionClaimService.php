@@ -183,6 +183,7 @@ class SessionClaimService
         $session->setRepresentative($player);
         $session->setPlayedAt($playedAt);
         $session->setEstimatedTeams($dto->estimatedTeams);
+        $session->setAnnouncementUrl($dto->announcementUrl);
         $session->setHost($host);
 
         $isOnline = match ($onlineMode) {
@@ -219,6 +220,7 @@ class SessionClaimService
 
         $session->setPlayedAt($playedAt);
         $session->setEstimatedTeams($dto->estimatedTeams);
+        $session->setAnnouncementUrl($dto->announcementUrl);
         $session->setHost($this->resolveHost($dto->hostId));
 
         $this->em->flush();

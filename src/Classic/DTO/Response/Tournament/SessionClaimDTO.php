@@ -25,6 +25,7 @@ final readonly class SessionClaimDTO
         public bool $hostHasUser,
         public string $status,
         public ?string $comment,
+        public ?string $announcementUrl = null,
         public int $venuePlayedSessionsCount = 0,
         public bool $isOnline = false,
     ) {

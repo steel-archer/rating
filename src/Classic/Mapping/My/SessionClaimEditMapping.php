@@ -36,6 +36,7 @@ final class SessionClaimEditMapping implements MappingInterface
             hostHasUser: $host->hasUser(),
             status: $source->getStatus()->value,
             comment: $source->getComment(),
+            announcementUrl: $session->getAnnouncementUrl(),
         );
     }
 }

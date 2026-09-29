@@ -55,6 +55,10 @@ class ListControllerTest extends WebTestCase
                 $crawler = $client->getCrawler();
                 $rows = $crawler->filter('table tbody tr');
                 static::assertCount(4, $rows);
+
+                // The approved session carries an announcement URL that must be rendered as a link.
+                $announcementLinks = $crawler->filter('table tbody a[href="https://example.com/announcement"]');
+                static::assertCount(1, $announcementLinks);
             },
         ];
 

@@ -35,6 +35,7 @@ final class SessionMapping implements MappingInterface
             hostId: $host->getId(),
             hostName: $host->getFullName(),
             hostHasUser: $host->hasUser(),
+            announcementUrl: $source->getAnnouncementUrl(),
             isOnline: $source->isOnline(),
         );
     }
