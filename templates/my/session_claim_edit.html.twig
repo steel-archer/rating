@@ -84,6 +84,8 @@
 
     {% if canEnterResults %}
         <div class="card">
+            <h2>{{ 'session_claim.results_section_title'|trans }}</h2>
+            <p class="hint mb-20">{{ 'session_claim.results_section_hint'|trans }}</p>
             <div class="actions-card">
                 <a href="{{ path('my_session_claim_squad', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'squad.enter_squads'|trans }}</a>
                 <a href="{{ path('my_session_claim_results', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'squad.enter_results'|trans }}</a>
@@ -91,6 +93,20 @@
                     <a href="{{ path('my_session_claim_disputes', {id: claim.sessionId}) }}" class="btn btn-primary">{{ 'dispute.enter_disputes'|trans }}</a>
                 {% endif %}
             </div>
+        </div>
+    {% elseif resultsPendingDate %}
+        <div class="card">
+            <h2>{{ 'session_claim.results_section_title'|trans }}</h2>
+            <p class="flash flash-info">{{ 'session_claim.results_pending_date'|trans({'%date%': playedAt|date('d.m.Y')}) }}</p>
+        </div>
+    {% elseif resultsClosed %}
+        <div class="card">
+            <h2>{{ 'session_claim.results_section_title'|trans }}</h2>
+            {% if submissionDeadline %}
+                <p class="flash flash-error">{{ 'session_claim.results_closed_deadline'|trans({'%date%': submissionDeadline|date('d.m.Y')}) }}</p>
+            {% else %}
+                <p class="flash flash-error">{{ 'session_claim.results_closed'|trans }}</p>
+            {% endif %}
         </div>
 
         {% if teams is not empty %}

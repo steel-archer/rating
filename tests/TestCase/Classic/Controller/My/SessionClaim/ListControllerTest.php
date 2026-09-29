@@ -54,7 +54,7 @@ class ListControllerTest extends WebTestCase
             'afterCallback' => static function (KernelBrowser $client) {
                 $crawler = $client->getCrawler();
                 $rows = $crawler->filter('table tbody tr');
-                static::assertCount(3, $rows);
+                static::assertCount(4, $rows);
             },
         ];
 

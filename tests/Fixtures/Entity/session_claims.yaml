@@ -110,6 +110,13 @@ App\Classic\Entity\TournamentSession:
         host: '@player_shevchenko'
         playedAt: '<(new \DateTimeImmutable("2025-06-25 19:00"))>'
         estimatedTeams: 6
+    session_future:
+        tournament: '@tournament_session_test'
+        venue: '@venue_lviv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("+1 month 19:00"))>'
+        estimatedTeams: 7
 
 App\Classic\Entity\SessionClaim:
     claim_pending:
@@ -135,3 +142,9 @@ App\Classic\Entity\SessionClaim:
         player: '@player_no_user'
         status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-22"))>'
+    claim_future:
+        session: '@session_future'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
