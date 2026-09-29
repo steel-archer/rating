@@ -72,8 +72,10 @@ class EditController extends AbstractController
         $tournamentEndedAt = $tournament->getEndedAt();
         $submissionDeadline = $tournament->getSubmissionDeadline();
 
+        // Show the already entered squads both while the submission window is open
+        // (so they can be reviewed and edited) and after it closes (read-only view).
         $teams = [];
-        if ($canEnterResults) {
+        if ($canEnterResults || $resultsClosed) {
             $teams = $resultService->getAllSessionTeams($session);
         }
 
@@ -89,6 +91,7 @@ class EditController extends AbstractController
             'tournamentStartedAt' => $tournamentStartedAt,
             'tournamentEndedAt' => $tournamentEndedAt,
             'teams' => $teams,
+            'canEditSquads' => $canEnterResults,
         ]);
     }
 }

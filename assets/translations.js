@@ -308,6 +308,7 @@ export default {
     "squad.captain_short": "К",
     "squad.enter_results": "Внести результати команд",
     "squad.enter_squads": "Внести склад команди",
+    "squad.entered_squads_title": "Внесені склади",
     "squad.entry_title": "Внесення складів",
     "squad.error.captain_not_in_squad": "Капітан має бути у складі",
     "squad.error.captain_required": "Оберіть капітана",

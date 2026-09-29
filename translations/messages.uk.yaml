@@ -368,6 +368,7 @@ squad:
   captain_short: 'К'
   enter_results: 'Внести результати команд'
   enter_squads: 'Внести склад команди'
+  entered_squads_title: 'Внесені склади'
   entry_title: 'Внесення складів'
   error:
     captain_not_in_squad: 'Капітан має бути у складі'

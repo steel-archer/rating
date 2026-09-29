@@ -114,6 +114,13 @@ class EditControllerTest extends WebTestCase
                 $pageText = $crawler->text();
                 static::assertStringContainsString('Результати відіграшу', $pageText);
                 static::assertCount(1, $crawler->filter('.actions-card'));
+                // The squads already entered are listed while the submission window is open,
+                // so the representative can review and edit them.
+                static::assertStringContainsString('Внесені склади', $pageText);
+                static::assertStringContainsString('Бета', $pageText);
+                // Edit and delete controls are available for each entered squad.
+                static::assertCount(1, $crawler->filter('a[href*="/my/session-teams/"][href$="/edit"]'));
+                static::assertCount(1, $crawler->filter('[data-squad-delete]'));
             },
         ];
 
@@ -146,6 +153,11 @@ class EditControllerTest extends WebTestCase
                 // The representative is warned that the submission deadline has passed.
                 static::assertStringContainsString('Термін подання результатів завершився', $crawler->filter('.flash-error')->text());
                 static::assertStringContainsString('Результати відіграшу', $crawler->text());
+                // The entered squads remain visible for reference, but as a read-only list:
+                // no edit or delete controls are shown once the window is closed.
+                static::assertStringContainsString('Бета', $crawler->text());
+                static::assertCount(0, $crawler->filter('a[href*="/my/session-teams/"][href$="/edit"]'));
+                static::assertCount(0, $crawler->filter('[data-squad-delete]'));
             },
         ];
 

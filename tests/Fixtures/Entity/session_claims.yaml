@@ -150,3 +150,16 @@ App\Classic\Entity\SessionClaim:
         status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("2025-05-20"))>'
         resolvedAt: '<(new \DateTimeImmutable("2025-05-21"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_approved:
+        tournamentSession: '@session_approved'
+        team: '@team_beta'
+        score: 5
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    session_team_player_approved:
+        tournamentSessionTeam: '@session_team_approved'
+        player: '@player_lesya'
+        isCaptain: true
+        isLegionary: false
