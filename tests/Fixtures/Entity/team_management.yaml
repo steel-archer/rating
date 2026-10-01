@@ -1,8 +1,9 @@
 App\Common\Entity\Season:
+    # Yearly season immediately before the current one (ends the day current starts).
     season_previous:
         name: '2024-2025'
-        startedAt: '<(new \DateTimeImmutable("2024-10-01"))>'
-        endedAt: '<(new \DateTimeImmutable("2025-09-30"))>'
+        startedAt: '<(new \DateTimeImmutable("-18 months"))>'
+        endedAt: '<(new \DateTimeImmutable("-6 months -1 day"))>'
 
 App\Common\Entity\User:
     user_captain:

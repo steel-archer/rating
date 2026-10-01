@@ -14,10 +14,11 @@ App\Common\Entity\Town:
         country: '@country_ukraine'
 
 App\Common\Entity\Season:
+    # Dynamic yearly season covering "today" so findCurrent() keeps working as time passes.
     season_current:
         name: '2025-2026'
-        startedAt: '<(new \DateTimeImmutable("2025-10-01"))>'
-        endedAt: '<(new \DateTimeImmutable("2026-09-30"))>'
+        startedAt: '<(new \DateTimeImmutable("-6 months"))>'
+        endedAt: '<(new \DateTimeImmutable("+6 months"))>'
 
 App\Common\Entity\Player:
     player_shevchenko:
