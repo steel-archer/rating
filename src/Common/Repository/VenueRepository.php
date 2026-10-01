@@ -74,14 +74,19 @@ class VenueRepository extends ServiceEntityRepository
     }
 
     /**
+     * Venues the player can manage: those they created plus those where they
+     * are a representative (without duplicates).
+     *
      * @return list<Venue>
      */
-    public function findByCreator(Player $player): array
+    public function findManageableByPlayer(Player $player): array
     {
         return $this->createQueryBuilder('v')
             ->join('v.town', 'town')
             ->addSelect('town')
+            ->leftJoin(VenueRepresentative::class, 'vr', 'WITH', 'vr.venue = v AND vr.player = :player')
             ->where('v.createdBy = :player')
+            ->orWhere('vr.id IS NOT NULL')
             ->setParameter('player', $player)
             ->orderBy('v.createdAt', 'DESC')
             ->getQuery()
@@ -101,6 +106,15 @@ class VenueRepository extends ServiceEntityRepository
             ->orderBy('v.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function countPendingApproval(): int
+    {
+        return (int) $this->createQueryBuilder('v')
+            ->select('COUNT(v.id)')
+            ->where('v.isApproved = false')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function existsByNameAndTown(string $name, int $townId): bool

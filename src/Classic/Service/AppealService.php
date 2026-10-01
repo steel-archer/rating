@@ -124,6 +124,7 @@ class AppealService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function reject(Appeal $appeal, ?string $verdict): void
@@ -136,6 +137,13 @@ class AppealService
         $appeal->setVerdict($verdict);
 
         $this->em->flush();
+
+        $this->cacheInvalidator->invalidateTournament(
+            $appeal->getTournamentSessionTeamAnswer()
+                ->getTournamentSessionTeam()
+                ->getTournamentSession()
+                ->getTournament(),
+        );
     }
 
     private function recalculateScore(int $sessionTeamId): void

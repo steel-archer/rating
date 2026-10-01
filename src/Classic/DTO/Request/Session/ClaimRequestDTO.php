@@ -19,8 +19,8 @@ final readonly class ClaimRequestDTO
         #[Assert\Positive]
         public ?int $estimatedTeams = null,
 
-        #[Assert\NotNull]
-        #[Assert\Positive]
+        #[Assert\NotNull(message: 'session_claim.error.host_required')]
+        #[Assert\Positive(message: 'session_claim.error.host_required')]
         public ?int $hostId = null,
 
         public bool $isOnline = false,

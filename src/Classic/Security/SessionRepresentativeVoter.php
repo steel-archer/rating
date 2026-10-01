@@ -6,6 +6,7 @@ namespace App\Classic\Security;
 
 use App\Classic\Entity\TournamentSession;
 use App\Common\Entity\User;
+use App\Common\Repository\VenueRepresentativeRepository;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -14,6 +15,11 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 final class SessionRepresentativeVoter extends Voter
 {
     public const string MANAGE = 'SESSION_MANAGE';
+
+    public function __construct(
+        private VenueRepresentativeRepository $representativeRepository,
+    ) {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -33,6 +39,7 @@ final class SessionRepresentativeVoter extends Voter
             return false;
         }
 
-        return $subject->getRepresentative()->getId() === $player->getId();
+        // A claim is shared across every representative of the session's venue.
+        return $this->representativeRepository->isRepresentative($player, $subject->getVenue());
     }
 }

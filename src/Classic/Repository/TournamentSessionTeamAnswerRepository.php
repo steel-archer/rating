@@ -325,6 +325,25 @@ class TournamentSessionTeamAnswerRepository extends ServiceEntityRepository
     }
 
     /**
+     * Count unresolved (submitted) disputes across every tournament where the
+     * player is game jury. Powers the personal menu badge for the game jury.
+     */
+    public function countSubmittedDisputesForJury(Player $player): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->join('a.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 's')
+            ->join(TournamentOfficial::class, 'o', 'WITH', 'o.tournament = s.tournament AND o.player = :player AND o.role = :role')
+            ->where('a.disputeStatus = :status')
+            ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::GameJury)
+            ->setParameter('status', DisputeStatus::Submitted->value)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * @param list<int> $sessionTeamIds
      * @return list<int>
      */

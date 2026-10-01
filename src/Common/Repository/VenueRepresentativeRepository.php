@@ -47,6 +47,31 @@ class VenueRepresentativeRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * Returns, out of the given venue ids, those the player represents. Used to
+     * resolve representation across many venues in a single query (avoids N+1).
+     *
+     * @param list<int> $venueIds
+     * @return list<int>
+     */
+    public function findRepresentedVenueIds(Player $player, array $venueIds): array
+    {
+        if ($venueIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('vr')
+            ->select('IDENTITY(vr.venue) AS venueId')
+            ->where('vr.player = :player')
+            ->andWhere('vr.venue IN (:venueIds)')
+            ->setParameter('player', $player)
+            ->setParameter('venueIds', $venueIds)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn(array $row): int => (int) $row['venueId'], $rows);
+    }
+
     public function hasVenuesByPlayer(Player $player): bool
     {
         return (bool) $this->createQueryBuilder('vr')

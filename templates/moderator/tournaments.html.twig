@@ -36,10 +36,10 @@
                 {% endif %}
 
                 {% if currentStatus == 'pending' %}
-                    <div class="moderation-actions">
-                        <button type="button" class="btn btn-approve" data-tournament-approve="{{ claim.tournamentId }}">{{ 'moderator.approve'|trans }}</button>
-                        <div class="reject-form">
-                            <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-tournament-reject-comment="{{ claim.tournamentId }}">
+                    <div class="moderation-actions moderation-actions-compact">
+                        <input type="text" class="reject-input" placeholder="{{ 'moderator.reject_comment'|trans }}" data-tournament-reject-comment="{{ claim.tournamentId }}">
+                        <div class="moderation-buttons">
+                            <button type="button" class="btn btn-approve" data-tournament-approve="{{ claim.tournamentId }}">{{ 'moderator.approve'|trans }}</button>
                             <button type="button" class="btn btn-reject" data-tournament-reject="{{ claim.tournamentId }}">{{ 'moderator.reject'|trans }}</button>
                         </div>
                     </div>

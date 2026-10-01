@@ -147,7 +147,7 @@ class TournamentManagementService
         $tournament->setDiscussionLink($dto->discussionLink);
         $tournament->setSeason($startedAt ? $this->seasonRepository->findByDate($startedAt) : null);
 
-        $this->syncOfficials($tournament, $dto);
+        $affectedPlayerIds = $this->syncOfficials($tournament, $dto);
 
         if ($nameChanged) {
             $tournament->setStatus(TournamentStatus::Draft);
@@ -157,6 +157,14 @@ class TournamentManagementService
         $this->em->flush();
 
         $this->cacheInvalidator->invalidateTournament($tournament);
+
+        // Players added to or removed from official roles need their personal
+        // menu badge refreshed: their old cache is not tagged with this tournament.
+        if ($affectedPlayerIds !== []) {
+            $this->cacheInvalidator->invalidateTags(
+                array_map(static fn(int $playerId) => CacheTag::menuPlayer($playerId), $affectedPlayerIds),
+            );
+        }
     }
 
     /**
@@ -210,10 +218,16 @@ class TournamentManagementService
         $this->cacheInvalidator->invalidateTags([
             CacheTag::tournament($tournamentId),
             CacheTag::TournamentList->value,
+            CacheTag::menuTournament($tournamentId),
         ]);
     }
 
-    private function syncOfficials(Tournament $tournament, EditRequestDTO $dto): void
+    /**
+     * Synchronises tournament officials with the submitted role lists.
+     *
+     * @return list<int> ids of players whose official roles changed (added or removed)
+     */
+    private function syncOfficials(Tournament $tournament, EditRequestDTO $dto): array
     {
         $existing = $this->officialRepository->findByTournament($tournament);
 
@@ -223,6 +237,8 @@ class TournamentManagementService
             TournamentOfficialRole::GameJury->value => $dto->gameJury,
             TournamentOfficialRole::AppealJury->value => $dto->appealJury,
         ];
+
+        $affectedPlayerIds = [];
 
         $creatorPlayerId = $tournament->getCreatedBy()?->getId();
         foreach ($existing as $official) {
@@ -235,6 +251,7 @@ class TournamentManagementService
                 continue;
             }
             if (!in_array($official->getPlayer()->getId(), $playerIds, true)) {
+                $affectedPlayerIds[] = $official->getPlayer()->getId();
                 $this->em->remove($official);
             }
         }
@@ -281,8 +298,12 @@ class TournamentManagementService
                 $official->setPlayer($player);
                 $official->setRole($role);
                 $this->em->persist($official);
+
+                $affectedPlayerIds[] = $playerId;
             }
         }
+
+        return array_values(array_unique($affectedPlayerIds));
     }
 
     /**

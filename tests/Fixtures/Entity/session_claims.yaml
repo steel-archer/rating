@@ -19,6 +19,11 @@ App\Common\Entity\User:
         googleId: 'google_mod_sc_123'
         roles: ['ROLE_MODERATOR']
         player: '@player_moderator_sc'
+    user_corep:
+        email: 'corep@example.com'
+        googleId: 'google_corep_123'
+        roles: []
+        player: '@player_corep'
 
 App\Common\Entity\Player:
     player_moderator_sc:
@@ -28,6 +33,10 @@ App\Common\Entity\Player:
     player_no_user:
         lastName: 'Безюзеренко'
         firstName: 'Безюзер'
+        town: '@town_kyiv'
+    player_corep:
+        lastName: 'Співпредставниченко'
+        firstName: 'Співпредставник'
         town: '@town_kyiv'
 
 App\Classic\Entity\Tournament:
@@ -79,6 +88,18 @@ App\Common\Entity\VenueRepresentative:
     venue_rep_online_sc:
         venue: '@venue_online_sc'
         player: '@player_shevchenko'
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
+    # Shevchenko represents venue_lviv too, so he manages every session held there.
+    venue_rep_lviv_shevchenko:
+        venue: '@venue_lviv'
+        player: '@player_shevchenko'
+        createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
+    # A co-representative of venue_kyiv. Claims are shared across venue
+    # representatives, so this player can manage sessions Shevchenko submitted
+    # at venue_kyiv (and vice versa).
+    venue_rep_kyiv_corep:
+        venue: '@venue_kyiv'
+        player: '@player_corep'
         createdAt: '<(new \DateTimeImmutable("2025-01-01"))>'
 
 App\Classic\Entity\TournamentSession:

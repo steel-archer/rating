@@ -7,10 +7,12 @@ namespace App\Classic\Repository;
 use App\Common\Entity\Player;
 use App\Classic\Entity\SessionClaim;
 use App\Classic\Entity\Tournament;
+use App\Classic\Entity\TournamentOfficial;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Enum\TournamentOfficialRole;
+use App\Common\Entity\VenueRepresentative;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -25,6 +27,24 @@ class SessionClaimRepository extends ServiceEntityRepository
     public function findBySession(TournamentSession $session): ?SessionClaim
     {
         return $this->findOneBy(['session' => $session]);
+    }
+
+    /**
+     * Count pending session claims across every tournament the player organizes.
+     * Powers the personal menu badge for the organizer.
+     */
+    public function countPendingForOrganizer(Player $player): int
+    {
+        return (int) $this->createQueryBuilder('sc')
+            ->select('COUNT(sc.id)')
+            ->join('sc.session', 's')
+            ->join(TournamentOfficial::class, 'o', 'WITH', 'o.tournament = s.tournament AND o.player = :player AND o.role = :role')
+            ->where('sc.status = :status')
+            ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::Organizer)
+            ->setParameter('status', SessionClaimStatus::Pending->value)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function hasApprovedHostedSession(Player $host, Tournament $tournament): bool
@@ -65,9 +85,13 @@ class SessionClaimRepository extends ServiceEntityRepository
     }
 
     /**
+     * Claims are shared across every representative of a venue, so a player sees
+     * claims for all sessions held at the venues they represent, not only the
+     * ones they personally submitted.
+     *
      * @return list<SessionClaim>
      */
-    public function findByPlayer(Player $player): array
+    public function findByVenueRepresentative(Player $player): array
     {
         return $this->createQueryBuilder('sc')
             ->join('sc.session', 's')
@@ -75,7 +99,11 @@ class SessionClaimRepository extends ServiceEntityRepository
             ->join('s.venue', 'v')
             ->join('v.town', 'town')
             ->addSelect('s', 't', 'v', 'town')
-            ->where('sc.player = :player')
+            ->where('EXISTS (
+                SELECT 1
+                FROM ' . VenueRepresentative::class . ' vr
+                WHERE vr.venue = v AND vr.player = :player
+            )')
             ->setParameter('player', $player)
             ->orderBy('sc.createdAt', 'DESC')
             ->getQuery()

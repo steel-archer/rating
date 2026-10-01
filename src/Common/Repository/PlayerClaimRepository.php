@@ -43,6 +43,11 @@ class PlayerClaimRepository extends ServiceEntityRepository
         return $this->count(['user' => $user, 'status' => PlayerClaimStatus::Pending]) > 0;
     }
 
+    public function countPending(): int
+    {
+        return $this->count(['status' => PlayerClaimStatus::Pending]);
+    }
+
     public function rejectOtherPendingClaims(PlayerClaim $approvedClaim): void
     {
         if ($approvedClaim->getPlayer() === null) {

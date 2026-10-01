@@ -1,6 +1,7 @@
 // @ts-check
 import { trans } from './trans.js';
 import { buttonAction } from './button-action.js';
+import { refreshMenuCounts } from './menu-counts.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (event) => {
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function removeModerationCard(btn) {
     const card = btn.closest('.moderation-card');
     card?.remove();
+    refreshMenuCounts();
     if (document.querySelectorAll('.moderation-card').length === 0) {
         const container = document.querySelector('h1')?.parentElement;
         if (container && !container.querySelector('.empty-state')) {

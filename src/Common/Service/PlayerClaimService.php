@@ -18,7 +18,10 @@ use App\Common\Repository\PlayerRepository;
 use App\Common\Repository\TownRepository;
 use App\Common\Repository\UserRepository;
 use App\Common\Entity\User;
+use App\Common\Enum\CacheTag;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class PlayerClaimService
 {
@@ -29,10 +32,12 @@ class PlayerClaimService
         private PlayerClaimRepository $claimRepository,
         private TownRepository $townRepository,
         private CountryRepository $countryRepository,
+        private TagAwareCacheInterface $cache,
     ) {
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws PlayerClaimException
      */
     public function approve(int $id, ?string $townName = null): void
@@ -55,16 +60,25 @@ class PlayerClaimService
         $this->em->flush();
 
         $this->claimRepository->rejectOtherPendingClaims($claim);
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws PlayerClaimException
+     */
     public function reject(int $id): void
     {
         $claim = $this->findPendingClaim($id);
         $claim->setStatus(PlayerClaimStatus::Rejected);
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws PlayerClaimException
      */
     public function claimExisting(ClaimExistingRequestDTO $dto, User $user): void
@@ -86,9 +100,12 @@ class PlayerClaimService
 
         $this->em->persist($claim);
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws PlayerClaimException
      */
     public function claimNew(ClaimNewRequestDTO $dto, User $user): void
@@ -116,6 +133,8 @@ class PlayerClaimService
 
         $this->em->persist($claim);
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
     /**

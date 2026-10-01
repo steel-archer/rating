@@ -232,6 +232,26 @@ class SessionShowControllerTest extends WebTestCase
             },
         ];
 
+        yield 'draft tournament - creator can view' => [
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_draft']->getId() . '/sessions/' . $objects['session_draft']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertSelectorTextContains('h1', 'Чернетка');
+            },
+        ];
+
+        yield 'draft tournament - co-organizer can view' => [
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_draft']->getId() . '/sessions/' . $objects['session_draft']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_draft_coorganizer',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertSelectorTextContains('h1', 'Чернетка');
+            },
+        ];
+
         yield 'breadcrumbs contain correct links' => [
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId() . '/sessions/' . $objects['session_spring_kyiv']->getId(),
             'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],

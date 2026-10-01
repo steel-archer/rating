@@ -2,6 +2,7 @@
 import { trans } from './trans.js';
 import { apiPost, showError } from './api.js';
 import { buttonAction } from './button-action.js';
+import { refreshMenuCounts } from './menu-counts.js';
 
 function initTournamentCreateForm() {
     const form = /** @type {HTMLFormElement|null} */ (document.getElementById('tournament-create-form'));
@@ -59,7 +60,7 @@ function initTournamentEditForm() {
     }
 
     initCustomQuestionsToggle(form);
-    initHiddenUntilDefaults(form);
+    initDefaults(form);
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -135,32 +136,60 @@ function initTournamentEditForm() {
 }
 
 /**
- * Prefills the "results hidden until" and "details hidden until" dates with
- * end date + 1 day whenever the end date changes and those fields are still
- * empty. This is a convenience for the organizer only: the fields stay
- * editable so the dates can be extended, and empty required fields are still
- * enforced by the backend on submit.
+ * Prefills default field values once the organizer fills in the tournament
+ * end date. All prefills are a convenience only: they touch empty fields,
+ * leave them editable, and the backend still enforces required fields on
+ * submit.
+ *
+ * On end date change (distributed format only):
+ *   - "results hidden until" / "details hidden until" -> end date + 1 day
+ *   - "registration deadline" -> the end date itself (the last day)
+ * On end date change (any format):
+ *   - "tours count" -> 3
+ *   - "questions per tour" -> 12
  *
  * @param {HTMLFormElement} form
  */
-function initHiddenUntilDefaults(form) {
-    // These fields are only rendered for the distributed format.
-    if (form.dataset.format !== 'distributed') {
+function initDefaults(form) {
+    const endedInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="endedAt"]'));
+    if (!endedInput) {
         return;
     }
 
-    const endedInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="endedAt"]'));
+    const isDistributed = form.dataset.format === 'distributed';
     const resultsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="resultsHiddenUntil"]'));
     const detailsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="detailsHiddenUntil"]'));
-
-    if (!endedInput || (!resultsInput && !detailsInput)) {
-        return;
-    }
+    const registrationInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="registrationDeadline"]'));
+    const toursInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="toursCount"]'));
+    const questionsInput = /** @type {HTMLInputElement|null} */ (form.querySelector('[name="questionsPerTour"]'));
 
     endedInput.addEventListener('change', () => {
         // Skip readonly (disabled) forms: their inputs cannot be edited anyway.
         if (endedInput.disabled) {
             return;
+        }
+
+        // Tours and questions per tour exist for every format.
+        if (toursInput && !toursInput.value) {
+            toursInput.value = '3';
+        }
+        if (questionsInput && !questionsInput.value) {
+            questionsInput.value = '12';
+        }
+
+        // The remaining defaults are derived from the end date.
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(endedInput.value)) {
+            return;
+        }
+
+        // The deadline fields below are only rendered for the distributed format.
+        if (!isDistributed) {
+            return;
+        }
+
+        // Registration closes on the last day of the tournament.
+        if (registrationInput && !registrationInput.value) {
+            registrationInput.value = endedInput.value;
         }
 
         const nextDay = addOneDay(endedInput.value);
@@ -337,6 +366,7 @@ function initTournamentActions() {
 function removeModerationCard(btn) {
     const card = btn.closest('.moderation-card');
     card?.remove();
+    refreshMenuCounts();
     if (document.querySelectorAll('.moderation-card').length === 0) {
         const container = document.querySelector('h1')?.parentElement;
         if (container && !container.querySelector('.empty-state')) {

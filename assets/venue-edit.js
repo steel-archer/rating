@@ -2,6 +2,7 @@
 import { trans } from './trans.js';
 import { apiPost, showError } from './api.js';
 import { buttonAction } from './button-action.js';
+import { refreshMenuCounts } from './menu-counts.js';
 
 function initVenueCreateForm() {
     const form = /** @type {HTMLFormElement|null} */ (document.getElementById('venue-create-form'));
@@ -122,6 +123,7 @@ function initVenueModeration() {
 function removeVenueCard(btn) {
     const card = btn.closest('[data-venue-id]');
     card?.remove();
+    refreshMenuCounts();
     if (document.querySelectorAll('[data-venue-id]').length === 0) {
         const container = document.querySelector('.moderation-card')?.parentElement || document.querySelector('h1')?.parentElement;
         if (container && !container.querySelector('.empty-state')) {

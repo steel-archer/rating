@@ -21,7 +21,7 @@ class ListController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $sessionClaims = $claimRepository->findByPlayer($user->getPlayer());
+        $sessionClaims = $claimRepository->findByVenueRepresentative($user->getPlayer());
 
         $sessionIds = array_map(
             static fn(SessionClaim $claim): int => $claim->getSession()->getId(),

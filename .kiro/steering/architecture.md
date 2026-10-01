@@ -82,7 +82,7 @@ Route → Controller → (Request-DTO) → Service → Repository / Provider
 
 Права понад ієрархію ролей Symfony перевіряються Voter'ами (`extends Voter`, generic phpdoc `@extends Voter<string, Subject>`, дія — публічна константа):
 
-- `SessionRepresentativeVoter` (`SESSION_MANAGE`) — представник сесії (`session.representative === player`).
+- `SessionRepresentativeVoter` (`SESSION_MANAGE`) — будь-який представник майданчика сесії (`VenueRepresentativeRepository::isRepresentative($player, $session->getVenue())`). Заявка на відіграш спільна для всіх представників майданчика, а не лише того, хто її подав.
 - `TournamentOrganizerVoter` (`TOURNAMENT_EDIT`) — делегує в `TournamentOfficialRepository::isOrganizer`.
 - `PlayerVoter` (`ROLE_PLAYER`) — роль обчислюється динамічно: `User` має прив'язаного `Player`. `ROLE_PLAYER` **не** зберігається в БД.
 - Капітан визначається через `TeamPlayer.isCaptain`, журі — через `TournamentOfficial.role` (перевіряється в репозиторіях/сервісах, не окремими Voter'ами).

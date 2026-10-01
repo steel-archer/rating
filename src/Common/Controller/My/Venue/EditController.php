@@ -24,8 +24,11 @@ class EditController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
+        $player = $user->getPlayer();
 
-        if ($venue->getCreatedBy() !== $user->getPlayer()) {
+        // Both the creator and any representative may manage the venue.
+        $isCreator = $venue->getCreatedBy()?->getId() === $player->getId();
+        if (!$isCreator && !$representativeRepository->isRepresentative($player, $venue)) {
             throw $this->createNotFoundException();
         }
 

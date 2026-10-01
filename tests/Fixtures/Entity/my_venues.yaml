@@ -40,3 +40,8 @@ App\Common\Entity\VenueRepresentative:
         venue: '@venue_approved_owned'
         player: '@player_franko'
         createdAt: '<(new \DateTimeImmutable("-1 day"))>'
+    # A representative who is not the creator; may manage the venue just like the creator.
+    rep_approved_shevchenko:
+        venue: '@venue_approved_owned'
+        player: '@player_shevchenko'
+        createdAt: '<(new \DateTimeImmutable("-1 day"))>'

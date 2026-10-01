@@ -9,18 +9,26 @@ use App\Classic\Entity\TournamentModerationClaim;
 use App\Classic\Enum\TournamentModerationStatus;
 use App\Classic\Enum\TournamentStatus;
 use App\Classic\Repository\TournamentModerationClaimRepository;
+use App\Common\Enum\CacheTag;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class TournamentModerationService
 {
     public function __construct(
         private EntityManagerInterface $em,
         private TournamentModerationClaimRepository $claimRepository,
+        private TagAwareCacheInterface $cache,
     ) {
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     */
     public function submitForModeration(Tournament $tournament): void
     {
         if ($tournament->getStatus() === TournamentStatus::Published) {
@@ -36,6 +44,10 @@ class TournamentModerationService
         $this->resetModeration($tournament);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     */
     public function approve(Tournament $tournament): void
     {
         $claim = $this->claimRepository->findByTournament($tournament)
@@ -49,8 +61,14 @@ class TournamentModerationService
         $claim->setResolvedAt(new DateTimeImmutable());
 
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     */
     public function reject(Tournament $tournament, ?string $comment): void
     {
         $claim = $this->claimRepository->findByTournament($tournament)
@@ -65,8 +83,13 @@ class TournamentModerationService
         $claim->setResolvedAt(new DateTimeImmutable());
 
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function resetModeration(Tournament $tournament): void
     {
         $claim = $this->claimRepository->findByTournament($tournament);
@@ -83,5 +106,7 @@ class TournamentModerationService
         }
 
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 }

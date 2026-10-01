@@ -62,12 +62,13 @@ class SeasonRolloverCommandTest extends KernelTestCase
             'input' => [],
             'expectedStatus' => 0,
             'afterCallback' => static function (CommandTester $tester) {
-                self::assertStringContainsString('Creating next season: 2026-2027', $tester->getDisplay());
+                $expected = self::expectedTarget();
+                self::assertStringContainsString('Creating next season: ' . $expected['name'], $tester->getDisplay());
 
                 $target = self::findTargetSeason();
                 self::assertNotNull($target);
-                self::assertEquals(new DateTimeImmutable('2026-10-01 00:00:00'), $target->getStartedAt());
-                self::assertEquals(new DateTimeImmutable('2027-09-30 23:59:59'), $target->getEndedAt());
+                self::assertEquals($expected['start'], $target->getStartedAt());
+                self::assertEquals($expected['end'], $target->getEndedAt());
             },
         ];
 
@@ -183,7 +184,10 @@ class SeasonRolloverCommandTest extends KernelTestCase
             'input' => ['--from' => 'season_current'],
             'expectedStatus' => 0,
             'afterCallback' => static function (CommandTester $tester) {
-                self::assertStringContainsString('Next season already exists: 2026-2027', $tester->getDisplay());
+                self::assertStringContainsString(
+                    'Next season already exists: ' . self::expectedTargetName(),
+                    $tester->getDisplay(),
+                );
 
                 $target = self::findTargetSeason();
                 self::assertNotNull($target);
@@ -229,7 +233,34 @@ class SeasonRolloverCommandTest extends KernelTestCase
     {
         return self::getContainer()->get('doctrine')
             ->getRepository(Season::class)
-            ->findOneBy(['name' => '2026-2027']);
+            ->findOneBy(['name' => self::expectedTargetName()]);
+    }
+
+    /**
+     * Mirrors the command's logic: the next season starts a year after the
+     * current one and spans a full year minus one second.
+     *
+     * @return array{name: string, start: DateTimeImmutable, end: DateTimeImmutable}
+     */
+    private static function expectedTarget(): array
+    {
+        $current = self::getContainer()->get('doctrine')
+            ->getRepository(Season::class)
+            ->findOneBy(['name' => '2025-2026']);
+
+        $start = $current->getStartedAt()->modify('+1 year');
+        $end = $start->modify('+1 year')->modify('-1 second');
+
+        return [
+            'name' => $start->format('Y') . '-' . $end->format('Y'),
+            'start' => $start,
+            'end' => $end,
+        ];
+    }
+
+    private static function expectedTargetName(): string
+    {
+        return self::expectedTarget()['name'];
     }
 
     /**

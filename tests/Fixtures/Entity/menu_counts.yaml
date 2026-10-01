@@ -1,0 +1,171 @@
+App\Common\Entity\User:
+    user_menu_mod:
+        email: 'menu_mod@example.com'
+        googleId: 'google_menu_mod'
+        roles: ['ROLE_MODERATOR']
+        player: null
+    user_menu_franko:
+        email: 'menu_franko@example.com'
+        googleId: 'google_menu_franko'
+        roles: []
+        player: '@player_franko'
+    user_menu_lesya:
+        email: 'menu_lesya@example.com'
+        googleId: 'google_menu_lesya'
+        roles: []
+        player: '@player_lesya'
+    # A player with no official roles sees no personal badge at all.
+    user_menu_plain:
+        email: 'menu_plain@example.com'
+        googleId: 'google_menu_plain'
+        roles: []
+        player: '@player_kotsubynsky'
+
+# --- Moderation sources (shared across all moderators) ---
+
+App\Common\Entity\PlayerClaim:
+    menu_player_claim_1:
+        user: '@user_menu_plain'
+        player: '@player_franko'
+        lastName: 'Франко'
+        status: 'pending'
+    menu_player_claim_2:
+        user: '@user_menu_lesya'
+        player: null
+        lastName: 'Новенька'
+        firstName: 'Тест'
+        town: '@town_kyiv'
+        status: 'pending'
+
+App\Common\Entity\Venue:
+    menu_venue_pending:
+        name: 'Непідтверджений майданчик'
+        town: '@town_kyiv'
+        isApproved: false
+        createdAt: '<(new \DateTimeImmutable("2025-02-01"))>'
+
+App\Classic\Entity\CaptainClaim:
+    menu_captain_claim_pending:
+        player: '@player_kotsubynsky'
+        team: '@team_beta'
+        status: '<(App\Classic\Enum\CaptainClaimStatus::Pending)>'
+        comment: 'Заявка на капітанство'
+
+# --- Tournaments ---
+
+App\Classic\Entity\Tournament:
+    # Co-organized by franko and lesya; franko is also game jury and appeal jury here.
+    t_menu_shared:
+        name: 'Спільний турнір меню'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-30 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        appealDeadline: '<(new \DateTimeImmutable("+1 year 00:00:00"))>'
+        toursCount: 1
+        questionsPerTourMap: [3]
+        createdBy: '@player_franko'
+    # Draft tournament on moderation, organized solely by franko.
+    t_menu_solo:
+        name: 'Сольний турнір меню'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        createdBy: '@player_franko'
+
+App\Classic\Entity\TournamentOfficial:
+    to_shared_org_franko:
+        tournament: '@t_menu_shared'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    to_shared_org_lesya:
+        tournament: '@t_menu_shared'
+        player: '@player_lesya'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    to_shared_game_jury_franko:
+        tournament: '@t_menu_shared'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
+    to_shared_appeal_jury_franko:
+        tournament: '@t_menu_shared'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
+    to_solo_org_franko:
+        tournament: '@t_menu_solo'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentModerationClaim:
+    menu_tournament_moderation_pending:
+        tournament: '@t_menu_solo'
+        status: '<(App\Classic\Enum\TournamentModerationStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable())>'
+
+# --- Sessions and pending session claims (organizer badge) ---
+
+App\Classic\Entity\TournamentSession:
+    session_menu_shared_1:
+        tournament: '@t_menu_shared'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-2 days"))>'
+        estimatedTeams: 2
+    session_menu_shared_2:
+        tournament: '@t_menu_shared'
+        venue: '@venue_lviv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+        estimatedTeams: 2
+    session_menu_solo_1:
+        tournament: '@t_menu_solo'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-3 days"))>'
+        estimatedTeams: 2
+
+App\Classic\Entity\SessionClaim:
+    claim_menu_shared_1:
+        session: '@session_menu_shared_1'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+    claim_menu_shared_2:
+        session: '@session_menu_shared_2'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+    claim_menu_solo_1:
+        session: '@session_menu_solo_1'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable("-5 days"))>'
+
+# --- Dispute and appeal in the shared tournament (franko is jury on both) ---
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_menu_shared:
+        tournamentSession: '@session_menu_shared_1'
+        team: '@team_alpha'
+        score: 1
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    answer_menu_submitted_dispute:
+        tournamentSessionTeam: '@session_team_menu_shared'
+        questionNumber: 1
+        isCorrect: false
+        disputeText: 'спірна на розгляді'
+        disputeStatus: '<(App\Classic\Enum\DisputeStatus::Submitted)>'
+    answer_menu_pending_appeal:
+        tournamentSessionTeam: '@session_team_menu_shared'
+        questionNumber: 2
+        isCorrect: false
+
+App\Classic\Entity\Appeal:
+    appeal_menu_pending:
+        tournamentSessionTeamAnswer: '@answer_menu_pending_appeal'
+        type: '<(App\Classic\Enum\AppealType::Remove)>'
+        text: 'Апеляція на розгляді'
+        status: '<(App\Classic\Enum\AppealStatus::Pending)>'

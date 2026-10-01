@@ -26,6 +26,14 @@
 * Якщо в Phpdoc є згадка хоча б одного аргументу методу - то мають бути всі.
 * Утримуватися від масивів, де багато елементів в один рядок.
 * Коментарі в коді мають бути англійською.
+* Багаторядкові коментарі робити блоком `/** ... */` із зірочкою на кожному рядку, а не кількома рядками `//`. Приклад:
+  ```php
+  /**
+   * Lorem ipsum dolor sit amet
+   * consectetur adipiscing elit
+   * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+   */
+  ```
 * Якщо є анонімна функція - по можливості робити її статичною. Але без фанатизму.
 * Підключення трейтів має бути в алфавітному порядку.
 
@@ -85,6 +93,15 @@
 > ❌ Неправильно: `docker compose exec app vendor/bin/phpstan analyse | tail`
 > ✅ Правильно: `./bin/test.sh --filter=Foo`
 > ✅ Правильно: `docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M`
+
+> 🚨 **ВАЖЛИВО. Тести запускати ЛИШЕ через `./bin/test.sh`. НІКОЛИ не викликати PHPUnit напряму.**
+>
+> На одному MySQL-контейнері дві бази: dev-БД `rating` (робочі дані розробки) і тестова `rating_test`. Правильний `DATABASE_URL` на `rating_test` підставляє **тільки** `bin/test.sh`. Прямий виклик PHPUnit залишає dev-значення `DATABASE_URL`, і тести з purge-delete фікстур **зітруть робочу БД `rating`** — це вже одного разу знищило локальні дані.
+>
+> ❌ Заборонено: `docker compose exec app php bin/phpunit`
+> ❌ Заборонено: `docker compose exec app vendor/bin/phpunit`
+> ❌ Заборонено: будь-який запуск тестів чи завантаження фікстур у тестовому режимі поза `bin/test.sh`
+> ✅ Єдиний правильний спосіб: `./bin/test.sh [аргументи PHPUnit]`
 
 * Команди мають завжди запускатися в docker container (через `docker compose exec app ...`).
 * Щоб з консолі виконувати SQL запити - запускати їх через `bin/console dbal:run-sql`.
