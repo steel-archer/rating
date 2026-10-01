@@ -21,7 +21,7 @@ class ListController extends AbstractController
         $user = $this->getUser();
 
         $venues = $mapper->mapMultiple(
-            $venueRepository->findByCreator($user->getPlayer()),
+            $venueRepository->findManageableByPlayer($user->getPlayer()),
             VenueListDTO::class,
         );
 

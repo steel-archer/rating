@@ -81,8 +81,24 @@ class VenueControllerTest extends WebTestCase
             'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/venues'),
             'expectedStatus' => 200,
             'afterCallback' => static function (KernelBrowser $client) {
-                static::assertStringContainsString('Новий майданчик', $client->getCrawler()->text());
-                static::assertStringContainsString('Мій схвалений майданчик', $client->getCrawler()->text());
+                $text = $client->getCrawler()->text();
+                static::assertStringContainsString('Новий майданчик', $text);
+                static::assertStringContainsString('Мій схвалений майданчик', $text);
+                // Franko is only a representative (not the creator) of this base-fixture venue.
+                static::assertStringContainsString('Арт-простір Львів', $text);
+            },
+        ];
+
+        yield 'list shows venues where player is only a representative' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_with_player',
+            'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/venues'),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $text = $client->getCrawler()->text();
+                // Shevchenko created none of these; he is only a representative.
+                static::assertStringContainsString('Квіз-бар Київ', $text);
+                static::assertStringContainsString('Мій схвалений майданчик', $text);
             },
         ];
 
@@ -357,13 +373,26 @@ class VenueControllerTest extends WebTestCase
 
         yield 'edit page denied for other user' => [
             'fixtures' => $fixtures,
-            'loginAs' => 'user_with_player',
+            'loginAs' => 'user_player',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'GET',
                 '/my/venues/' . $objects['venue_approved_owned']->getId() . '/edit',
             ),
             'expectedStatus' => 404,
             'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'edit page shown for non-creator representative' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_with_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'GET',
+                '/my/venues/' . $objects['venue_approved_owned']->getId() . '/edit',
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                static::assertStringContainsString('Мій схвалений майданчик', $client->getCrawler()->text());
             },
         ];
 
@@ -424,7 +453,7 @@ class VenueControllerTest extends WebTestCase
 
         yield 'update denied for other user' => [
             'fixtures' => $fixtures,
-            'loginAs' => 'user_with_player',
+            'loginAs' => 'user_player',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
                 'POST',
                 '/my/venues/' . $objects['venue_approved_owned']->getId(),
@@ -438,7 +467,70 @@ class VenueControllerTest extends WebTestCase
                 $reps = static::getContainer()->get('doctrine')
                     ->getRepository(VenueRepresentative::class)
                     ->findBy(['venue' => $objects['venue_approved_owned']->getId()]);
-                static::assertCount(1, $reps);
+                static::assertCount(2, $reps);
+            },
+        ];
+
+        yield 'non-creator representative can update venue' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_with_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/venues/' . $objects['venue_approved_owned']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'description' => 'Опис від представника',
+                    'url' => 'https://rep.example.com',
+                    'representatives' => [
+                        $objects['player_franko']->getId(),
+                        $objects['player_shevchenko']->getId(),
+                        $objects['player_lesya']->getId(),
+                    ],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $reps = static::getContainer()->get('doctrine')
+                    ->getRepository(VenueRepresentative::class)
+                    ->findBy(['venue' => $objects['venue_approved_owned']->getId()]);
+                static::assertCount(3, $reps);
+
+                $venue = static::getContainer()->get('doctrine')
+                    ->getRepository(Venue::class)
+                    ->find($objects['venue_approved_owned']->getId());
+                static::assertSame('Опис від представника', $venue->getDescription());
+                static::assertSame('https://rep.example.com', $venue->getUrl());
+            },
+        ];
+
+        yield 'non-creator representative cannot remove creator' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_with_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/venues/' . $objects['venue_approved_owned']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'representatives' => [$objects['player_shevchenko']->getId()],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $reps = static::getContainer()->get('doctrine')
+                    ->getRepository(VenueRepresentative::class)
+                    ->findBy(['venue' => $objects['venue_approved_owned']->getId()]);
+                // Creator (franko) is kept, shevchenko stays -> 2 representatives.
+                static::assertCount(2, $reps);
+
+                $playerIds = array_map(
+                    static fn(VenueRepresentative $rep) => $rep->getPlayer()->getId(),
+                    $reps,
+                );
+                static::assertContains($objects['player_franko']->getId(), $playerIds);
             },
         ];
 
