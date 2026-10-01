@@ -238,6 +238,7 @@ name:
 nav:
   home: 'Головна'
   moderation: 'Модерація'
+  pending_actions: 'Нерозглянутих дій: %count%'
   players: 'Гравці'
   profile: 'Профіль'
   teams: 'Команди'

@@ -123,7 +123,10 @@ header nav a:hover {
 }
 
 .dropdown-menu a {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     padding: 8px 16px;
     color: var(--text-secondary);
     text-decoration: none;
@@ -133,4 +136,28 @@ header nav a:hover {
 .dropdown-menu a:hover {
     background: var(--border);
     color: var(--text);
+}
+
+.menu-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    margin-left: 6px;
+    border-radius: 9px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.dropdown-menu a .menu-badge {
+    margin-left: 0;
+}
+
+.menu-badge[hidden] {
+    display: none;
 }

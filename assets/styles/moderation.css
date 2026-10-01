@@ -57,7 +57,8 @@
 
 .moderation-actions {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: 8px;
 }
 
@@ -65,6 +66,19 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.moderation-actions .moderation-buttons .btn {
+    flex: 1;
+}
+
+.moderation-actions-compact {
+    align-items: flex-start;
+    max-width: 320px;
+}
+
+.moderation-actions-compact .moderation-buttons .btn {
+    flex: 0 0 auto;
 }
 
 .reject-form {
@@ -80,6 +94,12 @@
     border: 1px solid var(--border);
     border-radius: 6px;
     width: 240px;
+    box-sizing: border-box;
+}
+
+.moderation-actions .reject-input {
+    width: 100%;
+    min-width: 160px;
 }
 
 .reject-input:focus {

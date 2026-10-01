@@ -196,6 +196,7 @@ export default {
     "name.invalid_characters": "Дозволені лише українські літери, пробіл, апостроф та дефіс",
     "nav.home": "Головна",
     "nav.moderation": "Модерація",
+    "nav.pending_actions": "Нерозглянутих дій: %count%",
     "nav.players": "Гравці",
     "nav.profile": "Профіль",
     "nav.teams": "Команди",

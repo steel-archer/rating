@@ -1,3 +1,7 @@
+{% macro menu_badge(key, count) %}
+    {%- set label = 'nav.pending_actions'|trans({'%count%': count}) -%}
+    <span class="menu-badge" data-menu-badge="{{ key }}" title="{{ label }}" aria-label="{{ label }}"{{ count > 0 ? '' : ' hidden' }}>{{ count }}</span>
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="{{ app.request.locale }}">
 <head>
@@ -33,21 +37,41 @@
             <div class="auth">
                 {% if app.user %}
                     {% if is_granted('ROLE_MODERATOR') %}
+                        {% set moderation = moderation_counts() %}
                         <div class="dropdown">
-                            <span class="dropdown-toggle">{{ 'nav.moderation'|trans }}</span>
+                            <span class="dropdown-toggle">
+                                {{ 'nav.moderation'|trans }}
+                                {{ _self.menu_badge('moderation.total', moderation.total) }}
+                            </span>
                             <div class="dropdown-menu">
                                 <div class="dropdown-menu-inner">
-                                    <a href="{{ path('moderator_player_claims') }}">{{ 'moderator.player_claims'|trans }}</a>
-                                    <a href="{{ path('moderator_tournaments') }}">{{ 'moderator.tournaments'|trans }}</a>
-                                    <a href="{{ path('moderator_captain_claims') }}">{{ 'moderator.captain_claims'|trans }}</a>
-                                    <a href="{{ path('moderator_venues') }}">{{ 'moderator.venues'|trans }}</a>
+                                    <a href="{{ path('moderator_player_claims') }}">
+                                        <span>{{ 'moderator.player_claims'|trans }}</span>
+                                        {{ _self.menu_badge('moderation.playerClaims', moderation.playerClaims) }}
+                                    </a>
+                                    <a href="{{ path('moderator_tournaments') }}">
+                                        <span>{{ 'moderator.tournaments'|trans }}</span>
+                                        {{ _self.menu_badge('moderation.tournaments', moderation.tournaments) }}
+                                    </a>
+                                    <a href="{{ path('moderator_captain_claims') }}">
+                                        <span>{{ 'moderator.captain_claims'|trans }}</span>
+                                        {{ _self.menu_badge('moderation.captainClaims', moderation.captainClaims) }}
+                                    </a>
+                                    <a href="{{ path('moderator_venues') }}">
+                                        <span>{{ 'moderator.venues'|trans }}</span>
+                                        {{ _self.menu_badge('moderation.venues', moderation.venues) }}
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     {% endif %}
                     {% if app.user.player %}
+                        {% set myCounts = my_action_counts(app.user.player) %}
                         <div class="dropdown">
-                            <span class="dropdown-toggle">{{ app.user.player.firstName }} {{ app.user.player.lastName }}</span>
+                            <span class="dropdown-toggle">
+                                {{ app.user.player.firstName }} {{ app.user.player.lastName }}
+                                {{ _self.menu_badge('my.total', myCounts.total) }}
+                            </span>
                             <div class="dropdown-menu">
                                 <div class="dropdown-menu-inner">
                                     <a href="{{ path('player_show', {id: app.user.player.id}) }}">{{ 'nav.profile'|trans }}</a>
@@ -55,11 +79,20 @@
                                         <a href="{{ path('my_team_management') }}">{{ 'team_management.title'|trans }}</a>
                                     {% endif %}
                                     <a href="{{ path('my_tournaments') }}">{{ 'tournament.my.title'|trans }}</a>
-                                    <a href="{{ path('my_tournament_claims') }}">{{ 'session_claim.tournament_claims_title'|trans }}</a>
+                                    <a href="{{ path('my_tournament_claims') }}">
+                                        <span>{{ 'session_claim.tournament_claims_title'|trans }}</span>
+                                        {{ _self.menu_badge('my.organizerClaims', myCounts.organizerClaims) }}
+                                    </a>
                                     <a href="{{ path('my_session_claims') }}">{{ 'session_claim.my_title'|trans }}</a>
                                     <a href="{{ path('my_hosted_sessions') }}">{{ 'hosted_session.my_title'|trans }}</a>
-                                    <a href="{{ path('my_disputes') }}">{{ 'dispute.jury_title'|trans }}</a>
-                                    <a href="{{ path('my_appeals') }}">{{ 'appeal.jury_title'|trans }}</a>
+                                    <a href="{{ path('my_disputes') }}">
+                                        <span>{{ 'dispute.jury_title'|trans }}</span>
+                                        {{ _self.menu_badge('my.disputes', myCounts.disputes) }}
+                                    </a>
+                                    <a href="{{ path('my_appeals') }}">
+                                        <span>{{ 'appeal.jury_title'|trans }}</span>
+                                        {{ _self.menu_badge('my.appeals', myCounts.appeals) }}
+                                    </a>
                                     <a href="{{ path('my_venues') }}">{{ 'venue.my.title'|trans }}</a>
                                 </div>
                             </div>

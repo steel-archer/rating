@@ -2,6 +2,7 @@
 import { trans } from './trans.js';
 import { apiPost, transError } from './api.js';
 import { buttonAction } from './button-action.js';
+import { refreshMenuCounts } from './menu-counts.js';
 
 function initPlayerClaimNewForm() {
     const form = /** @type {HTMLFormElement|null} */ (document.getElementById('player-claim-new-form'));
@@ -106,6 +107,7 @@ function initPlayerClaimActions() {
 function removeClaimRow(btn) {
     const row = btn.closest('tr');
     row?.remove();
+    refreshMenuCounts();
     if (document.querySelectorAll('table tbody tr').length === 0) {
         const table = document.querySelector('table');
         if (table) {

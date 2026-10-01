@@ -2,6 +2,7 @@
 import { trans } from './trans.js';
 import { apiPost } from './api.js';
 import { buttonAction } from './button-action.js';
+import { refreshMenuCounts } from './menu-counts.js';
 
 function initSessionClaimForm() {
     const form = /** @type {HTMLFormElement|null} */ (document.getElementById('session-claim-form'));
@@ -134,7 +135,7 @@ function initSessionClaimActions() {
             buttonAction(
                 `/my/tournament-claims/${id}/approve`,
                 /** @type {HTMLButtonElement} */ (approveBtn),
-                { onSuccess: () => { moveClaimToApproved(approveBtn); } },
+                { onSuccess: () => { moveClaimToApproved(approveBtn); refreshMenuCounts(); } },
             );
             return;
         }
@@ -147,7 +148,7 @@ function initSessionClaimActions() {
             buttonAction(
                 `/my/tournament-claims/${id}/reject`,
                 /** @type {HTMLButtonElement} */ (rejectBtn),
-                { data: {comment}, onSuccess: () => moveClaimToRejected(rejectBtn, comment) },
+                { data: {comment}, onSuccess: () => { moveClaimToRejected(rejectBtn, comment); refreshMenuCounts(); } },
             );
             return;
         }
@@ -169,7 +170,7 @@ function initSessionClaimActions() {
             buttonAction(
                 `/my/session-claims/${id}/delete`,
                 /** @type {HTMLButtonElement} */ (deleteBtn),
-                { onSuccess: () => redirect ? (window.location.href = redirect) : removeSessionClaimCard(deleteBtn) },
+                { onSuccess: () => { if (redirect) { window.location.href = redirect; } else { removeSessionClaimCard(deleteBtn); refreshMenuCounts(); } } },
             );
         }
 
@@ -182,7 +183,7 @@ function initSessionClaimActions() {
             buttonAction(
                 `/my/tournament-claims/${id}/revoke`,
                 /** @type {HTMLButtonElement} */ (revokeBtn),
-                { onSuccess: () => removeApprovedClaimRow(revokeBtn) },
+                { onSuccess: () => { removeApprovedClaimRow(revokeBtn); refreshMenuCounts(); } },
             );
         }
 

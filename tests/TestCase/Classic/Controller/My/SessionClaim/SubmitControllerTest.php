@@ -271,7 +271,9 @@ class SubmitControllerTest extends WebTestCase
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 422,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.host_required', $body['error']);
             },
         ];
 

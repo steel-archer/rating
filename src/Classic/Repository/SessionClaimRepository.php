@@ -7,6 +7,7 @@ namespace App\Classic\Repository;
 use App\Common\Entity\Player;
 use App\Classic\Entity\SessionClaim;
 use App\Classic\Entity\Tournament;
+use App\Classic\Entity\TournamentOfficial;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Enum\SessionClaimStatus;
@@ -26,6 +27,24 @@ class SessionClaimRepository extends ServiceEntityRepository
     public function findBySession(TournamentSession $session): ?SessionClaim
     {
         return $this->findOneBy(['session' => $session]);
+    }
+
+    /**
+     * Count pending session claims across every tournament the player organizes.
+     * Powers the personal menu badge for the organizer.
+     */
+    public function countPendingForOrganizer(Player $player): int
+    {
+        return (int) $this->createQueryBuilder('sc')
+            ->select('COUNT(sc.id)')
+            ->join('sc.session', 's')
+            ->join(TournamentOfficial::class, 'o', 'WITH', 'o.tournament = s.tournament AND o.player = :player AND o.role = :role')
+            ->where('sc.status = :status')
+            ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::Organizer)
+            ->setParameter('status', SessionClaimStatus::Pending->value)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function hasApprovedHostedSession(Player $host, Tournament $tournament): bool

@@ -68,6 +68,9 @@ class VenueManagementService
         $this->em->persist($representative);
         $this->em->flush();
 
+        // A freshly created venue is unapproved and bumps the moderation badge.
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
+
         return $venue;
     }
 
@@ -84,10 +87,14 @@ class VenueManagementService
         $venue->setIsApproved(true);
         $this->em->flush();
 
-        $this->cache->invalidateTags([CacheTag::Venues->value]);
+        $this->cache->invalidateTags([
+            CacheTag::Venues->value,
+            CacheTag::ModerationCounts->value,
+        ]);
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function reject(Venue $venue): void
@@ -103,6 +110,8 @@ class VenueManagementService
 
         $this->em->remove($venue);
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
     /**

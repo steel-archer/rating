@@ -26,6 +26,11 @@ class CaptainClaimRepository extends ServiceEntityRepository
         ]);
     }
 
+    public function countPending(): int
+    {
+        return $this->count(['status' => CaptainClaimStatus::Pending]);
+    }
+
     /**
      * @return list<CaptainClaim>
      */

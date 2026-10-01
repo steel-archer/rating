@@ -108,6 +108,15 @@ class VenueRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function countPendingApproval(): int
+    {
+        return (int) $this->createQueryBuilder('v')
+            ->select('COUNT(v.id)')
+            ->where('v.isApproved = false')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function existsByNameAndTown(string $name, int $townId): bool
     {
         return (bool) $this->createQueryBuilder('v')

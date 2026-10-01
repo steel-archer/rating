@@ -154,6 +154,7 @@ class SessionClaimService
 
     /**
      * @throws DateMalformedStringException
+     * @throws InvalidArgumentException
      * @throws LogicException
      * @throws NonUniqueResultException
      */
@@ -203,6 +204,8 @@ class SessionClaimService
         $this->em->persist($session);
         $this->em->persist($claim);
         $this->em->flush();
+
+        $this->cacheInvalidator->invalidateTournament($tournament);
     }
 
     /**
@@ -357,6 +360,7 @@ class SessionClaimService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function resubmit(TournamentSession $session, Player $player): void
@@ -382,9 +386,12 @@ class SessionClaimService
         $claim->setResolvedAt(null);
 
         $this->em->flush();
+
+        $this->cacheInvalidator->invalidateTournament($session->getTournament());
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function delete(TournamentSession $session, Player $player): void
@@ -397,6 +404,7 @@ class SessionClaimService
         }
 
         $claim = $this->claimRepository->findBySession($session);
+        $tournament = $session->getTournament();
 
         if ($claim !== null) {
             $this->em->remove($claim);
@@ -407,6 +415,8 @@ class SessionClaimService
 
         $this->em->remove($session);
         $this->em->flush();
+
+        $this->cacheInvalidator->invalidateTournament($tournament);
     }
 
     /**

@@ -34,6 +34,7 @@ class CaptainClaimService
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      * @throws NonUniqueResultException
      */
@@ -70,6 +71,8 @@ class CaptainClaimService
 
         $this->em->persist($claim);
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
     /**
@@ -158,10 +161,12 @@ class CaptainClaimService
         $this->cache->invalidateTags([
             CacheTag::team($team->getId()),
             CacheTag::playerSquad($player->getId()),
+            CacheTag::ModerationCounts->value,
         ]);
     }
 
     /**
+     * @throws InvalidArgumentException
      * @throws LogicException
      */
     public function reject(CaptainClaim $claim, string $comment): void
@@ -175,6 +180,8 @@ class CaptainClaimService
         $claim->setResolvedAt(new DateTimeImmutable());
 
         $this->em->flush();
+
+        $this->cache->invalidateTags([CacheTag::ModerationCounts->value]);
     }
 
     /**

@@ -73,6 +73,27 @@ class AppealRepository extends ServiceEntityRepository
     }
 
     /**
+     * Count pending appeals across every tournament where the player is appeal jury.
+     * Powers the personal menu badge for the appeal jury.
+     */
+    public function countPendingForJury(Player $player): int
+    {
+        return (int) $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(a.id)')
+            ->from(Appeal::class, 'a')
+            ->join('a.tournamentSessionTeamAnswer', 'ans')
+            ->join('ans.tournamentSessionTeam', 'st')
+            ->join('st.tournamentSession', 's')
+            ->join(TournamentOfficial::class, 'o', 'WITH', 'o.tournament = s.tournament AND o.player = :player AND o.role = :role')
+            ->where('a.status = :status')
+            ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::AppealJury)
+            ->setParameter('status', AppealStatus::Pending->value)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * @return list<array{tournamentId: int, tournamentName: string, total: int, resolved: int}>
      */
     public function findJuryTournamentStats(Player $player): array

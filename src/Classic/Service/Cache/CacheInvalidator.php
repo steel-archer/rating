@@ -38,6 +38,8 @@ class CacheInvalidator
         $this->cache->invalidateTags([
             CacheTag::tournament($tournament->getId()),
             CacheTag::TournamentList->value,
+            // Clears personal menu badges of every organizer/jury of this tournament.
+            CacheTag::menuTournament($tournament->getId()),
         ]);
     }
 
@@ -51,6 +53,8 @@ class CacheInvalidator
         $tags = [
             CacheTag::tournament($tournament->getId()),
             CacheTag::TournamentList->value,
+            // Clears personal menu badges of every organizer/jury of this tournament.
+            CacheTag::menuTournament($tournament->getId()),
         ];
 
         $teamIds = $this->sessionTeamRepository->findTeamIdsByTournament($tournament);
