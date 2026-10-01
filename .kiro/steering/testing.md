@@ -9,6 +9,15 @@ fileMatchPattern: 'tests/**'
 
 ## Запуск
 
+> 🚨 **ТІЛЬКИ через `./bin/test.sh`. НІКОЛИ не запускати PHPUnit напряму.**
+>
+> На одному MySQL-контейнері дві бази: dev-БД `rating` (твої робочі дані) і тестова `rating_test`. Правильний `DATABASE_URL` на `rating_test` підставляє **лише** `bin/test.sh`. Якщо запустити PHPUnit напряму (`docker compose exec app php bin/phpunit ...`, `php bin/console ... --env=test` для тестового прогону тощо), `DATABASE_URL` залишиться dev-значенням, і тести з їхнім purge-delete фікстур **зітруть робочу БД `rating`**. Це вже одного разу знищило локальні дані розробки.
+>
+> ❌ Заборонено: `docker compose exec app php bin/phpunit`
+> ❌ Заборонено: `docker compose exec app vendor/bin/phpunit`
+> ❌ Заборонено: будь-який прямий виклик `phpunit` чи завантаження фікстур у тестовому режимі поза `bin/test.sh`
+> ✅ Єдиний правильний спосіб: `./bin/test.sh [аргументи PHPUnit]`
+
 - Усі тести: `./bin/test.sh` (скрипт сам ганяє міграції на тестовій БД `rating_test`, потім `bin/phpunit`; усі аргументи проксуються в PHPUnit).
 - Конкретний: `./bin/test.sh --filter=testUpdate`.
 - З покриттям: `./bin/test.sh --coverage-html coverage --coverage-clover var/coverage/clover.xml`.
