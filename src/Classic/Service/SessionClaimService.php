@@ -442,7 +442,8 @@ class SessionClaimService
      */
     private function ensureSessionOwner(Player $player, TournamentSession $session): void
     {
-        if ($session->getRepresentative()->getId() !== $player->getId()) {
+        // A claim is shared across every representative of the session's venue.
+        if (!$this->representativeRepository->isRepresentative($player, $session->getVenue())) {
             throw new LogicException('common.error');
         }
     }

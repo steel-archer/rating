@@ -168,7 +168,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | Поле | Тип | Ціль | Nullable | Примітка |
 |------|-----|------|----------|----------|
 | town | ManyToOne | Town | — | |
-| createdBy | ManyToOne | Player | ✓ | |
+| createdBy | ManyToOne | Player | ✓ | фіксує автора; права на керування майданчиком має як творець, так і будь-який представник (VenueRepresentative) |
 
 #### Обмеження
 
@@ -500,7 +500,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 |------|-----|------|----------|----------|
 | tournament | ManyToOne | Tournament | — | |
 | venue | ManyToOne | Venue | — | 🔗 Common |
-| representative | ManyToOne | Player | — | 🔗 Common |
+| representative | ManyToOne | Player | — | 🔗 Common, фіксує лише автора заявки; права на керування сесією має будь-який представник майданчика (VenueRepresentative) |
 | host | ManyToOne | Player | — | 🔗 Common, гравець з акаунтом |
 
 ### TournamentSessionTeam

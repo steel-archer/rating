@@ -11,6 +11,7 @@ use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Enum\SessionClaimStatus;
 use App\Classic\Enum\TournamentOfficialRole;
+use App\Common\Entity\VenueRepresentative;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -65,9 +66,13 @@ class SessionClaimRepository extends ServiceEntityRepository
     }
 
     /**
+     * Claims are shared across every representative of a venue, so a player sees
+     * claims for all sessions held at the venues they represent, not only the
+     * ones they personally submitted.
+     *
      * @return list<SessionClaim>
      */
-    public function findByPlayer(Player $player): array
+    public function findByVenueRepresentative(Player $player): array
     {
         return $this->createQueryBuilder('sc')
             ->join('sc.session', 's')
@@ -75,7 +80,11 @@ class SessionClaimRepository extends ServiceEntityRepository
             ->join('s.venue', 'v')
             ->join('v.town', 'town')
             ->addSelect('s', 't', 'v', 'town')
-            ->where('sc.player = :player')
+            ->where('EXISTS (
+                SELECT 1
+                FROM ' . VenueRepresentative::class . ' vr
+                WHERE vr.venue = v AND vr.player = :player
+            )')
             ->setParameter('player', $player)
             ->orderBy('sc.createdAt', 'DESC')
             ->getQuery()

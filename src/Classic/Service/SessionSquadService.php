@@ -26,6 +26,7 @@ use App\Classic\Repository\TournamentSessionTeamRepository;
 use App\Classic\Repository\TournamentSessionTeamPlayerRepository;
 use App\Classic\Service\Cache\CacheInvalidator;
 use App\Common\Repository\TownRepository;
+use App\Common\Repository\VenueRepresentativeRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
@@ -47,6 +48,7 @@ class SessionSquadService
         private SessionClaimRepository $claimRepository,
         private TournamentSessionHostHistoryRepository $hostHistoryRepository,
         private TournamentDocumentDownloadRepository $documentDownloadRepository,
+        private VenueRepresentativeRepository $representativeRepository,
         private CacheInvalidator $cacheInvalidator,
         private Mapper $mapper,
     ) {
@@ -98,7 +100,8 @@ class SessionSquadService
      */
     public function ensureCanManageSquad(TournamentSession $session, Player $player): void
     {
-        if ($session->getRepresentative()->getId() !== $player->getId()) {
+        // A session is shared across every representative of its venue.
+        if (!$this->representativeRepository->isRepresentative($player, $session->getVenue())) {
             throw new AccessDeniedHttpException();
         }
 

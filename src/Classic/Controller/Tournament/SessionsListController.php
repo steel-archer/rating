@@ -17,6 +17,7 @@ use App\Classic\Repository\TournamentOfficialRepository;
 use App\Classic\Repository\TournamentSessionHostHistoryRepository;
 use App\Classic\Repository\TournamentSessionRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
+use App\Common\Repository\VenueRepresentativeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -32,6 +33,7 @@ class SessionsListController extends AbstractController
         TournamentOfficialRepository $officialRepository,
         TournamentSessionHostHistoryRepository $hostHistoryRepository,
         TournamentDocumentDownloadRepository $documentDownloadRepository,
+        VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
         #[MapQueryString] PageRequestDTO $dto = new PageRequestDTO(),
     ): Response {
@@ -52,6 +54,7 @@ class SessionsListController extends AbstractController
             $officialRepository,
             $hostHistoryRepository,
             $documentDownloadRepository,
+            $representativeRepository,
         );
 
         return $this->render('tournament/_sessions.html.twig', [
@@ -67,8 +70,9 @@ class SessionsListController extends AbstractController
      * Builds the mapper context that drives the extended hosts column. The full
      * host history is exposed only for sessions the viewer may inspect:
      * organizers of the tournament and moderators/admins see every session,
-     * a session representative sees only the sessions they represent. For other
-     * viewers an empty context is returned, so only the current host is shown.
+     * a venue representative sees every session held at a venue they represent.
+     * For other viewers an empty context is returned, so only the current host
+     * is shown.
      *
      * @param list<TournamentSession> $sessions
      * @return array<string, mixed>
@@ -80,10 +84,11 @@ class SessionsListController extends AbstractController
         TournamentOfficialRepository $officialRepository,
         TournamentSessionHostHistoryRepository $hostHistoryRepository,
         TournamentDocumentDownloadRepository $documentDownloadRepository,
+        VenueRepresentativeRepository $representativeRepository,
     ): array {
         /*
          * Moderators/admins and organizers of this tournament see every session;
-         * a representative sees only the sessions they represent.
+         * a representative sees every session held at a venue they represent.
          */
         $seesAll = $this->isGranted('ROLE_MODERATOR')
             || ($player !== null && $officialRepository->isOrganizer($player, $tournament));
@@ -93,9 +98,25 @@ class SessionsListController extends AbstractController
         }
 
         $visibleSessionIds = [];
-        foreach ($sessions as $session) {
-            if ($seesAll || $session->getRepresentative()->getId() === $player->getId()) {
+        if ($seesAll) {
+            foreach ($sessions as $session) {
                 $visibleSessionIds[] = $session->getId();
+            }
+        } else {
+            $venueIds = array_map(
+                    static fn(TournamentSession $session): int => $session->getVenue()->getId(),
+                    $sessions,
+                )
+                    |> array_unique(...)
+                    |> array_values(...);
+            $representedVenueIds = array_flip(
+                $representativeRepository->findRepresentedVenueIds($player, $venueIds),
+            );
+
+            foreach ($sessions as $session) {
+                if (isset($representedVenueIds[$session->getVenue()->getId()])) {
+                    $visibleSessionIds[] = $session->getId();
+                }
             }
         }
 
