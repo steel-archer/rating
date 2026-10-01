@@ -10,6 +10,7 @@ use App\Classic\Enum\TournamentStatus;
 use App\Common\Exception\EntityNotFoundException;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentModerationClaimRepository;
+use App\Classic\Repository\TournamentOfficialRepository;
 use App\Classic\Service\TournamentDisputeAccessService;
 use App\Classic\Service\TournamentService;
 use App\Common\Repository\VenueRepresentativeRepository;
@@ -31,20 +32,24 @@ class ShowController extends AbstractController
         int $id,
         TournamentService $tournamentService,
         TournamentModerationClaimRepository $claimRepository,
+        TournamentOfficialRepository $officialRepository,
         TournamentDisputeAccessService $disputeAccessService,
         VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
     ): Response {
         $tournament = $tournamentService->get($id);
+        $tournamentEntity = $tournamentService->getEntity($id);
 
         /** @var User $user */
         $user = $this->getUser();
+        $player = $user->getPlayer();
 
+        // Unpublished tournaments are only visible to organizers (creator and co-organizers) and moderators
         if ($tournament->status !== TournamentStatus::Published->value) {
-            $isOwner = $tournament->createdById === $user->getPlayer()?->getId();
+            $isOrganizer = $player !== null && $officialRepository->isOrganizer($player, $tournamentEntity);
             $isModerator = $this->isGranted('ROLE_MODERATOR');
 
-            if (!$isOwner && !$isModerator) {
+            if (!$isOrganizer && !$isModerator) {
                 throw $this->createNotFoundException();
             }
         }
@@ -53,8 +58,6 @@ class ShowController extends AbstractController
             ? $claimRepository->findByTournamentId($id)
             : null;
 
-        $tournamentEntity = $tournamentService->getEntity($id);
-        $player = $user->getPlayer();
         $canViewDisputes = $disputeAccessService->canView($tournamentEntity, $player);
 
         // A player may register to host a session only while registration is open,

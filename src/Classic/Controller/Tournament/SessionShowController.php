@@ -49,12 +49,12 @@ class SessionShowController extends AbstractController
         $user = $this->getUser();
         $player = $user->getPlayer();
 
-        // Unpublished tournaments are only visible to owners and moderators
+        // Unpublished tournaments are only visible to organizers (creator and co-organizers) and moderators
         if ($tournament->getStatus() !== TournamentStatus::Published) {
-            $isOwner = $tournament->getCreatedBy()?->getId() === $player?->getId();
+            $isOrganizer = $player !== null && $officialRepository->isOrganizer($player, $tournament);
             $isModerator = $this->isGranted('ROLE_MODERATOR');
 
-            if (!$isOwner && !$isModerator) {
+            if (!$isOrganizer && !$isModerator) {
                 throw $this->createNotFoundException();
             }
         }

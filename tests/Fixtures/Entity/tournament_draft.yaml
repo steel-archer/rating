@@ -9,6 +9,25 @@ App\Classic\Entity\Tournament:
         status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
         createdBy: '@player_shevchenko'
 
+# The creator is always an organizer, and co-organizers share the same access.
+App\Classic\Entity\TournamentOfficial:
+    official_draft_creator:
+        tournament: '@tournament_draft'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_draft_coorganizer:
+        tournament: '@tournament_draft'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+# A dedicated user bound to the co-organizer player.
+App\Common\Entity\User:
+    user_draft_coorganizer:
+        email: 'coorganizer@example.com'
+        googleId: 'google_coorganizer_123'
+        roles: []
+        player: '@player_franko'
+
 App\Classic\Entity\TournamentSession:
     session_draft:
         tournament: '@tournament_draft'

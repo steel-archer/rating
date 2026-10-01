@@ -252,6 +252,28 @@ class ShowControllerTest extends WebTestCase
             },
         ];
 
+        yield 'unpublished tournament accessible by creator' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_draft']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertSelectorTextContains('h1', 'Чернетка');
+            },
+        ];
+
+        yield 'unpublished tournament accessible by co-organizer' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_draft']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_draft_coorganizer',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertSelectorTextContains('h1', 'Чернетка');
+            },
+        ];
+
         yield 'service unavailable on throwable' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId(),
