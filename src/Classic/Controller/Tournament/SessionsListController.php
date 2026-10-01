@@ -104,9 +104,9 @@ class SessionsListController extends AbstractController
             }
         } else {
             $venueIds = array_map(
-                    static fn(TournamentSession $session): int => $session->getVenue()->getId(),
-                    $sessions,
-                )
+                static fn(TournamentSession $session): int => $session->getVenue()->getId(),
+                $sessions,
+            )
                     |> array_unique(...)
                     |> array_values(...);
             $representedVenueIds = array_flip(
