@@ -4,8 +4,12 @@
     "deny": [
       "Bash(* bin/phpunit)",
       "Bash(* bin/phpunit *)",
+      "Bash(* ./bin/phpunit)",
+      "Bash(* ./bin/phpunit *)",
       "Bash(* vendor/bin/phpunit)",
-      "Bash(* vendor/bin/phpunit *)"
+      "Bash(* vendor/bin/phpunit *)",
+      "Bash(* ./vendor/bin/phpunit)",
+      "Bash(* ./vendor/bin/phpunit *)"
     ]
   }
 }
