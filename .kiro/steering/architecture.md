@@ -5,12 +5,12 @@ fileMatchPattern: 'src/**'
 
 # Архітектура: шари та їх взаємодія
 
-Довідник про те, **де що лежить** і **як шари з'єднані**. Загальні принципи (DTO, безпека, БД) — у `context.md`; тут — конкретна механіка проєкту з прикладами. Модульний поділ Common/Classic описаний нижче та в `context.md`.
+Довідник про те, **де що лежить** і **як шари з'єднані**. Загальні принципи (DTO, безпека, БД) — у `conventions.md`; тут — конкретна механіка проєкту з прикладами. Модульний поділ Common/Classic описаний нижче та в `conventions.md`.
 
 ## Модулі
 
 - **`src/Common`** — загальний код: `User`, `Player`, `Venue`, `Town`, `Country`, `Season`, автентифікація, інфраструктура (rate-limit, санітизація, обробка помилок).
-- **`src/Classic`** — специфіка «Що? Де? Коли?»: турніри, сесії, спірки, апеляції, команди.
+- **`src/Classic`** — специфіка «Що? Де? Коли?»: турніри, сесії, спірні відповіді, апеляції, команди.
 - **Правило залежностей:** `Common` **не** посилається на `Classic`. Кодифіковано архітектурним тестом `tests/Architecture/ModuleDependencyTest.php` (PHPat). Взаємодія — лише через інтерфейси в `src/Common/Contract` (див. «Provider + Contract»).
 
 ## Конвеєр запиту
@@ -76,7 +76,7 @@ Route → Controller → (Request-DTO) → Service → Repository / Provider
 3. Споживач у Common інжектить **інтерфейс**, не реалізацію.
 4. DI: явного біндингу немає — працює single-implementer autowiring (єдиний імплементер прив'язується автоматично через `App\: resource: '../src/'`).
 
-Наявні контракти: `PlayerTeamProviderInterface`, `PlayerDetailProviderInterface`, `PlayerTournamentProviderInterface`, `VenueTournamentProviderInterface`.
+Наявні контракти: `PlayerTeamProviderInterface`, `PlayerDetailProviderInterface`, `PlayerTournamentProviderInterface`, `VenueTournamentProviderInterface`, `MenuActionCountsProviderInterface`.
 
 ## Security (Voters)
 
