@@ -24,17 +24,16 @@ rating.chgk.info: турніри (очні та синхрони), відігр�
    БД `rating_test`, а прямий запуск очищає фікстурами dev-БД `rating`.
 2. **Усі команди застосунку — в контейнері:** `docker compose exec app ...`.
    На хості запускаються лише `bin/*.sh`, які самі звертаються до контейнера.
-3. **Вивід перевірок читати повністю** — без `| tail`, `| head`, `| grep`.
-4. **`App\Common` не залежить від `App\Classic`.** Взаємодія — лише через
+3. **`App\Common` не залежить від `App\Classic`.** Взаємодія — лише через
    інтерфейси в `src/Common/Contract`. Правило перевіряє
    `tests/Architecture/ModuleDependencyTest.php`; не послаблювати його.
-5. **Згенеровані файли руками не редагувати:** `assets/translations.js`
+4. **Згенеровані файли руками не редагувати:** `assets/translations.js`
    (`php bin/console app:generate-translations` після зміни
    `translations/messages.uk.yaml`), `assets/vendor/`, `public/assets/`.
-6. **Мова:** відповіді в чаті — мовою запиту користувача; UI-тексти,
+5. **Мова:** відповіді в чаті — мовою запиту користувача; UI-тексти,
    переклади й документація — українською; коментарі в коді та повідомлення
    комітів — англійською.
-7. **Документація — частина зміни.** Нова чи змінена фіча → оновити
+6. **Документація — частина зміни.** Нова чи змінена фіча → оновити
    `.kiro/steering/features.md`; сутність → `entities.md`; команда `app:*` →
    `commands.md`.
 
@@ -45,13 +44,17 @@ rating.chgk.info: турніри (очні та синхрони), відігр�
 
 | Документ | Коли читати |
 |----------|-------------|
-| `.kiro/steering/context.md` | **Завжди**: стиль PHP, DTO, безпека, тести, міграції, кеш, шаблони |
+| `.kiro/steering/conventions.md` | **Завжди**: стиль PHP, DTO, безпека, тести, міграції, кеш, шаблони |
 | `.kiro/steering/architecture.md` | Будь-яка зміна в `src/` |
 | `.kiro/steering/entities.md` | `src/**/Entity/**`, `src/**/Repository/**`, `migrations/**` |
 | `.kiro/steering/features.md` | Контролери; перелік фіч, ролей і бізнес-процесів |
 | `.kiro/steering/commands.md` | `src/**/Command/**` |
 | `.kiro/steering/frontend.md` | `assets/**`, `templates/**` |
 | `.kiro/steering/testing.md` | `tests/**` |
+
+`.kiro/steering/context.md` — персональні налаштування AI-асистента власника
+проєкту в Kiro (мова відповідей, суб-агенти, робота з виводом). Це не правила
+проєкту: Codex і Claude їх не застосовують.
 
 ## Запуск і перевірка
 
@@ -65,7 +68,7 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 ```
 
 **Готово** означає: `./bin/lint.sh` і `./bin/test.sh` зелені, нова поведінка
-покрита e2e-тестом контролера, документація з п. 7 оновлена, JS-переклади
+покрита e2e-тестом контролера, документація з п. 6 оновлена, JS-переклади
 перегенеровані.
 
 ## Підводні камені

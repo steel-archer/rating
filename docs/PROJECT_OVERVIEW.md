@@ -278,4 +278,4 @@ graph TD
 
 ---
 
-> **Повний перелік правил:** [`.kiro/steering/context.md`](../.kiro/steering/context.md)
+> **Повний перелік правил:** [`.kiro/steering/conventions.md`](../.kiro/steering/conventions.md)
