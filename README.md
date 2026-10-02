@@ -25,11 +25,14 @@
    - Linux: `sudo apt install docker.io docker-compose-v2` (Ubuntu/Debian) або `sudo dnf install docker docker-compose` (Fedora)
    - Після встановлення запустіть Docker Desktop і дочекайтесь, поки він повністю завантажиться
 
+3. **Тільки для Windows: Bash** — скрипти `bin/*.sh` працюють лише в Bash. Підійде Git Bash (встановлюється разом із Git) або WSL2.
+   - **Рекомендовано:** працювати у WSL2 (`wsl --install -d Ubuntu`) і клонувати проєкт у файлову систему Linux (наприклад, `~/rating`), а не на диск `C:`. Docker Desktop монтує файли з диска Windows дуже повільно: повний прогін тестів триває ~40 хв замість ~1 хв, сторінки в dev-режимі відкриваються по кілька секунд, а інколи трапляється випадкова помилка `Input/output error`.
+
 ## Встановлення
 
 ### 1. Завантажте проєкт
 
-Відкрийте термінал (Terminal на macOS/Linux, PowerShell на Windows) і виконайте:
+Відкрийте термінал (Terminal на macOS/Linux; на Windows — термінал WSL2 або Git Bash, бо далі використовуються Bash-скрипти) і виконайте:
 
 ```bash
 git clone https://github.com/steel-archer/rating
@@ -51,7 +54,11 @@ GOOGLE_CLIENT_ID=отримайте_від_розробника
 GOOGLE_CLIENT_SECRET=отримайте_від_розробника
 ```
 
-> **Google OAuth:** значення `GOOGLE_CLIENT_ID` та `GOOGLE_CLIENT_SECRET` потрібно отримати від розробника проєкту. Без них автентифікація через Google не працюватиме.
+> **Google OAuth:** значення `GOOGLE_CLIENT_ID` та `GOOGLE_CLIENT_SECRET` потрібно отримати від розробника проєкту; також попросіть його додати ваш Google-email до списку дозволених в OAuth-клієнті. Інший варіант — створити власний OAuth-клієнт у Google Cloud Console (Credentials → OAuth client ID → Web application) з дозволеним redirect URI `http://localhost:8080/connect/google/check`.
+
+Без Google OAuth сайт запуститься, але відкриються лише головна сторінка, ліцензія та політика конфіденційності: решта сторінок потребує входу, а іншого способу увійти (пароль, dev-логін) немає.
+
+> **Звідки беруться налаштування:** `.env` читає лише Docker Compose і передає значення в контейнер. `symfony/dotenv` не встановлено, тому `.env.local` **не** використовується. Після зміни `.env` повторіть команду з кроку 3 — контейнер застосунку буде перестворено з новими значеннями.
 
 ### 3. Запустіть проєкт
 
@@ -59,7 +66,7 @@ GOOGLE_CLIENT_SECRET=отримайте_від_розробника
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-Перший запуск може зайняти кілька хвилин — Docker завантажує образи та створює контейнери.
+Перший запуск може зайняти кілька хвилин — Docker завантажує образи та створює контейнери. Образ застосунку `ghcr.io/steel-archer/php-dev:latest` публічний, входити в GHCR не потрібно.
 
 ### 4. Встановіть залежності PHP
 
@@ -87,6 +94,8 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 docker compose exec app php -d memory_limit=512M bin/console doctrine:fixtures:load --append --no-interaction
 ```
 
+Фікстури створюють гравців, команди, майданчики, сезони й опубліковані турніри, але не користувачів: увійти все одно можна лише через Google. Запускайте команду один раз — повторний запуск додасть ще один набір даних.
+
 ### 8. Налаштуйте адміністратора
 
 Адміністратори та модератори — це гравці з додатковими правами. Щоб створити першого адміна:
@@ -102,6 +111,8 @@ docker compose exec app php bin/console app:promote-admin your-email@gmail.com
 
 5. Перелогіньтеся на сайті (хоча, скоріше за все, вас вилогінить автоматично).
 
+Команда спрацює лише для користувача, який уже входив через Google і має заявку на прив'язку (крок 3) або вже прив'язаного гравця.
+
 Після цього ви зможете затверджувати заявки інших користувачів через інтерфейс модератора.
 
 ## Використання
@@ -109,6 +120,9 @@ docker compose exec app php bin/console app:promote-admin your-email@gmail.com
 Після успішного запуску відкрийте у браузері:
 
 - **Сайт:** http://localhost:8080
+- **Mailpit (листи, які надсилає застосунок):** http://localhost:8025
+- **MySQL:** `localhost:3306`, база `rating`, користувач `rating_user` з паролем `MYSQL_PASSWORD` з `.env` (тестова база — `rating_test`)
+- **Redis:** `localhost:6379`
 
 ## Зупинка та перезапуск
 
@@ -126,13 +140,18 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 ## Оновлення після git pull
 
-Для отримання нових змін з репозиторію і перезбирання проєкту запустіть скрипт оновлення:
+Для отримання нових змін з репозиторію і оновлення локального середовища запустіть скрипт оновлення:
 
 ```bash
 ./bin/update.sh
 ```
 
-Він встановить залежності, застосує міграції та очистить кеш.
+Він виконає `git pull`, запустить стек, встановить залежності, застосує міграції та очистить кеш. Образи скрипт не перезбирає і не оновлює: щоб отримати свіжий `php-dev` (CI публікує його з кожним комітом у `master`), виконайте:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml pull app
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
 
 ## Продакшн
 
@@ -141,6 +160,11 @@ Redis. Збірка образу, конфігурація та розгорта
 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Для розробників
+
+- Предметна область, терміни й повний цикл турніру: [docs/DOMAIN.md](docs/DOMAIN.md)
+- Архітектура й стек: [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md)
+- Конвенції коду, перелік фіч, сутностей і команд: [`.kiro/steering/`](.kiro/steering/)
+- Інструкції для AI-агентів (Codex, Claude Code): [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md)
 
 ### Встановлення залежностей PHP (наприклад, після зміни composer.json)
 
@@ -168,6 +192,7 @@ docker compose exec app php bin/console app:generate-translations
 ```bash
 docker build -f docker/Dockerfile --target php-dev --tag php-dev .
 ```
+Щоб стек використовував цей образ замість опублікованого, вкажіть у `.env` `APP_IMAGE=php-dev` і перезапустіть стек.
 
 Локальне створення образу з тестовою версією сайту рейтингу з dev- і test-залежностями:
 ```bash
@@ -217,6 +242,12 @@ docker compose exec app npx stylelint 'assets/styles/**/*.css'
 docker compose exec app vendor/bin/twig-cs-fixer lint
 ```
 
+Усі тести. Запускайте їх **лише** через `./bin/test.sh`: скрипт підставляє тестову базу `rating_test`, а прямий виклик PHPUnit очистить робочу базу `rating`.
+
+```bash
+./bin/test.sh
+```
+
 Тести з покриттям коду:
 
 ```bash
@@ -247,8 +278,24 @@ docker compose exec app symfony security:check
 **Docker не запускається:**
 Переконайтесь, що Docker Desktop запущений і повністю завантажився.
 
-**Помилка з базою даних:**
-Перевірте, що значення в `.env` збігаються з `DATABASE_URL`.
+**Помилка з базою даних (`Access denied for user 'rating_user'`):**
+Паролі MySQL задаються лише під час першої ініціалізації тому `db_data`. Якщо після цього змінити `MYSQL_PASSWORD` чи `MYSQL_ROOT_PASSWORD` у `.env`, застосунок не підключиться. Поверніть попередні значення або, якщо локальні дані не потрібні, видаліть томи (`docker compose down -v`) і пройдіть встановлення заново.
+
+**Тестової бази `rating_test` немає:**
+Її створює `docker/mysql/init-test-db.sql`, але лише під час першої ініціалізації тому `db_data` і лише якщо стек запущено з `docker-compose.dev.yml`. Створити її вручну (стек має бути запущений з `docker-compose.dev.yml`):
+
+```bash
+docker compose exec db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" < /docker-entrypoint-initdb.d/init-test-db.sql'
+```
+
+**PHPCS видає сотні `End of line character is invalid` (Windows):**
+Файли отримано із закінченнями рядків CRLF. Репозиторій примусово використовує LF (`.gitattributes`); якщо клон зроблено до цього, на чистому робочому дереві (без незакомічених змін!) виконайте `git rm -r --cached -q . && git reset --hard`.
+
+**`Input/output error` під час `composer install` або тестів (Windows):**
+Випадковий збій bind-mount Docker Desktop — повторіть команду. Щоб позбутися проблеми й повільної роботи, тримайте проєкт у файловій системі WSL2 (див. «Що потрібно встановити»).
+
+**Git Bash спотворює шляхи в `docker compose exec` (Windows):**
+Git Bash перетворює аргументи на кшталт `/var/www/html` на `C:/Program Files/Git/var/www/html`. Додайте перед командою `MSYS_NO_PATHCONV=1`.
 
 **Порт 8080 зайнятий:**
 Зупиніть інший сервіс на цьому порту або змініть порт у `docker-compose.yml`.

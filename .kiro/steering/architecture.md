@@ -76,7 +76,7 @@ Route → Controller → (Request-DTO) → Service → Repository / Provider
 3. Споживач у Common інжектить **інтерфейс**, не реалізацію.
 4. DI: явного біндингу немає — працює single-implementer autowiring (єдиний імплементер прив'язується автоматично через `App\: resource: '../src/'`).
 
-Наявні контракти: `PlayerTeamProviderInterface`, `PlayerDetailProviderInterface`, `PlayerTournamentProviderInterface`, `VenueTournamentProviderInterface`.
+Наявні контракти: `PlayerTeamProviderInterface`, `PlayerDetailProviderInterface`, `PlayerTournamentProviderInterface`, `VenueTournamentProviderInterface`, `MenuActionCountsProviderInterface`.
 
 ## Security (Voters)
 
