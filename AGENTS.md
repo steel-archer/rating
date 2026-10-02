@@ -89,7 +89,11 @@ docker compose exec app php bin/console doctrine:migrations:migrate --no-interac
 - **Windows:** `bin/*.sh` запускати з Git Bash або WSL. Bind-mount Docker
   Desktop повільний і зрідка дає `Input/output error` — просто перезапустити
   команду. У Git Bash абсолютні шляхи в аргументах `docker compose exec`
-  спотворюються; допомагає `MSYS_NO_PATHCONV=1`.
+  спотворюються; допомагає `MSYS_NO_PATHCONV=1`. Якщо в `.env` увімкнено
+  `docker-compose.windows.yml` (через `COMPOSE_FILE`), `vendor/` і
+  `node_modules/` є лише в контейнері — читати їх через
+  `docker compose exec app ...`, а стек запускати `docker compose up -d` без
+  `-f`.
 
 ## Git
 

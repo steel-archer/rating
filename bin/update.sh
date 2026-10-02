@@ -4,7 +4,13 @@ set -e
 
 git pull
 
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# COMPOSE_FILE in .env (e.g. the Windows override) selects the compose files;
+# passing -f here would silently drop it.
+if grep -q '^COMPOSE_FILE=' .env 2>/dev/null; then
+    docker compose up -d
+else
+    docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+fi
 
 docker compose exec app composer install
 docker compose exec app npm install
