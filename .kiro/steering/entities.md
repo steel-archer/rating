@@ -574,7 +574,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 ### TournamentSessionTeamAnswer
 
-Відповідь команди на конкретне запитання в ігровій сесії. Зберігає результат, дані спірки та статус зняття запитання. Окремої сутності `Dispute` немає: її текст, статус і коментар містяться в цій сутності.
+Відповідь команди на конкретне запитання в ігровій сесії. Зберігає результат, дані спірної відповіді та статус зняття запитання. Окремої сутності `Dispute` немає: текст, статус і коментар спірної зберігаються в цій сутності.
 
 **Файл:** `src/Classic/Entity/TournamentSessionTeamAnswer.php`
 
@@ -636,7 +636,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | Classic | SessionClaimStatus | `pending`, `approved`, `rejected`, `revoked` | `pending` |
 | Classic | TournamentModerationStatus | `pending`, `approved`, `rejected` | `pending` |
 | Classic | TournamentStatus | `draft`, `published` | `draft` |
-| Classic | DisputeStatus | `created`, `submitted`, `accepted`, `rejected` | `null` (немає спірки) |
+| Classic | DisputeStatus | `created`, `submitted`, `accepted`, `rejected` | `null` (немає спірної) |
 | Classic | AppealStatus | `pending`, `accepted`, `rejected` | `pending` |
 | Classic | AppealType | `accept`, `remove` | не задано |
 | Classic | TeamPlayerTransferType | `joined`, `left` | не задано |
