@@ -17,15 +17,20 @@ use App\Classic\Repository\TournamentOfficialRepository;
 use App\Classic\Repository\TournamentSessionHostHistoryRepository;
 use App\Classic\Repository\TournamentSessionRepository;
 use App\Classic\Repository\TournamentSessionTeamRepository;
+use App\Classic\Service\TournamentAccessService;
 use App\Common\Repository\VenueRepresentativeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/tournament/{id}/sessions/list', name: 'tournament_sessions_list', requirements: ['id' => '\d+'], methods: ['GET'])]
 class SessionsListController extends AbstractController
 {
+    /**
+     * @throws NotFoundHttpException
+     */
     public function __invoke(
         Tournament $tournament,
         TournamentSessionRepository $sessionRepository,
@@ -34,18 +39,24 @@ class SessionsListController extends AbstractController
         TournamentSessionHostHistoryRepository $hostHistoryRepository,
         TournamentDocumentDownloadRepository $documentDownloadRepository,
         VenueRepresentativeRepository $representativeRepository,
+        TournamentAccessService $accessService,
         Mapper $mapper,
         #[MapQueryString] PageRequestDTO $dto = new PageRequestDTO(),
     ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+        $player = $user->getPlayer();
+
+        // Unpublished tournaments stay hidden here just like on the main card.
+        if (!$accessService->isVisible($tournament, $player, $this->isGranted('ROLE_MODERATOR'))) {
+            throw $this->createNotFoundException();
+        }
+
         $sessions = $sessionRepository->findByTournamentPaginated($tournament, $dto->page);
 
         $teamCounts = $sessionTeamRepository->countBySessionIds(
             array_map(static fn($s) => $s->getId(), $sessions),
         );
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $player = $user->getPlayer();
 
         $context = $this->buildHostViewContext(
             $tournament,

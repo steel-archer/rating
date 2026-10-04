@@ -65,6 +65,36 @@ class SessionsControllerTest extends WebTestCase
             },
         ];
 
+        yield 'unpublished tournament - regular player gets 404' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/sessions',
+            'expectedStatus' => 404,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertStringNotContainsString('Неопублікований турнір з результатами', $crawler->html());
+            },
+        ];
+
+        yield 'unpublished tournament - organizer sees sessions page' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/sessions',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertSelectorTextContains('h1', 'Неопублікований турнір з результатами');
+            },
+        ];
+
+        yield 'unpublished tournament - moderator sees sessions page' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_moderator',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/sessions',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertSelectorTextContains('h1', 'Неопублікований турнір з результатами');
+            },
+        ];
+
         yield 'not found for non-existent tournament' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/users.yaml'],
             'loginAs' => 'user_with_player',
