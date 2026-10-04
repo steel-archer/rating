@@ -193,5 +193,39 @@ class ResultsControllerTest extends WebTestCase
                 static::assertCount(2, $rows);
             },
         ];
+
+        yield 'unpublished tournament - regular player gets 404' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/results',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 404,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
+        yield 'unpublished tournament - organizer sees results' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/results',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+            },
+        ];
+
+        yield 'unpublished tournament - moderator sees results' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/results',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_moderator',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+            },
+        ];
     }
 }

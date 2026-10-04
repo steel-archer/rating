@@ -100,6 +100,45 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
+        yield 'list shows tournaments to co-organizer who did not create them' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_player',
+            'action' => static fn(KernelBrowser $client) => $client->request('GET', '/my/tournaments'),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client) {
+                // user_player (Kotsubynsky) created none, but co-organizes two tournaments.
+                static::assertCount(2, $client->getCrawler()->filter('table tbody tr'));
+            },
+        ];
+
+        yield 'co-organizer may open edit page' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request('GET', '/my/tournaments/' . $objects['tournament_approved']->getId() . '/edit'),
+            'expectedStatus' => 200,
+            'afterCallback' => static function () {
+            },
+        ];
+
+        yield 'co-organizer may delete a draft tournament (variant B: equal rights)' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_player',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_approved']->getId() . '/delete',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function () {
+                $tournament = static::getContainer()->get('doctrine')
+                    ->getRepository(Tournament::class)
+                    ->findOneBy(['name' => 'Схвалений турнір']);
+                static::assertNull($tournament);
+            },
+        ];
+
         yield 'create form shown' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',

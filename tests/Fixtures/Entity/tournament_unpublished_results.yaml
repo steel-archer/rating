@@ -1,0 +1,56 @@
+App\Classic\Entity\Tournament:
+    # Draft tournament: results/detailed must stay hidden from non-organizers,
+    # even though no results/details hidden-until dates are set.
+    tournament_unpublished:
+        name: 'Неопублікований турнір з результатами'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-03-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-03-15 00:00:00"))>'
+        toursCount: 2
+        questionsPerTourMap: [3, 3]
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+
+App\Classic\Entity\TournamentOfficial:
+    official_unpublished_organizer:
+        tournament: '@tournament_unpublished'
+        player: '@player_shevchenko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentSession:
+    session_unpublished:
+        tournament: '@tournament_unpublished'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-03-01 19:00"))>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_unpublished_alpha:
+        tournamentSession: '@session_unpublished'
+        team: '@team_alpha'
+        score: 4
+        resultsSubmitted: true
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    answer_unpublished_alpha_{1..4}:
+        tournamentSessionTeam: '@session_team_unpublished_alpha'
+        questionNumber: '<current()>'
+        isCorrect: true
+    answer_unpublished_alpha_no_{1..2}:
+        tournamentSessionTeam: '@session_team_unpublished_alpha'
+        questionNumber: '<($current + 4)>'
+        isCorrect: false
+
+App\Classic\Entity\TournamentSessionTeamPlayer:
+    stp_unpublished_alpha_shevchenko:
+        tournamentSessionTeam: '@session_team_unpublished_alpha'
+        player: '@player_shevchenko'
+        isLegionary: false
+
+App\Classic\Entity\SessionClaim:
+    session_claim_unpublished:
+        session: '@session_unpublished'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-02-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-02-21"))>'

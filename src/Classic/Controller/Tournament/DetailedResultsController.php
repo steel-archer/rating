@@ -9,7 +9,7 @@ use App\Classic\Entity\Tournament;
 use App\Common\Entity\User;
 use App\Common\Mapping\Mapper;
 use App\Classic\Service\SessionResultService;
-use App\Classic\Service\TournamentDetailAccessService;
+use App\Classic\Service\TournamentAccessService;
 use App\Classic\Service\TournamentResultService;
 use Doctrine\DBAL\Exception as DbalException;
 use Psr\Cache\InvalidArgumentException;
@@ -27,15 +27,21 @@ class DetailedResultsController extends AbstractController
      */
     public function __invoke(
         #[MapEntity(expr: 'repository.findWithSeason(id)')] Tournament $tournament,
-        TournamentDetailAccessService $detailAccessService,
+        TournamentAccessService $accessService,
         TournamentResultService $resultService,
         SessionResultService $sessionResultService,
         Mapper $mapper,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
+        $player = $user->getPlayer();
 
-        if (!$detailAccessService->canView($tournament, $user->getPlayer())) {
+        // Unpublished tournaments stay hidden here just like on the main card.
+        if (!$accessService->isVisible($tournament, $player, $this->isGranted('ROLE_MODERATOR'))) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$accessService->canViewDetails($tournament, $player)) {
             throw $this->createNotFoundException();
         }
 

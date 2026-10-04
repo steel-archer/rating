@@ -13,6 +13,7 @@ use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Common\Entity\Venue;
+use App\Common\Entity\VenueRepresentative;
 use App\Common\Mapping\Mapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
@@ -189,10 +190,21 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
 
     public function isRepresentativeOfTournament(Player $player, Tournament $tournament): bool
     {
+        /**
+         * A venue representative is defined by VenueRepresentative, not by the
+         * TournamentSession.representative field (which only records the claim
+         * author). Match any representative of a venue hosting the tournament.
+         */
         return (bool) $this->createQueryBuilder('ts')
             ->select('1')
+            ->join(
+                VenueRepresentative::class,
+                'vr',
+                'WITH',
+                'vr.venue = ts.venue',
+            )
             ->where('ts.tournament = :tournament')
-            ->andWhere('ts.representative = :player')
+            ->andWhere('vr.player = :player')
             ->setParameter('tournament', $tournament)
             ->setParameter('player', $player)
             ->setMaxResults(1)

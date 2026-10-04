@@ -126,6 +126,38 @@ class DetailedResultsControllerTest extends WebTestCase
             },
         ];
 
+        yield 'unpublished tournament - regular player gets 404' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/detailed',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 404,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+            },
+        ];
+
+        yield 'unpublished tournament - organizer sees breakdown' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/detailed',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(1, $crawler->filter('table.results-breakdown'));
+            },
+        ];
+
+        yield 'unpublished tournament - moderator sees breakdown' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/detailed',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_moderator',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(1, $crawler->filter('table.results-breakdown'));
+            },
+        ];
+
         yield 'custom questions per tour renders correctly' => [
             'method' => 'GET',
             'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_detailed_custom']->getId() . '/detailed',

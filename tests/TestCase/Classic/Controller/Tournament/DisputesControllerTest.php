@@ -86,6 +86,13 @@ class DisputesControllerTest extends WebTestCase
             'expectedStatus' => 200,
         ];
 
+        yield 'co-representative who did not author the claim can view when details hidden' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/disputes_hidden.yaml'],
+            'loginAs' => 'user_dispute_hidden_corep',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_dispute_hidden']->getId() . '/disputes',
+            'expectedStatus' => 200,
+        ];
+
         yield 'player who played can view when details hidden' => [
             'fixtures' => ['Entity/base.yaml', 'Entity/disputes_hidden.yaml'],
             'loginAs' => 'user_dispute_hidden_player',
