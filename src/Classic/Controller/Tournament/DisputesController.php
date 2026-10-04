@@ -11,7 +11,7 @@ use App\Common\Entity\User;
 use App\Classic\Enum\TournamentStatus;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentSessionTeamAnswerRepository;
-use App\Classic\Service\TournamentDisputeAccessService;
+use App\Classic\Service\TournamentAccessService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +23,7 @@ class DisputesController extends AbstractController
     public function __invoke(
         #[MapEntity(expr: 'repository.findWithSeason(id)')] Tournament $tournament,
         TournamentSessionTeamAnswerRepository $answerRepository,
-        TournamentDisputeAccessService $accessService,
+        TournamentAccessService $accessService,
         Mapper $mapper,
     ): Response {
         if ($tournament->getStatus() !== TournamentStatus::Published) {
@@ -34,7 +34,7 @@ class DisputesController extends AbstractController
         $user = $this->getUser();
         $player = $user->getPlayer();
 
-        if (!$accessService->canView($tournament, $player)) {
+        if (!$accessService->canViewDisputes($tournament, $player)) {
             throw $this->createAccessDeniedException();
         }
 

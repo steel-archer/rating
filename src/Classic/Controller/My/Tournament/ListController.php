@@ -31,9 +31,9 @@ class ListController extends AbstractController
 
         $dto ??= new ListRequestDTO();
 
-        $tournaments = $tournamentRepository->findByCreator($user->getPlayer(), $dto->sort, $dto->page);
+        $tournaments = $tournamentRepository->findByOrganizer($user->getPlayer(), $dto->sort, $dto->page);
         $claimEntities = $claimRepository->findByTournaments($tournaments);
-        $total = $tournamentRepository->countByCreator($user->getPlayer());
+        $total = $tournamentRepository->countByOrganizer($user->getPlayer());
         $lastPage = max(1, (int) ceil($total / 50));
 
         $tournamentDtos = $mapper->mapMultiple($tournaments, TournamentListDTO::class);

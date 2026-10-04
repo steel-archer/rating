@@ -6,10 +6,9 @@ namespace App\Classic\Controller\Tournament;
 
 use App\Classic\DTO\Response\Tournament\SessionContextDTO;
 use App\Classic\Entity\TournamentSession;
-use App\Classic\Enum\TournamentStatus;
 use App\Classic\Repository\TournamentOfficialRepository;
 use App\Classic\Service\SessionResultService;
-use App\Classic\Service\TournamentDetailAccessService;
+use App\Classic\Service\TournamentAccessService;
 use App\Common\Entity\User;
 use App\Common\Mapping\Mapper;
 use Doctrine\DBAL\Exception as DbalException;
@@ -34,7 +33,7 @@ class SessionShowController extends AbstractController
     public function __invoke(
         int $tournamentId,
         #[MapEntity(expr: 'repository.findWithRelations(id)')] TournamentSession $session,
-        TournamentDetailAccessService $detailAccessService,
+        TournamentAccessService $accessService,
         TournamentOfficialRepository $officialRepository,
         SessionResultService $resultService,
         Mapper $mapper,
@@ -50,13 +49,8 @@ class SessionShowController extends AbstractController
         $player = $user->getPlayer();
 
         // Unpublished tournaments are only visible to organizers (creator and co-organizers) and moderators
-        if ($tournament->getStatus() !== TournamentStatus::Published) {
-            $isOrganizer = $player !== null && $officialRepository->isOrganizer($player, $tournament);
-            $isModerator = $this->isGranted('ROLE_MODERATOR');
-
-            if (!$isOrganizer && !$isModerator) {
-                throw $this->createNotFoundException();
-            }
+        if (!$accessService->isVisible($tournament, $player, $this->isGranted('ROLE_MODERATOR'))) {
+            throw $this->createNotFoundException();
         }
 
         // Same visibility logic as tournament results page
@@ -75,7 +69,7 @@ class SessionShowController extends AbstractController
         }
 
         $teams = $resultService->getSessionResults($session);
-        $canViewDetails = $detailAccessService->canView($tournament, $player);
+        $canViewDetails = $accessService->canViewDetails($tournament, $player);
 
         $breakdown = $canViewDetails
             ? $resultService->getAnswerBreakdown($session)

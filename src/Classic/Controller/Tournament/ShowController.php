@@ -6,12 +6,10 @@ namespace App\Classic\Controller\Tournament;
 
 use App\Classic\DTO\Response\Tournament\ModerationClaimDTO;
 use App\Common\Entity\User;
-use App\Classic\Enum\TournamentStatus;
 use App\Common\Exception\EntityNotFoundException;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentModerationClaimRepository;
-use App\Classic\Repository\TournamentOfficialRepository;
-use App\Classic\Service\TournamentDisputeAccessService;
+use App\Classic\Service\TournamentAccessService;
 use App\Classic\Service\TournamentService;
 use App\Common\Repository\VenueRepresentativeRepository;
 use Psr\Cache\InvalidArgumentException;
@@ -32,8 +30,7 @@ class ShowController extends AbstractController
         int $id,
         TournamentService $tournamentService,
         TournamentModerationClaimRepository $claimRepository,
-        TournamentOfficialRepository $officialRepository,
-        TournamentDisputeAccessService $disputeAccessService,
+        TournamentAccessService $accessService,
         VenueRepresentativeRepository $representativeRepository,
         Mapper $mapper,
     ): Response {
@@ -45,20 +42,15 @@ class ShowController extends AbstractController
         $player = $user->getPlayer();
 
         // Unpublished tournaments are only visible to organizers (creator and co-organizers) and moderators
-        if ($tournament->status !== TournamentStatus::Published->value) {
-            $isOrganizer = $player !== null && $officialRepository->isOrganizer($player, $tournamentEntity);
-            $isModerator = $this->isGranted('ROLE_MODERATOR');
-
-            if (!$isOrganizer && !$isModerator) {
-                throw $this->createNotFoundException();
-            }
+        if (!$accessService->isVisible($tournamentEntity, $player, $this->isGranted('ROLE_MODERATOR'))) {
+            throw $this->createNotFoundException();
         }
 
         $claim = $this->isGranted('ROLE_MODERATOR')
             ? $claimRepository->findByTournamentId($id)
             : null;
 
-        $canViewDisputes = $disputeAccessService->canView($tournamentEntity, $player);
+        $canViewDisputes = $accessService->canViewDisputes($tournamentEntity, $player);
 
         // A player may register to host a session only while registration is open,
         // and they represent at least one approved venue.

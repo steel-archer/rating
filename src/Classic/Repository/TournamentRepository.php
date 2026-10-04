@@ -8,8 +8,10 @@ use App\Classic\DTO\Request\TournamentListRequestDTO;
 use App\Classic\DTO\Response\Tournament\TournamentListItemDTO;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentModerationClaim;
+use App\Classic\Entity\TournamentOfficial;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
+use App\Classic\Enum\TournamentOfficialRole;
 use App\Classic\Enum\TournamentPeriod;
 use App\Classic\Enum\TournamentStatus;
 use App\Common\Entity\Player;
@@ -90,21 +92,31 @@ class TournamentRepository extends ServiceEntityRepository
     }
 
     /**
+     * Tournaments the player organizes (creator and co-organizers alike),
+     * matched by the organizer role in TournamentOfficial rather than by
+     * Tournament.createdBy, so co-organizers see what they can edit.
+     *
      * @return list<Tournament>
      */
-    public function findByCreator(Player $player, string $sort = 'DESC', int $page = 1): array
+    public function findByOrganizer(Player $player, string $sort = 'DESC', int $page = 1): array
     {
         $direction = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
 
         return $this->createQueryBuilder('t')
+            ->join(
+                TournamentOfficial::class,
+                'o',
+                'WITH',
+                'o.tournament = t AND o.player = :player AND o.role = :role',
+            )
             ->leftJoin(
                 TournamentModerationClaim::class,
                 'c',
                 'WITH',
                 'c.tournament = t',
             )
-            ->where('t.createdBy = :player')
             ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::Organizer->value)
             ->orderBy('CASE WHEN c.resolvedAt IS NOT NULL THEN c.resolvedAt WHEN c.createdAt IS NOT NULL THEN c.createdAt ELSE t.startedAt END', $direction)
             ->setFirstResult(($page - 1) * self::PER_PAGE)
             ->setMaxResults(self::PER_PAGE)
@@ -112,12 +124,18 @@ class TournamentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function countByCreator(Player $player): int
+    public function countByOrganizer(Player $player): int
     {
         return (int) $this->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->where('t.createdBy = :player')
+            ->select('COUNT(DISTINCT t.id)')
+            ->join(
+                TournamentOfficial::class,
+                'o',
+                'WITH',
+                'o.tournament = t AND o.player = :player AND o.role = :role',
+            )
             ->setParameter('player', $player)
+            ->setParameter('role', TournamentOfficialRole::Organizer->value)
             ->getQuery()
             ->getSingleScalarResult();
     }

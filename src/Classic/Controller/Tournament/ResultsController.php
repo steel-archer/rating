@@ -10,7 +10,7 @@ use App\Classic\Entity\Tournament;
 use App\Common\Entity\User;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentOfficialRepository;
-use App\Classic\Service\TournamentDetailAccessService;
+use App\Classic\Service\TournamentAccessService;
 use App\Classic\Service\TournamentResultService;
 use Doctrine\DBAL\Exception as DbalException;
 use Psr\Cache\InvalidArgumentException;
@@ -31,13 +31,18 @@ class ResultsController extends AbstractController
         #[MapEntity(expr: 'repository.findWithSeason(id)')] Tournament $tournament,
         TournamentResultService $resultService,
         TournamentOfficialRepository $officialRepository,
-        TournamentDetailAccessService $detailAccessService,
+        TournamentAccessService $accessService,
         Mapper $mapper,
         #[MapQueryString] PageRequestDTO $dto = new PageRequestDTO(),
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
         $player = $user->getPlayer();
+
+        // Unpublished tournaments stay hidden here just like on the main card.
+        if (!$accessService->isVisible($tournament, $player, $this->isGranted('ROLE_MODERATOR'))) {
+            throw $this->createNotFoundException();
+        }
 
         if ($tournament->areResultsHidden()) {
             $isOfficial = $officialRepository->findOneBy([
@@ -58,7 +63,7 @@ class ResultsController extends AbstractController
             'teams' => $resultService->getResults($tournament, $dto->page),
             'page' => $dto->page,
             'lastPage' => $resultService->getLastPageNumber($tournament),
-            'canViewDetails' => $detailAccessService->canView($tournament, $player),
+            'canViewDetails' => $accessService->canViewDetails($tournament, $player),
         ]);
     }
 }

@@ -1,3 +1,17 @@
+App\Common\Entity\Player:
+    # A second representative of venue_kyiv who did not author the session claim.
+    player_dispute_hidden_corep:
+        lastName: 'Стус'
+        firstName: 'Василь'
+        patronymic: 'Семенович'
+        town: '@town_kyiv'
+
+App\Common\Entity\VenueRepresentative:
+    venue_rep_kyiv_dispute_hidden:
+        venue: '@venue_kyiv'
+        player: '@player_dispute_hidden_corep'
+        createdAt: '<(new \DateTimeImmutable("2025-01-02"))>'
+
 App\Common\Entity\User:
     user_dispute_hidden_jury:
         email: 'dispute_hidden_jury@example.com'
@@ -19,6 +33,12 @@ App\Common\Entity\User:
         googleId: 'google_dispute_hidden_player'
         roles: []
         player: '@player_kotsubynsky'
+    # Co-representative of the venue who is not the session claim author.
+    user_dispute_hidden_corep:
+        email: 'dispute_hidden_corep@example.com'
+        googleId: 'google_dispute_hidden_corep'
+        roles: []
+        player: '@player_dispute_hidden_corep'
 
 App\Classic\Entity\Tournament:
     tournament_dispute_hidden:
