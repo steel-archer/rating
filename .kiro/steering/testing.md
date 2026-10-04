@@ -5,7 +5,7 @@ fileMatchPattern: 'tests/**'
 
 # Тести: механіка та патерни
 
-Принципи (FIRST, e2e, по тесту на контролер, моки з очікуваннями) — у `context.md`. Тут — конкретна механіка проєкту.
+Принципи (FIRST, e2e, по тесту на контролер, моки з очікуваннями) — у `conventions.md`. Тут — конкретна механіка проєкту.
 
 ## Запуск
 
@@ -69,4 +69,4 @@ static::getContainer()->set(SessionClaimService::class, $stub);
 
 ## Кеш у тестах
 
-У тестовому оточенні кеш — `cache.adapter.array` (не Redis), тож стан не тече між тестами. Кешуй лише DTO, ніколи Entity (див. `context.md`).
+У тестовому оточенні кеш — `cache.adapter.array` (не Redis), тож стан не тече між тестами. Кешуй лише DTO, ніколи Entity (див. `conventions.md`).

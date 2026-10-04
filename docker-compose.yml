@@ -37,6 +37,8 @@ services:
       MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
       MAILER_DSN: smtp://mailer:1025
       VAR_DUMPER_SERVER: 127.0.0.1:9912
+      ALPHA_TESTING_MODE: ${ALPHA_TESTING_MODE:-1}
+      SENTRY_DSN: ${SENTRY_DSN:-}
 
   db:
     image: mysql:9.3

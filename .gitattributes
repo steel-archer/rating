@@ -1,0 +1,8 @@
+# Check out LF on every OS (matches .editorconfig). PSR-12 (PHPCS) rejects
+# CRLF, and Windows checkouts with core.autocrlf=true would otherwise get it.
+* text=auto eol=lf
+
+*.ico binary
+*.pdf binary
+*.png binary
+*.xlsx binary

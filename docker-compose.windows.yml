@@ -1,0 +1,42 @@
+# Optional speed-up for Docker Desktop on Windows when the repository lives on
+# a Windows drive (C:\...), where the bind mount is very slow. Enable it via
+# COMPOSE_FILE in .env (see .env.dist) and start the stack with plain
+# `docker compose up -d`.
+#
+# vendor/, node_modules/ and var/ (except var/uploads) move into Docker
+# volumes; the source code stays bind-mounted, so edits are still picked up live. The app runs as
+# www-data so that CLI commands and Apache write var/ as the same user.
+# Side effect: vendor/ and node_modules/ are not visible on the host.
+
+services:
+  # One-shot: hands the volumes to www-data before the app starts.
+  app-volumes:
+    image: ${APP_IMAGE}
+    pull_policy: ${IMAGE_PULL_POLICY:-missing}
+    user: root
+    command: chown -R www-data:www-data /var/www/html/vendor /var/www/html/node_modules /var/www/html/var
+    volumes:
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+      - var:/var/www/html/var
+
+  app:
+    user: www-data
+    depends_on:
+      app-volumes:
+        condition: service_completed_successfully
+    environment:
+      # www-data cannot write to its home directory in the image.
+      COMPOSER_HOME: /tmp/composer
+      npm_config_cache: /tmp/npm
+    volumes:
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+      - var:/var/www/html/var
+      # Uploaded tournament documents are data, not cache: keep them on disk.
+      - ./var/uploads:/var/www/html/var/uploads
+
+volumes:
+  vendor:
+  node_modules:
+  var:

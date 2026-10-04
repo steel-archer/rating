@@ -5,7 +5,7 @@ fileMatchPattern: 'assets/**|templates/**|*.css|*.twig|eslint.config.js|.styleli
 
 # Фронтенд: конвенції JS / CSS / Twig
 
-Стек — Symfony AssetMapper + importmap (без webpack/build-кроку), Stimulus + Turbo, vanilla-JS модулі. Загальне правило (єдиний візуальний стиль, українською) — у `context.md`.
+Стек — Symfony AssetMapper + importmap (без webpack/build-кроку), Stimulus + Turbo, vanilla-JS модулі. Загальне правило (єдиний візуальний стиль, українською) — у `conventions.md`.
 
 ## Структура assets
 

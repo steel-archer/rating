@@ -7,6 +7,8 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 Довідкова карта всіх Doctrine-сутностей проєкту, згрупованих за модулями. Використовується як контекст для розуміння доменної моделі.
 
+Позначка «початкове значення PHP» описує ініціалізацію властивості сутності, а не `DEFAULT` у БД. Окремо зазначено значення, для яких ORM явно задає `options: ['default' => ...]`.
+
 ## Common
 
 ### Country
@@ -21,6 +23,10 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 |------|-----|----------|----------|
 | id | int | — | PK, auto |
 | name | string(255) | — | |
+
+#### Обмеження
+
+- **UQ_country_name**: (name)
 
 ### Player
 
@@ -116,7 +122,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 **Файл:** `src/Common/Entity/User.php`
 
-**Таблиця:** `user`
+**Таблиця:** `common_user`
 
 #### Поля
 
@@ -140,7 +146,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 | Поле | Тип | Ціль | Nullable | Примітка |
 |------|-----|------|----------|----------|
-| player | OneToOne | Player | ✓ | inversedBy: user |
+| player | OneToOne | Player | ✓ | inversedBy: user; cascade: persist |
 
 #### Обмеження
 
@@ -150,7 +156,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 ### Venue
 
-Місце проведення ігор (бар, клуб, зал). Прив'язане до міста, потребує підтвердження.
+Місце проведення ігор (бар, клуб, зал або онлайн-майданчик). Прив'язане до міста, потребує підтвердження. Схвалення зберігається як `isApproved`; відхилення видаляє несхвалений майданчик і його представників, окремого статусу відмови немає.
 
 **Файл:** `src/Common/Entity/Venue.php`
 
@@ -160,7 +166,10 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 |------|-----|----------|----------|
 | id | int | — | PK, auto |
 | name | string(255) | — | |
-| isApproved | bool | — | default: false |
+| description | text | ✓ | |
+| url | string(255) | ✓ | |
+| isOnline | bool | — | початкове значення PHP: false |
+| isApproved | bool | — | початкове значення PHP: false |
 | createdAt | DateTimeImmutable | — | |
 
 #### Зв'язки
@@ -226,7 +235,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 ### Appeal
 
-Апеляція на відповідь команди в турнірній сесії. Може бути на зарахування або зняття відповіді.
+Апеляція на відповідь команди в турнірній сесії. Може бути на зарахування відповіді або зняття запитання. Прийняття типу `remove` знімає запитання в усьому турнірі й перераховує бали всіх команд.
 
 **Файл:** `src/Classic/Entity/Appeal.php`
 
@@ -253,7 +262,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 ### SessionClaim
 
-Заявка на проведення ігрової сесії. Гравець подає заявку на конкретну турнірну сесію.
+Заявка на проведення ігрової сесії. Подання одночасно створює сесію та заявку зі статусом `pending`.
 
 **Файл:** `src/Classic/Entity/SessionClaim.php`
 
@@ -308,7 +317,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | Поле | Тип | Nullable | Примітка |
 |------|-----|----------|----------|
 | id | int | — | PK, auto |
-| isCaptain | bool | — | default: false |
+| isCaptain | bool | — | початкове значення PHP та DEFAULT БД (ORM): false |
 
 #### Зв'язки
 
@@ -491,6 +500,8 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | id | int | — | PK, auto |
 | playedAt | DateTimeImmutable | ✓ | |
 | estimatedTeams | int | ✓ | |
+| announcementUrl | string(255) | ✓ | |
+| isOnline | bool | — | початкове значення PHP: false |
 | createdAt | DateTimeImmutable | — | |
 | updatedAt | DateTimeImmutable | — | |
 
@@ -503,6 +514,37 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | representative | ManyToOne | Player | — | 🔗 Common, фіксує лише автора заявки; права на керування сесією має будь-який представник майданчика (VenueRepresentative) |
 | host | ManyToOne | Player | — | 🔗 Common, гравець з акаунтом |
 
+### TournamentSessionHostHistory
+
+Історія ведучих сесії. Сервіс записує ведучого під час схвалення заявки та його заміни, поки заявка схвалена; призначення лише в очікуванні не записуються. Поточний ведучий зберігається в `TournamentSession.host`.
+
+**Файл:** `src/Classic/Entity/TournamentSessionHostHistory.php`
+
+**Таблиця:** `classic_tournament_session_host_history`
+
+#### Поля
+
+| Поле | Тип | Nullable | Примітка |
+|------|-----|----------|----------|
+| id | int | — | PK, auto |
+| createdAt | DateTimeImmutable | — | задається конструктором PHP |
+
+#### Зв'язки
+
+| Поле | Тип | Ціль | Nullable | Примітка |
+|------|-----|------|----------|----------|
+| session | ManyToOne | TournamentSession | — | |
+| player | ManyToOne | Player | — | 🔗 Common |
+
+#### Обмеження
+
+- **UNIQ_tshh_session_player**: (session_id, player_id)
+
+#### Індекси
+
+- **IDX_tshh_session**: (session_id)
+- **IDX_tshh_player**: (player_id)
+
 ### TournamentSessionTeam
 
 Участь команди в конкретній ігровій сесії турніру. Зберігає рахунок команди та статус подання результатів.
@@ -514,8 +556,8 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | Поле | Тип | Nullable | Примітка |
 |------|-----|----------|----------|
 | id | int | — | PK, auto |
-| score | int | — | default: 0 |
-| resultsSubmitted | bool | — | default: false |
+| score | int | — | початкове значення PHP: 0 |
+| resultsSubmitted | bool | — | початкове значення PHP: false |
 | oneTimeName | string(255) | ✓ | |
 
 #### Зв'язки
@@ -532,7 +574,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 ### TournamentSessionTeamAnswer
 
-Відповідь команди на конкретне запитання в ігровій сесії. Зберігає результат, дані спірки та статус зняття запитання.
+Відповідь команди на конкретне запитання в ігровій сесії. Зберігає результат, дані спірної відповіді та статус зняття запитання. Окремої сутності `Dispute` немає: текст, статус і коментар спірної зберігаються в цій сутності.
 
 **Файл:** `src/Classic/Entity/TournamentSessionTeamAnswer.php`
 
@@ -546,7 +588,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | disputeText | string(500) | ✓ | |
 | disputeStatus | enum | ✓ | `App\Classic\Enum\DisputeStatus` |
 | disputeComment | string(500) | ✓ | |
-| isQuestionRemoved | bool | — | default: false |
+| isQuestionRemoved | bool | — | початкове значення PHP: false |
 
 #### Зв'язки
 
@@ -569,8 +611,8 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | Поле | Тип | Nullable | Примітка |
 |------|-----|----------|----------|
 | id | int | — | PK, auto |
-| isLegionary | bool | — | default: false |
-| isCaptain | bool | — | default: false |
+| isLegionary | bool | — | початкове значення PHP та DEFAULT БД (ORM): false |
+| isCaptain | bool | — | початкове значення PHP та DEFAULT БД (ORM): false |
 
 #### Зв'язки
 
@@ -582,3 +624,30 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 #### Обмеження
 
 - **UQ_session_team_player**: (tournament_session_team_id, player_id)
+
+## Enum-и
+
+Значення нижче — рядки, що зберігаються в полях сутностей. Файли розташовані в `src/Common/Enum` та `src/Classic/Enum` відповідно до модуля.
+
+| Модуль | Enum | Значення | Початкове значення PHP у сутності |
+|--------|------|----------|----------------------------------|
+| Common | PlayerClaimStatus | `pending`, `approved`, `rejected` | `pending` |
+| Classic | CaptainClaimStatus | `pending`, `approved`, `rejected` | `pending` |
+| Classic | SessionClaimStatus | `pending`, `approved`, `rejected`, `revoked` | `pending` |
+| Classic | TournamentModerationStatus | `pending`, `approved`, `rejected` | `pending` |
+| Classic | TournamentStatus | `draft`, `published` | `draft` |
+| Classic | DisputeStatus | `created`, `submitted`, `accepted`, `rejected` | `null` (немає спірної) |
+| Classic | AppealStatus | `pending`, `accepted`, `rejected` | `pending` |
+| Classic | AppealType | `accept`, `remove` | не задано |
+| Classic | TeamPlayerTransferType | `joined`, `left` | не задано |
+| Classic | TournamentOfficialRole | `organizer`, `editor`, `game_jury`, `appeal_jury` | не задано; співорганізатор також має `organizer` |
+| Classic | TournamentFormat | `centralized`, `distributed` | `distributed` |
+| Classic | TournamentOnlineMode | `online`, `offline`, `mixed` | `mixed` |
+
+Службові enum-и не є станами, збереженими в полях турніру:
+
+| Модуль | Enum | Значення | Призначення |
+|--------|------|----------|-------------|
+| Classic | TournamentPeriod | `past`, `active`, `future` | фільтр списку турнірів |
+| Classic | ResolveAction | `accept`, `reject` | вхідна дія розгляду |
+| Common | CacheTag | `countries`, `towns`, `tournament_list`, `venues`, `moderation_counts` | інфраструктурні теги кешу |
