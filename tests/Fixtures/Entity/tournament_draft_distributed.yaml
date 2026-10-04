@@ -1,0 +1,46 @@
+App\Common\Entity\User:
+    user_draft_rep:
+        email: 'draft_rep@example.com'
+        googleId: 'google_draft_rep'
+        roles: []
+        player: '@player_shevchenko'
+
+App\Classic\Entity\Tournament:
+    tournament_draft_distributed:
+        name: 'Чернетка синхронного турніру'
+        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
+        format: '<(App\Classic\Enum\TournamentFormat::Distributed)>'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("-7 days"))>'
+        endedAt: '<(new \DateTimeImmutable("+7 days"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+1 month"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+2 months"))>'
+        toursCount: 1
+        questionsPerTourMap: [1]
+
+App\Classic\Entity\TournamentSession:
+    session_draft_approved:
+        tournament: '@tournament_draft_distributed'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_franko'
+        playedAt: '<(new \DateTimeImmutable("-1 day"))>'
+
+App\Classic\Entity\SessionClaim:
+    claim_draft_approved:
+        session: '@session_draft_approved'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+
+App\Classic\Entity\TournamentSessionTeam:
+    session_team_draft:
+        tournamentSession: '@session_draft_approved'
+        team: '@team_alpha'
+        score: 0
+        resultsSubmitted: false
+
+App\Classic\Entity\TournamentSessionTeamAnswer:
+    answer_draft:
+        tournamentSessionTeam: '@session_team_draft'
+        questionNumber: 1
+        isCorrect: true

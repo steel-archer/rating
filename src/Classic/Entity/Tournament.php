@@ -182,10 +182,17 @@ class Tournament
         return $this;
     }
 
+    /**
+     * Registration is closed until publication for every format.
+     */
     public function isRegistrationOpen(): bool
     {
+        if ($this->status !== TournamentStatus::Published) {
+            return false;
+        }
+
         if ($this->format === TournamentFormat::Centralized) {
-            return $this->status === TournamentStatus::Published;
+            return true;
         }
 
         return $this->registrationDeadline !== null
@@ -222,10 +229,17 @@ class Tournament
         return $this;
     }
 
+    /**
+     * Submission is closed until publication for every format.
+     */
     public function isSubmissionOpen(): bool
     {
+        if ($this->status !== TournamentStatus::Published) {
+            return false;
+        }
+
         if ($this->format === TournamentFormat::Centralized) {
-            return $this->status === TournamentStatus::Published;
+            return true;
         }
 
         return $this->submissionDeadline !== null

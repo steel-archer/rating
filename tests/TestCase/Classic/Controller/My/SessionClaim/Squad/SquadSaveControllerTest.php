@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\TestCase\Classic\Controller\My\SessionClaim\Squad;
 
 use App\Classic\Entity\TournamentSession;
+use App\Classic\Entity\TournamentSessionTeam;
+use App\Classic\Entity\TournamentSessionTeamPlayer;
 use App\Classic\Service\SessionResultService;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -61,6 +63,27 @@ class SquadSaveControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'draft distributed tournament rejects squad with a future deadline' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft_distributed.yaml'],
+            'loginAs' => 'user_draft_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_draft_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamId' => $objects['team_beta']->getId(),
+                'players' => [
+                    ['id' => $objects['player_lesya']->getId()],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 403,
+            'afterCallback' => static function ($client, array $objects) {
+                $doctrine = static::getContainer()->get('doctrine');
+                $teams = $doctrine->getRepository(TournamentSessionTeam::class)->findAll();
+                static::assertCount(1, $teams);
+                static::assertSame($objects['session_team_draft']->getId(), $teams[0]->getId());
+                static::assertSame(0, $doctrine->getRepository(TournamentSessionTeamPlayer::class)->count([]));
+            },
+        ];
+
         yield 'save squad with new team and new player' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_rep',
