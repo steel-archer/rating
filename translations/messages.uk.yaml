@@ -372,8 +372,6 @@ squad:
   entered_squads_title: 'Внесені склади'
   entry_title: 'Внесення складів'
   error:
-    captain_not_in_squad: 'Капітан має бути у складі'
-    captain_required: 'Оберіть капітана'
     duplicate_players: 'Гравець не може бути у складі двічі'
     max_players: 'Максимум 9 гравців у складі'
     min_players: 'Мінімум 1 гравець у складі'

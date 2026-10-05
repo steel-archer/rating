@@ -311,8 +311,6 @@ export default {
     "squad.enter_squads": "Внести склад команди",
     "squad.entered_squads_title": "Внесені склади",
     "squad.entry_title": "Внесення складів",
-    "squad.error.captain_not_in_squad": "Капітан має бути у складі",
-    "squad.error.captain_required": "Оберіть капітана",
     "squad.error.duplicate_players": "Гравець не може бути у складі двічі",
     "squad.error.max_players": "Максимум 9 гравців у складі",
     "squad.error.min_players": "Мінімум 1 гравець у складі",

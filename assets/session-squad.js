@@ -356,12 +356,6 @@ function initFormSubmit(form) {
             return;
         }
 
-        if (resolveCaptainIndex() === null) {
-            status.textContent = trans('squad.error.captain_required');
-            status.hidden = false;
-            return;
-        }
-
         const isEditMode = form.dataset.editMode === '1';
 
         /** @type {object} */

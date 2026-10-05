@@ -130,7 +130,7 @@ class SessionSquadService
         $this->validateNoDuplicate($session, $team);
 
         $players = $this->resolveAndValidatePlayers($session, $dto, []);
-        $captainIndex = $this->validateCaptainIndex($dto, $players);
+        $captainIndex = $this->resolveCaptainIndex($dto, $players);
 
         $sessionTeam = new TournamentSessionTeam();
         $sessionTeam->setTournamentSession($session);
@@ -363,15 +363,17 @@ class SessionSquadService
     }
 
     /**
+     * Resolves the captain index. The captain is optional: when none is chosen
+     * (or the index points past the squad) the squad is saved without a captain.
+     *
      * @param SquadRequestDTO $dto
      * @param list<Player> $players
-     * @return int
-     * @throws LogicException
+     * @return int|null
      */
-    private function validateCaptainIndex(SquadRequestDTO $dto, array $players): int
+    private function resolveCaptainIndex(SquadRequestDTO $dto, array $players): ?int
     {
         if ($dto->captainIndex === null || $dto->captainIndex >= count($players)) {
-            throw new LogicException('squad.error.captain_required');
+            return null;
         }
 
         return $dto->captainIndex;
@@ -388,7 +390,7 @@ class SessionSquadService
         $this->ensureCanManageSquad($session, $representative);
 
         $players = $this->resolvePlayersForUpdate($session, $sessionTeam, $dto);
-        $captainIndex = $this->validateCaptainIndex($dto, $players);
+        $captainIndex = $this->resolveCaptainIndex($dto, $players);
 
         $sessionTeam->setOneTimeName($dto->oneTimeName !== null ? trim($dto->oneTimeName) : null);
 

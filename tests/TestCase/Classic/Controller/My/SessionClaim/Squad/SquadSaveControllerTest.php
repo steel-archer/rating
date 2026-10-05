@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\SessionClaim\Squad;
 
+use App\Classic\Entity\Team;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Entity\TournamentSessionTeamPlayer;
@@ -178,7 +179,7 @@ class SquadSaveControllerTest extends WebTestCase
             },
         ];
 
-        yield 'error: no captain' => [
+        yield 'save squad without a captain' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_rep',
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
@@ -190,10 +191,24 @@ class SquadSaveControllerTest extends WebTestCase
                 ],
                 'captainIndex' => null,
             ],
-            'expectedStatus' => 422,
-            'afterCallback' => static function ($client) {
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
                 $data = json_decode($client->getResponse()->getContent(), true);
-                static::assertStringContainsString('captain_required', $data['error']);
+                static::assertTrue($data['success']);
+
+                // The newly saved team has a player, none of whom is a captain.
+                $doctrine = static::getContainer()->get('doctrine');
+                $team = $doctrine->getRepository(Team::class)->findOneBy(['name' => 'Ще команда']);
+                static::assertNotNull($team);
+
+                $sessionTeam = $doctrine->getRepository(TournamentSessionTeam::class)
+                    ->findOneBy(['team' => $team]);
+                static::assertNotNull($sessionTeam);
+
+                $savedPlayers = $doctrine->getRepository(TournamentSessionTeamPlayer::class)
+                    ->findBy(['tournamentSessionTeam' => $sessionTeam]);
+                static::assertCount(1, $savedPlayers);
+                static::assertFalse($savedPlayers[0]->isCaptain());
             },
         ];
 
