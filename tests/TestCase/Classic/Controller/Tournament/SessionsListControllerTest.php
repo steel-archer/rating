@@ -91,10 +91,10 @@ class SessionsListControllerTest extends WebTestCase
                 static::assertContains('Шевченко Тарас Григорович', $reps);
                 static::assertContains('Франко Іван Якович', $reps);
 
-                // calculated team counts: Kyiv session has 2 teams, Lviv has 1
-                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(8)->text()));
-                static::assertContains('2', $teamCounts);
-                static::assertContains('1', $teamCounts);
+                // calculated team counts, shown as "actual / estimated": Kyiv session has 2 teams, Lviv has 1
+                $teamCounts = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(7)->text()));
+                static::assertNotEmpty(array_filter($teamCounts, static fn(string $value): bool => str_starts_with($value, '2 /')));
+                static::assertNotEmpty(array_filter($teamCounts, static fn(string $value): bool => str_starts_with($value, '1 /')));
 
                 // online column: Kyiv session is online, Lviv is not
                 $onlineValues = $rows->each(fn(Crawler $row) => trim($row->filter('td')->eq(2)->text()));
