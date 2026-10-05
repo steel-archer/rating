@@ -2,7 +2,7 @@
 import { trans } from './trans.js';
 import { apiPost } from './api.js';
 
-/** @type {Array<{id: number|null, name: string, lastName?: string, firstName?: string, patronymic?: string, townId?: number|null}>} */
+/** @type {Array<{id: number|null, name: string, lastName?: string, firstName?: string, patronymic?: string, townId?: number|null, townName?: string, countryId?: number|null, location?: string}>} */
 const selectedPlayers = [];
 
 /** @type {number|null} */
@@ -32,6 +32,39 @@ function transError(errorKey) {
     return trans(key).replace('%name%', param);
 }
 
+/**
+ * @param {HTMLElement|null} status
+ * @param {string} message
+ */
+function showNewPlayerStatus(status, message) {
+    if (!status) {
+        return;
+    }
+    status.textContent = message;
+    status.hidden = false;
+}
+
+/**
+ * @param {HTMLElement|null} status
+ */
+function hideNewPlayerStatus(status) {
+    if (!status) {
+        return;
+    }
+    status.hidden = true;
+}
+
+/**
+ * Builds a readable "town, country" label, skipping empty parts.
+ *
+ * @param {string} town
+ * @param {string} country
+ * @returns {string}
+ */
+function formatLocation(town, country) {
+    return [town, country].filter(Boolean).join(', ');
+}
+
 function initSquadForm() {
     const form = /** @type {HTMLFormElement|null} */ (document.getElementById('squad-form'));
     if (!form) {
@@ -56,8 +89,12 @@ function initSquadForm() {
         const editPlayersJson = form.dataset.editPlayers;
         if (editPlayersJson) {
             const editPlayers = JSON.parse(editPlayersJson);
-            editPlayers.forEach(/** @param {{id: number, name: string, isCaptain: boolean}} p */ (p) => {
-                selectedPlayers.push({ id: p.id, name: p.name });
+            editPlayers.forEach(/** @param {{id: number, name: string, isCaptain: boolean, townName?: string|null, countryName?: string|null}} p */ (p) => {
+                selectedPlayers.push({
+                    id: p.id,
+                    name: p.name,
+                    location: formatLocation(p.townName || '', p.countryName || ''),
+                });
                 if (p.isCaptain) {
                     captainId = p.id;
                 }
@@ -159,12 +196,14 @@ function loadTeamPlayers(form, teamId) {
 }
 
 /**
- * @param {{id: number, name: string}} player
+ * @param {{id: number, name: string, townName?: string|null, countryName?: string|null}} player
  * @returns {HTMLElement}
  */
 function createSuggestionRow(player) {
     const tr = document.createElement('tr');
     tr.dataset.playerId = String(player.id);
+
+    const location = formatLocation(player.townName || '', player.countryName || '');
 
     const tdAdd = document.createElement('td');
     const addBtn = document.createElement('button');
@@ -172,7 +211,7 @@ function createSuggestionRow(player) {
     addBtn.className = 'btn-add-player';
     addBtn.textContent = '+';
     addBtn.addEventListener('click', () => {
-        addPlayer({ id: player.id, name: player.name });
+        addPlayer({ id: player.id, name: player.name, location });
     });
     tdAdd.appendChild(addBtn);
 
@@ -215,9 +254,12 @@ function initPlayerSearch(form) {
         if (!item) {
             return;
         }
-        const id = parseInt(/** @type {string} */ (item.dataset.id));
-        const name = /** @type {string} */ (item.textContent);
-        addPlayer({ id, name });
+        const el = /** @type {HTMLElement} */ (item);
+        const id = parseInt(/** @type {string} */ (el.dataset.id));
+        // Plain name from the first text node, excluding the location hint span.
+        const name = el.childNodes[0]?.textContent ?? el.textContent ?? '';
+        const location = formatLocation(el.dataset.townName || '', el.dataset.countryName || '');
+        addPlayer({ id, name, location });
         const input = /** @type {HTMLInputElement} */ (document.getElementById('player-search'));
         setTimeout(() => {
             input.value = '';
@@ -236,17 +278,40 @@ function initNewPlayerForm() {
         newPlayerForm.hidden = !newPlayerForm.hidden;
     });
 
+    const status = /** @type {HTMLElement|null} */ (document.getElementById('new-player-status'));
+
     addBtn.addEventListener('click', () => {
         const lastName = /** @type {HTMLInputElement} */ (document.getElementById('new-player-last-name')).value.trim();
         const firstName = /** @type {HTMLInputElement} */ (document.getElementById('new-player-first-name')).value.trim();
         const patronymic = /** @type {HTMLInputElement} */ (document.getElementById('new-player-patronymic')).value.trim();
+        const countryInput = /** @type {HTMLInputElement} */ (document.getElementById('new-player-country'));
+        const countryId = /** @type {HTMLInputElement} */ (document.getElementById('new-player-country-id')).value;
+        const townInput = /** @type {HTMLInputElement} */ (document.getElementById('new-player-town'));
         const townId = /** @type {HTMLInputElement} */ (document.getElementById('new-player-town-id')).value;
+        const townName = !townId ? townInput.value.trim() : '';
 
-        if (!lastName || !firstName) {
+        if (!lastName) {
+            showNewPlayerStatus(status, trans('squad.error.player_last_name_required'));
             return;
         }
 
+        if (!firstName) {
+            showNewPlayerStatus(status, trans('squad.error.player_first_name_required'));
+            return;
+        }
+
+        // A town (picked or typed) always needs a country attached to it.
+        if ((townId || townName) && !countryId) {
+            showNewPlayerStatus(status, trans('squad.error.country_required'));
+            return;
+        }
+
+        hideNewPlayerStatus(status);
+
         const name = [lastName, firstName, patronymic].filter(Boolean).join(' ');
+        const countryName = countryId ? countryInput.value.trim() : '';
+        const townLabel = townId ? townInput.value.trim() : townName;
+
         addPlayer({
             id: null,
             name,
@@ -254,20 +319,24 @@ function initNewPlayerForm() {
             firstName,
             patronymic: patronymic || undefined,
             townId: townId ? parseInt(townId) : undefined,
+            townName: townName || undefined,
+            countryId: countryId ? parseInt(countryId) : undefined,
+            location: formatLocation(townLabel, countryName),
         });
 
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-last-name')).value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-first-name')).value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-patronymic')).value = '';
-        /** @type {HTMLInputElement} */ (document.getElementById('new-player-country')).value = '';
+        countryInput.value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-country-id')).value = '';
-        /** @type {HTMLInputElement} */ (document.getElementById('new-player-town')).value = '';
+        countryInput.dispatchEvent(new Event('input'));
+        townInput.value = '';
         /** @type {HTMLInputElement} */ (document.getElementById('new-player-town-id')).value = '';
     });
 }
 
 /**
- * @param {{id: number|null, name: string, lastName?: string, firstName?: string, patronymic?: string, townId?: number}} player
+ * @param {{id: number|null, name: string, lastName?: string, firstName?: string, patronymic?: string, townId?: number, townName?: string, countryId?: number, location?: string}} player
  */
 function addPlayer(player) {
     if (player.id !== null && selectedPlayers.some(p => p.id === player.id)) {
@@ -298,6 +367,9 @@ function renderPlayers() {
         const tdName = document.createElement('td');
         tdName.textContent = player.name;
 
+        const tdLocation = document.createElement('td');
+        tdLocation.textContent = player.location || '—';
+
         const tdCaptain = document.createElement('td');
         const radio = document.createElement('input');
         radio.type = 'radio';
@@ -326,7 +398,7 @@ function renderPlayers() {
         });
         tdRemove.appendChild(removeBtn);
 
-        tr.append(tdName, tdCaptain, tdRemove);
+        tr.append(tdName, tdLocation, tdCaptain, tdRemove);
         tbody.appendChild(tr);
     });
 
@@ -362,7 +434,14 @@ function initFormSubmit(form) {
         const data = {
             players: selectedPlayers.map(p => p.id !== null
                 ? { id: p.id }
-                : { lastName: p.lastName, firstName: p.firstName, patronymic: p.patronymic || null, townId: p.townId || null },
+                : {
+                    lastName: p.lastName,
+                    firstName: p.firstName,
+                    patronymic: p.patronymic || null,
+                    townId: p.townId || null,
+                    townName: p.townName || null,
+                    countryId: p.countryId || null,
+                },
             ),
             captainIndex: resolveCaptainIndex(),
         };

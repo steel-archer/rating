@@ -58,7 +58,11 @@ class PlayerSuggestControllerTest extends WebTestCase
             'afterCallback' => static function ($client, array $objects) {
                 $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertCount(1, $data);
+                // The name is the plain full name; the location is returned separately.
                 static::assertStringContainsString('Шевченко', $data[0]['name']);
+                static::assertStringNotContainsString('(', $data[0]['name']);
+                static::assertSame('Київ', $data[0]['townName']);
+                static::assertSame('Україна', $data[0]['countryName']);
             },
         ];
 

@@ -19,11 +19,15 @@ final class SessionTeamPlayerSuggestMapping implements MappingInterface
      */
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
+        $town = $source->getTown();
+
         return new $destinationClass(
             id: $source->getId(),
             name: $source->getFullName(),
             group: $context['group'],
             isCaptain: $context['isCaptain'] ?? false,
+            townName: $town?->getName(),
+            countryName: $town?->getCountry()->getName(),
         );
     }
 }

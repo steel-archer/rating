@@ -19,11 +19,14 @@ final class SquadPlayerEditMapping implements MappingInterface
     public function map(mixed $source, string $destinationClass, array $context = []): object
     {
         $player = $source->getPlayer();
+        $town = $player->getTown();
 
         return new $destinationClass(
             id: $player->getId(),
             name: $player->getFullName(),
             isCaptain: $source->isCaptain(),
+            townName: $town?->getName(),
+            countryName: $town?->getCountry()->getName(),
         );
     }
 }

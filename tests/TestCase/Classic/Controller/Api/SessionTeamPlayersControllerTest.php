@@ -54,8 +54,14 @@ class SessionTeamPlayersControllerTest extends WebTestCase
             'afterCallback' => static function ($client) {
                 $data = json_decode($client->getResponse()->getContent(), true);
                 static::assertNotEmpty($data);
-                $baseGroup = array_filter($data, static fn($item) => $item['group'] === 'base');
+                $baseGroup = array_values(array_filter($data, static fn($item) => $item['group'] === 'base'));
                 static::assertNotEmpty($baseGroup);
+                // Location is returned as separate fields for the squad table.
+                // Base squad is ordered by last name: Франко (Львів) comes first.
+                static::assertArrayHasKey('townName', $baseGroup[0]);
+                static::assertArrayHasKey('countryName', $baseGroup[0]);
+                static::assertSame('Львів', $baseGroup[0]['townName']);
+                static::assertSame('Україна', $baseGroup[0]['countryName']);
             },
         ];
 

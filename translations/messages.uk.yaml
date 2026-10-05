@@ -372,6 +372,7 @@ squad:
   entered_squads_title: 'Внесені склади'
   entry_title: 'Внесення складів'
   error:
+    country_required: 'Вкажіть країну гравця'
     duplicate_players: 'Гравець не може бути у складі двічі'
     max_players: 'Максимум 9 гравців у складі'
     min_players: 'Мінімум 1 гравець у складі'
@@ -385,6 +386,8 @@ squad:
   existing_team: 'Існуюча команда'
   hide: 'сховати'
   hide_all: 'сховати всі'
+  location: 'Місто, країна'
+  new_player_location_optional: 'Місто та країну можна не вказувати. Якщо вказуєте місто, оберіть і країну.'
   new_team: 'Нова команда'
   one_time_name: 'Разова назва'
   one_time_name_hint: 'Якщо команда грала під іншою назвою'

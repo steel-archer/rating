@@ -11,6 +11,8 @@ final readonly class SessionTeamPlayerSuggestDTO
         public string $name,
         public string $group,
         public bool $isCaptain = false,
+        public ?string $townName = null,
+        public ?string $countryName = null,
     ) {
     }
 }

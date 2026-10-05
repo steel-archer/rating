@@ -9,6 +9,7 @@ use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Entity\TournamentSessionTeamPlayer;
 use App\Classic\Service\SessionResultService;
+use App\Common\Entity\Player;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -104,7 +105,7 @@ class SquadSaveControllerTest extends WebTestCase
             },
         ];
 
-        yield 'save squad with new player with town' => [
+        yield 'save squad with new player with town picked from list' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_squad_rep',
             'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
@@ -112,14 +113,87 @@ class SquadSaveControllerTest extends WebTestCase
                 'teamName' => 'Ще команда 2',
                 'townId' => $objects['town_kyiv']->getId(),
                 'players' => [
-                    ['id' => null, 'lastName' => 'Містенко', 'firstName' => 'Місто', 'patronymic' => 'Містович', 'townId' => $objects['town_kyiv']->getId()],
+                    [
+                        'id' => null,
+                        'lastName' => 'Містенко',
+                        'firstName' => 'Місто',
+                        'patronymic' => 'Містович',
+                        'townId' => $objects['town_kyiv']->getId(),
+                        'countryId' => $objects['country_ukraine']->getId(),
+                    ],
                 ],
                 'captainIndex' => 0,
             ],
             'expectedStatus' => 200,
-            'afterCallback' => static function ($client) {
+            'afterCallback' => static function ($client, array $objects) {
                 $data = json_decode($client->getResponse()->getContent(), true);
                 static::assertTrue($data['success']);
+
+                $doctrine = static::getContainer()->get('doctrine');
+                $player = $doctrine->getRepository(Player::class)
+                    ->findOneBy(['lastName' => 'Містенко']);
+                static::assertInstanceOf(Player::class, $player);
+                static::assertSame('Київ', $player->getTown()?->getName());
+            },
+        ];
+
+        yield 'save squad with new player with hand-typed town and country' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => 'Ще команда 3',
+                'townId' => $objects['town_kyiv']->getId(),
+                'players' => [
+                    [
+                        'id' => null,
+                        'lastName' => 'Новомістенко',
+                        'firstName' => 'Новий',
+                        'patronymic' => null,
+                        'townName' => 'Жмеринка',
+                        'countryId' => $objects['country_ukraine']->getId(),
+                    ],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 200,
+            'afterCallback' => static function ($client, array $objects) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertTrue($data['success']);
+
+                $doctrine = static::getContainer()->get('doctrine');
+                $player = $doctrine->getRepository(Player::class)
+                    ->findOneBy(['lastName' => 'Новомістенко']);
+                static::assertInstanceOf(Player::class, $player);
+                $town = $player->getTown();
+                static::assertNotNull($town);
+                static::assertSame('Жмеринка', $town->getName());
+                static::assertSame('Україна', $town->getCountry()->getName());
+            },
+        ];
+
+        yield 'error: new player with town but no country' => [
+            'fixtures' => self::FIXTURES,
+            'loginAs' => 'user_squad_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_squad_approved']->getId() . '/squad',
+            'payload' => static fn(array $objects) => [
+                'teamName' => 'Команда без країни',
+                'townId' => $objects['town_kyiv']->getId(),
+                'players' => [
+                    [
+                        'id' => null,
+                        'lastName' => 'Безкраїнько',
+                        'firstName' => 'Тест',
+                        'patronymic' => null,
+                        'townId' => $objects['town_kyiv']->getId(),
+                    ],
+                ],
+                'captainIndex' => 0,
+            ],
+            'expectedStatus' => 422,
+            'afterCallback' => static function ($client) {
+                $data = json_decode($client->getResponse()->getContent(), true);
+                static::assertStringContainsString('country_required', $data['error']);
             },
         ];
 

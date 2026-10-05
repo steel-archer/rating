@@ -90,6 +90,7 @@
                     <thead>
                         <tr>
                             <th>{{ 'player.full_name'|trans }}</th>
+                            <th>{{ 'squad.location'|trans }}</th>
                             <th>{{ 'squad.captain_short'|trans }}</th>
                             <th></th>
                         </tr>
@@ -129,17 +130,19 @@
                         <input type="text" id="new-player-first-name" placeholder="{{ 'player.first_name'|trans }}">
                         <input type="text" id="new-player-patronymic" placeholder="{{ 'player.patronymic'|trans }}">
                         <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
-                            <input type="text" id="new-player-country" data-suggest-input placeholder="{{ 'common.country'|trans }}">
+                            <input type="text" id="new-player-country" data-suggest-input placeholder="{{ 'common.country'|trans }}" autocomplete="off">
                             <input type="hidden" id="new-player-country-id" data-suggest-hidden>
                             <div data-suggest-dropdown hidden></div>
                         </div>
-                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="new-player-country-id">
-                            <input type="text" id="new-player-town" data-suggest-input placeholder="{{ 'common.town'|trans }}">
+                        <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="new-player-country-id" data-suggest-require-country>
+                            <input type="text" id="new-player-town" data-suggest-input placeholder="{{ 'common.town'|trans }}" autocomplete="off" disabled>
                             <input type="hidden" id="new-player-town-id" data-suggest-hidden>
                             <div data-suggest-dropdown hidden></div>
                         </div>
                         <button type="button" id="add-new-player-btn" class="btn btn-primary">{{ 'squad.add_player'|trans }}</button>
                     </div>
+                    <p class="hint">{{ 'squad.new_player_location_optional'|trans }}</p>
+                    <div id="new-player-status" class="form-error" hidden></div>
                 </div>
             </div>
 
