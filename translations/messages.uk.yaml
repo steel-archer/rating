@@ -271,6 +271,7 @@ player_claim:
   email_visibility_warning: 'Цей email бачитимуть: ви, модератори сайту та організатори турнірів, на які ви подаватимете заявки на відіграш.'
   existing_description: 'Знайдіть себе серед гравців рейтингу'
   existing_title: 'Я вже є в рейтингу'
+  location_optional: 'Місто та країну можна не вказувати. Якщо вказуєте місто, оберіть і країну.'
   new_description: 'Заповніть дані для створення нового гравця'
   new_title: 'Я новий гравець'
   select: 'Обрати'
@@ -280,7 +281,6 @@ player_claim:
   terms_accept: 'Я приймаю <a href="%license_url%" target="_blank">умови користування сервісом</a> і ознайомлений(-а) з <a href="%privacy_url%" target="_blank">політикою конфіденційності</a>'
   terms_required: 'Необхідно прийняти умови користування сервісом'
   title: 'Привʼязка гравця'
-  town_required: 'Вкажіть місто'
   your_email: 'Ваш email'
 
 hosted_session:

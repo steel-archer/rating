@@ -122,6 +122,7 @@
 
 .form-error {
     margin-top: 12px;
+    margin-bottom: 12px;
     padding: 10px 14px;
     background: #fef2f2;
     border: 1px solid #fecaca;

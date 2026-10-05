@@ -80,18 +80,20 @@
                 </div>
                 <div class="form-group">
                     <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}" data-suggest-country-input>
-                        <input type="text" data-suggest-input placeholder="{{ 'common.country'|trans }} *" class="search-input" autocomplete="off" required>
+                        <input type="text" data-suggest-input placeholder="{{ 'common.country'|trans }}" class="search-input" autocomplete="off">
                         <input type="hidden" name="countryId" data-suggest-hidden>
                         <div class="suggest-dropdown" data-suggest-dropdown></div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId" data-suggest-town-input>
-                        <input type="text" data-suggest-input placeholder="{{ 'common.town'|trans }} *" class="search-input" autocomplete="off" required>
+                    <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="countryId" data-suggest-require-country data-suggest-town-input>
+                        <input type="text" data-suggest-input placeholder="{{ 'common.town'|trans }}" class="search-input" autocomplete="off" disabled>
                         <input type="hidden" name="townId" data-suggest-hidden>
                         <div class="suggest-dropdown" data-suggest-dropdown></div>
                     </div>
                 </div>
+                <p class="hint">{{ 'player_claim.location_optional'|trans }}</p>
+                <div id="player-claim-new-status" class="form-error" hidden></div>
                 <button type="submit" class="search-btn" disabled>{{ 'player_claim.submit'|trans }}</button>
             </form>
         </div>
