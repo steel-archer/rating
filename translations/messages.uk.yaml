@@ -519,7 +519,6 @@ tournament:
     submission_before_end: 'Дедлайн подачі результатів має бути пізніше дати завершення'
     appeal_deadline_before_submission: 'Дедлайн подачі апеляцій має бути пізніше дедлайну подачі результатів'
     questions_map_length_mismatch: 'Кількість елементів у розподілі питань не відповідає кількості турів'
-    spans_multiple_seasons: 'Турнір не може охоплювати декілька сезонів'
     start_in_past: 'Дата початку не може бути в минулому'
   moderation_status:
     approved: 'Схвалено'

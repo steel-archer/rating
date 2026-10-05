@@ -440,7 +440,6 @@ export default {
     "tournament.error.submission_before_end": "Дедлайн подачі результатів має бути пізніше дати завершення",
     "tournament.error.appeal_deadline_before_submission": "Дедлайн подачі апеляцій має бути пізніше дедлайну подачі результатів",
     "tournament.error.questions_map_length_mismatch": "Кількість елементів у розподілі питань не відповідає кількості турів",
-    "tournament.error.spans_multiple_seasons": "Турнір не може охоплювати декілька сезонів",
     "tournament.error.start_in_past": "Дата початку не може бути в минулому",
     "tournament.moderation_status.approved": "Схвалено",
     "tournament.moderation_status.none": "Не подано",
