@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\SessionClaim;
 
+use App\Classic\Entity\SessionClaim;
+use App\Classic\Entity\TournamentSession;
 use App\Tests\FixturesTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -48,6 +50,24 @@ class CreateControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'draft distributed tournament rejects registration with a future deadline' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft_distributed.yaml'],
+            'loginAs' => 'user_draft_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/create/' . $objects['tournament_draft_distributed']->getId(),
+            'expectedStatus' => 403,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                // Closed registration returns a bare access denial, without a domain error key.
+                static::assertCount(0, $client->getCrawler()->filter('#session-claim-form'));
+                $doctrine = static::getContainer()->get('doctrine');
+                $sessions = $doctrine->getRepository(TournamentSession::class)->findAll();
+                $claims = $doctrine->getRepository(SessionClaim::class)->findAll();
+                static::assertCount(1, $sessions);
+                static::assertCount(1, $claims);
+                static::assertSame($objects['session_draft_approved']->getId(), $sessions[0]->getId());
+                static::assertSame($objects['claim_draft_approved']->getId(), $claims[0]->getId());
+            },
+        ];
+
         yield 'shows form for representative' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',

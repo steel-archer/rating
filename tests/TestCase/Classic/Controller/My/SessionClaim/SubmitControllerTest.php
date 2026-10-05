@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\SessionClaim;
 
+use App\Classic\Entity\SessionClaim;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Service\SessionClaimService;
 use App\Tests\FixturesTrait;
@@ -55,6 +56,35 @@ class SubmitControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'draft distributed tournament rejects registration with a future deadline' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft_distributed.yaml'],
+            'loginAs' => 'user_draft_rep',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/session-claims/' . $objects['tournament_draft_distributed']->getId() . '/submit',
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'venueId' => $objects['venue_kyiv']->getId(),
+                    'hostId' => $objects['player_shevchenko']->getId(),
+                    'estimatedTeams' => 6,
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $body = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+                static::assertSame('session_claim.error.registration_closed', $body['error']);
+                $doctrine = static::getContainer()->get('doctrine');
+                $sessions = $doctrine->getRepository(TournamentSession::class)->findAll();
+                $claims = $doctrine->getRepository(SessionClaim::class)->findAll();
+                static::assertCount(1, $sessions);
+                static::assertCount(1, $claims);
+                static::assertSame($objects['session_draft_approved']->getId(), $sessions[0]->getId());
+                static::assertSame($objects['claim_draft_approved']->getId(), $claims[0]->getId());
+            },
+        ];
+
         yield 'submit successfully' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_representative',

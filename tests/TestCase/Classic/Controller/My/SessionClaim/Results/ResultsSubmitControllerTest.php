@@ -56,6 +56,22 @@ class ResultsSubmitControllerTest extends WebTestCase
      */
     public static function dataProvider(): iterable
     {
+        yield 'draft distributed tournament rejects results with a future deadline' => [
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_draft_distributed.yaml'],
+            'loginAs' => 'user_draft_rep',
+            'uri' => static fn(array $objects) => '/my/session-claims/' . $objects['session_draft_approved']->getId() . '/results/submit',
+            'setup' => null,
+            'expectedStatus' => 403,
+            'afterCallback' => static function ($client, array $objects) {
+                $sessionTeam = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentSessionTeam::class)
+                    ->find($objects['session_team_draft']->getId());
+                static::assertNotNull($sessionTeam);
+                static::assertFalse($sessionTeam->isResultsSubmitted());
+                static::assertSame(0, $sessionTeam->getScore());
+            },
+        ];
+
         yield 'submit after upload' => [
             'fixtures' => self::FIXTURES,
             'loginAs' => 'user_results_rep',

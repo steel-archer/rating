@@ -103,6 +103,43 @@ class SessionsListControllerTest extends WebTestCase
             },
         ];
 
+        yield 'unpublished tournament - regular player gets 404' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/sessions/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_player',
+            'expectedStatus' => 404,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertStringNotContainsString('Квіз-бар Київ', $crawler->html());
+            },
+        ];
+
+        yield 'unpublished tournament - organizer sees sessions' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/sessions/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertSame('Квіз-бар Київ', trim($rows->filter('td')->eq(0)->text()));
+            },
+        ];
+
+        yield 'unpublished tournament - moderator sees sessions' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_unpublished']->getId() . '/sessions/list',
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_unpublished_results.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_moderator',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $rows = $crawler->filter('table tbody tr');
+                static::assertCount(1, $rows);
+                static::assertSame('Квіз-бар Київ', trim($rows->filter('td')->eq(0)->text()));
+            },
+        ];
+
         yield 'not found for non-existent tournament' => [
             'method' => 'GET',
             'uri' => '/tournament/999999/sessions/list',
