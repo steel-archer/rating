@@ -108,14 +108,13 @@ class TournamentManagementService
         $startedAt = $dto->startedAt
             ? new DateTimeImmutable($dto->startedAt)->setTime(0, 0)
             : null;
+        $endedAt = $dto->endedAt
+            ? new DateTimeImmutable($dto->endedAt)->setTime(0, 0)
+            : null;
 
         $tournament->setName($dto->name);
         $tournament->setStartedAt($startedAt);
-        $tournament->setEndedAt(
-            $dto->endedAt
-                ? new DateTimeImmutable($dto->endedAt)->setTime(0, 0)
-                : null,
-        );
+        $tournament->setEndedAt($endedAt);
         $tournament->setResultsHiddenUntil(
             $dto->resultsHiddenUntil
                 ? new DateTimeImmutable($dto->resultsHiddenUntil)->setTime(0, 0)
@@ -145,7 +144,7 @@ class TournamentManagementService
         $tournament->setQuestionsPerTourMap($this->buildQuestionsPerTourMap($dto));
         $tournament->setDifficulty($dto->difficulty);
         $tournament->setDiscussionLink($dto->discussionLink);
-        $tournament->setSeason($startedAt ? $this->seasonRepository->findByDate($startedAt) : null);
+        $tournament->setSeason($endedAt ? $this->seasonRepository->findByDate($endedAt) : null);
 
         $affectedPlayerIds = $this->syncOfficials($tournament, $dto);
 

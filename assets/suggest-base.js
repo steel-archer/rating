@@ -5,7 +5,7 @@ import { debounce } from './debounce.js';
  * @param {HTMLInputElement} input
  * @param {HTMLElement} dropdown
  * @param {string} apiUrl
- * @param {function({id: string, name: string}): void} onSelect
+ * @param {function({id: string, name: string, townName?: string|null, countryName?: string|null}): void} onSelect
  * @param {function(): Object<string, string>} [getExtraParams]
  */
 export function initSuggestBehavior(input, dropdown, apiUrl, onSelect, getExtraParams) {
@@ -25,7 +25,7 @@ export function initSuggestBehavior(input, dropdown, apiUrl, onSelect, getExtraP
                 }
                 return response.json();
             })
-            .then(/** @param {Array<{id: string, name: string}>} items */ (items) => {
+            .then(/** @param {Array<{id: string, name: string, townName?: string|null, countryName?: string|null}>} items */ (items) => {
                 if (items.length === 0) {
                     dropdown.innerHTML = '';
                     dropdown.hidden = true;
@@ -35,7 +35,22 @@ export function initSuggestBehavior(input, dropdown, apiUrl, onSelect, getExtraP
                     const div = document.createElement('div');
                     div.className = 'suggest-item';
                     div.dataset.id = item.id;
+                    if (item.townName) {
+                        div.dataset.townName = item.townName;
+                    }
+                    if (item.countryName) {
+                        div.dataset.countryName = item.countryName;
+                    }
+                    // Location (if any) is shown as a muted hint so players with the
+                    // same name can be told apart, while the item text stays the name.
+                    const location = [item.townName, item.countryName].filter(Boolean).join(', ');
                     div.textContent = item.name;
+                    if (location) {
+                        const hint = document.createElement('span');
+                        hint.className = 'suggest-item-hint';
+                        hint.textContent = ` (${location})`;
+                        div.appendChild(hint);
+                    }
                     return div;
                 }));
                 dropdown.hidden = false;
@@ -61,7 +76,15 @@ export function initSuggestBehavior(input, dropdown, apiUrl, onSelect, getExtraP
         if (!item) {
             return;
         }
-        onSelect({ id: /** @type {string} */ (item.dataset.id), name: /** @type {string} */ (item.textContent) });
+        const el = /** @type {HTMLElement} */ (item);
+        // Take the plain name from the first text node, not the location hint span.
+        const name = el.childNodes[0]?.textContent ?? el.textContent ?? '';
+        onSelect({
+            id: /** @type {string} */ (el.dataset.id),
+            name,
+            townName: el.dataset.townName ?? null,
+            countryName: el.dataset.countryName ?? null,
+        });
         dropdown.innerHTML = '';
         dropdown.hidden = true;
     });

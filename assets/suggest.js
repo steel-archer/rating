@@ -15,18 +15,31 @@ function initSuggest(wrapper) {
     wrapper.dataset.suggestInit = '1';
 
     input.addEventListener('input', () => {
-        if (hidden) {
+        if (hidden && hidden.value !== '') {
             hidden.value = '';
+            // Notify dependent suggests (e.g. town linked to this country) so they
+            // reset and re-lock when the text is cleared or edited by hand.
+            hidden.dispatchEvent(new Event('change'));
         }
     });
 
     const countryHidden = resolveCountryHidden(wrapper);
     if (countryHidden) {
+        // When requested, the town input stays disabled until a country is chosen,
+        // so a town can never be selected without its country.
+        const requireCountry = wrapper.dataset.suggestRequireCountry !== undefined;
+        if (requireCountry) {
+            input.disabled = !countryHidden.value;
+        }
+
         // Reset the chosen town whenever the linked country changes.
         countryHidden.addEventListener('change', () => {
             input.value = '';
             if (hidden) {
                 hidden.value = '';
+            }
+            if (requireCountry) {
+                input.disabled = !countryHidden.value;
             }
         });
     }

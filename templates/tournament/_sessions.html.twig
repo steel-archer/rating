@@ -13,8 +13,7 @@
                         <th>{{ 'venue.representative'|trans }}</th>
                         <th>{{ 'venue.host'|trans }}</th>
                         <th>{{ 'session_claim.announcement_link'|trans }}</th>
-                        <th title="{{ 'session_claim.estimated_teams'|trans }}">{{ 'session_claim.estimated_teams_short'|trans }}</th>
-                        <th>{{ 'common.teams_count'|trans }}</th>
+                        <th title="{{ 'session_claim.teams_col_hint'|trans }}">{{ 'session_claim.estimated_teams_short'|trans }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,8 +52,9 @@
                                     —
                                 {% endif %}
                             </td>
-                            <td>{{ s.estimatedTeams ?? '—' }}</td>
-                            <td>{{ teamCounts[s.id] ?? 0 }}</td>
+                            <td title="{{ 'session_claim.teams_col_hint'|trans }}">
+                                {{ teamCounts[s.id] ?? 0 }} / {{ s.estimatedTeams ?? '—' }}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

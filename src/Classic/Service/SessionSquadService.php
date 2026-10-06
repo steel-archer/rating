@@ -13,7 +13,10 @@ use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Entity\TournamentSessionTeamPlayer;
 use App\Classic\Enum\SessionClaimStatus;
+use App\Common\Entity\Country;
+use App\Common\Entity\Town;
 use App\Common\Mapping\Mapper;
+use App\Common\Repository\CountryRepository;
 use App\Common\Repository\PlayerRepository;
 use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TeamPlayerRepository;
@@ -39,6 +42,7 @@ class SessionSquadService
         private EntityManagerInterface $em,
         private TeamRepository $teamRepository,
         private TownRepository $townRepository,
+        private CountryRepository $countryRepository,
         private PlayerRepository $playerRepository,
         private TeamPlayerRepository $teamPlayerRepository,
         private TeamPlayerTransferRepository $transferRepository,
@@ -130,7 +134,7 @@ class SessionSquadService
         $this->validateNoDuplicate($session, $team);
 
         $players = $this->resolveAndValidatePlayers($session, $dto, []);
-        $captainIndex = $this->validateCaptainIndex($dto, $players);
+        $captainIndex = $this->resolveCaptainIndex($dto, $players);
 
         $sessionTeam = new TournamentSessionTeam();
         $sessionTeam->setTournamentSession($session);
@@ -351,11 +355,7 @@ class SessionSquadService
         $player->setLastName(trim($dto->lastName));
         $player->setFirstName(trim($dto->firstName));
         $player->setPatronymic($dto->patronymic !== null ? trim($dto->patronymic) : null);
-
-        if ($dto->townId !== null) {
-            $town = $this->townRepository->find($dto->townId);
-            $player->setTown($town);
-        }
+        $player->setTown($this->resolvePlayerTown($dto));
 
         $this->em->persist($player);
 
@@ -363,15 +363,64 @@ class SessionSquadService
     }
 
     /**
-     * @param SquadRequestDTO $dto
-     * @param list<Player> $players
-     * @return int
+     * Resolves the town for a brand new player. A town picked from the list
+     * (townId) is used as is; a hand-typed name is matched within the chosen
+     * country or created there. Both forms require a country.
+     *
      * @throws LogicException
      */
-    private function validateCaptainIndex(SquadRequestDTO $dto, array $players): int
+    private function resolvePlayerTown(SquadPlayerDTO $dto): ?Town
+    {
+        if ($dto->townId !== null) {
+            return $this->townRepository->find($dto->townId)
+                ?? throw new LogicException('common.not_found');
+        }
+
+        if ($dto->townName === null || trim($dto->townName) === '') {
+            return null;
+        }
+
+        $country = $this->resolvePlayerCountry($dto->countryId);
+        $townName = trim($dto->townName);
+
+        $existing = $this->townRepository->findOneBy(['name' => $townName, 'country' => $country]);
+        if ($existing !== null) {
+            return $existing;
+        }
+
+        $town = new Town();
+        $town->setName($townName);
+        $town->setCountry($country);
+        $this->em->persist($town);
+
+        return $town;
+    }
+
+    /**
+     * @throws LogicException
+     */
+    private function resolvePlayerCountry(?int $countryId): Country
+    {
+        if ($countryId === null) {
+            throw new LogicException('squad.error.country_required');
+        }
+
+        return $this->countryRepository->find($countryId)
+            ?? throw new LogicException('common.not_found');
+    }
+
+    /**
+     * Resolves the captain index. The captain is optional: when none is chosen
+     * (or the index points past the squad) the squad is saved without a captain.
+     *
+     * @param SquadRequestDTO $dto
+     * @param list<Player> $players
+     * @return int|null
+     */
+    private function resolveCaptainIndex(SquadRequestDTO $dto, array $players): ?int
     {
         if ($dto->captainIndex === null || $dto->captainIndex >= count($players)) {
-            throw new LogicException('squad.error.captain_required');
+            return null;
         }
 
         return $dto->captainIndex;
@@ -388,7 +437,7 @@ class SessionSquadService
         $this->ensureCanManageSquad($session, $representative);
 
         $players = $this->resolvePlayersForUpdate($session, $sessionTeam, $dto);
-        $captainIndex = $this->validateCaptainIndex($dto, $players);
+        $captainIndex = $this->resolveCaptainIndex($dto, $players);
 
         $sessionTeam->setOneTimeName($dto->oneTimeName !== null ? trim($dto->oneTimeName) : null);
 

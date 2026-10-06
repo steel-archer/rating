@@ -392,7 +392,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | Поле | Тип | Ціль | Nullable | Примітка |
 |------|-----|------|----------|----------|
 | createdBy | ManyToOne | Player | ✓ | 🔗 Common |
-| season | ManyToOne | Season | ✓ | 🔗 Common |
+| season | ManyToOne | Season | ✓ | 🔗 Common; визначається за датою завершення (`endedAt`); турнір може тривати в межах кількох сезонів |
 
 ### TournamentDocument
 

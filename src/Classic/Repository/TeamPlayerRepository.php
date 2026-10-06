@@ -63,7 +63,9 @@ class TeamPlayerRepository extends ServiceEntityRepository
             static fn(TeamPlayer $tp) => $tp->getPlayer(),
             $this->createQueryBuilder('tp')
                 ->join('tp.player', 'player')
-                ->addSelect('player')
+                ->leftJoin('player.town', 'town')
+                ->leftJoin('town.country', 'country')
+                ->addSelect('player', 'town', 'country')
                 ->where('tp.team = :team')
                 ->andWhere('tp.season = :season')
                 ->setParameter('team', $team)

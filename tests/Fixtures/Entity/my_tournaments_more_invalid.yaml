@@ -5,13 +5,6 @@ App\Common\Entity\User:
         roles: []
         player: '@player_franko'
 
-App\Common\Entity\Season:
-    # Yearly season immediately after the current one (starts the day current ends).
-    season_next:
-        name: '2026-2027'
-        startedAt: '<(new \DateTimeImmutable("+6 months +1 day"))>'
-        endedAt: '<(new \DateTimeImmutable("+18 months"))>'
-
 App\Classic\Entity\Tournament:
     tournament_appeal_before_submission:
         name: 'Турнір appealDeadline < submissionDeadline'
@@ -52,22 +45,6 @@ App\Classic\Entity\Tournament:
         appealDeadline: '<(new \DateTimeImmutable("+34 days 00:00:00"))>'
         toursCount: 3
         questionsPerTourMap: [12, 12]
-        difficulty: 3.5
-    tournament_spans_seasons:
-        name: 'Турнір через сезони'
-        status: '<(App\Classic\Enum\TournamentStatus::Draft)>'
-        createdBy: '@player_franko'
-        season: '@season_current'
-        # Straddles the current/next season boundary (at +6 months) so publishing fails.
-        startedAt: '<(new \DateTimeImmutable("+6 months -5 days 00:00:00"))>'
-        endedAt: '<(new \DateTimeImmutable("+6 months +5 days 00:00:00"))>'
-        resultsHiddenUntil: '<(new \DateTimeImmutable("+6 months +6 days 00:00:00"))>'
-        registrationDeadline: '<(new \DateTimeImmutable("+6 months +1 day 00:00:00"))>'
-        detailsHiddenUntil: '<(new \DateTimeImmutable("+6 months +7 days 00:00:00"))>'
-        submissionDeadline: '<(new \DateTimeImmutable("+6 months +6 days 00:00:00"))>'
-        appealDeadline: '<(new \DateTimeImmutable("+6 months +8 days 00:00:00"))>'
-        toursCount: 3
-        questionsPerTourMap: [12, 12, 12]
         difficulty: 3.5
 
 App\Classic\Entity\TournamentOfficial:
@@ -119,22 +96,6 @@ App\Classic\Entity\TournamentOfficial:
         tournament: '@tournament_map_mismatch'
         player: '@player_franko'
         role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
-    official_spans_org:
-        tournament: '@tournament_spans_seasons'
-        player: '@player_franko'
-        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
-    official_spans_editor:
-        tournament: '@tournament_spans_seasons'
-        player: '@player_franko'
-        role: '<(App\Classic\Enum\TournamentOfficialRole::Editor)>'
-    official_spans_game_jury:
-        tournament: '@tournament_spans_seasons'
-        player: '@player_lesya'
-        role: '<(App\Classic\Enum\TournamentOfficialRole::GameJury)>'
-    official_spans_appeal_jury:
-        tournament: '@tournament_spans_seasons'
-        player: '@player_franko'
-        role: '<(App\Classic\Enum\TournamentOfficialRole::AppealJury)>'
 
 App\Classic\Entity\TournamentModerationClaim:
     claim_appeal_sub:
@@ -149,11 +110,6 @@ App\Classic\Entity\TournamentModerationClaim:
         resolvedAt: '<(new \DateTimeImmutable())>'
     claim_map_mismatch:
         tournament: '@tournament_map_mismatch'
-        status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
-        createdAt: '<(new \DateTimeImmutable("-1 day"))>'
-        resolvedAt: '<(new \DateTimeImmutable())>'
-    claim_spans:
-        tournament: '@tournament_spans_seasons'
         status: '<(App\Classic\Enum\TournamentModerationStatus::Approved)>'
         createdAt: '<(new \DateTimeImmutable("-1 day"))>'
         resolvedAt: '<(new \DateTimeImmutable())>'

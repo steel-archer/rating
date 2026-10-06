@@ -10,7 +10,6 @@ use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentModerationStatus;
 use App\Classic\Entity\TournamentOfficial;
 use App\Classic\Enum\TournamentOfficialRole;
-use App\Common\Repository\SeasonRepository;
 use App\Classic\Repository\TournamentModerationClaimRepository;
 use App\Classic\Repository\TournamentOfficialRepository;
 use DateMalformedStringException;
@@ -22,7 +21,6 @@ class TournamentValidator
     public function __construct(
         private TournamentModerationClaimRepository $claimRepository,
         private TournamentOfficialRepository $officialRepository,
-        private SeasonRepository $seasonRepository,
         private ClockInterface $clock,
     ) {
     }
@@ -179,13 +177,6 @@ class TournamentValidator
 
         if ($startedAt !== null && $endedAt !== null && $endedAt < $startedAt) {
             $errors[] = 'tournament.error.end_before_start';
-        }
-        if ($startedAt !== null && $endedAt !== null) {
-            $startSeason = $this->seasonRepository->findByDate($startedAt);
-            $endSeason = $this->seasonRepository->findByDate($endedAt);
-            if ($startSeason !== $endSeason) {
-                $errors[] = 'tournament.error.spans_multiple_seasons';
-            }
         }
 
         return $errors;

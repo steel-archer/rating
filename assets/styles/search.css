@@ -89,3 +89,7 @@
 .suggest-item:hover {
     background: #f0f0f5;
 }
+
+.suggest-item-hint {
+    color: #6b7280;
+}

@@ -153,10 +153,12 @@ class PlayerRepository extends ServiceEntityRepository
     {
         $rows = $this->createQueryBuilder('p')
             ->leftJoin('p.town', 'town')
+            ->leftJoin('town.country', 'country')
             ->select(
                 'p.id',
                 "CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) AS name",
                 'town.name AS townName',
+                'country.name AS countryName',
             )
             ->where("CONCAT(p.lastName, ' ', p.firstName, ' ', COALESCE(p.patronymic, '')) LIKE :q")
             ->setParameter('q', LikeEscape::contains($query))
@@ -167,7 +169,9 @@ class PlayerRepository extends ServiceEntityRepository
 
         $rows = array_map(static fn(array $row) => [
             'id' => $row['id'],
-            'name' => trim($row['name']) . ($row['townName'] ? ' (' . $row['townName'] . ')' : ''),
+            'name' => trim($row['name']),
+            'townName' => $row['townName'],
+            'countryName' => $row['countryName'],
         ], $rows);
 
         return $this->mapper->mapMultiple($rows, SuggestItemDTO::class);

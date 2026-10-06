@@ -14,37 +14,71 @@ function initPlayerClaimNewForm() {
         event.preventDefault();
 
         const url = /** @type {string} */ (form.dataset.url);
+        const status = /** @type {HTMLElement|null} */ (document.getElementById('player-claim-new-status'));
+
+        const townId = parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null;
+        const countryId = parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="countryId"]')).value) || null;
+
+        // The town name is read directly from the visible input so a manually
+        // typed value is not silently dropped when nothing is picked from the list.
+        const townInput = /** @type {HTMLInputElement} */ (form.querySelector('[data-suggest-town-input] [data-suggest-input]'));
+        const townName = !townId ? (townInput.value.trim() || null) : null;
+
+        // A town (picked from the list or typed by hand) always needs a country.
+        if ((townId !== null || townName !== null) && countryId === null) {
+            showStatus(status, trans('player_claim.country_required'));
+            return;
+        }
+
+        hideStatus(status);
 
         const data = {
             lastName: /** @type {HTMLInputElement} */ (form.querySelector('[name="lastName"]')).value,
             firstName: /** @type {HTMLInputElement} */ (form.querySelector('[name="firstName"]')).value,
             patronymic: /** @type {HTMLInputElement} */ (form.querySelector('[name="patronymic"]')).value || null,
-            townId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="townId"]')).value) || null,
-            townName: null,
-            countryId: parseInt(/** @type {HTMLInputElement} */ (form.querySelector('[name="countryId"]')).value) || null,
+            townId,
+            townName,
+            countryId,
             termsAccepted: isTermsAccepted(),
             telegram: getContactValue('telegram'),
             facebook: getContactValue('facebook'),
             phone: getContactValue('phone'),
         };
 
-        if (!data.townId) {
-            const townInput = /** @type {HTMLInputElement} */ (form.querySelector('[data-suggest-town-input] [data-suggest-input]'));
-            data.townName = townInput.value.trim() || null;
-        }
-
         apiPost(url, data)
             .then(({ok, body}) => {
                 if (ok) {
                     window.location.href = '/player-claim/submitted';
                 } else {
-                    alert(transError(body.error));
+                    showStatus(status, transError(body.error));
                 }
             })
             .catch(() => {
-                alert(transError(null));
+                showStatus(status, transError(null));
             });
     });
+}
+
+/**
+ * @param {HTMLElement|null} status
+ * @param {string} message
+ */
+function showStatus(status, message) {
+    if (!status) {
+        return;
+    }
+    status.textContent = message;
+    status.hidden = false;
+}
+
+/**
+ * @param {HTMLElement|null} status
+ */
+function hideStatus(status) {
+    if (!status) {
+        return;
+    }
+    status.hidden = true;
 }
 
 function initPlayerClaimActions() {

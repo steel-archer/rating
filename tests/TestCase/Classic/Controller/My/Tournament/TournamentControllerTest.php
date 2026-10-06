@@ -997,33 +997,6 @@ class TournamentControllerTest extends WebTestCase
             },
         ];
 
-        yield 'update with dates spanning multiple seasons returns 422' => [
-            'fixtures' => $fixtures,
-            'loginAs' => 'user_creator',
-            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
-                'POST',
-                '/my/tournaments/' . $objects['tournament_draft']->getId(),
-                [],
-                [],
-                ['CONTENT_TYPE' => 'application/json'],
-                json_encode([
-                    'name' => 'Мій чернетковий турнір',
-                    'startedAt' => '2026-09-29',
-                    'endedAt' => '2026-10-02',
-                    'toursCount' => null,
-                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
-                    'difficulty' => null,
-                    'organizers' => [],
-                    'editors' => [],
-                    'gameJury' => [],
-                    'appealJury' => [],
-                ], JSON_THROW_ON_ERROR),
-            ),
-            'expectedStatus' => 422,
-            'afterCallback' => static function () {
-            },
-        ];
-
         yield 'update with resultsHiddenUntil before endedAt returns 422' => [
             'fixtures' => $fixtures,
             'loginAs' => 'user_creator',
@@ -1715,23 +1688,6 @@ class TournamentControllerTest extends WebTestCase
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertContains('tournament.publish_error.questions_map_mismatch', $json['error']);
-            },
-        ];
-
-        yield 'publish fails when tournament spans multiple seasons' => [
-            'fixtures' => $fixturesMoreInvalid,
-            'loginAs' => 'user_creator',
-            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
-                'POST',
-                '/my/tournaments/' . $objects['tournament_spans_seasons']->getId() . '/publish',
-                [],
-                [],
-                ['CONTENT_TYPE' => 'application/json'],
-            ),
-            'expectedStatus' => 422,
-            'afterCallback' => static function (KernelBrowser $client) {
-                $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-                static::assertContains('tournament.error.spans_multiple_seasons', $json['error']);
             },
         ];
 

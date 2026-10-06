@@ -9,12 +9,12 @@ use App\Common\Validator\UkrainianName;
 use App\Common\Validator\UkrainianTownName;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Town and country are both optional, but a town (whether picked by id or typed
+ * by name) always requires a country to be chosen alongside it.
+ */
 #[Assert\Expression(
-    expression: 'this.townId !== null or (this.townName !== null and this.townName !== "")',
-    message: 'player_claim.town_required',
-)]
-#[Assert\Expression(
-    expression: 'this.townId !== null or this.countryId !== null',
+    expression: '(this.townId === null and (this.townName === null or this.townName === "")) or this.countryId !== null',
     message: 'player_claim.country_required',
 )]
 final readonly class ClaimNewRequestDTO implements HasContactFields

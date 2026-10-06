@@ -10,6 +10,8 @@ final readonly class SquadPlayerEditDTO
         public int $id,
         public string $name,
         public bool $isCaptain,
+        public ?string $townName = null,
+        public ?string $countryName = null,
     ) {
     }
 }
