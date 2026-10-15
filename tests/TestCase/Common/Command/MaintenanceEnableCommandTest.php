@@ -15,7 +15,7 @@ class MaintenanceEnableCommandTest extends AbstractMaintenanceCommandTestCase
             $this->maintenanceService->enable();
         }
 
-        $tester = $this->runCommand('app:maintenance:enable');
+        $tester = $this->executeCommand('app:maintenance:enable');
 
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay());
         self::assertStringContainsString('Maintenance mode enabled', $tester->getDisplay());
