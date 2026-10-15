@@ -41,7 +41,7 @@ class SeasonRolloverCommandTest extends KernelTestCase
             $arrange($objects);
         }
 
-        $tester = self::runCommand($input);
+        $tester = self::executeCommand($input);
 
         self::assertSame($expectedStatus, $tester->getStatusCode(), $tester->getDisplay());
         $afterCallback($tester, $objects);
@@ -179,7 +179,7 @@ class SeasonRolloverCommandTest extends KernelTestCase
 
         yield 'rerun is idempotent' => [
             'arrange' => static function () {
-                self::runCommand(['--from' => 'season_current'])->assertCommandIsSuccessful();
+                self::executeCommand(['--from' => 'season_current'])->assertCommandIsSuccessful();
             },
             'input' => ['--from' => 'season_current'],
             'expectedStatus' => 0,
@@ -212,7 +212,7 @@ class SeasonRolloverCommandTest extends KernelTestCase
     /**
      * @param array<string, mixed> $input
      */
-    private static function runCommand(array $input = []): CommandTester
+    private static function executeCommand(array $input = []): CommandTester
     {
         // Resolve a season reference placeholder to its real id at run time.
         if (isset($input['--from']) && $input['--from'] === 'season_current') {

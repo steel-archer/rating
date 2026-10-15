@@ -19,7 +19,7 @@ abstract class AbstractMaintenanceCommandTestCase extends KernelTestCase
         $this->maintenanceService = self::getContainer()->get(MaintenanceService::class);
     }
 
-    protected function runCommand(string $name): CommandTester
+    protected function executeCommand(string $name): CommandTester
     {
         $application = new Application(self::$kernel);
         $tester = new CommandTester($application->find($name));
