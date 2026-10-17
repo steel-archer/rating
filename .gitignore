@@ -16,4 +16,5 @@
 /coverage/
 .idea/
 .kiro/settings/mcp.json
+.kiro/steering/mcp.md
 /docker-compose.prodcheck.yml
