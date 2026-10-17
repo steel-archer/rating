@@ -6,6 +6,7 @@ namespace App\Classic\Service;
 
 use App\Classic\DTO\Request\Tournament\My\CreateRequestDTO;
 use App\Classic\DTO\Request\Tournament\My\EditRequestDTO;
+use App\Classic\DTO\Request\Tournament\My\OfficialPlayerDTO;
 use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentOnlineMode;
 use App\Common\Entity\Player;
@@ -17,6 +18,7 @@ use App\Classic\Enum\TournamentOfficialRole;
 use App\Classic\Enum\TournamentStatus;
 use App\Common\Repository\PlayerRepository;
 use App\Common\Repository\SeasonRepository;
+use App\Common\Service\PlayerFactory;
 use App\Classic\Repository\TournamentModerationClaimRepository;
 use App\Classic\Repository\TournamentOfficialRepository;
 use App\Classic\Service\Cache\CacheInvalidator;
@@ -36,6 +38,7 @@ class TournamentManagementService
         private TournamentModerationClaimRepository $claimRepository,
         private TournamentOfficialRepository $officialRepository,
         private PlayerRepository $playerRepository,
+        private PlayerFactory $playerFactory,
         private SeasonRepository $seasonRepository,
         private TournamentValidator $validator,
         private ClockInterface $clock,
@@ -222,14 +225,19 @@ class TournamentManagementService
     }
 
     /**
-     * Synchronises tournament officials with the submitted role lists.
+     * Synchronises tournament officials with the submitted role lists. Each entry
+     * is either an existing player (by id) or a brand new player described inline,
+     * which is created on the fly through the shared PlayerFactory.
      *
      * @return list<int> ids of players whose official roles changed (added or removed)
+     *
+     * @throws LogicException
      */
     private function syncOfficials(Tournament $tournament, EditRequestDTO $dto): array
     {
         $existing = $this->officialRepository->findByTournament($tournament);
 
+        /** @var array<string, list<OfficialPlayerDTO>> $roleMap */
         $roleMap = [
             TournamentOfficialRole::Organizer->value => $dto->organizers,
             TournamentOfficialRole::Editor->value => $dto->editors,
@@ -237,27 +245,39 @@ class TournamentManagementService
             TournamentOfficialRole::AppealJury->value => $dto->appealJury,
         ];
 
+        // Collect, per role, the ids of existing players the organizer kept.
+        // New players (no id) do not take part in the removal comparison.
+        $keptPlayerIdsByRole = array_map(static function (array $officialDtos) {
+            return array_map(
+                static fn(OfficialPlayerDTO $officialDto) => $officialDto->id,
+                $officialDtos,
+            )
+                    |> array_filter(...)
+                    |> array_values(...);
+        }, $roleMap);
+
         $affectedPlayerIds = [];
 
+        // Remove officials no longer present in the submitted lists. The creator
+        // always stays an organizer and is never removed.
         $creatorPlayerId = $tournament->getCreatedBy()?->getId();
         foreach ($existing as $official) {
             $roleValue = $official->getRole()->value;
-            $playerIds = $roleMap[$roleValue];
             if (
                 $roleValue === TournamentOfficialRole::Organizer->value
                 && $official->getPlayer()->getId() === $creatorPlayerId
             ) {
                 continue;
             }
-            if (!in_array($official->getPlayer()->getId(), $playerIds, true)) {
+            if (!in_array($official->getPlayer()->getId(), $keptPlayerIdsByRole[$roleValue], true)) {
                 $affectedPlayerIds[] = $official->getPlayer()->getId();
                 $this->em->remove($official);
             }
         }
 
-        $organizerIds = $roleMap[TournamentOfficialRole::Organizer->value];
-        if ($creatorPlayerId !== null && !in_array($creatorPlayerId, $organizerIds, true)) {
-            $roleMap[TournamentOfficialRole::Organizer->value][] = $creatorPlayerId;
+        // Force the creator to stay an organizer even if the submitted list omits them.
+        if ($creatorPlayerId !== null && !in_array($creatorPlayerId, $keptPlayerIdsByRole[TournamentOfficialRole::Organizer->value], true)) {
+            $roleMap[TournamentOfficialRole::Organizer->value][] = new OfficialPlayerDTO(id: $creatorPlayerId);
         }
 
         $existingKeys = array_map(
@@ -265,44 +285,76 @@ class TournamentManagementService
             $existing,
         );
 
-        $allNewPlayerIds = [];
-        foreach ($roleMap as $roleValue => $playerIds) {
-            foreach (array_unique($playerIds) as $playerId) {
-                if (!in_array($roleValue . '_' . $playerId, $existingKeys, true)) {
-                    $allNewPlayerIds[] = $playerId;
+        // Batch-load every existing player referenced by id across all roles.
+        $allPlayerIds = [];
+        foreach ($roleMap as $officialDtos) {
+            foreach ($officialDtos as $officialDto) {
+                if ($officialDto->id !== null) {
+                    $allPlayerIds[] = $officialDto->id;
                 }
             }
         }
 
-        $players = $allNewPlayerIds !== []
-            ? $this->playerRepository->findBy(['id' => array_unique($allNewPlayerIds)])
+        $players = $allPlayerIds !== []
+            ? $this->playerRepository->findBy(['id' => array_unique($allPlayerIds)])
             : [];
         $playerIndex = [];
         foreach ($players as $player) {
             $playerIndex[$player->getId()] = $player;
         }
 
-        foreach ($roleMap as $roleValue => $playerIds) {
+        foreach ($roleMap as $roleValue => $officialDtos) {
             $role = TournamentOfficialRole::from($roleValue);
-            foreach (array_unique($playerIds) as $playerId) {
-                if (in_array($roleValue . '_' . $playerId, $existingKeys, true)) {
-                    continue;
+            $seenPlayerIds = [];
+            foreach ($officialDtos as $officialDto) {
+                if ($officialDto->id !== null) {
+                    // Existing player: skip duplicates and already-assigned pairs.
+                    if (in_array($officialDto->id, $seenPlayerIds, true)) {
+                        continue;
+                    }
+                    $seenPlayerIds[] = $officialDto->id;
+
+                    if (in_array($roleValue . '_' . $officialDto->id, $existingKeys, true)) {
+                        continue;
+                    }
+
+                    $player = $playerIndex[$officialDto->id] ?? null;
+                    if ($player === null) {
+                        continue;
+                    }
+                } else {
+                    // Brand new player described inline: create and persist it.
+                    $player = $this->playerFactory->create(
+                        lastName: $officialDto->lastName,
+                        firstName: $officialDto->firstName,
+                        patronymic: $officialDto->patronymic,
+                        townId: $officialDto->townId,
+                        townName: $officialDto->townName,
+                        countryId: $officialDto->countryId,
+                    );
                 }
-                $player = $playerIndex[$playerId] ?? null;
-                if ($player === null) {
-                    continue;
-                }
+
                 $official = new TournamentOfficial();
                 $official->setTournament($tournament);
                 $official->setPlayer($player);
                 $official->setRole($role);
                 $this->em->persist($official);
 
-                $affectedPlayerIds[] = $playerId;
+                $playerId = $player->getId();
+                if ($playerId !== null) {
+                    $affectedPlayerIds[] = $playerId;
+                }
             }
         }
 
-        return array_values(array_unique($affectedPlayerIds));
+        $this->em->flush();
+
+        return array_filter(
+            $affectedPlayerIds,
+            static fn(?int $playerId) => $playerId !== null,
+        )
+                |> array_unique(...)
+                |> array_values(...);
     }
 
     /**

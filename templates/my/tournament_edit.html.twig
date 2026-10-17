@@ -193,6 +193,27 @@
                             <input type="text" data-suggest-input placeholder="{{ 'tournament.my.add_official'|trans }}">
                             <div data-suggest-dropdown hidden></div>
                         </div>
+                        <button type="button" class="btn btn-link" data-official-toggle-new>{{ 'tournament.my.add_new_official'|trans }}</button>
+                        {% set countryFieldId = 'official-new-country-id-' ~ cfg.key %}
+                        <div class="new-player-form" data-official-new-player hidden>
+                            <div class="new-player-fields">
+                                <input type="text" data-official-new-last-name placeholder="{{ 'player.last_name'|trans }} *">
+                                <input type="text" data-official-new-first-name placeholder="{{ 'player.first_name'|trans }} *">
+                                <input type="text" data-official-new-patronymic placeholder="{{ 'player.patronymic'|trans }}">
+                                <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
+                                    <input type="text" data-suggest-input data-official-new-country placeholder="{{ 'common.country'|trans }}" autocomplete="off">
+                                    <input type="hidden" id="{{ countryFieldId }}" data-suggest-hidden data-official-new-country-id>
+                                    <div data-suggest-dropdown hidden></div>
+                                </div>
+                                <div class="suggest-wrapper" data-suggest-url="{{ path('api_towns_suggest') }}" data-suggest-country="{{ countryFieldId }}" data-suggest-require-country>
+                                    <input type="text" data-suggest-input data-official-new-town placeholder="{{ 'common.town'|trans }}" autocomplete="off" disabled>
+                                    <input type="hidden" data-suggest-hidden data-official-new-town-id>
+                                    <div data-suggest-dropdown hidden></div>
+                                </div>
+                                <button type="button" class="btn btn-primary" data-official-add-new>{{ 'tournament.my.add_official_short'|trans }}</button>
+                            </div>
+                            <div class="form-error" data-official-new-status hidden></div>
+                        </div>
                     {% endif %}
                 </div>
             {% endfor %}
