@@ -126,8 +126,8 @@
                 <button type="button" id="toggle-new-player" class="btn btn-link">{{ 'squad.add_new_player'|trans }}</button>
                 <div id="new-player-form" hidden>
                     <div class="new-player-fields">
-                        <input type="text" id="new-player-last-name" placeholder="{{ 'player.last_name'|trans }}">
-                        <input type="text" id="new-player-first-name" placeholder="{{ 'player.first_name'|trans }}">
+                        <input type="text" id="new-player-last-name" placeholder="{{ 'player.last_name'|trans }} *">
+                        <input type="text" id="new-player-first-name" placeholder="{{ 'player.first_name'|trans }} *">
                         <input type="text" id="new-player-patronymic" placeholder="{{ 'player.patronymic'|trans }}">
                         <div class="suggest-wrapper" data-suggest-url="{{ path('api_countries_suggest') }}">
                             <input type="text" id="new-player-country" data-suggest-input placeholder="{{ 'common.country'|trans }}" autocomplete="off">
@@ -141,7 +141,6 @@
                         </div>
                         <button type="button" id="add-new-player-btn" class="btn btn-primary">{{ 'squad.add_player'|trans }}</button>
                     </div>
-                    <p class="hint">{{ 'squad.new_player_location_optional'|trans }}</p>
                     <div id="new-player-status" class="form-error" hidden></div>
                 </div>
             </div>

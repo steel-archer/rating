@@ -222,6 +222,91 @@ class ShowControllerTest extends WebTestCase
             },
         ];
 
+        yield 'representative with a single session sees a direct shortcut' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            // Shevchenko represents venue_kyiv and holds exactly one session
+            // (session_spring_kyiv) of this tournament. Registration is closed,
+            // so only the shortcut shows up, not the create button.
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $sessionId = $objects['session_spring_kyiv']->getId();
+                $shortcut = $crawler->filter(
+                    '.tournament-actions a[href="/my/session-claims/' . $sessionId . '/edit"]',
+                );
+                static::assertCount(1, $shortcut, 'Expected a direct shortcut to the single session');
+                static::assertStringContainsString('Мій відіграш', $shortcut->text());
+
+                // A single session links straight to it, never to the list.
+                static::assertCount(
+                    0,
+                    $crawler->filter('.tournament-actions a[href="/my/session-claims"]'),
+                );
+            },
+        ];
+
+        yield 'representative with many sessions is sent to the claims list' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_rep_multi']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournament_rep_multi.yaml', 'Entity/users.yaml'],
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                $shortcut = $crawler->filter('.tournament-actions a[href="/my/session-claims"]');
+                static::assertCount(1, $shortcut, 'Expected a shortcut to the claims list for many sessions');
+                // Count is surfaced to the player.
+                static::assertStringContainsString('2', $shortcut->text());
+                static::assertStringContainsString('Мої відіграші', $shortcut->text());
+            },
+        ];
+
+        yield 'representative without sessions of this tournament sees no shortcut' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_festival']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            // Festival is centralized with no sessions; Shevchenko is a
+            // representative but manages nothing here. Only the create button
+            // (registration open) remains, no "my sessions" shortcut.
+            'loginAs' => 'user_with_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                // No single-session shortcut (links end with /edit) ...
+                static::assertCount(
+                    0,
+                    $crawler->filter('.tournament-actions a[href$="/edit"]'),
+                    'A representative with no sessions here must not see a session shortcut',
+                );
+                // ... and no "go to the list" shortcut either.
+                static::assertCount(
+                    0,
+                    $crawler->filter('.tournament-actions a[href="/my/session-claims"]'),
+                );
+                // The create button is still there (registration is open).
+                static::assertCount(
+                    1,
+                    $crawler->filter('.tournament-actions a[href*="/my/session-claims/create/"]'),
+                );
+            },
+        ];
+
+        yield 'non-representative never sees a session shortcut' => [
+            'method' => 'GET',
+            'uri' => static fn(array $objects) => '/tournament/' . $objects['tournament_spring']->getId(),
+            'fixtures' => ['Entity/base.yaml', 'Entity/tournaments.yaml', 'Entity/users.yaml'],
+            // Kotsubynsky represents no venue, so no shortcut regardless of sessions.
+            'loginAs' => 'user_player',
+            'expectedStatus' => 200,
+            'afterCallback' => static function (Crawler $crawler, array $objects) {
+                static::assertCount(
+                    0,
+                    $crawler->filter('.tournament-actions a[href*="/my/session-claims"]'),
+                    'A non-representative must not see any session shortcut',
+                );
+            },
+        ];
+
         yield 'not found for non-existent tournament' => [
             'method' => 'GET',
             'uri' => '/tournament/999999',

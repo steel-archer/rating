@@ -16,9 +16,16 @@
         {% if tournament.startedAt %}<span>{{ tournament.startedAt|date('d.m.Y') }}{% if tournament.endedAt %} — {{ tournament.endedAt|date('d.m.Y') }}{% endif %}</span>{% endif %}
     </div>
 
-    {% if canSubmitClaim %}
+    {% if canSubmitClaim or manageableSessionCount > 0 %}
         <p class="tournament-actions">
-            <a class="btn btn-primary" href="{{ path('my_session_claim_create', {tournamentId: tournament.id}) }}">{{ 'session_claim.submit_title'|trans }}</a>
+            {% if manageableSessionCount == 1 %}
+                <a class="btn btn-primary" href="{{ path('my_session_claim_edit', {id: manageableSessionId}) }}">{{ 'session_claim.my_session_shortcut'|trans }}</a>
+            {% elseif manageableSessionCount > 1 %}
+                <a class="btn btn-primary" href="{{ path('my_session_claims') }}">{{ 'session_claim.my_sessions_shortcut'|trans({'%count%': manageableSessionCount}) }}</a>
+            {% endif %}
+            {% if canSubmitClaim %}
+                <a class="btn btn-primary" href="{{ path('my_session_claim_create', {tournamentId: tournament.id}) }}">{{ 'session_claim.submit_title'|trans }}</a>
+            {% endif %}
         </p>
     {% elseif needsApprovedVenue %}
         <div class="flash flash-info">

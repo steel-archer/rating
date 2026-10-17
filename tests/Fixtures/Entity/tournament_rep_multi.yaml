@@ -1,0 +1,40 @@
+# A tournament where the logged-in representative (player_shevchenko, who
+# represents venue_kyiv in base.yaml) manages more than one session. Used to
+# cover the "many sessions" shortcut on the tournament page, which links to the
+# personal claims list instead of a single session.
+App\Classic\Entity\Tournament:
+    tournament_rep_multi:
+        name: 'Турнір двох відіграшів'
+        season: '@season_current'
+        startedAt: '<(new \DateTimeImmutable("2025-04-01 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("2025-04-10 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+
+App\Classic\Entity\TournamentSession:
+    session_rep_multi_one:
+        tournament: '@tournament_rep_multi'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-04-01 19:00"))>'
+    session_rep_multi_two:
+        tournament: '@tournament_rep_multi'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("2025-04-02 19:00"))>'
+
+App\Classic\Entity\SessionClaim:
+    claim_rep_multi_one:
+        session: '@session_rep_multi_one'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("2025-03-20"))>'
+        resolvedAt: '<(new \DateTimeImmutable("2025-03-21"))>'
+    claim_rep_multi_two:
+        session: '@session_rep_multi_two'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Pending)>'
+        createdAt: '<(new \DateTimeImmutable("2025-03-20"))>'

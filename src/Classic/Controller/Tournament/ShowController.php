@@ -9,6 +9,7 @@ use App\Common\Entity\User;
 use App\Common\Exception\EntityNotFoundException;
 use App\Common\Mapping\Mapper;
 use App\Classic\Repository\TournamentModerationClaimRepository;
+use App\Classic\Repository\TournamentSessionRepository;
 use App\Classic\Service\TournamentAccessService;
 use App\Classic\Service\TournamentService;
 use App\Common\Repository\VenueRepresentativeRepository;
@@ -32,6 +33,7 @@ class ShowController extends AbstractController
         TournamentModerationClaimRepository $claimRepository,
         TournamentAccessService $accessService,
         VenueRepresentativeRepository $representativeRepository,
+        TournamentSessionRepository $sessionRepository,
         Mapper $mapper,
     ): Response {
         $tournament = $tournamentService->get($id);
@@ -58,6 +60,15 @@ class ShowController extends AbstractController
         $hasApprovedVenue = $player !== null && $representativeRepository->hasVenuesByPlayer($player);
         $canSubmitClaim = $registrationOpen && $hasApprovedVenue;
 
+        /**
+         * Shortcut to the player's own sessions of this tournament. Only a venue
+         * representative can have any, so skip the query for everyone else.
+         */
+        $manageableSessionIds = $hasApprovedVenue
+            ? $sessionRepository->findManageableIdsByTournamentAndPlayer($tournamentEntity, $player)
+            : [];
+        $manageableSessionCount = count($manageableSessionIds);
+
         return $this->render('tournament/show.html.twig', [
             'tournament' => $tournament,
             'moderationClaim' => $claim !== null ? $mapper->map($claim, ModerationClaimDTO::class) : null,
@@ -66,6 +77,9 @@ class ShowController extends AbstractController
             'canSubmitClaim' => $canSubmitClaim,
             // Prompt the player to get an approved venue when that is the only thing missing.
             'needsApprovedVenue' => $registrationOpen && $player !== null && !$hasApprovedVenue,
+            'manageableSessionCount' => $manageableSessionCount,
+            // Set only when there is exactly one, to link straight to it.
+            'manageableSessionId' => $manageableSessionCount === 1 ? $manageableSessionIds[0] : null,
         ]);
     }
 }

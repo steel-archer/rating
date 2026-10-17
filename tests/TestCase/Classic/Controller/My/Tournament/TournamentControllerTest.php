@@ -14,6 +14,7 @@ use App\Classic\Enum\TournamentOfficialRole;
 use App\Classic\Enum\TournamentStatus;
 use App\Classic\Service\TournamentManagementService;
 use App\Classic\Service\TournamentModerationService;
+use App\Common\Entity\Player;
 use App\Tests\TestCase\Classic\Controller\My\Tournament\Document\DocumentTestTrait;
 use App\Tests\FixturesTrait;
 use DateTime;
@@ -243,6 +244,325 @@ class TournamentControllerTest extends WebTestCase
             'afterCallback' => static function (KernelBrowser $client) {
                 $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 static::assertTrue($json['success']);
+            },
+        ];
+
+        yield 'update adds an existing player as editor' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [['id' => $objects['player_shevchenko']->getId()]],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $official = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentOfficial::class)
+                    ->findOneBy([
+                        'tournament' => $objects['tournament_draft']->getId(),
+                        'player' => $objects['player_shevchenko']->getId(),
+                        'role' => TournamentOfficialRole::Editor,
+                    ]);
+                static::assertNotNull($official);
+            },
+        ];
+
+        yield 'update creates a brand new player as game jury (no town)' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [[
+                        'id' => null,
+                        'lastName' => 'Новосуддя',
+                        'firstName' => 'Петро',
+                        'patronymic' => 'Іванович',
+                        'townId' => null,
+                        'townName' => null,
+                        'countryId' => null,
+                    ]],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $player = static::getContainer()->get('doctrine')
+                    ->getRepository(Player::class)
+                    ->findOneBy(['lastName' => 'Новосуддя', 'firstName' => 'Петро']);
+                static::assertNotNull($player);
+                static::assertSame('Іванович', $player->getPatronymic());
+                static::assertNull($player->getTown());
+                static::assertFalse($player->hasUser());
+
+                $official = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentOfficial::class)
+                    ->findOneBy([
+                        'tournament' => $objects['tournament_draft']->getId(),
+                        'player' => $player->getId(),
+                        'role' => TournamentOfficialRole::GameJury,
+                    ]);
+                static::assertNotNull($official);
+            },
+        ];
+
+        yield 'update creates a brand new player with a town picked by id' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [[
+                        'id' => null,
+                        'lastName' => 'Апеляційний',
+                        'firstName' => 'Юрій',
+                        'patronymic' => null,
+                        'townId' => $objects['town_kyiv']->getId(),
+                        'townName' => null,
+                        'countryId' => $objects['country_ukraine']->getId(),
+                    ]],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $player = static::getContainer()->get('doctrine')
+                    ->getRepository(Player::class)
+                    ->findOneBy(['lastName' => 'Апеляційний', 'firstName' => 'Юрій']);
+                static::assertNotNull($player);
+                static::assertNull($player->getPatronymic());
+                static::assertNotNull($player->getTown());
+                static::assertSame($objects['town_kyiv']->getId(), $player->getTown()->getId());
+
+                $official = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentOfficial::class)
+                    ->findOneBy([
+                        'tournament' => $objects['tournament_draft']->getId(),
+                        'player' => $player->getId(),
+                        'role' => TournamentOfficialRole::AppealJury,
+                    ]);
+                static::assertNotNull($official);
+            },
+        ];
+
+        yield 'update creates a brand new player with a town typed by hand' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [[
+                        'id' => null,
+                        'lastName' => 'Полтавець',
+                        'firstName' => 'Остап',
+                        'patronymic' => null,
+                        'townId' => null,
+                        'townName' => 'Полтава',
+                        'countryId' => $objects['country_ukraine']->getId(),
+                    ]],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $player = static::getContainer()->get('doctrine')
+                    ->getRepository(Player::class)
+                    ->findOneBy(['lastName' => 'Полтавець', 'firstName' => 'Остап']);
+                static::assertNotNull($player);
+                static::assertNotNull($player->getTown());
+                static::assertSame('Полтава', $player->getTown()->getName());
+                static::assertSame($objects['country_ukraine']->getId(), $player->getTown()->getCountry()->getId());
+
+                $official = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentOfficial::class)
+                    ->findOneBy([
+                        'tournament' => $objects['tournament_draft']->getId(),
+                        'player' => $player->getId(),
+                        'role' => TournamentOfficialRole::Editor,
+                    ]);
+                static::assertNotNull($official);
+            },
+        ];
+
+        yield 'update rejects a new player without last name' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [[
+                        'id' => null,
+                        'lastName' => '',
+                        'firstName' => 'Петро',
+                        'patronymic' => null,
+                        'townId' => null,
+                        'townName' => null,
+                        'countryId' => null,
+                    ]],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $body = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                static::assertStringContainsString('last_name_required', $body['error']);
+
+                $player = static::getContainer()->get('doctrine')
+                    ->getRepository(Player::class)
+                    ->findOneBy(['firstName' => 'Петро']);
+                static::assertNull($player);
+            },
+        ];
+
+        yield 'update rejects a new player with a town but no country' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_draft']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Мій чернетковий турнір',
+                    'startedAt' => null,
+                    'endedAt' => null,
+                    'toursCount' => null,
+                    'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
+                    'difficulty' => null,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [[
+                        'id' => null,
+                        'lastName' => 'Безкраїни',
+                        'firstName' => 'Олег',
+                        'patronymic' => null,
+                        'townId' => null,
+                        'townName' => 'Полтава',
+                        'countryId' => null,
+                    ]],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 422,
+            'afterCallback' => static function (KernelBrowser $client) {
+                $player = static::getContainer()->get('doctrine')
+                    ->getRepository(Player::class)
+                    ->findOneBy(['lastName' => 'Безкраїни']);
+                static::assertNull($player);
+            },
+        ];
+
+        yield 'update removes officials no longer in the list but keeps the creator' => [
+            'fixtures' => $fixtures,
+            'loginAs' => 'user_creator',
+            'action' => static fn(KernelBrowser $client, array $objects) => $client->request(
+                'POST',
+                '/my/tournaments/' . $objects['tournament_approved']->getId(),
+                [],
+                [],
+                ['CONTENT_TYPE' => 'application/json'],
+                json_encode([
+                    'name' => 'Схвалений турнір',
+                    'startedAt' => (new DateTime('+30 days'))->format('Y-m-d'),
+                    'endedAt' => (new DateTime('+31 days'))->format('Y-m-d'),
+                    'resultsHiddenUntil' => (new DateTime('+32 days'))->format('Y-m-d'),
+                    'registrationDeadline' => (new DateTime('+31 days'))->format('Y-m-d'),
+                    'detailsHiddenUntil' => (new DateTime('+33 days'))->format('Y-m-d'),
+                    'submissionDeadline' => (new DateTime('+32 days'))->format('Y-m-d'),
+                    'appealDeadline' => (new DateTime('+34 days'))->format('Y-m-d'),
+                    'toursCount' => 3,
+                    'questionsPerTour' => null,
+                    'customQuestionsPerTour' => true,
+                    'questionsPerTourMap' => [12, 12, 12],
+                    'difficulty' => 3.5,
+                    'organizers' => [],
+                    'editors' => [],
+                    'gameJury' => [],
+                    'appealJury' => [],
+                ], JSON_THROW_ON_ERROR),
+            ),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, array $objects) {
+                $repository = static::getContainer()->get('doctrine')
+                    ->getRepository(TournamentOfficial::class);
+
+                // The game jury (Lesya) is dropped.
+                static::assertNull($repository->findOneBy([
+                    'tournament' => $objects['tournament_approved']->getId(),
+                    'player' => $objects['player_lesya']->getId(),
+                    'role' => TournamentOfficialRole::GameJury,
+                ]));
+
+                // The creator stays an organizer even though organizers were sent empty.
+                static::assertNotNull($repository->findOneBy([
+                    'tournament' => $objects['tournament_approved']->getId(),
+                    'player' => $objects['player_franko']->getId(),
+                    'role' => TournamentOfficialRole::Organizer,
+                ]));
             },
         ];
 
@@ -1411,10 +1731,10 @@ class TournamentControllerTest extends WebTestCase
                     'toursCount' => null,
                     'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
-                    'organizers' => [$objects['player_franko']->getId()],
-                    'editors' => [$objects['player_shevchenko']->getId()],
-                    'gameJury' => [$objects['player_lesya']->getId()],
-                    'appealJury' => [$objects['player_franko']->getId()],
+                    'organizers' => [['id' => $objects['player_franko']->getId()]],
+                    'editors' => [['id' => $objects['player_shevchenko']->getId()]],
+                    'gameJury' => [['id' => $objects['player_lesya']->getId()]],
+                    'appealJury' => [['id' => $objects['player_franko']->getId()]],
                 ], JSON_THROW_ON_ERROR),
             ),
             'expectedStatus' => 200,
@@ -1442,7 +1762,7 @@ class TournamentControllerTest extends WebTestCase
                     'toursCount' => null,
                     'questionsPerTour' => null, 'customQuestionsPerTour' => false, 'questionsPerTourMap' => null,
                     'difficulty' => null,
-                    'organizers' => [$objects['player_franko']->getId(), 999999],
+                    'organizers' => [['id' => $objects['player_franko']->getId()], ['id' => 999999]],
                     'editors' => [],
                     'gameJury' => [],
                     'appealJury' => [],

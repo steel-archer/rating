@@ -13,11 +13,9 @@ use App\Classic\Entity\TournamentSession;
 use App\Classic\Entity\TournamentSessionTeam;
 use App\Classic\Entity\TournamentSessionTeamPlayer;
 use App\Classic\Enum\SessionClaimStatus;
-use App\Common\Entity\Country;
-use App\Common\Entity\Town;
 use App\Common\Mapping\Mapper;
-use App\Common\Repository\CountryRepository;
 use App\Common\Repository\PlayerRepository;
+use App\Common\Service\PlayerFactory;
 use App\Classic\Repository\SessionClaimRepository;
 use App\Classic\Repository\TeamPlayerRepository;
 use App\Classic\Repository\TeamPlayerTransferRepository;
@@ -42,7 +40,7 @@ class SessionSquadService
         private EntityManagerInterface $em,
         private TeamRepository $teamRepository,
         private TownRepository $townRepository,
-        private CountryRepository $countryRepository,
+        private PlayerFactory $playerFactory,
         private PlayerRepository $playerRepository,
         private TeamPlayerRepository $teamPlayerRepository,
         private TeamPlayerTransferRepository $transferRepository,
@@ -343,6 +341,8 @@ class SessionSquadService
                 ?? throw new LogicException('common.not_found');
         }
 
+        // Keep squad-specific wording for the required name fields; the shared
+        // factory validates the rest (town/country resolution).
         if ($dto->lastName === null || trim($dto->lastName) === '') {
             throw new LogicException('squad.error.player_last_name_required');
         }
@@ -351,62 +351,23 @@ class SessionSquadService
             throw new LogicException('squad.error.player_first_name_required');
         }
 
-        $player = new Player();
-        $player->setLastName(trim($dto->lastName));
-        $player->setFirstName(trim($dto->firstName));
-        $player->setPatronymic($dto->patronymic !== null ? trim($dto->patronymic) : null);
-        $player->setTown($this->resolvePlayerTown($dto));
+        try {
+            return $this->playerFactory->create(
+                lastName: $dto->lastName,
+                firstName: $dto->firstName,
+                patronymic: $dto->patronymic,
+                townId: $dto->townId,
+                townName: $dto->townName,
+                countryId: $dto->countryId,
+            );
+        } catch (LogicException $ex) {
+            // Re-map the factory's generic "country required" to the squad wording.
+            if ($ex->getMessage() === 'player.error.country_required') {
+                throw new LogicException('squad.error.country_required');
+            }
 
-        $this->em->persist($player);
-
-        return $player;
-    }
-
-    /**
-     * Resolves the town for a brand new player. A town picked from the list
-     * (townId) is used as is; a hand-typed name is matched within the chosen
-     * country or created there. Both forms require a country.
-     *
-     * @throws LogicException
-     */
-    private function resolvePlayerTown(SquadPlayerDTO $dto): ?Town
-    {
-        if ($dto->townId !== null) {
-            return $this->townRepository->find($dto->townId)
-                ?? throw new LogicException('common.not_found');
+            throw $ex;
         }
-
-        if ($dto->townName === null || trim($dto->townName) === '') {
-            return null;
-        }
-
-        $country = $this->resolvePlayerCountry($dto->countryId);
-        $townName = trim($dto->townName);
-
-        $existing = $this->townRepository->findOneBy(['name' => $townName, 'country' => $country]);
-        if ($existing !== null) {
-            return $existing;
-        }
-
-        $town = new Town();
-        $town->setName($townName);
-        $town->setCountry($country);
-        $this->em->persist($town);
-
-        return $town;
-    }
-
-    /**
-     * @throws LogicException
-     */
-    private function resolvePlayerCountry(?int $countryId): Country
-    {
-        if ($countryId === null) {
-            throw new LogicException('squad.error.country_required');
-        }
-
-        return $this->countryRepository->find($countryId)
-            ?? throw new LogicException('common.not_found');
     }
 
     /**

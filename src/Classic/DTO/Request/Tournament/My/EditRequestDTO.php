@@ -10,10 +10,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 final readonly class EditRequestDTO
 {
     /**
-     * @param list<int> $organizers
-     * @param list<int> $editors
-     * @param list<int> $gameJury
-     * @param list<int> $appealJury
+     * @param list<OfficialPlayerDTO> $organizers
+     * @param list<OfficialPlayerDTO> $editors
+     * @param list<OfficialPlayerDTO> $gameJury
+     * @param list<OfficialPlayerDTO> $appealJury
      */
     public function __construct(
         #[Assert\NotBlank]
@@ -63,24 +63,24 @@ final readonly class EditRequestDTO
         #[Assert\Url(message: 'tournament.error.invalid_discussion_link', protocols: ['http', 'https'])]
         public ?string $discussionLink = null,
 
-        /** @var list<int> */
+        /** @var list<OfficialPlayerDTO> */
         #[Assert\Count(max: 20)]
-        #[Assert\All([new Assert\Positive()])]
+        #[Assert\Valid]
         public array $organizers = [],
 
-        /** @var list<int> */
+        /** @var list<OfficialPlayerDTO> */
         #[Assert\Count(max: 20)]
-        #[Assert\All([new Assert\Positive()])]
+        #[Assert\Valid]
         public array $editors = [],
 
-        /** @var list<int> */
+        /** @var list<OfficialPlayerDTO> */
         #[Assert\Count(max: 20)]
-        #[Assert\All([new Assert\Positive()])]
+        #[Assert\Valid]
         public array $gameJury = [],
 
-        /** @var list<int> */
+        /** @var list<OfficialPlayerDTO> */
         #[Assert\Count(max: 20)]
-        #[Assert\All([new Assert\Positive()])]
+        #[Assert\Valid]
         public array $appealJury = [],
     ) {
     }

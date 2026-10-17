@@ -91,10 +91,10 @@ function initTournamentEditForm() {
                 ? parseFloat(/** @type {HTMLInputElement} */ (form.querySelector('[name="difficulty"]')).value)
                 : null,
             discussionLink: /** @type {HTMLInputElement} */ (form.querySelector('[name="discussionLink"]')).value || null,
-            organizers: getOfficialIds('organizers'),
-            editors: getOfficialIds('editors'),
-            gameJury: getOfficialIds('gameJury'),
-            appealJury: getOfficialIds('appealJury'),
+            organizers: getOfficials('organizers'),
+            editors: getOfficials('editors'),
+            gameJury: getOfficials('gameJury'),
+            appealJury: getOfficials('appealJury'),
         };
 
         if (isCustom) {
@@ -284,16 +284,35 @@ function rebuildCustomFields(form) {
 }
 
 /**
+ * Collects the officials of a role as a list of objects: either an existing
+ * player ({id}) or a brand new player described inline ({lastName, ...}).
+ *
  * @param {string} role
- * @returns {number[]}
+ * @returns {Array<object>}
  */
-function getOfficialIds(role) {
+function getOfficials(role) {
     const group = document.querySelector(`.officials-group[data-role="${role}"]`);
     if (!group) {
         return [];
     }
-    return Array.from(group.querySelectorAll('input[type="hidden"]'))
-        .map(input => parseInt(/** @type {HTMLInputElement} */ (input).value));
+
+    return Array.from(group.querySelectorAll('.official-entry')).map(entry => {
+        const el = /** @type {HTMLElement} */ (entry);
+        if (el.dataset.newPlayer === '1') {
+            return {
+                id: null,
+                lastName: el.dataset.lastName || null,
+                firstName: el.dataset.firstName || null,
+                patronymic: el.dataset.patronymic || null,
+                townId: el.dataset.townId ? parseInt(el.dataset.townId) : null,
+                townName: el.dataset.townName || null,
+                countryId: el.dataset.countryId ? parseInt(el.dataset.countryId) : null,
+            };
+        }
+
+        const hidden = /** @type {HTMLInputElement|null} */ (el.querySelector('input[type="hidden"]'));
+        return { id: hidden ? parseInt(hidden.value) : null };
+    });
 }
 
 function initTournamentActions() {
