@@ -211,4 +211,37 @@ class TournamentSessionRepository extends ServiceEntityRepository implements Ven
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Returns the ids of the tournament's sessions that the player can manage
+     * as a venue representative, regardless of claim status (pending sessions
+     * are editable too). Powers the "my sessions" shortcut on the tournament
+     * page: zero hides it, one links straight to the session, many link to the
+     * personal claims list.
+     *
+     * Representation is resolved through VenueRepresentative (shared across all
+     * representatives of a venue), not the TournamentSession.representative
+     * field which only records the claim author.
+     *
+     * @return list<int>
+     */
+    public function findManageableIdsByTournamentAndPlayer(Tournament $tournament, Player $player): array
+    {
+        $rows = $this->createQueryBuilder('ts')
+            ->select('ts.id AS sessionId')
+            ->join(
+                VenueRepresentative::class,
+                'vr',
+                'WITH',
+                'vr.venue = ts.venue AND vr.player = :player',
+            )
+            ->where('ts.tournament = :tournament')
+            ->setParameter('tournament', $tournament)
+            ->setParameter('player', $player)
+            ->orderBy('ts.id', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn(array $row): int => (int) $row['sessionId'], $rows);
+    }
 }

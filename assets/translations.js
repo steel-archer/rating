@@ -269,6 +269,8 @@ export default {
     "session_claim.host_hint": "Оберіть гравця, який вестиме відіграш. Саме ведучий (а не ви як представник) отримає доступ до пакета запитань — у своєму розділі «Відіграші, які я веду». Якщо ведучим будете ви, вкажіть себе.",
     "session_claim.host_package_notice": "Пакет запитань доступний ведучому (%host%) у розділі «Відіграші, які я веду».",
     "session_claim.my_empty": "У вас немає заявок на відіграші",
+    "session_claim.my_session_shortcut": "Мій відіграш на цьому турнірі",
+    "session_claim.my_sessions_shortcut": "Мої відіграші на цьому турнірі (%count%)",
     "session_claim.my_title": "Мої заявки на відіграші",
     "session_claim.need_approved_venue": "Щоб подати заявку на відіграш, спершу потрібно мати затверджений майданчик, представником якого ви є.",
     "session_claim.need_approved_venue_link": "Перейти до моїх майданчиків",
