@@ -6,57 +6,78 @@
     <nav class="breadcrumbs"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a><span>{{ 'session_claim.my_title'|trans }}</span></nav>
 {% endblock %}
 
+{% macro claims_table(claims) %}
+    <div class="card card-wide">
+        <table aria-label="{{ 'session_claim.my_title'|trans }}">
+            <thead>
+                <tr>
+                    <th>{{ 'common.tournament'|trans }}</th>
+                    <th>{{ 'venue.venue'|trans }}</th>
+                    <th>{{ 'common.town'|trans }}</th>
+                    <th>{{ 'session_claim.estimated_date'|trans }}</th>
+                    <th title="{{ 'session_claim.teams_col_hint'|trans }}">{{ 'session_claim.estimated_teams_short'|trans }}</th>
+                    <th>{{ 'session_claim.announcement_link'|trans }}</th>
+                    <th>{{ 'session_claim.work_state_col'|trans }}</th>
+                    <th>{{ 'tournament.my.actions'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for claim in claims %}
+                    <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
+                        <td><a href="{{ path('tournament_show', {id: claim.tournamentId}) }}">{{ claim.tournamentName }}</a></td>
+                        <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
+                        <td>{{ claim.townName }}{% if claim.isOnline and claim.townName != 'Онлайн' %} (онлайн){% endif %}</td>
+                        <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
+                        <td title="{{ 'session_claim.teams_col_hint'|trans }}">
+                            {{ claim.actualTeams }} / {{ claim.estimatedTeams ?? '—' }}
+                        </td>
+                        <td>
+                            {% set announcementUrl = claim.announcementUrl|safe_url %}
+                            {% if announcementUrl %}
+                                <a href="{{ announcementUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ 'session_claim.announcement_link'|trans }}</a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-work-{{ claim.workState.value|replace({_: '-'}) }}">{{ ('session_claim.work_state.' ~ claim.workState.value)|trans }}</span>
+                            {% if claim.submissionDeadline and claim.workState.value == 'results_needed' %}
+                                {% set urgency = claim.deadlineUrgency ? claim.deadlineUrgency.value : 'calm' %}
+                                <br><small class="hint deadline-{{ urgency|replace({_: '-'}) }}">{{ 'session_claim.submission_deadline_until'|trans({'%date%': claim.submissionDeadline|date('d.m.Y')}) }}</small>
+                                {% if urgency == 'last_day' %}
+                                    <br><small class="hint deadline-warning">{{ 'session_claim.submission_deadline_last_day'|trans }}</small>
+                                {% endif %}
+                            {% endif %}
+                            {% if claim.comment %}
+                                <br><small class="meta">{{ claim.comment }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('my_session_claim_edit', {id: claim.sessionId}) }}">{{ 'session_claim.edit_and_results'|trans }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endmacro %}
+
 {% block body %}
     <h1>{{ 'session_claim.my_title'|trans }}</h1>
 
-    {% if claims is empty %}
+    {% if not hasClaims %}
         <p class="empty-state">{{ 'session_claim.my_empty'|trans }}</p>
     {% else %}
-        <div class="card card-wide">
-            <table aria-label="{{ 'session_claim.my_title'|trans }}">
-                <thead>
-                    <tr>
-                        <th>{{ 'common.tournament'|trans }}</th>
-                        <th>{{ 'venue.venue'|trans }}</th>
-                        <th>{{ 'common.town'|trans }}</th>
-                        <th>{{ 'session_claim.estimated_date'|trans }}</th>
-                        <th title="{{ 'session_claim.teams_col_hint'|trans }}">{{ 'session_claim.estimated_teams_short'|trans }}</th>
-                        <th>{{ 'session_claim.announcement_link'|trans }}</th>
-                        <th>{{ 'tournament.my.status'|trans }}</th>
-                        <th>{{ 'tournament.my.actions'|trans }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for claim in claims %}
-                        <tr class="{{ loop.index is odd ? 'row-light' : 'row-dark' }}">
-                            <td><a href="{{ path('tournament_show', {id: claim.tournamentId}) }}">{{ claim.tournamentName }}</a></td>
-                            <td><a href="{{ path('venue_show', {id: claim.venueId}) }}">{{ claim.venueName }}</a></td>
-                            <td>{{ claim.townName }}{% if claim.isOnline and claim.townName != 'Онлайн' %} (онлайн){% endif %}</td>
-                            <td>{{ claim.playedAt ? claim.playedAt|date('d.m.Y') : '—' }}</td>
-                            <td title="{{ 'session_claim.teams_col_hint'|trans }}">
-                                {{ claim.actualTeams }} / {{ claim.estimatedTeams ?? '—' }}
-                            </td>
-                            <td>
-                                {% set announcementUrl = claim.announcementUrl|safe_url %}
-                                {% if announcementUrl %}
-                                    <a href="{{ announcementUrl }}" target="_blank" rel="noopener noreferrer nofollow">{{ 'session_claim.announcement_link'|trans }}</a>
-                                {% else %}
-                                    —
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge {% if claim.status == 'pending' %}badge-moderation-pending{% elseif claim.status == 'approved' %}badge-moderation-approved{% else %}badge-moderation-rejected{% endif %}">{{ ('session_claim.status.' ~ claim.status)|trans }}</span>
-                                {% if claim.comment %}
-                                    <br><small class="meta">{{ claim.comment }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{ path('my_session_claim_edit', {id: claim.sessionId}) }}">{{ 'session_claim.edit_and_results'|trans }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {% import _self as claimMacros %}
+
+        {% if currentClaims is not empty %}
+            <h2>{{ 'session_claim.current_section_title'|trans }}</h2>
+            {{ claimMacros.claims_table(currentClaims) }}
+        {% endif %}
+
+        {% if closedClaims is not empty %}
+            <h2>{{ 'session_claim.closed_section_title'|trans }}</h2>
+            {{ claimMacros.claims_table(closedClaims) }}
+        {% endif %}
     {% endif %}
 {% endblock %}

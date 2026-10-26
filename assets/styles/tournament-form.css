@@ -372,6 +372,44 @@
     color: #991b1b;
 }
 
+/* Derived "what to do now" state of a session claim on /my/session-claims. */
+.badge-work-results-needed {
+    background: #fde68a;
+    color: #854d0e;
+}
+
+.badge-work-awaiting-moderation {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-work-awaiting-game {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.badge-work-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-work-closed {
+    background: #f3f4f6;
+    color: var(--text-secondary);
+}
+
+/* Results submission deadline hint on /my/session-claims, coloured by urgency. */
+.deadline-soon {
+    color: var(--warning, #e6a700);
+    font-weight: 600;
+}
+
+.deadline-last-day,
+.deadline-warning {
+    color: var(--danger);
+    font-weight: 600;
+}
+
 .dispute-actions {
     display: flex;
     gap: 8px;
