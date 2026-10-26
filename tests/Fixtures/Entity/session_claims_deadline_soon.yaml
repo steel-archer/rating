@@ -1,0 +1,70 @@
+App\Common\Entity\User:
+    user_representative_soon:
+        email: 'representative_soon@example.com'
+        googleId: 'google_rep_soon_123'
+        roles: []
+        player: '@player_shevchenko'
+
+App\Classic\Entity\Tournament:
+    # Submission deadline is the day after tomorrow at 00:00, so two whole days
+    # are left: the "soon" urgency band.
+    tournament_deadline_soon:
+        name: 'Турнір з близьким дедлайном'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        startedAt: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+2 days 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+    # Submission deadline is tomorrow at 00:00, so only one whole day is left:
+    # today is the last day to submit.
+    tournament_deadline_last_day:
+        name: 'Турнір з дедлайном сьогодні'
+        status: '<(App\Classic\Enum\TournamentStatus::Published)>'
+        startedAt: '<(new \DateTimeImmutable("-10 days 00:00:00"))>'
+        endedAt: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        registrationDeadline: '<(new \DateTimeImmutable("+30 days 00:00:00"))>'
+        submissionDeadline: '<(new \DateTimeImmutable("+1 day 00:00:00"))>'
+        toursCount: 3
+        questionsPerTourMap: [12, 12, 12]
+
+App\Classic\Entity\TournamentOfficial:
+    official_org_deadline_soon:
+        tournament: '@tournament_deadline_soon'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+    official_org_deadline_last_day:
+        tournament: '@tournament_deadline_last_day'
+        player: '@player_franko'
+        role: '<(App\Classic\Enum\TournamentOfficialRole::Organizer)>'
+
+App\Classic\Entity\TournamentSession:
+    session_deadline_soon:
+        tournament: '@tournament_deadline_soon'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-5 days 19:00"))>'
+        estimatedTeams: 8
+    session_deadline_last_day:
+        tournament: '@tournament_deadline_last_day'
+        venue: '@venue_kyiv'
+        representative: '@player_shevchenko'
+        host: '@player_shevchenko'
+        playedAt: '<(new \DateTimeImmutable("-5 days 19:00"))>'
+        estimatedTeams: 6
+
+App\Classic\Entity\SessionClaim:
+    claim_deadline_soon:
+        session: '@session_deadline_soon'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-9 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-8 days"))>'
+    claim_deadline_last_day:
+        session: '@session_deadline_last_day'
+        player: '@player_shevchenko'
+        status: '<(App\Classic\Enum\SessionClaimStatus::Approved)>'
+        createdAt: '<(new \DateTimeImmutable("-9 days"))>'
+        resolvedAt: '<(new \DateTimeImmutable("-8 days"))>'

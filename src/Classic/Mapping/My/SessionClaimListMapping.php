@@ -6,6 +6,8 @@ namespace App\Classic\Mapping\My;
 
 use App\Classic\DTO\Response\My\SessionClaimListDTO;
 use App\Classic\Entity\SessionClaim;
+use App\Classic\Enum\SessionClaimWorkState;
+use App\Classic\Enum\SubmissionDeadlineUrgency;
 use App\Common\Mapping\AsMapper;
 use App\Common\Mapping\MappingInterface;
 
@@ -24,6 +26,12 @@ final class SessionClaimListMapping implements MappingInterface
         /** @var array<int, int> $actualTeamsBySession */
         $actualTeamsBySession = $context['actualTeamsBySession'] ?? [];
 
+        /** @var array<int, SessionClaimWorkState> $workStateBySession */
+        $workStateBySession = $context['workStateBySession'] ?? [];
+
+        /** @var array<int, SubmissionDeadlineUrgency|null> $deadlineUrgencyBySession */
+        $deadlineUrgencyBySession = $context['deadlineUrgencyBySession'] ?? [];
+
         return new $destinationClass(
             sessionId: $session->getId(),
             tournamentId: $session->getTournament()->getId(),
@@ -35,7 +43,10 @@ final class SessionClaimListMapping implements MappingInterface
             estimatedTeams: $session->getEstimatedTeams(),
             actualTeams: $actualTeamsBySession[$session->getId()] ?? 0,
             status: $source->getStatus()->value,
+            workState: $workStateBySession[$session->getId()] ?? SessionClaimWorkState::Closed,
             comment: $source->getComment(),
+            submissionDeadline: $session->getTournament()->getSubmissionDeadline(),
+            deadlineUrgency: $deadlineUrgencyBySession[$session->getId()] ?? null,
             announcementUrl: $session->getAnnouncementUrl(),
             isOnline: $session->isOnline(),
         );
