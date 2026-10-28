@@ -16,7 +16,7 @@
         "knpuniversity/oauth2-client-bundle": "^2.20.2",
         "league/oauth2-google": "^5.0",
         "phpdocumentor/reflection-docblock": "^6.0.3",
-        "phpoffice/phpspreadsheet": "^5.9",
+        "phpoffice/phpspreadsheet": "^5.10",
         "phpstan/phpdoc-parser": "^2.3.3",
         "predis/predis": "^3.6",
         "roave/security-advisories": "dev-latest",
