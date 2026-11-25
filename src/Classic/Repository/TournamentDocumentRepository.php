@@ -6,6 +6,7 @@ namespace App\Classic\Repository;
 
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentDocument;
+use App\Classic\Enum\TournamentDocumentVisibility;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,18 +18,32 @@ class TournamentDocumentRepository extends ServiceEntityRepository
         parent::__construct($registry, TournamentDocument::class);
     }
 
-    /** @return list<TournamentDocument> */
-    public function findByTournament(Tournament $tournament): array
-    {
-        return $this->createQueryBuilder('d')
+    /**
+     * @param Tournament $tournament
+     * @param TournamentDocumentVisibility|null $visibility null returns documents of both kinds
+     * @return list<TournamentDocument>
+     */
+    public function findByTournament(
+        Tournament $tournament,
+        ?TournamentDocumentVisibility $visibility = null,
+    ): array {
+        $builder = $this->createQueryBuilder('d')
             ->where('d.tournament = :tournament')
             ->setParameter('tournament', $tournament)
-            ->orderBy('d.createdAt', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('d.createdAt', 'ASC');
+
+        if ($visibility !== null) {
+            $builder
+                ->andWhere('d.visibility = :visibility')
+                ->setParameter('visibility', $visibility);
+        }
+
+        return $builder->getQuery()->getResult();
     }
 
     /**
+     * Counts closed documents only: the map feeds the question package links of hosts.
+     *
      * @param list<int> $tournamentIds
      * @return array<int, int> map of tournamentId => document count
      */
@@ -41,7 +56,9 @@ class TournamentDocumentRepository extends ServiceEntityRepository
         $rows = $this->createQueryBuilder('d')
             ->select('IDENTITY(d.tournament) AS tournamentId', 'COUNT(d.id) AS documentCount')
             ->where('IDENTITY(d.tournament) IN (:tournamentIds)')
+            ->andWhere('d.visibility = :visibility')
             ->setParameter('tournamentIds', $tournamentIds)
+            ->setParameter('visibility', TournamentDocumentVisibility::Closed)
             ->groupBy('d.tournament')
             ->getQuery()
             ->getArrayResult();
@@ -54,12 +71,16 @@ class TournamentDocumentRepository extends ServiceEntityRepository
         return $counts;
     }
 
-    public function countByTournament(Tournament $tournament): int
-    {
+    public function countByTournament(
+        Tournament $tournament,
+        TournamentDocumentVisibility $visibility,
+    ): int {
         return (int) $this->createQueryBuilder('d')
             ->select('COUNT(d.id)')
             ->where('d.tournament = :tournament')
+            ->andWhere('d.visibility = :visibility')
             ->setParameter('tournament', $tournament)
+            ->setParameter('visibility', $visibility)
             ->getQuery()
             ->getSingleScalarResult();
     }

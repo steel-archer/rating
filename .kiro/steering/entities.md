@@ -396,7 +396,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 ### TournamentDocument
 
-Документ (файл), прикріплений до турніру. Зберігає метадані завантаженого файлу.
+Документ (файл), прикріплений до турніру. Зберігає метадані доданого файлу. Вид (`visibility`): `closed` (пакет запитань, лише для ведучих, скачування логуються) або `open` (публічні матеріали, наприклад регламент, скачування не логуються).
 
 **Файл:** `src/Classic/Entity/TournamentDocument.php`
 
@@ -409,6 +409,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | storedName | string(255) | — | |
 | mimeType | string(100) | — | |
 | size | int | — | |
+| visibility | enum TournamentDocumentVisibility | — | `closed` (за замовчуванням) / `open` |
 | createdAt | DateTimeImmutable | — | |
 
 #### Зв'язки
@@ -419,7 +420,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 
 ### TournamentDocumentDownload
 
-Аудит-запис про завантаження пакета запитань. Один рядок на кожне завантаження документа ведучим.
+Аудит-запис про скачування пакета запитань (закритого документа). Один рядок на кожне скачування документа ведучим. Для відкритих документів не створюється.
 
 **Файл:** `src/Classic/Entity/TournamentDocumentDownload.php`
 
@@ -435,7 +436,7 @@ fileMatchPattern: 'src/**/Entity/**|src/**/Repository/**|migrations/**'
 | Поле | Тип | Ціль | Nullable | Примітка |
 |------|-----|------|----------|----------|
 | document | ManyToOne | TournamentDocument | — | |
-| player | ManyToOne | Player | — | 🔗 Common, ведучий, що завантажив |
+| player | ManyToOne | Player | — | 🔗 Common, ведучий, що скачав |
 
 ### TournamentModerationClaim
 

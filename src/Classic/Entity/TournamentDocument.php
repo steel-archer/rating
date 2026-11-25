@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Classic\Entity;
 
+use App\Classic\Enum\TournamentDocumentVisibility;
 use App\Classic\Repository\TournamentDocumentRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -33,6 +34,9 @@ class TournamentDocument
 
     #[ORM\Column]
     private int $size;
+
+    #[ORM\Column(length: 20, enumType: TournamentDocumentVisibility::class)]
+    private TournamentDocumentVisibility $visibility = TournamentDocumentVisibility::Closed;
 
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
@@ -105,6 +109,23 @@ class TournamentDocument
         $this->size = $size;
 
         return $this;
+    }
+
+    public function getVisibility(): TournamentDocumentVisibility
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(TournamentDocumentVisibility $visibility): static
+    {
+        $this->visibility = $visibility;
+
+        return $this;
+    }
+
+    public function isOpen(): bool
+    {
+        return $this->visibility === TournamentDocumentVisibility::Open;
     }
 
     public function getCreatedAt(): DateTimeImmutable

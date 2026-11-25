@@ -8,6 +8,7 @@ use App\Classic\DTO\Response\My\HostedSessionDetailDTO;
 use App\Classic\DTO\Response\My\TournamentDocumentDTO;
 use App\Classic\Entity\TournamentSession;
 use App\Classic\Repository\SessionClaimRepository;
+use App\Classic\Enum\TournamentDocumentVisibility;
 use App\Classic\Repository\TournamentDocumentRepository;
 use App\Common\Entity\User;
 use App\Common\Mapping\Mapper;
@@ -42,7 +43,7 @@ class ShowController extends AbstractController
         }
 
         $documents = $mapper->mapMultiple(
-            $documentRepository->findByTournament($tournament),
+            $documentRepository->findByTournament($tournament, TournamentDocumentVisibility::Closed),
             TournamentDocumentDTO::class,
         );
 

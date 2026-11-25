@@ -24,7 +24,7 @@ class DeleteDocumentController extends AbstractController
             return $this->json(['error' => 'common.not_found'], 404);
         }
 
-        if ($document->getTournament()->isStarted()) {
+        if (!$document->isOpen() && $document->getTournament()->isStarted()) {
             return $this->json(['error' => 'tournament.document.error.started'], 422);
         }
 

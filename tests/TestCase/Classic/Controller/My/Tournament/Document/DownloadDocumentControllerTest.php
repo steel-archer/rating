@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\Tournament\Document;
 
-use App\Classic\Entity\Tournament;
-use App\Classic\Entity\TournamentDocument;
 use App\Classic\Entity\TournamentDocumentDownload;
+use App\Classic\Enum\TournamentDocumentVisibility;
 use App\Tests\FixturesTrait;
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -95,32 +94,18 @@ class DownloadDocumentControllerTest extends WebTestCase
             'afterCallback' => static function () {
             },
         ];
-    }
 
-    private static function createDocumentDirectly(int $tournamentId): int
-    {
-        $em = static::getContainer()->get('doctrine.orm.entity_manager');
-        $tournament = $em->getRepository(Tournament::class)->find($tournamentId);
-
-        $projectDir = static::getContainer()->getParameter('kernel.project_dir');
-        $uploadDir = static::getContainer()->getParameter('app.upload_dir');
-        $dir = $uploadDir . '/' . $tournamentId;
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        $storedName = 'test-' . uniqid() . '.pdf';
-        copy($projectDir . '/tests/Fixtures/Files/test.pdf', $dir . '/' . $storedName);
-
-        $document = new TournamentDocument();
-        $document->setTournament($tournament);
-        $document->setOriginalName('test.pdf');
-        $document->setStoredName($storedName);
-        $document->setMimeType('application/pdf');
-        $document->setSize(filesize($dir . '/' . $storedName));
-
-        $em->persist($document);
-        $em->flush();
-
-        return $document->getId();
+        // Open documents are served by the public route only, so the host route refuses them.
+        yield 'download denied for open document via closed route' => [
+            'fixtures' => self::FIXTURES_WITH_SESSION,
+            'downloadAs' => 'user_representative',
+            'getDocumentId' => static fn(KernelBrowser $client, array $objects) => self::createDocumentDirectly(
+                $objects['tournament_session_test']->getId(),
+                TournamentDocumentVisibility::Open,
+            ),
+            'expectedStatus' => 404,
+            'afterCallback' => static function () {
+            },
+        ];
     }
 }

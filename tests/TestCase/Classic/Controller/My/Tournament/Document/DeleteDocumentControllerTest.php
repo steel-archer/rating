@@ -40,12 +40,13 @@ class DeleteDocumentControllerTest extends WebTestCase
         int $expectedStatus,
         callable $afterCallback,
         ?callable $beforeDelete = null,
+        string $visibility = 'closed',
     ): void {
         $client = static::createClient();
         $objects = self::loadFixtures($fixtures);
 
         $tournamentId = $getTournamentId($objects);
-        $documentId = self::uploadDocumentAs($client, $objects, $uploadAs, $tournamentId);
+        $documentId = self::uploadDocumentAs($client, $objects, $uploadAs, $tournamentId, $visibility);
 
         if ($beforeDelete !== null) {
             $beforeDelete($tournamentId);
@@ -112,6 +113,29 @@ class DeleteDocumentControllerTest extends WebTestCase
                 $em->flush();
             },
         ];
+
+        yield 'delete open document allowed for started tournament' => [
+            'fixtures' => self::FIXTURES,
+            'uploadAs' => 'user_creator',
+            'deleteAs' => 'user_creator',
+            'getTournamentId' => static fn(array $objects) => $objects['tournament_draft']->getId(),
+            'expectedStatus' => 200,
+            'afterCallback' => static function (KernelBrowser $client, int $documentId) {
+                static::assertNull(
+                    static::getContainer()->get('doctrine')
+                        ->getRepository(TournamentDocument::class)
+                        ->find($documentId),
+                );
+            },
+            'beforeDelete' => static function (int $tournamentId): void {
+                $em = static::getContainer()->get('doctrine.orm.entity_manager');
+                $tournament = $em->getRepository(Tournament::class)->find($tournamentId);
+                $tournament->setStatus(TournamentStatus::Published);
+                $tournament->setStartedAt(new DateTimeImmutable('-1 day'));
+                $em->flush();
+            },
+            'visibility' => 'open',
+        ];
     }
 
     /**
@@ -168,12 +192,13 @@ class DeleteDocumentControllerTest extends WebTestCase
         array $objects,
         string $userKey,
         int $tournamentId,
+        string $visibility = 'closed',
     ): int {
         $client->loginUser($objects[$userKey]);
         $client->request(
             'POST',
             '/my/tournaments/' . $tournamentId . '/documents',
-            [],
+            ['visibility' => $visibility],
             ['file' => self::createTestPdf()],
         );
 
