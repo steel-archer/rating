@@ -14,5 +14,7 @@ document.addEventListener('turbo:frame-load', (event) => {
     const pageUrl = new URL(window.location.href);
 
     pageUrl.search = frameUrl.search;
-    window.history.replaceState({}, '', pageUrl);
+    // Keep the existing state: Turbo stores its restoration identifier there,
+    // and without it the back button changes only the URL, not the page.
+    window.history.replaceState(window.history.state, '', pageUrl);
 });
