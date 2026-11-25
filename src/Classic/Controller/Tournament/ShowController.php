@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Classic\Controller\Tournament;
 
+use App\Classic\DTO\Response\My\TournamentDocumentDTO;
 use App\Classic\DTO\Response\Tournament\ModerationClaimDTO;
+use App\Classic\Enum\TournamentDocumentVisibility;
+use App\Classic\Repository\TournamentDocumentRepository;
 use App\Common\Entity\User;
 use App\Common\Exception\EntityNotFoundException;
 use App\Common\Mapping\Mapper;
@@ -34,6 +37,7 @@ class ShowController extends AbstractController
         TournamentAccessService $accessService,
         VenueRepresentativeRepository $representativeRepository,
         TournamentSessionRepository $sessionRepository,
+        TournamentDocumentRepository $documentRepository,
         Mapper $mapper,
     ): Response {
         $tournament = $tournamentService->get($id);
@@ -80,6 +84,10 @@ class ShowController extends AbstractController
             'manageableSessionCount' => $manageableSessionCount,
             // Set only when there is exactly one, to link straight to it.
             'manageableSessionId' => $manageableSessionCount === 1 ? $manageableSessionIds[0] : null,
+            'openDocuments' => $mapper->mapMultiple(
+                $documentRepository->findByTournament($tournamentEntity, TournamentDocumentVisibility::Open),
+                TournamentDocumentDTO::class,
+            ),
         ]);
     }
 }

@@ -12,6 +12,7 @@ use App\Classic\Entity\Tournament;
 use App\Classic\Enum\TournamentFormat;
 use App\Classic\Enum\TournamentStatus;
 use App\Common\Mapping\Mapper;
+use App\Classic\Enum\TournamentDocumentVisibility;
 use App\Classic\Repository\TournamentDocumentRepository;
 use App\Classic\Repository\TournamentModerationClaimRepository;
 use App\Classic\Repository\TournamentOfficialRepository;
@@ -56,7 +57,11 @@ class EditController extends AbstractController
             'claim' => $claimDto,
             'officials' => $officials,
             'documents' => $mapper->mapMultiple(
-                $documentRepository->findByTournament($tournament),
+                $documentRepository->findByTournament($tournament, TournamentDocumentVisibility::Closed),
+                TournamentDocumentDTO::class,
+            ),
+            'openDocuments' => $mapper->mapMultiple(
+                $documentRepository->findByTournament($tournament, TournamentDocumentVisibility::Open),
                 TournamentDocumentDTO::class,
             ),
             'publishErrors' => $validator->validatePublish($tournament),

@@ -7,6 +7,7 @@ namespace App\Classic\Service;
 use App\Classic\Entity\Tournament;
 use App\Classic\Entity\TournamentDocument;
 use App\Classic\Entity\TournamentDocumentDownload;
+use App\Classic\Enum\TournamentDocumentVisibility;
 use App\Classic\Repository\TournamentDocumentDownloadRepository;
 use App\Classic\Repository\TournamentDocumentRepository;
 use App\Common\Entity\Player;
@@ -55,9 +56,12 @@ class TournamentDocumentService
      * @throws LogicException
      * @throws RandomException
      */
-    public function upload(Tournament $tournament, UploadedFile $file): TournamentDocument
-    {
-        $count = $this->documentRepository->countByTournament($tournament);
+    public function upload(
+        Tournament $tournament,
+        UploadedFile $file,
+        TournamentDocumentVisibility $visibility = TournamentDocumentVisibility::Closed,
+    ): TournamentDocument {
+        $count = $this->documentRepository->countByTournament($tournament, $visibility);
         if ($count >= self::MAX_FILES) {
             throw new LogicException('tournament.document.error.max_files');
         }
@@ -98,6 +102,7 @@ class TournamentDocumentService
         $document->setStoredName($storedName);
         $document->setMimeType($mimeType);
         $document->setSize($fileSize);
+        $document->setVisibility($visibility);
 
         $this->em->persist($document);
         $this->em->flush();

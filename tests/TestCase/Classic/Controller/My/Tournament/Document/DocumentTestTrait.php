@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\My\Tournament\Document;
 
+use App\Classic\Entity\Tournament;
+use App\Classic\Entity\TournamentDocument;
+use App\Classic\Enum\TournamentDocumentVisibility;
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -48,5 +51,35 @@ trait DocumentTestTrait
         $json = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         return $json['document']['id'];
+    }
+
+    private static function createDocumentDirectly(
+        int $tournamentId,
+        TournamentDocumentVisibility $visibility = TournamentDocumentVisibility::Closed,
+    ): int {
+        $em = static::getContainer()->get('doctrine.orm.entity_manager');
+        $tournament = $em->getRepository(Tournament::class)->find($tournamentId);
+
+        $projectDir = static::getContainer()->getParameter('kernel.project_dir');
+        $uploadDir = static::getContainer()->getParameter('app.upload_dir');
+        $dir = $uploadDir . '/' . $tournamentId;
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $storedName = 'test-' . uniqid() . '.pdf';
+        copy($projectDir . '/tests/Fixtures/Files/test.pdf', $dir . '/' . $storedName);
+
+        $document = new TournamentDocument();
+        $document->setTournament($tournament);
+        $document->setOriginalName('test.pdf');
+        $document->setStoredName($storedName);
+        $document->setMimeType('application/pdf');
+        $document->setSize(filesize($dir . '/' . $storedName));
+        $document->setVisibility($visibility);
+
+        $em->persist($document);
+        $em->flush();
+
+        return $document->getId();
     }
 }

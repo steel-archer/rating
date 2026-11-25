@@ -405,27 +405,51 @@ document.addEventListener('turbo:load', () => {
     initDocumentActions();
 });
 
-function initDocumentActions() {
-    const uploadBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById('document-upload-btn'));
-    const fileInput = /** @type {HTMLInputElement|null} */ (document.getElementById('document-file'));
-    const list = /** @type {HTMLElement|null} */ (document.getElementById('documents-list'));
-    const uploadGroup = /** @type {HTMLElement|null} */ (document.getElementById('document-upload-group'));
-    const status = /** @type {HTMLElement|null} */ (document.getElementById('document-upload-status'));
+/** Mirrors the server-side limit in TournamentDocumentService. */
+const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024;
 
-    if (!uploadBtn || !fileInput || !list) {
+function initDocumentActions() {
+    document.querySelectorAll('[data-document-block]').forEach((block) => {
+        initDocumentBlock(/** @type {HTMLElement} */ (block));
+    });
+}
+
+/**
+ * One block handles one kind of documents (closed or open), see data-visibility.
+ *
+ * @param {HTMLElement} block
+ */
+function initDocumentBlock(block) {
+    const uploadBtn = /** @type {HTMLButtonElement|null} */ (block.querySelector('[data-document-upload]'));
+    const fileInput = /** @type {HTMLInputElement|null} */ (block.querySelector('[data-document-file]'));
+    const list = /** @type {HTMLElement|null} */ (block.querySelector('[data-document-list]'));
+    const uploadGroup = /** @type {HTMLElement|null} */ (block.querySelector('[data-document-upload-group]'));
+    const status = /** @type {HTMLElement|null} */ (block.querySelector('[data-document-status]'));
+
+    if (!list) {
         return;
     }
 
-    const tournamentId = list.dataset.tournamentId;
+    const tournamentId = block.dataset.tournamentId;
+    const visibility = block.dataset.visibility ?? 'closed';
+    const downloadBase = block.dataset.downloadBase;
 
-    uploadBtn.addEventListener('click', () => {
-        const file = fileInput.files?.[0];
-        if (!file) {
+    uploadBtn?.addEventListener('click', () => {
+        const file = fileInput?.files?.[0];
+        if (!file || !fileInput) {
+            return;
+        }
+
+        if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
+            if (status) {
+                showError(status, 'tournament.document.error.too_large');
+            }
             return;
         }
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('visibility', visibility);
 
         uploadBtn.disabled = true;
 
@@ -433,14 +457,17 @@ function initDocumentActions() {
             method: 'POST',
             body: formData,
         })
-            .then(response => response.json().then(body => ({ok: response.ok, body})))
+            .then(response => response.json()
+                // The body is not JSON when a proxy or PHP rejects an oversized request before the app runs.
+                .catch(() => ({error: response.status === 413 ? 'tournament.document.error.too_large' : null}))
+                .then(body => ({ok: response.ok, body})))
             .then(({ok, body}) => {
                 uploadBtn.disabled = false;
                 if (ok) {
                     const entry = document.createElement('div');
                     entry.className = 'document-entry';
                     entry.dataset.documentId = String(body.document.id);
-                    entry.innerHTML = `<a href="/my/tournaments/documents/${body.document.id}/download" class="document-link">${escapeHtml(body.document.originalName)}</a>`
+                    entry.innerHTML = `<a href="${downloadBase}${body.document.id}/download" class="document-link">${escapeHtml(body.document.originalName)}</a>`
                         + ` <span class="document-size">(${Math.round(body.document.size / 1024)} KB)</span>`
                         + ` <button type="button" class="btn-remove" data-document-delete="${body.document.id}">\u00d7</button>`;
                     list.appendChild(entry);
@@ -472,7 +499,6 @@ function initDocumentActions() {
         }
 
         const documentId = /** @type {HTMLElement} */ (deleteBtn).dataset.documentDelete;
-
         fetch(`/my/tournaments/documents/${documentId}`, {method: 'DELETE'})
             .then(response => {
                 if (response.ok) {

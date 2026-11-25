@@ -205,7 +205,11 @@ class TournamentControllerTest extends WebTestCase
             'loginAs' => 'user_creator',
             'action' => static fn(KernelBrowser $client, array $objects) => $client->request('GET', '/my/tournaments/' . $objects['tournament_draft']->getId() . '/edit'),
             'expectedStatus' => 200,
-            'afterCallback' => static function () {
+            'afterCallback' => static function (KernelBrowser $client) {
+                $crawler = $client->getCrawler();
+                // Closed and open documents are managed in two separate blocks.
+                static::assertCount(1, $crawler->filter('[data-document-block][data-visibility="closed"]'));
+                static::assertCount(1, $crawler->filter('[data-document-block][data-visibility="open"]'));
             },
         ];
 

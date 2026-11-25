@@ -128,6 +128,17 @@
         {% endif %}
     </div>
 
+    {% if openDocuments is not empty %}
+        <div class="card">
+            <h2>{{ 'tournament.document.public_title'|trans }}</h2>
+            {% for doc in openDocuments %}
+                <div class="document-entry">
+                    <a href="{{ path('tournament_document_download', {id: doc.id}) }}" class="document-link">{{ doc.originalName }}</a>
+                    <span class="document-size">({{ (doc.size / 1024)|round(0) }} KB)</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     {% if moderationClaim and moderationClaim.status == 'pending' %}
         <div class="card moderation-card">
             <h2>{{ 'nav.moderation'|trans }}</h2>

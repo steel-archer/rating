@@ -30,7 +30,8 @@ class DownloadDocumentController extends AbstractController
         $tournament = $document->getTournament();
 
         // Only a host of an approved session may access the question package.
-        if ($player === null || !$claimRepository->hasApprovedHostedSession($player, $tournament)) {
+        // Open documents are served by the public download controller instead.
+        if ($player === null || $document->isOpen() || !$claimRepository->hasApprovedHostedSession($player, $tournament)) {
             throw $this->createNotFoundException();
         }
 

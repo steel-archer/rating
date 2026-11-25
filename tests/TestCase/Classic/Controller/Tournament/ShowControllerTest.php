@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\TestCase\Classic\Controller\Tournament;
 
+use App\Classic\Enum\TournamentDocumentVisibility;
 use App\Tests\FixturesTrait;
+use App\Tests\TestCase\Classic\Controller\My\Tournament\Document\DocumentTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use App\Classic\Service\TournamentService;
 use RuntimeException;
@@ -13,6 +15,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ShowControllerTest extends WebTestCase
 {
+    use DocumentTestTrait;
     use FixturesTrait;
 
     /**
@@ -44,6 +47,36 @@ class ShowControllerTest extends WebTestCase
 
         static::assertResponseStatusCodeSame($expectedStatus);
         $afterCallback($crawler, $objects);
+    }
+
+    public function testShowListsOnlyOpenDocuments(): void
+    {
+        $client = static::createClient();
+        $objects = self::loadFixtures(['Entity/base.yaml', 'Entity/users.yaml', 'Entity/my_tournaments.yaml']);
+        $tournamentId = $objects['tournament_published']->getId();
+        $openId = self::createDocumentDirectly($tournamentId, TournamentDocumentVisibility::Open);
+        $closedId = self::createDocumentDirectly($tournamentId);
+        $client->loginUser($objects['user_with_player']);
+
+        $crawler = $client->request('GET', '/tournament/' . $tournamentId);
+
+        static::assertResponseIsSuccessful();
+        static::assertCount(1, $crawler->filter('a[href="/tournament/documents/' . $openId . '/download"]'));
+        static::assertCount(0, $crawler->filter('a[href*="/documents/' . $closedId . '/download"]'));
+    }
+
+    public function testShowHidesDocumentsBlockWithoutOpenDocuments(): void
+    {
+        $client = static::createClient();
+        $objects = self::loadFixtures(['Entity/base.yaml', 'Entity/users.yaml', 'Entity/my_tournaments.yaml']);
+        $tournamentId = $objects['tournament_published']->getId();
+        self::createDocumentDirectly($tournamentId);
+        $client->loginUser($objects['user_with_player']);
+
+        $crawler = $client->request('GET', '/tournament/' . $tournamentId);
+
+        static::assertResponseIsSuccessful();
+        static::assertCount(0, $crawler->filter('.document-entry'));
     }
 
     /**
